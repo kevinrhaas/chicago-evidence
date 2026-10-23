@@ -1,0 +1,563 @@
+{
+  "plugins": [
+    "react",
+    "import"
+  ],
+  "rules": {
+    "react/forbid-elements": [
+      "warn",
+      {
+        "forbid": []
+      }
+    ],
+    "no-restricted-imports": [
+      "warn",
+      {
+        "patterns": [
+          {
+            "group": [
+              "components/brand/**",
+              "components/controls/**",
+              "components/destinations/**",
+              "components/instruments/**",
+              "components/overlays/**",
+              "components/records/**",
+              "dev/**",
+              "ui_kits/observatory/**"
+            ],
+            "message": "Import design-system components from 'index.js', not component internals."
+          }
+        ]
+      }
+    ],
+    "no-restricted-syntax": [
+      "warn",
+      {
+        "selector": "Literal[value=/#[0-9a-fA-F]{3,8}\\b/]",
+        "message": "Raw hex color — use a design-system color token via var()."
+      },
+      {
+        "selector": "Literal[value=/\\b\\d+px\\b/]",
+        "message": "Raw px value — use a design-system spacing token via var()."
+      },
+      {
+        "selector": "Literal[value=/font-family\\s*:\\s*(?!['\\\"]?(?:Barlow|Barlow Semi Condensed|Instrument Serif|IBM Plex Mono|Cormorant Garamond|Cormorant SC|Courier Prime|League Spartan|Jost|Space Mono|Saira|Share Tech Mono))/i]",
+        "message": "Font not provided by the design system. Available: Barlow, Barlow Semi Condensed, Instrument Serif, IBM Plex Mono, Cormorant Garamond, Cormorant SC, Courier Prime, League Spartan, Jost, Space Mono, Saira, Share Tech Mono."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='AcquisitionStatus'] > JSXAttribute > JSXIdentifier[name!=/^(?:message|count|busy|key|ref|className|style|children)$/]",
+        "message": "<AcquisitionStatus> doesn't accept that prop. Declared props: message, count, busy."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='BrandMark'] > JSXAttribute > JSXIdentifier[name!=/^(?:size|code|name|href|showWordmark|key|ref|className|style|children)$/]",
+        "message": "<BrandMark> doesn't accept that prop. Declared props: size, code, name, href, showWordmark."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Fact'] > JSXAttribute > JSXIdentifier[name!=/^(?:label|value|grade|wide|key|ref|className|style|children)$/]",
+        "message": "<Fact> doesn't accept that prop. Declared props: label, value, grade, wide."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Fact'] > JSXAttribute[name.name='grade'] > Literal[value!=/^(?:documented|inferred|conjectural)$/]",
+        "message": "<Fact> grade must be one of 'documented' | 'inferred' | 'conjectural'."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Chronometer'] > JSXAttribute > JSXIdentifier[name!=/^(?:phase|size|note|imageSrc|label|key|ref|className|style|children)$/]",
+        "message": "<Chronometer> doesn't accept that prop. Declared props: phase, size, note, imageSrc, label."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Chronometer'] > JSXAttribute[name.name='phase'] > Literal[value!=/^(?:scan|lock|arrive)$/]",
+        "message": "<Chronometer> phase must be one of 'scan' | 'lock' | 'arrive'."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='ConfidenceGrade'] > JSXAttribute > JSXIdentifier[name!=/^(?:grade|label|chip|showLabel|key|ref|className|style|children)$/]",
+        "message": "<ConfidenceGrade> doesn't accept that prop. Declared props: grade, label, chip, showLabel."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='ConfidenceGrade'] > JSXAttribute[name.name='grade'] > Literal[value!=/^(?:documented|inferred|conjectural)$/]",
+        "message": "<ConfidenceGrade> grade must be one of 'documented' | 'inferred' | 'conjectural'."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='DepartureOverlay'] > JSXAttribute > JSXIdentifier[name!=/^(?:year|eyebrow|message|open|inline|onAbort|abortLabel|children|key|ref|className|style|children)$/]",
+        "message": "<DepartureOverlay> doesn't accept that prop. Declared props: year, eyebrow, message, open, inline, onAbort, abortLabel, children."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='EngageButton'] > JSXAttribute > JSXIdentifier[name!=/^(?:children|variant|size|arrow|disabled|href|onClick|type|key|ref|className|style|children)$/]",
+        "message": "<EngageButton> doesn't accept that prop. Declared props: children, variant, size, arrow, disabled, href, onClick, type."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='EngageButton'] > JSXAttribute[name.name='variant'] > Literal[value!=/^(?:primary|secondary|ghost)$/]",
+        "message": "<EngageButton> variant must be one of 'primary' | 'secondary' | 'ghost'."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='EngageButton'] > JSXAttribute[name.name='size'] > Literal[value!=/^(?:sm|md|lg)$/]",
+        "message": "<EngageButton> size must be one of 'sm' | 'md' | 'lg'."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='EngageButton'] > JSXAttribute[name.name='type'] > Literal[value!=/^(?:button|submit)$/]",
+        "message": "<EngageButton> type must be one of 'button' | 'submit'."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='EraArt'] > JSXAttribute > JSXIdentifier[name!=/^(?:kind|key|ref|className|style|children)$/]",
+        "message": "<EraArt> doesn't accept that prop. Declared props: kind."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='EraArt'] > JSXAttribute[name.name='kind'] > Literal[value!=/^(?:town|avenue|shore)$/]",
+        "message": "<EraArt> kind must be one of 'town' | 'avenue' | 'shore'."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='EraCard'] > JSXAttribute > JSXIdentifier[name!=/^(?:index|name|year|title|body|state|pending|primary|imageSrc|art|footLeft|footRight|href|onClick|key|ref|className|style|children)$/]",
+        "message": "<EraCard> doesn't accept that prop. Declared props: index, name, year, title, body, state, pending, primary, imageSrc, art, footLeft, footRight, href, onClick."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='EraCard'] > JSXAttribute[name.name='art'] > Literal[value!=/^(?:town|avenue|shore)$/]",
+        "message": "<EraCard> art must be one of 'town' | 'avenue' | 'shore'."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='IndicatorLamp'] > JSXAttribute > JSXIdentifier[name!=/^(?:label|on|blink|tone|size|key|ref|className|style|children)$/]",
+        "message": "<IndicatorLamp> doesn't accept that prop. Declared props: label, on, blink, tone, size."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Machine'] > JSXAttribute > JSXIdentifier[name!=/^(?:id|name|code|swatch|key|ref|className|style|children)$/]",
+        "message": "<Machine> doesn't accept that prop. Declared props: id, name, code, swatch."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Masthead'] > JSXAttribute > JSXIdentifier[name!=/^(?:station|status|href|children|key|ref|className|style|children)$/]",
+        "message": "<Masthead> doesn't accept that prop. Declared props: station, status, href, children."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Pill'] > JSXAttribute > JSXIdentifier[name!=/^(?:children|pressed|count|disabled|onClick|key|ref|className|style|children)$/]",
+        "message": "<Pill> doesn't accept that prop. Declared props: children, pressed, count, disabled, onClick."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Placard'] > JSXAttribute > JSXIdentifier[name!=/^(?:title|note|glyph|tone|key|ref|className|style|children)$/]",
+        "message": "<Placard> doesn't accept that prop. Declared props: title, note, glyph, tone."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Placard'] > JSXAttribute[name.name='tone'] > Literal[value!=/^(?:solid|stripe)$/]",
+        "message": "<Placard> tone must be one of 'solid' | 'stripe'."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='ResultRow'] > JSXAttribute > JSXIdentifier[name!=/^(?:name|sub|distance|bearing|grade|active|onClick|key|ref|className|style|children)$/]",
+        "message": "<ResultRow> doesn't accept that prop. Declared props: name, sub, distance, bearing, grade, active, onClick."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='ResultRow'] > JSXAttribute[name.name='grade'] > Literal[value!=/^(?:documented|inferred|conjectural)$/]",
+        "message": "<ResultRow> grade must be one of 'documented' | 'inferred' | 'conjectural'."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='SearchField'] > JSXAttribute > JSXIdentifier[name!=/^(?:value|onChange|placeholder|label|key|ref|className|style|children)$/]",
+        "message": "<SearchField> doesn't accept that prop. Declared props: value, onChange, placeholder, label."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='SectionLine'] > JSXAttribute > JSXIdentifier[name!=/^(?:title|meta|metaValue|children|key|ref|className|style|children)$/]",
+        "message": "<SectionLine> doesn't accept that prop. Declared props: title, meta, metaValue, children."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='TabItem'] > JSXAttribute > JSXIdentifier[name!=/^(?:id|label|count|key|ref|className|style|children)$/]",
+        "message": "<TabItem> doesn't accept that prop. Declared props: id, label, count."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='TelemetryItem'] > JSXAttribute > JSXIdentifier[name!=/^(?:label|value|state|key|ref|className|style|children)$/]",
+        "message": "<TelemetryItem> doesn't accept that prop. Declared props: label, value, state."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='TelemetryItem'] > JSXAttribute[name.name='state'] > Literal[value!=/^(?:normal|ok|warn|alert)$/]",
+        "message": "<TelemetryItem> state must be one of 'normal' | 'ok' | 'warn' | 'alert'."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Toggle'] > JSXAttribute > JSXIdentifier[name!=/^(?:label|checked|onChange|detail|key|ref|className|style|children)$/]",
+        "message": "<Toggle> doesn't accept that prop. Declared props: label, checked, onChange, detail."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='TransitSequence'] > JSXAttribute > JSXIdentifier[name!=/^(?:steps|current|key|ref|className|style|children)$/]",
+        "message": "<TransitSequence> doesn't accept that prop. Declared props: steps, current."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='YearReadout'] > JSXAttribute > JSXIdentifier[name!=/^(?:year|label|size|key|ref|className|style|children)$/]",
+        "message": "<YearReadout> doesn't accept that prop. Declared props: year, label, size."
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": [
+        "**/index.js"
+      ],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
+    }
+  ],
+  "x-omelette": {
+    "components": {
+      "AcquisitionStatus": {
+        "replaces": []
+      },
+      "BrandMark": {
+        "replaces": []
+      },
+      "Fact": {
+        "replaces": []
+      },
+      "Chronometer": {
+        "replaces": []
+      },
+      "ConfidenceGrade": {
+        "replaces": []
+      },
+      "DepartureOverlay": {
+        "replaces": []
+      },
+      "EngageButton": {
+        "replaces": []
+      },
+      "EraArt": {
+        "replaces": []
+      },
+      "EraCard": {
+        "replaces": []
+      },
+      "IndicatorLamp": {
+        "replaces": []
+      },
+      "Machine": {
+        "replaces": []
+      },
+      "Masthead": {
+        "replaces": []
+      },
+      "Pill": {
+        "replaces": []
+      },
+      "Placard": {
+        "replaces": []
+      },
+      "ResultRow": {
+        "replaces": []
+      },
+      "SearchField": {
+        "replaces": []
+      },
+      "SectionLine": {
+        "replaces": []
+      },
+      "TabItem": {
+        "replaces": []
+      },
+      "TelemetryItem": {
+        "replaces": []
+      },
+      "Toggle": {
+        "replaces": []
+      },
+      "TransitSequence": {
+        "replaces": []
+      },
+      "YearReadout": {
+        "replaces": []
+      }
+    },
+    "tokens": [
+      "--accent",
+      "--accent-ink",
+      "--accent-style",
+      "--alert",
+      "--border-hair",
+      "--brass",
+      "--chamfer",
+      "--con",
+      "--cr-alert-magenta",
+      "--cr-aluminum",
+      "--cr-aluminum-dark",
+      "--cr-cd-yellow",
+      "--cr-console-blue",
+      "--cr-console-deep",
+      "--cr-console-night",
+      "--cr-ivory-enamel",
+      "--cr-lamp-amber",
+      "--cr-phosphor-green",
+      "--cr-scope",
+      "--cr-signal-red",
+      "--cr-steel-blue",
+      "--display-case",
+      "--display-tracking",
+      "--display-weight",
+      "--doc",
+      "--ds-amber",
+      "--ds-ceramic",
+      "--ds-cyan",
+      "--ds-gunmetal",
+      "--ds-obsidian",
+      "--ds-obsidian-2",
+      "--ds-violet",
+      "--ease-detent",
+      "--ease-machine",
+      "--edge",
+      "--edge-strong",
+      "--font-accent",
+      "--font-body",
+      "--font-display",
+      "--font-label",
+      "--font-mono",
+      "--frame-gutter",
+      "--frame-max",
+      "--fs-body",
+      "--fs-depart",
+      "--fs-h2",
+      "--fs-h3",
+      "--fs-hero",
+      "--fs-label",
+      "--fs-lede",
+      "--fs-meta",
+      "--fs-micro",
+      "--fs-small",
+      "--fs-title",
+      "--fs-year",
+      "--glow-lamp",
+      "--glow-phosphor",
+      "--grade-conjectural",
+      "--grade-conjectural-light",
+      "--grade-documented",
+      "--grade-documented-light",
+      "--grade-inferred",
+      "--grade-inferred-light",
+      "--grid-cell",
+      "--hazard",
+      "--hit-min",
+      "--inf",
+      "--ink",
+      "--ink-dim",
+      "--ink-faint",
+      "--inset-bezel",
+      "--label-case",
+      "--label-tracking",
+      "--label-weight",
+      "--lamp",
+      "--lh-body",
+      "--lh-loose",
+      "--lh-tight",
+      "--masthead-h",
+      "--metal",
+      "--metal-ink",
+      "--ok",
+      "--page",
+      "--page-2",
+      "--panel",
+      "--panel-raised",
+      "--panel-solid",
+      "--pb-amber",
+      "--pb-brass",
+      "--pb-brass-dark",
+      "--pb-copper",
+      "--pb-ivory",
+      "--pb-ready-green",
+      "--pb-verdigris",
+      "--pb-walnut",
+      "--pb-walnut-night",
+      "--r",
+      "--r-bezel",
+      "--r-control",
+      "--r-panel",
+      "--r-pill",
+      "--r-screen",
+      "--s-1",
+      "--s-2",
+      "--s-3",
+      "--s-4",
+      "--s-5",
+      "--s-6",
+      "--s-7",
+      "--s-8",
+      "--s-9",
+      "--screen",
+      "--screen-grid",
+      "--screen-ink",
+      "--shadow-button",
+      "--shadow-lift",
+      "--shadow-panel",
+      "--signal",
+      "--signal-deep",
+      "--signal-ink",
+      "--skin-display",
+      "--skin-font",
+      "--skin-glow",
+      "--skin-radius",
+      "--surface-card",
+      "--surface-control",
+      "--surface-page",
+      "--t-cross",
+      "--t-mid",
+      "--t-orbit",
+      "--t-quick",
+      "--text-body",
+      "--text-muted",
+      "--wash",
+      "--wf-aluminum",
+      "--wf-crt",
+      "--wf-crt-ink",
+      "--wf-graphite",
+      "--wf-ivory",
+      "--wf-ivory-light",
+      "--wf-orange",
+      "--wf-turquoise"
+    ],
+    "tokenKinds": {
+      "--cr-ivory-enamel": "color",
+      "--cr-console-blue": "color",
+      "--cr-console-deep": "color",
+      "--cr-console-night": "color",
+      "--cr-steel-blue": "color",
+      "--cr-aluminum": "color",
+      "--cr-aluminum-dark": "color",
+      "--cr-signal-red": "color",
+      "--cr-phosphor-green": "color",
+      "--cr-scope": "color",
+      "--cr-lamp-amber": "color",
+      "--cr-cd-yellow": "color",
+      "--cr-alert-magenta": "color",
+      "--pb-brass": "color",
+      "--pb-brass-dark": "color",
+      "--pb-walnut": "color",
+      "--pb-walnut-night": "color",
+      "--pb-ivory": "color",
+      "--pb-verdigris": "color",
+      "--pb-amber": "color",
+      "--pb-ready-green": "color",
+      "--pb-copper": "color",
+      "--wf-ivory": "color",
+      "--wf-ivory-light": "color",
+      "--wf-turquoise": "color",
+      "--wf-orange": "color",
+      "--wf-graphite": "color",
+      "--wf-aluminum": "color",
+      "--wf-crt": "color",
+      "--wf-crt-ink": "color",
+      "--ds-obsidian": "color",
+      "--ds-obsidian-2": "color",
+      "--ds-ceramic": "color",
+      "--ds-cyan": "color",
+      "--ds-amber": "color",
+      "--ds-violet": "color",
+      "--ds-gunmetal": "color",
+      "--grade-documented": "color",
+      "--grade-inferred": "color",
+      "--grade-conjectural": "color",
+      "--grade-documented-light": "color",
+      "--grade-inferred-light": "color",
+      "--grade-conjectural-light": "color",
+      "--page": "color",
+      "--page-2": "color",
+      "--panel": "color",
+      "--panel-solid": "color",
+      "--panel-raised": "color",
+      "--ink": "color",
+      "--ink-dim": "color",
+      "--ink-faint": "color",
+      "--edge": "color",
+      "--edge-strong": "color",
+      "--accent": "color",
+      "--accent-ink": "color",
+      "--signal": "color",
+      "--signal-ink": "color",
+      "--signal-deep": "color",
+      "--lamp": "color",
+      "--hazard": "color",
+      "--alert": "color",
+      "--ok": "color",
+      "--metal": "color",
+      "--metal-ink": "color",
+      "--screen": "color",
+      "--screen-ink": "color",
+      "--screen-grid": "color",
+      "--skin-glow": "color",
+      "--wash": "color",
+      "--doc": "color",
+      "--inf": "color",
+      "--con": "color",
+      "--surface-page": "color",
+      "--surface-card": "color",
+      "--surface-control": "color",
+      "--text-body": "font",
+      "--text-muted": "font",
+      "--border-hair": "color",
+      "--brass": "color",
+      "--r": "color",
+      "--font-display": "font",
+      "--font-body": "font",
+      "--font-accent": "font",
+      "--font-mono": "font",
+      "--font-label": "font",
+      "--display-weight": "font",
+      "--display-tracking": "font",
+      "--display-case": "font",
+      "--accent-style": "font",
+      "--label-tracking": "font",
+      "--label-case": "font",
+      "--label-weight": "font",
+      "--fs-hero": "font",
+      "--fs-year": "font",
+      "--fs-depart": "font",
+      "--fs-h2": "spacing",
+      "--fs-h3": "spacing",
+      "--fs-title": "spacing",
+      "--fs-lede": "spacing",
+      "--fs-body": "spacing",
+      "--fs-small": "spacing",
+      "--fs-meta": "spacing",
+      "--fs-label": "spacing",
+      "--fs-micro": "spacing",
+      "--lh-tight": "font",
+      "--lh-body": "font",
+      "--lh-loose": "font",
+      "--skin-font": "font",
+      "--skin-display": "color",
+      "--s-1": "spacing",
+      "--s-2": "spacing",
+      "--s-3": "spacing",
+      "--s-4": "spacing",
+      "--s-5": "spacing",
+      "--s-6": "spacing",
+      "--s-7": "spacing",
+      "--s-8": "spacing",
+      "--s-9": "spacing",
+      "--frame-max": "spacing",
+      "--frame-gutter": "spacing",
+      "--masthead-h": "spacing",
+      "--grid-cell": "spacing",
+      "--r-panel": "spacing",
+      "--r-control": "spacing",
+      "--r-pill": "spacing",
+      "--r-bezel": "spacing",
+      "--r-screen": "spacing",
+      "--skin-radius": "radius",
+      "--hit-min": "spacing",
+      "--shadow-panel": "shadow",
+      "--shadow-lift": "shadow",
+      "--shadow-button": "shadow",
+      "--inset-bezel": "spacing",
+      "--glow-phosphor": "color",
+      "--glow-lamp": "color",
+      "--ease-machine": "other",
+      "--ease-detent": "other",
+      "--t-quick": "other",
+      "--t-mid": "other",
+      "--t-cross": "other",
+      "--t-orbit": "other",
+      "--chamfer": "spacing"
+    },
+    "fontFamilies": [
+      "Barlow",
+      "Barlow Semi Condensed",
+      "Cormorant Garamond",
+      "Cormorant SC",
+      "Courier Prime",
+      "IBM Plex Mono",
+      "Instrument Serif",
+      "Jost",
+      "League Spartan",
+      "Saira",
+      "Share Tech Mono",
+      "Space Mono"
+    ]
+  }
+}
