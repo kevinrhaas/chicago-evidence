@@ -38,7 +38,7 @@ for source in selected:
 run(['git', 'add', '--', str(REL)])
 changed = run(['git', 'diff', '--cached', '--name-only']).stdout.splitlines()
 assert changed and all(p.startswith(str(REL) + '/') for p in changed)
-run(['git', 'commit', '-q', '-m', 'Checkpoint resumed school and Tremont actual comparisons with open image gates'])
+run(['git', 'commit', '-q', '-m', 'Checkpoint resumed picture comparisons and guarded integration work'])
 push_log = []
 for attempt in range(3):
     result = run(['git', 'push', 'origin', 'HEAD:main'], check=False)
