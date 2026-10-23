@@ -1,6 +1,6 @@
 # Final parallel picture-work recovery — 23 October 2026
 
-Snapshot 2026-10-23T14:44:32.055078+00:00. These archives preserve exact closed sets and their unresolved limits. **None of the seventeen original picture-matching tickets is certified as image-matched by this checkpoint.** Ownership is the ticket metadata snapshot below; normal releases may follow archival publication. Original T-2387 is split into continuing compound work, not successfully matched.
+Snapshot 2026-10-23T14:53:41.495959+00:00. These archives preserve exact closed sets and their unresolved limits. **None of the seventeen original picture-matching tickets is certified as image-matched by this checkpoint.** Ownership is the ticket metadata snapshot below; normal releases may follow archival publication. Original T-2387 is split into continuing compound work, not successfully matched.
 
 ## Root and PR anchors
 
@@ -19,23 +19,23 @@ Each tar contains `ARCHIVE-MANIFEST.json` listing exactly selected source paths,
 
 | Ticket | Structure | State / owner at snapshot | Actual status | Next work |
 |---|---|---|---|---|
-| T-2372 | School | claimed / school_lighthouse_castle_bridge 10/23/2026, 8:40:22 AM CT | Door-recess next291-file input proposal UNRUN; earlier shared-log preview differs. | Resolve original-picture identity/date and dark doorway; shared81 canonical integration still owed. |
-| T-2373 | 1832 lighthouse | claimed / Codex lighthouse picture matching; parallel Chicago 4D 10/23/2026, 7:00:17 AM CT | One irregular-stone export/capture actually completed; differs. | Continue image-specific lantern/shaft/roof controls; shared25 adoption remains separate. |
+| T-2372 | School | open / unclaimed | Door-recess next291-file input proposal UNRUN; earlier shared-log preview differs. | Resolve original-picture identity/date and dark doorway; shared81 canonical integration still owed. |
+| T-2373 | 1832 lighthouse | open / unclaimed | One irregular-stone export/capture actually completed; differs. | Continue image-specific lantern/shaft/roof controls; shared25 adoption remains separate. |
 | T-2374 | Cobweb Castle | open / unclaimed | Five-room isolated proposal preview differs; not canonical. | Resolve depicting source identity and roof intersections; shared81 integration. |
 | T-2375 | Dearborn bridge | open / unclaimed | v2 actual paired comparison differs; source audit previously published. | Preserve independently cleared Andreas correction; guarded6-master adoption, actual app/image QA. |
 | T-2376 | Green Tree | open / unclaimed | Frame prerequisite root792598d pushed in draftPR1239; actual app QA, picture differs. | Continue all-picture camera/form comparisons after prerequisite; no original match acceptance. |
 | T-2377 | Hogan first post office | claimed / Codex Hogan picture-match continuation 10/22/2026, 10:18:41 PM CT | Historical target39/tested5eae ten smoke PASS and1053gate; latest dev67 integration (42 Wheeler +67 fold) ongoing, not archived live. | Wait the final closed67 packet; finish PR1229 against current dev; picture remains differs. |
-| T-2378 | Beaubien homestead | claimed / beaubien-lakehouse-agent 10/23/2026, 9:10:20 AM CT | Root source identity/context correction adopted in draftPR1239; new primary-source patch UNAPPLIED. | Resolve homestead vs Factor/Dean identity before appearance edits. |
-| T-2379 | Lake House | claimed / beaubien-lakehouse-agent 10/23/2026, 9:10:30 AM CT | Actual roof-none prototype inspected; new context source patch UNAPPLIED. | June1835 construction does not establish roof/wall progress; guarded25-family adoption/QA. |
+| T-2378 | Beaubien homestead | open / unclaimed | Root source identity/context correction adopted in draftPR1239; new primary-source patch UNAPPLIED. | Resolve homestead vs Factor/Dean identity before appearance edits. |
+| T-2379 | Lake House | open / unclaimed | Actual roof-none prototype inspected; new context source patch UNAPPLIED. | June1835 construction does not establish roof/wall progress; guarded25-family adoption/QA. |
 | T-2380 | Log jail | open / unclaimed | Earlier full-group actual comparisons differ; corrected visible-joint pilot UNRUN. | Use corrected camera/topology controls; isolated pilot then guarded18-master production unit. |
 | T-2381 | Miller House | open / unclaimed | Actual boarding refinement visibly improved joints but differs; not canonical. | Shared81 adoption; window count, stack, rear cabin/annex and camera. |
 | T-2382 | Carpenter log shop | open / unclaimed | Actual shared-log sash/stack preview differs; optional brick selector unrun. | Recompose against new Sauganash and calibrate compound; shared81 integration. |
 | T-2383 | Sauganash Hotel | open / unclaimed | Frame prerequisite root792598d draftPR1239 includes actual app QA; picture differs. | Recompose log annex, separate dates and finish picture cameras. |
 | T-2384 | St Mary | open / unclaimed | Source-only chronology adopted in root draftPR1239; actual positive1835 Moss/Gale previews differ; narrower belfry next UNRUN. | Retain25x35/date/placement and uncertain installation; official271-family bake if adopted. |
 | T-2385 | First Tremont | open / unclaimed | Actual native normal/confidence comparisons viewed and differ; roof-only fork UNRUN; root three-storey/flag prerequisite draftPR1239. | Use717-file handoff; retain Gifford owner-use rights limits and unresolved flag/opening/camera details. |
-| T-2386 | Wolf Point | claimed / school_lighthouse_castle_bridge 10/23/2026, 7:14:35 AM CT | Latest actual169-file rounded-log/door review differs; roof/stack research diagnostic. | Inspect remaining roof/stack/door detail; shared81 canonical integration still owed. |
+| T-2386 | Wolf Point | open / unclaimed | Latest actual169-file rounded-log/door review differs; roof/stack research diagnostic. | Inspect remaining roof/stack/door detail; shared81 canonical integration still owed. |
 | T-2387 | First Fort, every building | split / run 10/22/2026, 5:44:36 PM CT | Original is SPLIT, continuing T3040/T3041; nine actual compound comparisons differ. | Track every original member; independent PD proposals UNAPPLIED; finish compound/calibrated cameras and25-family adoption. |
-| T-2388 | Second Fort, every building | claimed / run 10/23/2026, 8:49:10 AM CT | Actual earlier compound comparisons differ; low-river gallery47-file next proposal UNRUN. | Date each range separately;1838/1850s images cannot establish every1835building; shared25 adoption. |
+| T-2388 | Second Fort, every building | open / unclaimed | Actual earlier compound comparisons differ; low-river gallery47-file next proposal UNRUN. | Date each range separately;1838/1850s images cannot establish every1835building; shared25 adoption. |
 
 ## Published archive inventory
 
@@ -63,13 +63,50 @@ Each tar contains `ARCHIVE-MANIFEST.json` listing exactly selected source paths,
 - [BEAUBIEN-primary-publication-patch-UNAPPLIED](archives/BEAUBIEN-primary-publication-patch-UNAPPLIED.tar.gz) — 25 source files; archiveSHA256 `a32866a33ba5ffe48548c679369d684f6a948eac8bb434ae4f29fd33765f87de`; readback PASS. Closed exact-publication three-file source/identity correction against root792598d; preferred inferred homestead identity, no numerical geometry/camera/grade promotion. Public1881printed86/87 evidence and wrong-leaf attempts retained distinctly.
 - [LAKEHOUSE-context-chronology-patch-UNAPPLIED](archives/LAKEHOUSE-context-chronology-patch-UNAPPLIED.tar.gz) — 12 source files; archiveSHA256 `784c3769760c63f57220feb40e52af6f9e23cc0c8b8cc05fca76ecfb46596893`; readback PASS. Closed later-holderlink/June10construction chronology three-file patch against root792598d; no new image license or earlyroof attestation. Existing geometry/mesh unchanged; combined compactindex relies on Beaubien shortening, estimated21B headroom must be actually rederived.
 - [NORMAL-CLAIM-RELEASES-jail-stmary-PROOFS](archives/NORMAL-CLAIM-RELEASES-jail-stmary-PROOFS.tar.gz) — 10 source files; archiveSHA256 `e2ecacd16ba643468d311280f8b9348b3fdbe6a0f007fd2f9662aea6ba50a5db`; readback PASS. Normal own-claim releases only, no force/done/image acceptance. Jail4bbcbf48, StMary68e84bb4; firstfortT3041 f48ad51 recorded in separate release ledger if no owner proof folder. Tickets stay open/unclaimed; originalT2387 remains split.
+- [HOGAN-ef480-readonly-staged-audit-NO-APPROVAL](archives/HOGAN-ef480-readonly-staged-audit-NO-APPROVAL.tar.gz) — 4 source files; archiveSHA256 `6f3a55a8fefb7ba8f28b09b5dd6a2ce0ffbeb106e40c06b47c61640aa48e1ae0`; readback PASS. Closed independent four-file readonly review of staged67463f99 own39/incomingef480 integration and59-step native tail. No integrity blocker observed for those exact inputs; strict fullgate and new hosted smokes were STILLPENDING at review, not remote approval. Manifest hashes referencing owner inputs do not cause live owner/gate paths to be captured.
 
 ## Continuing-work boundaries
 
 All native-unreviewed original bytes and reviewed-differs verdicts are retained separately where supplied. No research camera becomes accepted through archival storage. Shared-family canonical rebuilds remain owed where proposals are unadopted: log81, fort25, jail18, and StMary frame271. Root frame/source23 asset prerequisite has its own actual supported bake/QA and full1056 gate; that does not certify the seventeen original matches. Live Hogan dev67 integration and any later claim release are separate events, not inferred from this snapshot.
 
-## Ordinary supersession and releases
+## Earlier related case archives, unchanged
 
-`SUPERSEDED-ARCHIVES.json` records the initial full school-origin folder snapshot from64fd5de. The owner supplied a bounded20-file capsule afterward; the earlier archive/manifest/receipt are removed from current main by ordinary commit and replaced with the bounded capsule. Historical64fd5de is unchanged; no history rewrite or rights expansion was performed.
+These migrated immutable archives retain proposals/actual evidence omitted from the new late-case packets. Their earlier source/root inputs are historical: compose guarded changes against the current pushed branch, preserving newer Hogan/source metadata, rather than copying whole old records or treating old recipes as fresh.
 
-`RELEASES.json` records normal post-archive releases and the reserved root writer window. Completed: T3041→open/unclaimed atf48ad51 (parent T2387 stays split), T2380→open/unclaimed at4bbcbf48, T2384→open/unclaimed at68e84bb4. Original scope/acceptance stays intact, no force/done. Later releases are separate updates.
+- [Cobweb/Miller/Carpenter and school/Wolf shared-log actual original frozen comparison (differs)](https://github.com/kevinrhaas/chicago-evidence/blob/3575ef631781623e13f3382b1f275434560af074/evidence/image-match-2026-10-22/parallel-next-proposals/log-combined--REVIEWED_DIFFERS_ORIGINAL_FROZEN--20261023T053415Z.tar.gz)
+- [Miller boarding refinement actual comparison (differs; shared81 rebuild owed)](https://github.com/kevinrhaas/chicago-evidence/blob/3575ef631781623e13f3382b1f275434560af074/evidence/image-match-2026-10-22/parallel-next-proposals/log-boarding-refinement--REVIEWED_DIFFERS_REBUILD81_REQUIRED--20261023T053752Z.tar.gz)
+- [Historical guarded log81 composer, unapplied; preserve later Hogan changes](https://github.com/kevinrhaas/chicago-evidence/blob/3575ef631781623e13f3382b1f275434560af074/evidence/image-match-2026-10-22/parallel-next-proposals/log81-materializer--FINAL05F6_SOURCES_UNAPPLIED--20261023T084840Z.tar.gz)
+- [Carpenter earlier continuation/optional chimney-material proposal, unadopted](https://github.com/kevinrhaas/chicago-evidence/blob/3575ef631781623e13f3382b1f275434560af074/evidence/image-match-2026-10-22/hogan-first-rebuild/parallel-next-proposals/T-2382-next.tar.gz)
+- [Dearborn bridge actual paired comparison (differs)](https://github.com/kevinrhaas/chicago-evidence/blob/3575ef631781623e13f3382b1f275434560af074/evidence/image-match-2026-10-22/parallel-next-proposals/T-2375-next--REVIEWED_DIFFERS--20261023T053415Z.tar.gz)
+- [Bridge independent source audit and12-case app QA recovery; BakerCo remains held](https://github.com/kevinrhaas/chicago-evidence/blob/3575ef631781623e13f3382b1f275434560af074/evidence/image-match-2026-10-22/closed-complete12QA-bridge-fort-20261023T120430Z/RECOVERY.md)
+- [StMary original-site positive1835 candidate and actual Moss/Gale previews (differs;271 rebuild owed)](https://github.com/kevinrhaas/chicago-evidence/blob/3575ef631781623e13f3382b1f275434560af074/evidence/image-match-2026-10-22/parallel-next-proposals/T-2384-1835--RESEARCH_DIFFERS_REBAKE271_REQUIRED--20261023T064034Z.tar.gz)
+- [Separate noncanonical May1844 StMary prototype (differs; never transfer enlarged dimensions to1835)](https://github.com/kevinrhaas/chicago-evidence/blob/3575ef631781623e13f3382b1f275434560af074/evidence/image-match-2026-10-22/parallel-next-proposals/T-2384-prototype--NONCANONICAL_MAY1844_DIFFERS--20261023T054910Z.tar.gz)
+- [Historical fort selective integration including LakeHouse roof-none increment, unapplied](https://github.com/kevinrhaas/chicago-evidence/blob/3575ef631781623e13f3382b1f275434560af074/evidence/image-match-2026-10-22/parallel-next-proposals/fort-selective-integration--UNAPPLIED_SIX_KWONLY_API_FIX--20261023T070319Z.tar.gz)
+
+## Ordinary school-source supersession
+
+`SUPERSEDED-ARCHIVES.json` records the initial full school-origin folder snapshot from64fd5de. The later owner-bounded20-file capsule replaces its current-main archive/manifest/receipt through an ordinary commit. Historical64fd5de remains untouched. No history rewrite or rights upgrade was made.
+
+## Earlier capacity-policy history, preserved unchanged
+
+[Original/V1/V2/native-output checkpoint](https://github.com/kevinrhaas/chicago-evidence/tree/3575ef631781623e13f3382b1f275434560af074/evidence/image-match-2026-10-22/capacity-policy-history-20261023T134513Z) was first published at tickets commit`f9d23900b84567a156b631aab208774a04655591` and migrated under the same owner-authorized private-evidence path. [Archive metadata](https://github.com/kevinrhaas/chicago-evidence/blob/3575ef631781623e13f3382b1f275434560af074/evidence/image-match-2026-10-22/capacity-policy-history-20261023T134513Z/ARCHIVES.json) distinguishes initial adopted freeze, **historical V1 NOT FOR ADOPTION**, adopted V2 accounting/regression, actual native six-command outputs and independent reviewers. V1 kept authorization32 static and was rejected; V2 preserves historical authorization while deducting later ordinary occupancy. Do not apply V1 or replay old preparation scripts onto an already adopted/later checkout. Its then-pending final-root gate wording is historical; the later corrected root1056 gate is archived above. The earlier archives were not relabeled or rerun. Copied metadata/link proof is in `prior-capacity-index/`.
+
+## Normal post-archive claim releases
+
+A release leaves work available; it does not certify a picture match or close the original scope. Exact owner receipts are under `claim-release-proofs/` and `RELEASES.json`. No force/done or acceptance bypass was used.
+
+| Ticket | Normal release commit | Result |
+|---|---|---|
+| T-3041 | `f48ad51b66c140a402e7a51c7e8db9a3a50001f2` | open/unclaimed; original T2387 remains split |
+| T-2380 | `4bbcbf48f8c9884143a1db0055c1d61ae89f0798` | open/unclaimed, full original scope retained |
+| T-2384 | `68e84bb468e04e60515dddf2b6107a292d537e6c` | open/unclaimed, full original scope retained |
+| T-2372 | `b21716d01078bf41d67415563949bc67c8fd5768` | open/unclaimed; original body/acceptance preserved |
+| T-2386 | `b21716d01078bf41d67415563949bc67c8fd5768` | open/unclaimed; original body/acceptance preserved |
+| T-2373 | `bc839638304054f0c840e2382eda747b7d97eab9` | open/unclaimed; pr/closed null, original body/acceptance preserved |
+| T-2378 | `bc839638304054f0c840e2382eda747b7d97eab9` | open/unclaimed; pr/closed null, original body/acceptance preserved |
+| T-2379 | `bc839638304054f0c840e2382eda747b7d97eab9` | open/unclaimed; pr/closed null, original body/acceptance preserved |
+| T-2388 | `bc839638304054f0c840e2382eda747b7d97eab9` | open/unclaimed; pr/closed null, original body/acceptance preserved |
+| T-3055 | `43f91d005942ce777b949d8c5c6cb98b9641344d` | open/unclaimed; pr/closed null, original body/acceptance preserved |
+| T-3056 | `43f91d005942ce777b949d8c5c6cb98b9641344d` | open/unclaimed; pr/closed null, original body/acceptance preserved |
+
+Root pending handoff releases at this snapshot: T-2377 at final Hogan handoff if still pending. Later state changes are separate from these receipts.
