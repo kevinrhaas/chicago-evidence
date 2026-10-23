@@ -1,0 +1,12 @@
+# Add to existing proof checks before D.mkdir/any API write:
+SOURCE_PARENTS=['92ee0214878d0c40960b0e6239cbe415756e0e0a']
+assert terminal['source']==H and terminal['source_tree']==T and terminal['source_parents']==SOURCE_PARENTS
+assert terminal['expected_testmerge']==Q and terminal['expected_testmerge_tree']==T and terminal['reviewed_base']==B
+EXPECTED={40004752292:('.github/workflows/chicago-4d-check.yml','pull_request'),40004752222:('.github/workflows/chicago-4d-moving-frames.yml','pull_request'),40004742266:('.github/workflows/chicago-4d-pr-stuck.yml','push')}
+for proof in proofs:
+ assert (proof['workflow_path'],proof['event'])==EXPECTED[proof['run_id']] and proof['run_conclusion']=='success'
+ assert proof['actual_checkout_tree']==T and proof['actual_checkout_parents']==(SOURCE_PARENTS if proof['event']=='push' else [B,H])
+# Existing legacy request: add ?per_page=100; before all-success:
+assert statuses['total_count']==len(statuses['statuses'])
+# After final valid_pr(final), before merge:
+assert not any(label['name']=='hold' for label in final['labels'])

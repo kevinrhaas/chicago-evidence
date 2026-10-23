@@ -1,0 +1,37 @@
+{
+  "at": "2026-10-23T18:51:57.959190+00:00",
+  "reviewed_source": "/workspace/shared/T2800-PR1244-OWNER-APPROVED-INTEGRATION-20261023/merge_when_verified_green.py",
+  "source_sha256": "6b61d348fe958826abe5b4fdfcc16db7f4d66a79aa57160a25c3995b4a9f5a34",
+  "scope": "Source-only independent review. No execution, GET, app/canonical/ref mutation.",
+  "PASS_guards": [
+    "exact three strict-success source-f225 run IDs and H/Q checkout SHA",
+    "local H/tree/clean worktree",
+    "PR head/repository/branch/dev/open/no-automerge",
+    "observed DEV EB1a before and immediately before normal merge",
+    "all check-runs inventory complete with total_count",
+    "all current checkruns completed with GitHub-accepted conclusions; applicable three workflows require strict success separately",
+    "body update/ready/removehold only after proof and live checks",
+    "ordinary REST squash with expected source SHA, no admin/bypass/dispatch",
+    "actual merged PR exact source/DEV/squashSHA",
+    "actual merge tree T and single reviewed-B parent",
+    "preview status pending, photographic completion false"
+  ],
+  "hardening_before_execution": [
+    {
+      "issue": "Legacy combined-status response completeness is not checked",
+      "proposal": "GET commits/H/status?per_page=100; assert total_count == len(statuses), then require every status success."
+    },
+    {
+      "issue": "Merge boundary relies on upstream strict collector for detailed tree/parents/event/workflow provenance",
+      "proposal": "Reassert terminal source/tree/sourceparents/testmerge/testmergetree/reviewedbase and each audited proof workflow/event/run_conclusion/tree/parents using their already proved exact values."
+    },
+    {
+      "issue": "Final PR check does not explicitly reject a hold label newly added after initial snapshot",
+      "proposal": "Assert no hold label in final ready-PR labels before final base read and merge."
+    }
+  ],
+  "ordinary_merge_API_base_race_note": "REST sha pins source only. Existing before/final DEV guards plus actual postmerge parent proof are appropriate; do not claim the REST request atomically pins the base. No requirement to rebase on every later base movement is invented.",
+  "GETs": 0,
+  "executed_merge": false,
+  "source_edits": 0
+}
