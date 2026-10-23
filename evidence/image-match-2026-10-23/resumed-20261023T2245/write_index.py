@@ -3,19 +3,24 @@ from datetime import datetime, timezone
 from pathlib import Path
 import json
 import subprocess
+import sys
 
 WORK = Path(__file__).resolve().parent
 def api(endpoint):
     return json.loads(subprocess.check_output(['gh', 'api', endpoint], text=True))
-with ThreadPoolExecutor(max_workers=2) as pool:
-    prs = dict(zip([1229, 1239], pool.map(api, [f'repos/kevinrhaas/chicago/pulls/{n}' for n in [1229, 1239]])))
-snapshot = {
-    'at_utc': datetime.now(timezone.utc).isoformat(),
-    'scope': 'Read-only publication snapshot, not new validation or ownership. Live CI may change.',
-    'pulls': {str(n): {'number': n, 'state': p['state'], 'merged': p['merged'], 'draft': p['draft'], 'head': p['head']['sha'], 'merge_commit_sha': p['merge_commit_sha'], 'labels': [l['name'] for l in p['labels']], 'html_url': p['html_url']} for n, p in prs.items()},
-    'no_original_picture_acceptance_claimed': True,
-}
-(WORK / 'PR-SNAPSHOT.json').write_text(json.dumps(snapshot, indent=2) + '\n')
+if '--offline-snapshot' in sys.argv:
+    snapshot = json.loads((WORK / 'PR-SNAPSHOT.json').read_text())
+    prs = {int(n): {**p, 'head': {'sha': p['head']}} for n, p in snapshot['pulls'].items()}
+else:
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        prs = dict(zip([1229, 1239], pool.map(api, [f'repos/kevinrhaas/chicago/pulls/{n}' for n in [1229, 1239]])))
+    snapshot = {
+        'at_utc': datetime.now(timezone.utc).isoformat(),
+        'scope': 'Read-only publication snapshot, not new validation or ownership. Live CI may change.',
+        'pulls': {str(n): {'number': n, 'state': p['state'], 'merged': p['merged'], 'draft': p['draft'], 'head': p['head']['sha'], 'merge_commit_sha': p['merge_commit_sha'], 'labels': [l['name'] for l in p['labels']], 'html_url': p['html_url']} for n, p in prs.items()},
+        'no_original_picture_acceptance_claimed': True,
+    }
+    (WORK / 'PR-SNAPSHOT.json').write_text(json.dumps(snapshot, indent=2) + '\n')
 rows = json.loads((WORK / 'ARCHIVES.json').read_text())
 inventory = '\n'.join(f"- [{r['name']}](archives/{Path(r['archive']).name}) — {r['source_file_count']} selected files, archiveSHA256 `{r['sha256']}`, {r['readback']}. {r['scope_note']}" for r in rows)
 text = f'''# Resumed picture-work recovery — 23 October 2026, 22:45 UTC
@@ -31,8 +36,10 @@ Read-only metadata snapshot: `{snapshot['at_utc']}`; raw summary is [PR-SNAPSHOT
 - [PR1229](https://github.com/kevinrhaas/chicago/pull/1229): merged={str(prs[1229]['merged']).lower()}, head `{prs[1229]['head']['sha']}`. This is Hogan's visible first increment; original T-2377 still requires image matching. Do not reconstruct that landed increment from old scratch files.
 - [PR1239](https://github.com/kevinrhaas/chicago/pull/1239): state `{prs[1239]['state']}`, draft={str(prs[1239]['draft']).lower()}, head `{prs[1239]['head']['sha']}`. The root identified a live automation owner and is respecting its lock. This metadata is not a claim that its latest gate/browser coverage passed.
 - School T-2372: resumed actual one-export/one-capture trial darkens the doorway with the existing blind-recess control. Master `de08343a76201c4e7199066b12c285efc28c855b0a84fbcf318796aadba3f8a2`, 496 triangles. Actual source/before/after inspected; verdict **differs**. Frontage, gable cladding, roof, logs/chinks, openings, stack/context and provisional camera remain unresolved. Canonical integration remains separate. The root's resumed recount finds82 current log-family masters including new Ouilmette1812; the older frozen81-family baseline is historical and must not omit the new master.
+- School's next front-gable trial actually exported/captured once at the same camera, master `fe73a03a135811179b47ac603bf4169b35d1b0cc8b8d595d144885053189a8d8`,528triangles. Horizontal courses continue through the former plain triangle; all other raw polygons equal the actual blind-door baseline. Direct source/full/detail review remains **differs**, still **unadopted**. Exact680 noncache files plus originalmanifest include the4-file proposal, libertyCover, actual barePNG doorbaseline, raw/snapshot and real receipts. Historical81/51positional checks do not establish current82-family integration.
 - Tremont T-2385: three actual native/GPU roof-only factors0.5/0.25/0.125 completed and were directly reviewed. All remain **differs**;0.25 is a preferred bounded next candidate, **unadopted**. Exact18 files plus author manifest are archived; shared328 native inputs remain in the prior frozen packet. The flag still differs and no historical pigment is asserted.
-- Wolf Point resumed work and the next school-gable/Tremont producer proposals are ongoing. Only expressly closed packets in the inventory qualify as archived output; no unlisted proposal is called an actual render or adoption.
+- A separate Tremont quarter-roof-stock producer proposal is **UNAPPLIED**:14closed files plus originalmanifest,4guarded existing-file candidates and16CPU/24rawphase parity/schema checks. Official23-family rebake, fullgates and native adoption were not run. It is not another actual capture or a historical pigment claim; recover from recorded792base plus guardedpatch.
+- Wolf Point resumed work and further flag-pose proposals are ongoing. Only expressly closed packets in the inventory qualify as archived output; no unlisted proposal is called an actual render or adoption.
 
 ## Exact archives
 

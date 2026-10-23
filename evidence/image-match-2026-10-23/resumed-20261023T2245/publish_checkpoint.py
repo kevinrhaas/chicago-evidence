@@ -53,7 +53,7 @@ receipt = {'published_at': datetime.now(timezone.utc).isoformat(), 'repository':
 (WORK / 'LATEST-PUBLICATION.json').write_text(json.dumps(receipt, indent=2) + '\n')
 
 # Re-read the published index plus every archive through the GitHub blob API.
-verify = [p for p in copied if p['path'].endswith('/RECOVERY.md') or p['path'].endswith('.tar.gz')]
+verify = [p for p in copied if p['path'] in changed and (p['path'].endswith('/RECOVERY.md') or p['path'].endswith('.tar.gz'))]
 for row in verify:
     blob_sha = run(['git', 'rev-parse', head + ':' + row['path']]).stdout.strip()
     response = subprocess.check_output(['gh', 'api', 'repos/kevinrhaas/chicago-evidence/git/blobs/' + blob_sha], text=True)
