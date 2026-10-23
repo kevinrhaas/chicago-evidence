@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+"""One bounded GET-only observer of an already-dispatched exact-head smoke grid."""
+import argparse, datetime, hashlib, json, os, pathlib, re, subprocess, time
+
+REPO='kevinrhaas/chicago'
+BRANCH='steward/parked-period-vehicles-20261021'
+RANGES=['1-2','3-4','5','6-7','8','9-12','13','14','15']
+SMOKE='.github/workflows/chicago-4d-smoke.yml'
+NORMAL={
+ '.github/workflows/chicago-4d-check.yml':('pull_request','gate',[
+  'Set up job','Run actions/checkout@v4','Run actions/setup-python@v5',
+  'Run actions/setup-node@v4','Install validator dependencies','How many cores this runner has',
+  'Run the gate','Does this change carry a changelog entry?','Complete job']),
+ '.github/workflows/chicago-4d-moving-frames.yml':('pull_request','moving-frames',[
+  'Set up job','Run actions/checkout@v4','Run actions/setup-node@v4','Install Playwright',
+  'Publish the mirror the gate serves (site/4d/ is generated)',
+  'Walk, turn, fly and ride; hold the flora frame to its ceilings',
+  'A phone keeps the town on the GPU, not twice','Complete job']),
+ '.github/workflows/chicago-4d-pr-stuck.yml':('push','report',[
+  'Set up job','Check the secret before doing anything','Run actions/checkout@v4',
+  'Report every pull request nothing can move','Complete job']),
+}
+SMOKE_STEPS=['Set up job','Run actions/checkout@v4','Run actions/setup-node@v4',
+ 'Install Playwright','Publish the mirror the smoke serves (site/4d/ is generated)',
+ 'Run the smoke against the published mirror','Complete job']
+def need(c,m):
+ if not c:raise ValueError(m)
+def now():return datetime.datetime.now(datetime.timezone.utc).isoformat()
+def sha(data):return hashlib.sha256(data).hexdigest()
+def save(path,value):
+ tmp=path.with_suffix(path.suffix+'.new');tmp.write_text(json.dumps(value,indent=2)+'\n');tmp.replace(path)
+def smoke_cell(text):
+ """Bind inputs to the actual published-smoke step's env, never dispatch order."""
+ clean=re.sub(r'\x1b\[[0-?]*[ -/]*[@-~]','',text)
+ lines=[re.sub(r'^\d{4}-\d\d-\d\dT\S+Z\s*','',x) for x in clean.splitlines()]
+ starts=[i for i,x in enumerate(lines) if x=='##[group]Run node tools/smoke_renderer.mjs --published']
+ need(len(starts)==1,'Expected exactly one actual published-smoke log group')
+ start=starts[0];end=next((i for i in range(start+1,len(lines)) if lines[i]=='##[endgroup]'),None)
+ need(end is not None,'Incomplete published-smoke log group')
+ group='\n'.join(lines[start:end])
+ viewport=re.findall(r'^\s*SMOKE_VIEWPORT:\s*(\S+)\s*$',group,re.M)
+ stage=re.findall(r'^\s*SMOKE_STAGE:\s*(\S+)\s*$',group,re.M)
+ need(len(viewport)==len(stage)==1,'Missing or ambiguous actual viewport/stage')
+ viewport,stage=viewport[0],stage[0]
+ need(viewport in ['desktop','mobile'] and stage in RANGES,'Unexpected actual smoke cell')
+ need(f'NOT THE FULL GATE — viewports filtered to "{viewport}"' in lines,'Runtime viewport does not match step env')
+ need(f'NOT THE FULL GATE — stages filtered to "{stage}" of 15' in lines,'Runtime stage does not match step env')
+ need(lines.count('SMOKE PASS')==1,'Actual single-cell smoke did not print one terminal PASS')
+ return viewport,stage
+def audit_job(job,run,head,name,required):
+ need(job['run_id']==run['id'] and job.get('run_attempt')==1 and job.get('head_sha')==head,'Job identity/attempt drift')
+ need(job['name']==name and job['status']=='completed' and job['conclusion']=='success','Job did not succeed')
+ steps=job.get('steps',[])
+ for wanted in required:
+  matches=[s for s in steps if s['name']==wanted]
+  need(len(matches)==1 and matches[0]['status']=='completed' and matches[0]['conclusion']=='success','Required actual step did not succeed: '+wanted)
+ need(all(s['conclusion']=='success' for s in steps),'Unexpected skipped/failed job step')
+ return {'run_id':run['id'],'job_id':job['id'],'job_name':name,'required_steps':required,'PASS':True}

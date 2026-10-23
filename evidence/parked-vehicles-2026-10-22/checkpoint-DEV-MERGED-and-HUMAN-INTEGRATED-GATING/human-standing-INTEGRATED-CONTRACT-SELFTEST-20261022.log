@@ -1,0 +1,78 @@
+the contract
+  ok   the committed contract holds to its own rules: clean
+  ok   a bone declared twice: contract.duplicate_bone: bone 'pelvis' is declared twice
+  ok   a bone whose parent is not declared: contract.unknown_parent: 'toe_l' names parent 'nowhere', which is not declared above it; contract.asymmetric: 'toe_l' has no twin 'toe_r'
+  ok   a left bone with no right twin: contract.asymmetric: 'toe_l' has no twin 'toe_r'
+  ok   a morph both required and optional: contract.morphs_vocabulary: morphs: a name is repeated, or both required and optional
+  ok   the schema's clip pattern drifting from the contract's: contract.pattern_drift: the instance schema's clip pattern is not the contract's clips.name_pattern
+GLB — conforming fixtures pass
+  ok   a conforming lod0 body: clean
+  ok   a conforming lod2 body without a face: clean
+  ok   an ext_ leaf bone: clean
+GLB — each named incompatibility is refused, by name
+  ok   a missing contract bone (hand_l): skeleton.missing_bone: contract bone 'hand_l' is not a joint of the skin; skeleton.wrong_parent: 'thumb_01_l' hangs from 'lowerarm_l'; the contract says 'hand_l'; skeleton.wrong_parent: 'index_01_l' hangs from 'lowerarm_
+  ok   a renamed bone (spine_02 -> spine2): skeleton.missing_bone: contract bone 'spine_02' is not a joint of the skin; skeleton.unknown_bone: 'spine2' is neither a contract bone nor an ext_* extension; skeleton.wrong_parent: 'spine_03' hangs from 'spine2'; the co
+  ok   a reparented bone (calf_l under pelvis): skeleton.wrong_parent: 'calf_l' hangs from 'pelvis'; the contract says 'thigh_l'
+  ok   a contract bone hung under an ext_ bone: skeleton.under_extension: 'neck_01' hangs under extension bone 'ext_collar'
+  ok   a different declared skeleton: skeleton.incompatible: declares skeleton 'mixamo', the contract's is 'c4d_humanoid_v1'
+  ok   more than four influences per vertex: skeleton.influences: 'body' carries JOINTS_1/WEIGHTS_1: more than 4 influences per vertex
+  ok   a missing material slot (footwear): material.missing_slot: required material slot 'footwear' is on no primitive
+  ok   a material on no contract slot (cloak): material.unknown_slot: material 'cloak' is not <slot> or <slot>__<variant> on a contract slot; material.missing_slot: required material slot 'skin' is on no primitive
+  ok   lod0 without the face: morph.missing_required: lod0 owes the face: morph 'eyeBlinkLeft' is missing; morph.missing_required: lod0 owes the face: morph 'eyeBlinkRight' is missing; morph.missing_required: lod0 owes the face: morph 'jawOpen' is mi
+  ok   a morph outside the vocabulary: morph.unknown: morph 'smileBig' is not in the contract's vocabulary (or ext_*); morph.missing_required: lod0 owes the face: morph 'eyeBlinkLeft' is missing
+  ok   duplicate clip names: clip.duplicate: two clips are named 'idle'
+  ok   a clip not in lower snake case: clip.bad_name: clip 'Walk' is not lower snake case <verb>[_<variant>]
+  ok   a clip with no contract verb: clip.unknown_verb: clip 'dance': verb not in ['idle', 'walk', 'talk', 'gesture', 'work', 'sit', 'turn']
+  ok   centimetres instead of metres: frame.height: rest height 178.000 — outside 0.45-2.3 m; non-metric scale? (a 1.75 m adult in centimetres reads 175)
+  ok   metric positions hidden under a 0.01 armature: frame.node_scale: node 'c4d_armature' carries scale [0.01, 0.01, 0.01]; size belongs in vertex positions, not a transform; frame.height: rest height 178.000 — outside 0.45-2.3 m; non-metric scale? (a 1.75 m adult in cent
+  ok   soles off the ground: frame.origin: the soles stand at y = 0.900; they belong at y = 0
+  ok   a root bone moved off the origin: frame.origin: root bone stands at (2.000, 0.000, 0.000) m; it belongs at the origin, on the ground
+  ok   a missing socket (socket_hand_r): socket.missing: socket 'socket_hand_r' is missing
+  ok   no provenance block: provenance.missing: no scenes[].extras.chicago4d_human block (export the Blender scene's custom properties)
+  ok   no licence: provenance.missing_field: chicago4d_human.license is missing or empty
+  ok   a check_required licence: provenance.license: licence 'check_required' is not one the repository can honour (AGENTS.md rule 6)
+  ok   attested with no source: provenance.attested_unsourced: an attested depiction names no source
+  ok   a source that does not resolve: provenance.unknown_source: source 'no_such_source' does not resolve in data/sources/
+  ok   reconstructed with no liberty: provenance.liberty_missing: a reconstructed depiction names no docs/LIBERTIES.md entry in `liberty`
+  ok   a lod that disagrees with its file name: provenance.lod_mismatch: lod 1 but the file is lod0
+  ok   KTX2 textures the renderer cannot open: delivery.refused_extension: KHR_texture_basisu: KTX2 textures: the renderer never calls setKTX2Loader (tools/web_derivatives.sh, BAKE_KTX2)
+  ok   Draco geometry the renderer cannot open: delivery.refused_extension: KHR_draco_mesh_compression: Draco: the renderer never calls setDRACOLoader; Meshopt is this project's compression
+  ok   a file not named <asset_id>.lod<N>.glb: provenance.file_name: 'fixture_body.glb' is not named <asset_id>.lod<0-3>.glb
+GLB — a Meshopt derivative is read beside its master (T-1787)
+  ok   a quantised body with no master: frame.quantised: positions are quantised (KHR_mesh_quantization), so the rest frame cannot be read from accessor bounds; keep the derivative in web/ beside its master
+  ok   a quantised derivative whose master passes: clean
+  ok   a derivative that renamed a clip: derivative.drift: clips differ from the master's; a derivative changes bytes, not names
+  ok   a derivative whose master is in centimetres: frame.master: its master fixture_body.lod1.glb: frame.height: rest height 178.000 — outside 0.45-2.3 m; non-metric scale? (a 1.75 m adult in centimetres reads 175)
+  ok   a derivative with no master beside it: frame.no_master: a quantised derivative with no master at /tmp/tmpcm4e6amo/fixture_body.lod1.glb
+instances
+  ok   a withheld 1835 instance bound to beaubien_mark: clean
+  ok   current owner policy permits a shown portable instance: clean
+  ok   current policy preserves review metadata without blocking display: clean
+  ok   shown instance may not drop its person review metadata: instance.review_dropped: 'rc_fb_anderson_benjamin' is review_required on their record; the instance must say so too
+  ok   explicit synthetic L1 gate still refuses shown: instance.l1: display `shown` while L1 stands: no human figure is drawn, for anyone (AGENTS.md)
+  ok   a person the residents layer does not hold: instance.unknown_person: person 'nobody_at_all' does not resolve; this file never mints a person
+  ok   review dropped for rc_fb_anderson_benjamin: instance.review_dropped: 'rc_fb_anderson_benjamin' is review_required on their record; the instance must say so too
+  ok   a variant on no contract slot: instance.unknown_slot: variant on 'cloak', which is not a contract material slot
+  ok   a clip with no contract verb: instance.unknown_verb: clip 'dance': verb not in the contract
+  ok   a record missing `display`: instance.schema: (record): 'display' is a required property
+  ok   walk_surface with no structure: instance.schema: placement: 'structure_id' is a required property
+  ok   attested with no source: instance.attested_unsourced: an attested depiction names no source
+  ok   reconstructed with no liberty: instance.liberty_missing: a reconstructed depiction names no LIBERTIES entry
+  ok   a scene with no people layer: instance.no_people_layer: scene '1812' has no people layer to bind to
+  ok   the same person standing twice in one scene: instance.duplicate_person: 'beaubien_mark' already stands in 1835 as 'hi_beaubien_mark_1835'
+instance browser indexes
+  ok   browser manifest is not treated as an instance: clean
+  ok   every listed instance is still discovered: clean
+  ok   records without a browser index refuse: instance.index_missing: 1835 has instances but no browser index
+  ok   repeated ids: instance.index_duplicate: /tmp/tmp62e7tfrx/1835/index.json: repeated instance id
+  ok   missing listed file: instance.index_missing_file: /tmp/tmp62e7tfrx/1835/index.json: hi_absent_1835 has no regular record file; instance.index_inventory: /tmp/tmp62e7tfrx/1835/index.json: listed ids and instance files differanonymous Python schema/semantic refusal checks passed
+
+  ok   unlisted record: instance.index_inventory: /tmp/tmp62e7tfrx/1835/index.json: listed ids and instance files differ
+  ok   index scene mismatch: instance.index_schema: /tmp/tmp62e7tfrx/1835/index.json: exact scene and safe instance-id list required
+  ok   unsafe id: instance.index_schema: /tmp/tmp62e7tfrx/1835/index.json: exact scene and safe instance-id list required
+  ok   non-list ids: instance.index_schema: /tmp/tmp62e7tfrx/1835/index.json: exact scene and safe instance-id list required
+  ok   record id differs from filename: instance.index_record: /tmp/tmp62e7tfrx/1835/hi_existing_resident_1835.json: index, filename, id and scene must agree
+  ok   record scene differs from directory: instance.index_record: /tmp/tmp62e7tfrx/1835/hi_existing_resident_1835.json: index, filename, id and scene must agree
+  ok   malformed index: instance.index_schema: /tmp/tmp62e7tfrx/1835/index.json: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+  ok   symlink record: instance.index_missing_file: /tmp/tmp62e7tfrx/1835/index.json: hi_existing_resident_1835 has no regular record file
+human_contract self-test: OK (0 assertion(s) did not fire as required)

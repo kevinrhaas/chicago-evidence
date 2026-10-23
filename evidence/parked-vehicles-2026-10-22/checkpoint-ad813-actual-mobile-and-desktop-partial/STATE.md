@@ -1,0 +1,34 @@
+# Checkpoint awaiting root terminal updates
+
+Prepared outside both application and canonical tickets clone at 2026-10-22T06:01:38.643835+00:00. No network, CI action, browser, build, app/Git/index/mirror or ticket mutation occurred during packaging. Root alone will copy/sync after mobile and moving terminal outcomes. Status below reflects root's explicit current report, not a new remote poll. Root should append terminal outcomes without erasing this snapshot.
+
+PR1174 actually merged into DEV at969cd3d3ee8942381fc584d3fd624dc516929a8e (04:16:26Z), followed by folda989a171ac9518ccb6ddc7b0c2a29333616f1b3d. Actual public DEV visibility/model proof was retained in earlier durable checkpoint82a9ec27. T2979,T2981,T2792,T2799 are done. This does not close ongoing covered-carriage refinementT2980 or human/horse/Brougham work.
+
+PR1175 remains draft at pushed ad813a6278b7d76961b78ef3483f1bbf3e106c02 / tree4e62a7742f5dc57439f82c8629b082cae15d0ed1. Root reports all three normal source gate39726884425, human39726884467 and report39726877482 SUCCESS. No eighteen manual smokes have been dispatched. Normal success is not complete browser, moving or photographic qualification.
+
+Moving run39727250726 attempt1 is a real FAILURE: unchanged Light21ms flora ceiling exceeded by actual max38.6ms in674 Light/travel frames, p95=1.9ms; phone step skipped. Full raw job/step/logZIP and metadata remain in75e08066. Exact-source comparisonb4eaaf6a proves flora/tool/workflow bytes identical to the ca82 comparator, all12 sample counts equal and all12 new flora p95 values lower. The comparator checked out synthetic9a581978 with tree exactly ca82c0b314. Human updates lie outside timed flora.update, but indirect scheduling/GC/load effects remain possible; no cause is proven or budget relaxed.
+
+Root issued ONE expressly authorized diagnostic repeat at05:42:08Z, retained as POST-INTENT/RESULT plus original attempt1 metadata. POST returned0/{}; current attempt2 is IN_PROGRESS according to root. This is one diagnostic rerun of the same run, not another dispatch or18smoke release. No further repeat is authorized. The original failure remains permanent evidence regardless of attempt2. CollectorV2adf164b8 is prepared/HELD support, not proof it was launched or any future CI success.
+
+Desktop V3 produced actual profile/front/quarter and completed own-resident-card PNGs; all performed view, actual ground/shoe/culling/budget/card guards passed, plus seven normal-loop rAF diagnostic intervals. SourceUnchanged:true, closed:true, page/network error arrays empty. Overall run is PARTIAL/FAIL:540s deadline hit during the extra combined four-file production-loader probe before it returned, and before far. No completed loader/far result exists in that run. Full actual receipt/progress/log/all4PNGs and exact V3 source are in9019a127; V3 source/prospective controls are separately preserved in696fca18. Historical V2 front-padding failure remains in the source packet and prior checkpoint; it is not renamed PASS.
+
+**Priority repair remains the real missing vest shoulder panels identified in actual human review.** Current geometry is not accepted as complete clothing, fit or photographic appearance. Technical view/sole/budget success does not waive that visible defect. No repair was applied by this packaging task.
+
+Mobile V3 is RUNNING under root session9445 at this checkpoint. No mobile captures, terminal success or failure are claimed here. Root owns the browser lane and will append its actual closed receipt/outcome before sync. Desktop functional continuation202270ff is separately PREPARED/HELD: exact same inputs, unchanged far guards first and then individual loader rows; no launch is claimed and it does not retroactively complete the original desktop run.
+
+Brougham V12 remains a SOURCE-ONLY large-form proposal plus independent source review. Peer permits one future finite generation only after separate root release; no V12 mesh, rendered likeness, solid-intersection/operation, material/main-world or photographic acceptance exists. Compact source+peer archive omits the already durable V11 master GLB by exact hash and preserves original source/input references. No appearance PASS follows from source arithmetic.
+
+Horse head large-form source1cc3817d is an UNEXECUTED proposal based on repaired772. Actual772 passed a bounded topology/proper-crossing screen but was rejected in side/quarter appearance review; it is uninstalled. Current app still uses the older89b048 horse. Head/orbit/pinna/throatlatch proposal16 source checks do not establish generated anatomy, intersections, rig, motion, material or photographic acceptance. No binary horse master is duplicated here.
+
+No eight human master GLBs, full binary Git diff, vendor packages or published mirror are copied into this payload. Exact ad813 Git/source assets, canonical human artifact/run IDs and hashes, plus earlier durable model evidence remain their recovery authority. Nested archives are unchanged unless explicitly labeled source-only subset; each payload hash is in INCLUSION-MANIFEST.json. There is no blanket PASS in this checkpoint.
+
+Root finalization required before canonical ticket sync: append actual mobile CLOSED result and captures/errors, moving attempt2 terminal result with actual job/log/head binding, any later authorized desktop-continuation outcome, and actual shoulder-panel repair status. Do not edit historical failure records to match later outcomes.
+
+
+## Root update — 2026-10-22 ~06:04 UTC
+
+Mobile V3 session9445 CLOSED exit0, actual PASS in202seconds: all3 fixed normal views and own resident card, four canonical production loader checks and actual far LOD3. Source/index/published pins unchanged; no page errors. Actual receipt/log/all4PNGs are included. Root viewed the mobile front, desktop quarter and own-card; missing upper waistcoat panels are real and promotion remains held for connected-mesh repair. The desktop V3 overall deadline failure remains preserved; its functional continuation has not run.
+
+Brougham V12 actually generated raw8016867da68e3f061d98864ef46a94b98d8356a683ff9d0c39113abdf1504590,32670tri/24batches/41nodes/6materials.460 protected parts incl9 fittings and exactly6 intended changed instances, nodes/materials/anchors/bounds and repeatability pass; Khronos0/0. Actual matched8 comparison now released, outcome not yet recorded.
+
+Horse head actual d35679f9cbee20f11bd963574842bcdc7e406eb4ec433092c0600b1edb18987b built once0.365s; full actual structural screen pending, no browser/install acceptance. Waistcoat minimal connected-mesh source proposal has14 finite controls and is undergoing independent source/posed fit review, not applied. Moving attempt2 still IN_PROGRESS after the single authorized repeat; no further repeat or18smoke dispatch. T2794 renewed normally and pushed at05:59UTC; current active human/horse/covered claims otherwise unchanged.

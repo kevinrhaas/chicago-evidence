@@ -1,0 +1,13 @@
+# Actual Bardwell standing idle — 2026-10-22
+
+The installed canonical Bardwell is animated, but the native standing movement is subtle and repetitive. All four source GLB hashes and byte counts match canonical run **39736567239**, source head **96c4da4b1fe68e6dec3b18c15da2f14c596a60c5**, in the retained artifact inventory.
+
+Actual decoded idle keys show a **2.0-second loop**, with exactly **one varying channel: spine_02 rotation**. It bends about **0.60003 degrees each way** from the initial pose. The other 111 channels remain constant. This produces breathing-like upper-body sway. The head follows the torso: its pivot travels **10.540 mm fore/aft peak to peak** and **1.424 mm vertically**. It does not independently turn the head, shift weight laterally, move the pelvis, or reposition the feet.
+
+Full CPU linear blend skinning of every vertex at **25 inclusive loop times** confirms actual body and garment variation. LOD0 maximum displacement from the initial pose is **6.900 mm for body**, **4.552 mm for shirt**, and **4.091 mm for waistcoat**; the full body fore/aft span reaches **13.700 mm**. All four LODs agree closely. All shoe vertices remain exactly stationary at the sampled times, and root, pelvis, foot and ball pivots have zero span. Shoe minima remain roughly **0.012–0.031 mm above model ground**. These CPU sole minima agree with the retained canonical browser readings within floating-point roundoff.
+
+All meshes return to exactly the initial positions at the 2-second endpoint. This is an exact sampled position seam result; the finite-difference velocity diagnostic is preserved separately and does not establish continuous acceleration smoothness.
+
+`ACTUAL-IDLE-READBACK.json` preserves original asset hashes, exact exported clip key times, varying channels, all per-LOD/per-mesh LBS metrics, source pins and prior browser sole parity. Meshopt views were decoded using the application's pinned vendored decoder. Native computation finished in about **0.51 seconds**, under a 14-second CPU limit. The `.decoded.bin` and view JSON files are reader caches, not replacement assets.
+
+No browser, image capture, generation, gate, app, Git, ticket or PR mutation occurred. Runtime procedural blinking was not simulated by this native skeletal reader. These measurements prove small periodic movement and stationary sampled feet, not visible naturalness, realistic breathing, independent attention, load transfer, garment fit, or photographic acceptance. The instance's selected `idle` loop and the renderer's mixer progression are separate runtime facts supplied by root; this readback proves what the asset's clip actually contains.

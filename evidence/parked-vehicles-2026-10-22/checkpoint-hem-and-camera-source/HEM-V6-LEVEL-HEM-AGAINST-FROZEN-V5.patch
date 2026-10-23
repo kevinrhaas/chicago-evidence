@@ -1,0 +1,80 @@
+--- a/chicago/4d/tools/human_workwear_fit.py
++++ b/chicago/4d/tools/human_workwear_fit.py
+@@ -171,6 +171,7 @@
+         'waistcoat_front_closure_y_m':closure_y if kind=='waistcoat' else None,
+         'body_mutated':False,'maximum_discarded_cut_weight':maximum_drop,'degenerate_cut_fans_discarded':discarded_zero,
+         'fit_accepted':False,'scope':'Original source construction; actual deformation and rendered clothing still need review'}
++    if kind=='trousers':result=level_trouser_hems(result,bones)
+     return result
+ 
+ 
+@@ -381,3 +382,69 @@
+     expand=1+blend*(max(1.,1/r)-1)
+     p[0]=s['axis_x_m']+dx*expand;p[2]=s['axis_z_m']+dz*expand
+     return p
++
++
++def level_trouser_hems(shell,bones):
++    """Trim only the jagged V5 hem band on its existing source-derived faces.
++
++    Each level is the highest point of the corresponding actual boundary cycle,
++    recorded relative to its source ankle. This is an engineering trim, not a
++    historical measurement. Cut corners interpolate the existing V5 triangle's
++    source barycentrics, UVs and skin; retained V5 positions stay bit-exact.
++    The cuffs remain open tubes with closed perimeter cycles, never cap disks.
++    """
++    ps=shell['positions_m'];edges=collections.Counter(tuple(sorted(e)) for f in shell['triangles'] for e in zip(f,f[1:]+f[:1]))
++    if max(edges.values())>2:raise ValueError('hem trim requires manifold input edges')
++    adjacency=collections.defaultdict(set)
++    for (a,b),count in edges.items():
++        if count==1:adjacency[a].add(b);adjacency[b].add(a)
++    if any(len(v)!=2 for v in adjacency.values()):raise ValueError('hem trim requires closed boundary cycles')
++    seen=set();cycles=[]
++    for first in sorted(adjacency):
++        if first in seen:continue
++        todo=[first];cycle=[]
++        while todo:
++            i=todo.pop()
++            if i in seen:continue
++            seen.add(i);cycle.append(i);todo.extend(sorted(adjacency[i]-seen))
++        cycles.append(cycle)
++    def owner(weights,side):return math.fsum(v for b,v in weights.items() if b in ('thigh_'+side,'calf_'+side,'foot_'+side,'ball_'+side))
++    hems={}
++    for cycle in cycles:
++        if min(ps[i][1] for i in cycle)>=min(bones['calf_'+side]['head_m'][1] for side in ('l','r')):continue
++        side=max(('l','r'),key=lambda side:math.fsum(owner(shell['weights'][i],side) for i in cycle))
++        if side in hems or any(owner(shell['weights'][i],side)<.9 for i in cycle):raise ValueError('ambiguous source-owned hem cycle')
++        ankle=bones['foot_'+side]['head_m'][1];knee=bones['calf_'+side]['head_m'][1]
++        lo=min(ps[i][1] for i in cycle);hi=max(ps[i][1] for i in cycle)
++        if not ankle<lo<=hi<ankle+.15*(knee-ankle) or hi-lo>.1*(knee-ankle):raise ValueError('hem correction exceeds source ankle band')
++        hems[side]={'source_ankle_y_m':ankle,'existing_boundary_y_range_m':[lo,hi],'level_y_m':hi,'above_ankle_m':hi-ankle,'original_boundary_vertices':len(cycle)}
++    if set(hems)!={'l','r'} or len(cycles)!=3:raise ValueError('hem trim requires exactly waist and two leg cycles')
++    out={k:[] for k in ('positions_m','triangles','uvs','weights','source_basis','corner_uvs','source_triangle_indices')};cache={};maximum_drop=0.;cut_faces=0
++    for face,uvs,source_face in zip(shell['triangles'],shell['corner_uvs'],shell['source_triangle_indices']):
++        poly=[{'p':ps[i],'uv':uv,'n':[],'w':shell['weights'][i],'basis':shell['source_basis'][i]} for i,uv in zip(face,uvs)]
++        if min(ps[i][1] for i in face)<max(v['level_y_m'] for v in hems.values()):
++            side=max(('l','r'),key=lambda side:math.fsum(owner(shell['weights'][i],side) for i in face))
++            if any(owner(shell['weights'][i],side)<.9 for i in face):raise ValueError('ambiguous source-owned ankle face')
++            level=hems[side]['level_y_m'];poly=_clip(poly,lambda v:v['p'][1]-level);cut_faces+=1
++            for v in poly:
++                if abs(v['p'][1]-level)<=1e-12:v['p']=[v['p'][0],level,v['p'][2]]
++        ids=[]
++        for v in poly:
++            weights=sorted(((k,w) for k,w in v['w'].items() if w>1e-12),key=lambda kv:(-kv[1],kv[0]));drop=math.fsum(w for k,w in weights[4:]);maximum_drop=max(maximum_drop,drop)
++            if drop>.025:raise ValueError('hem cut exceeds 2.5 percent discarded skin mass')
++            # Keep original lanes exact; only genuinely interpolated cut lanes
++            # require truncation/normalization, following the existing guard.
++            if len(weights)>4 or len(v['basis'])>1:
++                weights=weights[:4];total=math.fsum(w for k,w in weights);mapping={k:w/total for k,w in weights}
++            else:mapping=dict(v['w'])
++            basis={k:w for k,w in v['basis'].items() if w>1e-12};key=(tuple(v['p']),tuple(sorted(mapping.items())))
++            if key not in cache:
++                cache[key]=len(out['positions_m']);out['positions_m'].append(list(v['p']));out['uvs'].append(list(v['uv']));out['weights'].append(mapping);out['source_basis'].append(basis)
++            ids.append(cache[key])
++        for k in range(1,len(ids)-1):
++            tri=[ids[0],ids[k],ids[k+1]]
++            a,b,c=[out['positions_m'][i] for i in tri];u=[b[i]-a[i] for i in range(3)];v=[c[i]-a[i] for i in range(3)];cross=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]]
++            if len(set(tri))<3 or math.hypot(*cross)<=1e-18:continue
++            out['triangles'].append(tri);out['corner_uvs'].append([poly[j]['uv'] for j in (0,k,k+1)]);out['source_triangle_indices'].append(source_face)
++    out['receipt']=copy.deepcopy(shell['receipt']);out['receipt']['trouser_level_hem_v6']={'sides':hems,'touched_original_hem_faces':cut_faces,'maximum_discarded_cut_weight':maximum_drop,'engineering_basis':'Highest existing closed hem-cycle point, relative to actual source ankle; no historical dimension','scope':'Finite unrendered ankle-band source trim only; inherited fit and seated footwear failures remain open'}
++    return out

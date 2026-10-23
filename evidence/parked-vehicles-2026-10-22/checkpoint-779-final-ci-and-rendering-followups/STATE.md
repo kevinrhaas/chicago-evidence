@@ -1,0 +1,23 @@
+# Actual checkpoint — 2026-10-22, 14:40 UTC
+
+PR1175 is still draft at779978bcee51c62096778a846292c2473b9ec7af, treebd514a647a68aed461f541fc2124a9cc49598626, base142f295bd. Full1044-step preflight and published/mirror verification passed. Current-head Full desktop visual and original mobile full PASS with all8images personally reviewed by root. Earlier checkpoint holds those images/receipts.
+
+Actual supplementary desktop combined540s, Full90s AUTO-far and Balanced90s AUTO-far attempts all FAILED; preserved without changing thresholds. Balanced actual receipt70503fec... is included here. Root stopped additional experiments. Correct earlier handover inference: default HUD quality1.5 does not establish actual desktop raster ratio1.5; source applies the DPR cap, and actual Balanced ratio was1. All private focused collectors remain HELD/unqualified. These tests do not acquire a PASS by splitting cases.
+
+One separate CI_ONLY GET collector is running at /workspace/shared/ROOT-1175-779978bce-CI-ONLY-23-GET-ACTUAL. It audits exactly18 already-once-dispatched published smoke cells plus gate/moving/humans/report/guarded-bake with unchanged remote guards. It never grants local qualification or merge readiness; both remain false. Latest16 smoke cells,4normal,1guarded bake strictly audited success;2smokes still running. No reruns/redispatch/cancellations. Root independently reviews actual required repository gates before any ordinary head-pinned DEV merge.
+
+Brougham V13 normal1904 side preview exec13059 CLOSED/FAIL: candidate installation/native lighting/budget checks reported no problems and view_ready at328.077s, but taking the side screenshot hit its unchanged90s timeout. NO PNG, no actual visual acceptance. Receipt/progress/ownership/caller inputs preserved in capsule. No app model install/source mutation occurred. Further finite diagnosis only; do not equate pre-screenshot checks with photographic completion.
+
+All broad photographic/library/horse/carriage/covered/occupied parents remain open. Four independent root claims and1175lap renewed13:04. User authorizes ordinary green DEV merge only; no production/admin/workflow change. Horse sourceV2+schema addendum, licensedOldCart/RFD originals, fuller sleeveV2 and staticBrougham/footplate proposals remain backed but not installed/exported. PR1174 and four bounded done tickets remain merged/done.
+
+Finite carriage review: browser/server CLOSED and owned processes absent, inputsUnchanged:true. Explicit clearance, candidate disposal and scene-restoration stages were NOT reached, so browser teardown is not semantic cleanup PASS. ReadPixels stalls and unavailable-adapter console warnings are consistent with slow rendering/readback, but exact renderer/vendor was not captured. No visual acceptance.
+
+Actual horse matched material study subsequently PASS/CLOSED7.274s/fourPNGs/root-reviewed; organic_dielectric_v1 chosen for later development intake only. See HORSE-MATERIAL-REVIEW.md and exact capsule. No app install or photographic acceptance. Latest17of18smokes +all5normal strictly PASS; onlydesktop13 remains in progress.
+
+## Subsequent inventory anomaly — 14:59:41 UTC
+
+Original sole CI_ONLY observer CLOSED1/STOPPED_WITH_EVIDENCE because filtered GitHub actions/runs?head_sha returned total_count0/[] instead of the23knownruns. Direct finalrun39787820986 andjob119855522821 continuedtoexist atcorrect779head/attempt1/in_progress; separatefilteredreadconfirmedemptylist. No actualCIred established. Prior17selected+normal4+guard1 strictproofs remain preserved, originalcollector terminal isNOTPASS. Direct-ID continuation being prepared to revalidate actual source/job/log guards without resetting original17:07UTCdeadline/retryingCI/redispatching or changinglocalfocusedflags. PR1175 remainsdraft/unmerged pendingactualfinaldesktop13SUCCESS.
+
+Horseintegration now inprogress in EXISTING isolatedcheckout /workspace/chicago-waistcoat, branchsteward/standing-horse-development-20261022 based779, agenthorse_completion solewriter/heavylane. Mainapp /workspace/chicago staysfrozen/clean779. No newworktree. No horsepublish/browser acceptanceyet. Agentcancommit/push ONLYafteractualfullpreflightPASS, noPRmerge orparentclosure.
+
+Complete branch-filtered inventory subsequently resolved the lookup anomaly: actions/runs?branch=steward%2F1835-workwear-repair-20261021&per_page=100 returned ALL60branchruns (total_count==returned_count), EXACT23current779runs after exactheadfilter, all22completedSUCCESS andsame39787820986in_progress. This is complete alternate inventory evidence, not a failedCIwaiver or a rerun. Head-filtered query anomaly remains preserved. Root owns prospective continuation release; no collector live yet.

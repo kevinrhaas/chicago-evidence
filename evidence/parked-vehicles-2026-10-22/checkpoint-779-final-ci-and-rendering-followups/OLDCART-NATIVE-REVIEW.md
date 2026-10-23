@@ -1,0 +1,7 @@
+# Actual original OldCart inspection — 2026-10-22
+
+Root personally reviewed front, three-quarter and side PNGs from the original unchanged licensed OldCart13600b73. One bounded owned study passed7.96s, three fixed source-native views,51,595 indexed samples per view,0clipped/0errors; browser/caller closed with no owned processes left. Original model root/materials/geometry/hierarchy/rawunits unchanged. Richer timber grain, joinery, wheel rims/hubs and steered axle are visible. This is a promising development base, not a dated/identified Chicago specimen or an app replacement.
+
+Author Lyskilde/longtail, originalCCBY4 page https://sketchfab.com/3d-models/old-cart-f536745fd82144eeb5cc4900a48e816e . Author description supplies generic cart wording only; NO maker, prototype location, specimen date or region. Do not call it Dearborn, Studebaker or period-proven1835. Fourequalwheels/shafts/bed differ from the dated manufacturer targets. Source preserved; metric calibration, period-class justification, source attribution/intake, ground/shafts clearance, optimized exports and actual published placement remain future work.
+
+Capsule oldcart-native-original-ACTUAL-CLOSED-SUPPORT-20261022.tar.gz is677730B SHAea4ecbeaef5fdccd199c1b59461701c087c0db71cf40a65d32b68046e60618fe, including caller/supervisor/pins/3PNGs/receipt/closure/credits without duplicate originalGLB. The9.8MB original is already in the earlier licensed-source archive892e5106. Nothing app-installed/exported/rescaled by this study.

@@ -1,0 +1,86 @@
+travel.js:465-497
+465:   /** Ease yaw and pitch onto the building over ≤ ARRIVE_TURN_S, then finish in afterWalk. */
+466:   function steerArrive(intentNow, dt) {
+467:     const r = ride;
+468:     const s = walker.state;
+469:     intentNow.forward = 0;
+470:     intentNow.strafe = 0;
+471:     intentNow.rise = 0;
+472:     intentNow.sprint = false;
+473:     let yawT = s.yaw;
+474:     let pitchT = 0;
+475:     if (r.arrive.point) {
+476:       const p = r.arrive.point;
+477:       const de = p.x - s.e, dn = -p.z - s.n;
+478:       // A larger compass bearing is a smaller yaw (yaw grows counter-clockwise).
+479:       yawT = bearingToYaw(Math.atan2(de, dn) / DEG + (r.arrive.yawOff ?? 0) / DEG);
+480:       pitchT = Math.atan2(p.y - s.eyeY, Math.max(Math.hypot(de, dn), 0.1)) + (r.arrive.pitchOff ?? 0);
+481:     } else if (r.arrive.yaw !== null) {
+482:       yawT = r.arrive.yaw;
+483:     }
+484:     const k = Math.min(1, dt / Math.max(r.arrive.t, 1e-6));
+485:     intentNow.yawDelta = wrapPi(yawT - s.yaw) * k;
+486:     intentNow.pitchDelta = (pitchT - s.pitch) * k;
+487:     r.arrive.t -= dt;
+488:     if (r.arrive.t <= 1e-6) r.done = true;
+489:   }
+490: 
+491:   function complete() {
+492:     const { kind, id, dest, callbacks } = ride;
+493:     finish();
+494:     if (callbacks) callbacks.onArrive?.(callbacks.token);
+495:     else if (kind === 'structure') onArrive?.(id);
+496:     else hud?.say?.(`Here — ${dest}`);
+497:   }
+
+travel.js:550-599
+550:   function update(dt, intentNow = intent) {
+551:     updateBob(dt, intentNow);
+552:     if (phase === 'idle' || !ride) return;
+553:     ride.sinceGo += dt;
+554:     if (visitorInput(intentNow, ride)) { stop('input'); return; }
+555:     wrote = true;
+556:     if (phase === 'travelling') steerGround(intentNow, dt);
+557:     else if (phase === 'arriving') steerArrive(intentNow, dt);
+558:     else steerFlight(intentNow, dt);
+559:   }
+560: 
+561:   function afterWalk(intentNow = intent, dt = 0) {
+562:     if (wrote) {
+563:       // Only what this controller wrote: the visitor's own writes end the ride
+564:       // before update() steers, so nothing of theirs is standing here.
+565:       intentNow.forward = 0;
+566:       intentNow.strafe = 0;
+567:       intentNow.rise = 0;
+568:       intentNow.sprint = false;
+569:       wrote = false;
+570:     }
+571:     if (!ride) return;
+572:     if (ride.done) { complete(); return; }
+573:     ride.bannerT += dt;
+574:     if (ride.bannerT >= BANNER_INTERVAL_S) { ride.bannerT = 0; paintBanner(); }
+575:   }
+576: 
+577:   /**
+578:    * Harness only: the same code path as tick(), run synchronously for `seconds`
+579:    * of simulated time (or until the ride ends). Zeroes the intent first so a
+580:    * held key in the test page is not read as the visitor cancelling.
+581:    */
+582:   function simulate(seconds, dt = 1 / 30) {
+583:     intent.clear();
+584:     const s = walker.state;
+585:     const samples = [[s.e, s.n]];
+586:     let t = 0;
+587:     let sinceSample = 0;
+588:     let maxAlt = s.altitude;
+589:     const steps = Math.ceil(Math.max(0, seconds) / dt);
+590:     for (let i = 0; i < steps && phase !== 'idle'; i++) {
+591:       update(dt, intent);
+592:       walker.update(dt, intent);
+593:       afterWalk(intent, dt);
+594:       t += dt;
+595:       sinceSample += dt;
+596:       if (s.altitude > maxAlt) maxAlt = s.altitude;
+597:       if (sinceSample >= 0.5) { samples.push([s.e, s.n]); sinceSample = 0; }
+598:     }
+599:     return { phase, e: s.e, n: s.n, altitude: s.altitude, maxAltitude: maxAlt, samples, seconds: t };

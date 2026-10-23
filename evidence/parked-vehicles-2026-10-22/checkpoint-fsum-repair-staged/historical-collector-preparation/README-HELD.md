@@ -1,0 +1,17 @@
+# Original e694 smoke continuation — HELD, not launched
+
+This specific GET-only collector finishes the ORIGINAL18 dispatched e694849a2c516a9862a2564c5ff86d97406e09ab smoke runs. It neither dispatches nor reruns anything. It is not PR/current-head/merge qualification, even if every smoke succeeds. `qualification_pass:false` and `current_head_qualified:false` are permanent. Known normal gate39705450602 FAILURE and its actual source-hash traceback/log remain bound in every owner/terminal record.
+
+Original dispatch receipt is fixed at `/workspace/shared/parked-covered-2981-e694849a2c516a9862a2564c5ff86d97406e09ab-dispatch-once/receipt.json`, SHA953687ac311363231fc8354625d6dc9cedc3db1ba08b520e847fdfe80a17f36d. The collector uses only its18unique run IDs and9range×2viewport cells. Every selected run must still be original e694/source branch/workflow_dispatch/smoke.yml/attempt1. Every actual job must succeed with every required step; exact unchanged `audit_job` and `smoke_cell` helpers bind real published-step env, matching runtime filters and one terminal SMOKE PASS. No mapping by dispatch order. It re-fetches completed actual jobs/logs to produce a self-contained18-cell collection; this is cheap GET work, not a browser rerun.
+
+The old failed observer PID must be absent. Old output/lock/terminal/failure proof is preserved. A fresh historical collector lock and fresh output are mandatory. The source scans for another copy of this collector and refuses duplicates. It does not require the PR/source branch still point at e694; original run SHA/tree/input/log bindings remain explicit after root advances the branch. Other original-head workflow metadata is retained only as context, never audited as current-green. The known normal gate failure is never relabeled or bypassed.
+
+Bounds:180minutes max, poll interval≥60seconds, one original-head listing per poll. GET retries only HTTP502/503/504 or EOF/reset, at most2 retries after2/4seconds; no auth/semantic/job-failure retries. A selected failure, duplicate/missing cell, changed run/attempt/identity or deadline stops and retains partial evidence. Root alone owns any subsequent exact-runtime-equivalence proof, fresh normal CI at the authoring-fix SHA, required checks, source route and merge decisions. Old e694 smoke results never become a claim that a job ran at the fix head.
+
+Root copies ROOT-RELEASE-TEMPLATE-HELD.json outside this directory to `/workspace/shared/ROOT-RELEASE-e694-historical-smoke-collection.json`, reviews source/control and sets status `ROOT_RELEASED_HISTORICAL_RUNTIME_COLLECTION`, allow_GET_collectiontrue. Exact source hash and original receipt/head bindings must remain as pinned. Root then explicitly releases ONE collector; until then no process is launched.
+
+```sh
+python3 -u /workspace/shared/parked-covered-2981-e694-HISTORICAL-SMOKE-COLLECTOR-HELD/collect-original-e694-smokes.py --release /workspace/shared/ROOT-RELEASE-e694-historical-smoke-collection.json --output /workspace/shared/parked-covered-2981-e694849a2c516a9862a2564c5ff86d97406e09ab-HISTORICAL-SMOKES-GET-owner1 --minutes 180 --interval 60
+```
+
+Expected terminal success is `ORIGINAL_E694_18_SMOKES_COLLECTED` with historical_smoke_collection_completetrue,18actual log-bound cells, permanent known gate failure and qualification_passfalse. Collector process success means evidence collection completed, not merge acceptance. No POST/rerun/cancel/push/ready/merge/app/index/mirror/browser action exists here.

@@ -1,0 +1,28 @@
+# Visible DEV landing checkpoint — 2026-10-22 20:34 UTC
+
+User priority: land visible progress in DEV; PR1175 is the immediate priority. Continue parallel horse/carriage work, push checkpoints, use the canonical ticket claims. Ordinary green DEV merges are authorized. Production/admin merges and workflow edits are outside this task.
+
+## PR1175 — canonical CI integration in progress
+
+Remote head remains03ef5178977184928cf454011737ea2b17607b5d. Full preflight79000 CLOSED EXIT1 at20:31:59UTC:1046of1047checks PASS, sole FAIL generated data/liberties.json stale; changelog/IDs PASS. All original logs are included; no failed tree was committed or called green. Exact failed staged2adde/merge4459 is recoverable from the included capsule. Root verified every ownhuman path unchanged from pushed03ef and safely aborted this incoming-only merge. Primary is clean03ef; no source change was lost.
+
+Root made1175 ready, verified native auto_merge:null, released own lap and dispatched existing chicago-4d-pr-lap.yml on DEV with only=1175. Actual run39849920673 is IN_PROGRESS, created20:33:42UTC. This supported integration path rederives and pushes, then CI owns the full gate. Root must observe actual successful push, verify human pins/derived changes, and reacquire lap only AFTER that push before final published qualification. No re-dispatch without inspecting this run. No merge-ready or all-green claim yet.
+
+DEV advanced again to d1cea81204f33a4ae66fd59571b89b0f50f0f321: Glessner PR1209 and rendering-budget fix PR1205. PR1205 actually merged20:17:56UTC; exact3566 normal gate39844008953 and moving39844008958 both SUCCESS. Do not label that as PR1175 current rendering proof.
+
+After current source pipeline closes: use the existing scoped PR lap workflow (only1175) if newerDEV generated conflicts need rebuilding. This script explicitly relies on CI instead of duplicating a pre-push fullgate. Inspect native auto-merge OFF; current lease must be released for that lap and reacquired only AFTER its actual successful push, before final tests/merge. Do not edit workflows or bypass assertions. Verify all human pins unchanged and actual new source/testmerge/CI evidence. Published desktop+mobile qualification remains required; old779/b092 proofs keep their original labels. No current all-green/merge-ready claim.
+
+## Independent parallel work
+
+- Covered wagons: pushed0656467069ee3f8d0a40685ee571ceaaf4b0a2d7, draftPR1208. Full1046/381 preflight and publication pass. Actual desktop/mobile stage8 both21PASS/0FAIL; normal source CI passes. Stage8 is targeted only, not the full published gate. Existing checkpoint d673a30d contains exact source/proofs. Broader T2980 stays open.
+- Horse idle: independent DEV4459-based source fde6bc317f6c82b57a1eaaf77a46d6d8274ecfd8, clean/pushed, full1047/381+publication PASS. Actual desktop model/ground/contact checks PASS, but idle clock failed to advance1.5ownedseconds within15wallseconds. This remains FAIL/unqualified; no mobile run, PR or ticket closure. Diagnostic-on-timeout caller is being prepared without assertion changes. Hardware slowness is a hypothesis, not a conclusion. Complete handover capsule included.
+- Brougham V17: initial4459 staged treea6f05c6532c254bb39a1f19264b98bb053bf2244. Actual CPU world analysis found pole shoe penetrates4.637–4.866mm against existing1mm bound; production would omit it. Root authorized a scoped Brougham-only solve over all rigid support contacts, preserving fixedstand/geometry/guards and other vehicle paths. Agent carriage_v17_visual owns /tmp/chicago-covered-sag; no fullgate/commit/PR/browser yet. Pre-fix capsule/proof included. Actual tree/canopy intersection remains unproved.
+- Four-limb horse walk: actual26joint restbind parity PASS,65pose mechanics PASS, actual skinned deformation FAIL. V3 abrupt-cutoff weight proposal worsened deformation and is rejected. New actual witness diagnostics locate discontinuous/mixed foreleg-body weights. Agent animated_horse_source is preparing one continuous surface-graph weighting candidate; no oldclip activation, threshold relaxation or app install. Failure capsule included.
+- Circuit: current coherent4459/2ad source proof passes all9pieces/seam and727dependency guards for rigid provisional team within ROW and dry worked shoulders. Worn7mcore and openedtrackbands FAIL. All live/qualified flags remain false. Correct source packet2cc2437d and historical5d83f522 included.
+- Seated driver: V2 source only, all4LOD CPU bench clearance passes narrowly with22.096mm pelvis/trunk rise and shoes fixed. Actual canonical export/float32 clearance, full support/reins and live placement remain open. Existing d673a30d checkpoint contains source and independent source review. Do not modify person assets before1175 lands.
+
+## Ownership / recovery
+
+Root sole writer of /workspace/chicago/chicago/4d/tickets. Canonical was clean7c83ac7a before this checkpoint. All seven independent claims T1789/T2794/T2800/T2980/T2803/T2795/T2796 renewed19:35:35–53UTC; renew before22:35 if active or release inactive work with saved artifacts. PR1175 lap refreshed19:36. Four bounded PR1174 tickets T2792/T2799/T2979/T2981 remain done. No broad photographic/occupied/riding parent is done.
+
+This directory was prepared outside the canonical ticket checkout, then copied after the primary fullgate closed and global logs were preserved. It is being published with ticket.mjs sync; verify the resulting pushed commit. Prior pushed checkpoint is d673a30d. Existing source assets are on GitHub; MANIFEST.json authenticates included recovery capsules. Preserve every actual failure and historical source label.

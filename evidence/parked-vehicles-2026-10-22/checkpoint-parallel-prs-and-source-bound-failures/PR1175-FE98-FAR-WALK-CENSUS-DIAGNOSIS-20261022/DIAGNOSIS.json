@@ -1,0 +1,89 @@
+{
+  "verdict": "Exact source census pin is stale after T3029. This failure supplies no evidence of an active/frustum rendering bug.",
+  "actual_failure": {
+    "run_id": 39854607926,
+    "job_id": 120089432801,
+    "run_conclusion": "failure",
+    "head": "fe9832a14921d385d1d53463403bdf3f39bc3f2b",
+    "workflow_path": ".github/workflows/chicago-4d-smoke.yml",
+    "workflow_id": 365585058,
+    "event": "workflow_dispatch",
+    "run_attempt": 1,
+    "job_log_sha256": "6b6c6fdaa4716029ac180db3c08c64026eae5b6dd08fa5634fdae2c4691251ff",
+    "PASS": false,
+    "actual_step_env_viewport": "mobile",
+    "actual_step_env_stage": "1-2",
+    "actual_checkout_sha": "fe9832a14921d385d1d53463403bdf3f39bc3f2b",
+    "failure": "Actual workflow conclusion failure",
+    "causal_lines": [
+      "2026-10-22T21:12:06.5005587Z   FAIL  mobile 390x780: the distant walk draw is one exact derived top-face batch \u2014 {\"meshes\":[{\"name\":\"frontage-far-walk-tops\",\"sharedMaterial\":true,\"castsShadow\":false,\"groundHugging\":true,\"candidates\":111470,\"drawn\":0}],\"state\":{\"candidateChunks\":122,\"candidateTriangles\":111470,\"eligibleChunks\":67,\"eligibleTriangles\":60168,\"activeChunks\":0,\"triangles\":0,\"drawCalls\":0,\"indexUpdates\":9}}",
+      "2026-10-22T21:13:15.3685547Z ##[error]Process completed with exit code 1."
+    ]
+  },
+  "failed_predicate": "m.candidates === 111472; actual111470. drawn0 === state.triangles0 passes the same assertion.",
+  "actual_source_change": {
+    "commit": "d51f7b9f0cf3025eb2bbb4eec86deed51d6bc3ea",
+    "pr": 1207,
+    "ticket": "T-3029",
+    "record": "blk_west_randolph_canal_north_walk_1",
+    "old": {
+      "endpoints": [
+        [
+          -145.11,
+          -262.31
+        ],
+        [
+          -124.04,
+          -262.48
+        ]
+      ],
+      "length_m": 21.070685798046544,
+      "plank_pitch_m": 0.32,
+      "board_count": 66,
+      "stringer_pitch_m": 2.08,
+      "stringer_bays": 10
+    },
+    "new": {
+      "endpoints": [
+        [
+          -145.11,
+          -262.31
+        ],
+        [
+          -124.27,
+          -262.47
+        ]
+      ],
+      "length_m": 20.840614194404175,
+      "plank_pitch_m": 0.32,
+      "board_count": 65,
+      "stringer_pitch_m": 2.08,
+      "stringer_bays": 10
+    },
+    "production_rule": "frontage.js laySegment: n=Math.max(1,Math.round(len/pitch)); every board emits one box with two top triangles. In createFarWalkTops only normal.y>=.99 top faces are selected.",
+    "board_difference": -1,
+    "expected_top_triangle_difference": -2
+  },
+  "existing_independent_constructor_evidence": [
+    {
+      "log": "/workspace/shared/ROOT-1175-DEVccad-FULL-PREFLIGHT-20261022/preflight-check.log",
+      "log_sha256": "228a6a0c4f1a2815edd17eef32fdf08b451da11ac5dea04e073ebaac8aa7b303",
+      "relevant_actual_lines": [
+        "PASS plank ground: 9 checks; 111472 top triangles, 1921 buried before / 0 after; 47.90 mm minimum clearance; +9470 triangles",
+        "PASS 9 far-plank checks; 111472 total / 60170 light-eligible candidate triangles; at most one added draw"
+      ]
+    },
+    {
+      "log": "/workspace/shared/ROOT-1175-DEV4459-FULL-PREFLIGHT-20261022/COMPACT-FAILURE-SUPPORT/preflight-check.log",
+      "log_sha256": "672aa7e1ab1b92e50cd1c849e83722a6d7fe1b240f4912bdf8c38adb317ff929",
+      "relevant_actual_lines": [
+        "PASS plank ground: 9 checks; 111470 top triangles, 1921 buried before / 0 after; 47.90 mm minimum clearance; +9470 triangles",
+        "PASS 9 far-plank checks; 111470 total / 60168 light-eligible candidate triangles; at most one added draw"
+      ]
+    }
+  ],
+  "bounded_repair": "Keep exact equality. Update only stale candidate census111472\u2192111470 and its attribution comment to this source/run. Preserve all name/material/castShadow/groundHugging/state-equality assertions and all geometry/visibility logic. No threshold/range/drop or geometry restoration is justified.",
+  "controls": "Existing nine far-plank controls passed at both counts, including exact source attribute copy, no near/far duplicate, reach/tier/frustum exclusion, unchanged-index reuse and return-inside-reach removal. The exact pin must continue rejecting111468 and stale111472; no need a new implementation-mirroring test.",
+  "scope": "Original fe98 mobile1\u20132 remains FAIL. After repair, fresh final-source published1\u20132 both viewports are required; untouched other assertion contexts can retain separately labeled immutablefe98 evidence. No current whole-gate claim.",
+  "actions": "Read-only source/history/log inspection and arithmetic only; no app/caller changes, test run, rerun, browser, cancellation or dispatch."
+}

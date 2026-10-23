@@ -1,0 +1,11 @@
+--- original
++++ corrected
+@@ -56,7 +56,7 @@
+   const initial=mobile?'light':'full';await page.addInitScript(detail=>localStorage.setItem('chicago4d.settings',JSON.stringify({detail})),initial);
+   await page.goto(origin+'/walk/?year=1835',{waitUntil:'domcontentloaded',timeout:45000});await page.waitForFunction(()=>window.__chicago4d?.ready||window.__chicago4d?.error,null,{timeout:240000,polling:1000});
+   await page.evaluate(()=>{const a=window.__chicago4d;if(!a.ready||a.error||!a.standingHorses)throw Error('Actual new layer not ready');if(a.welcome.state==='welcome')a.welcome.enter('spawn');});
+-  await page.waitForFunction(()=>window.__chicago4d?.welcome.state==='world',null,{timeout:30000});if(report.requests.length)throw Error('Far spawn fetched horse GLB');
++  await page.waitForFunction(()=>{const w=window.__chicago4d?.welcome;if(w?.state==='welcome')w.enter('spawn');return w?.state==='world';},null,{timeout:30000,polling:100});if(report.requests.length)throw Error('Far spawn fetched horse GLB');
+   report.initial=await page.evaluate(()=>({detail:window.__chicago4d.detail,coarse:matchMedia('(pointer:coarse)').matches,instances:window.__chicago4d.standingHorses.instances.length}));
+   const views=mobile?{side:{local_e:-127.5,local_n:-289.5,yaw_deg:180,pitch_deg:-7},quarter:{local_e:-123.1,local_n:-291.6,yaw_deg:225,pitch_deg:-7}}:{side:{local_e:-127.5,local_n:-291.4,yaw_deg:180,pitch_deg:-12},quarter:{local_e:-124.9,local_n:-293.4,yaw_deg:225,pitch_deg:-12}};
+   if(mobile){await page.evaluate(p=>{const a=window.__chicago4d;a.setFly(false);a.walker.teleport(p);a.step();},views.side);if(report.requests.length)throw Error('Light near stand fetched horse GLB');await page.evaluate(async()=>{const a=window.__chicago4d;await a.setDetail('balanced');a.step();await a.standingHorses.ready;});}

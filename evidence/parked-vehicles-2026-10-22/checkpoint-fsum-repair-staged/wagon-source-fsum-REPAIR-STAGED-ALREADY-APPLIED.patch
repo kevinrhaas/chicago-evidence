@@ -1,0 +1,173 @@
+diff --git a/chicago/4d/assets/authored/transport/wagon_covered/SOURCE.json b/chicago/4d/assets/authored/transport/wagon_covered/SOURCE.json
+index 669cd2ecd..a925b4416 100644
+--- a/chicago/4d/assets/authored/transport/wagon_covered/SOURCE.json
++++ b/chicago/4d/assets/authored/transport/wagon_covered/SOURCE.json
+@@ -7,7 +7,7 @@
+   "recipe": "data/transport/parked/covered-w01.json",
+   "producer": "tools/transport/generate_covered_wagons.py",
+   "core_source": "tools/transport/wagon_covered/build.py",
+-  "core_source_sha256": "29f239fa3c82507d8edd33c79de0688da7ccd946080583e3626d5805d8520913",
++  "core_source_sha256": "1a36e3506c9e515c5404d911f30f2c2093b325fe5a6184d931aefa6503d7555d",
+   "reviewed_parent_sha256": "274e737b51872983df792d0b24de8e75de8631890a8d586a32d9c6f0066484fb",
+   "source_commit": "2aebef95f6a5b6fa1bd8353db936c7674a73c32f",
+   "actual_terrain_qualification": {
+@@ -133,7 +133,7 @@
+       "model": "covered_w01_western_blue",
+       "legacy_id": "town_wagon_western_hotel_wagon_yard_1",
+       "glb_sha256": "9b6575d1702ca288b5a66487ef089cc51dd0b86d14a47574f94b6fe6eaf23d23",
+-      "sidecar_sha256": "cc44a5289b9dc821a50d40e824ee940270aaba56bc1a493e13eb01f0827bfcbd",
++      "sidecar_sha256": "5261e1ea4c89312322f1589019c05e2bcb6402aea600848d3ee1fb6f30c6d5fc",
+       "source_seed_text": "wagon|town_wagon_western_hotel_wagon_yard_1|-136.05|-291",
+       "scheme": {
+         "weight": 3,
+@@ -148,7 +148,7 @@
+       "model": "covered_w01_wolfpoint_oak",
+       "legacy_id": "town_wagon_wolf_point_tavern_yard_1",
+       "glb_sha256": "c6f69830d4ad690125ed703353d429bb8f68d67d29d6f6161b383b8b2d78f191",
+-      "sidecar_sha256": "c781cf738b54b4e61d98973095d4647a86e0ec3369c12554b59e12146af7ca38",
++      "sidecar_sha256": "2873ec1ea489651dde522fbea3d8f078d8fe2d5661dea9c510b5775fba753891",
+       "source_seed_text": "wagon|town_wagon_wolf_point_tavern_yard_1|-90.5|-39.5",
+       "scheme": {
+         "weight": 1,
+diff --git a/chicago/4d/assets/authored/transport/wagon_parked/SOURCE.json b/chicago/4d/assets/authored/transport/wagon_parked/SOURCE.json
+index 419fc81e9..10f7c376a 100644
+--- a/chicago/4d/assets/authored/transport/wagon_parked/SOURCE.json
++++ b/chicago/4d/assets/authored/transport/wagon_parked/SOURCE.json
+@@ -24,6 +24,6 @@
+     "assets/authored/transport/wagon_parked/textures/wood_normal.png": "9187f7bf24b0cad9fe212587b29ff7f2cc6edcf8cc76077062ae4d36ad1eea2c",
+     "assets/authored/transport/wagon_parked/textures/wood_orm.png": "d583fb966c65ed725599ad0a0cf37f56890dcda337ca661121856242df99c65d",
+     "renderers/web/transport/parked-wagon/wagon-w01.glb": "274e737b51872983df792d0b24de8e75de8631890a8d586a32d9c6f0066484fb",
+-    "renderers/web/transport/parked-wagon/wagon-w01.json": "706dd90be1ab65634e6c6d18f31fbcb1bc3275b1729d9b8670812038143a3d67"
++    "renderers/web/transport/parked-wagon/wagon-w01.json": "0856b257d1ba465b933aeae22cde270ff3153952dd147005892c80e5b4b348fd"
+   }
+ }
+diff --git a/chicago/4d/docs/STATUS.md b/chicago/4d/docs/STATUS.md
+index 0fe587e9f..acca6fd02 100644
+--- a/chicago/4d/docs/STATUS.md
++++ b/chicago/4d/docs/STATUS.md
+@@ -24438,3 +24438,8 @@ Matched exact2aeb/fdb runtime overlays over one immutable published substrate at
+ The declared envelope is Full with active true-transparency Ghost only:8,900driver draws (8469 +5percent, rounded up to100) and3,675,000rendered triangles (3656436 +the ordinary Full defended18059 margin, rounded up to5000). Ordinary Normal/Tint, Balanced/Light and all geometry, sorting, reach and draw units retain their prior behavior. Higher existing inspection allowances are preserved. Public API and stats read the same active envelope, which returns to the ordinary budget when Ghost ends. This explicitly measured allowance follows AGENTS.md's owner headroom ruling; rendering cost remains unchanged. Spot readings do not establish all-camera or frame-rate guarantees.
+ 
+ Independent literal policy pins and actual confidence smoke checks cover envelope identity, triangles, public/stats agreement and ordinary-limit restoration. The original ordinary7800 pin stays. Current full preflight and relevant combined-vehicle qualification must pass before ordinary DEV merge. T2979/T2980 remain the visible parked-vehicle parcel; full photographic, LOD, people/horse and occupied acceptance remain open.
++
++
++### T-2980 — Wagon reproduction across Python runtimes, 2026-10-22
++
++The covered-wagon CI gate exposed different built-in floating-point summation in Python 3.11 and 3.12. Ten floating sums in the two hardware helpers and covered core now use explicit math.fsum. Native 3.11 reproduces the reviewed authored-parts digest, final W01 and both covered GLBs exactly; root 3.12 production wrappers independently reproduce the same three shipped GLB byte streams. The original failure, unchanged-core secondary failure and corrected proofs are retained. Every original raw-parts, parent and final-product hash guard and recipe remains intact. Only the three sidecars' source-code hashes and their SOURCE manifests are refreshed. Geometry, materials, textures, individual finishes, placement, budgets and runtime JavaScript are unchanged. This repairs reproducibility; it adds no photographic, occupied or motion acceptance.
+diff --git a/chicago/4d/renderers/web/transport/covered-wagon/covered_w01_western_blue/covered-w01.json b/chicago/4d/renderers/web/transport/covered-wagon/covered_w01_western_blue/covered-w01.json
+index dbe4f3468..349442dab 100644
+--- a/chicago/4d/renderers/web/transport/covered-wagon/covered_w01_western_blue/covered-w01.json
++++ b/chicago/4d/renderers/web/transport/covered-wagon/covered_w01_western_blue/covered-w01.json
+@@ -932,7 +932,7 @@
+     "seedText": "wagon|town_wagon_western_hotel_wagon_yard_1|-136.05|-291",
+     "seedUint32": 1970835735
+   },
+-  "source_sha256": "29f239fa3c82507d8edd33c79de0688da7ccd946080583e3626d5805d8520913",
++  "source_sha256": "1a36e3506c9e515c5404d911f30f2c2093b325fe5a6184d931aefa6503d7555d",
+   "triangles": 17292,
+   "unsupportedInheritedSockets": [
+     "vehicle_hitch_team",
+diff --git a/chicago/4d/renderers/web/transport/covered-wagon/covered_w01_wolfpoint_oak/covered-w01.json b/chicago/4d/renderers/web/transport/covered-wagon/covered_w01_wolfpoint_oak/covered-w01.json
+index 740070224..a89ac49a7 100644
+--- a/chicago/4d/renderers/web/transport/covered-wagon/covered_w01_wolfpoint_oak/covered-w01.json
++++ b/chicago/4d/renderers/web/transport/covered-wagon/covered_w01_wolfpoint_oak/covered-w01.json
+@@ -932,7 +932,7 @@
+     "seedText": "wagon|town_wagon_wolf_point_tavern_yard_1|-90.5|-39.5",
+     "seedUint32": 1535618531
+   },
+-  "source_sha256": "29f239fa3c82507d8edd33c79de0688da7ccd946080583e3626d5805d8520913",
++  "source_sha256": "1a36e3506c9e515c5404d911f30f2c2093b325fe5a6184d931aefa6503d7555d",
+   "triangles": 17292,
+   "unsupportedInheritedSockets": [
+     "vehicle_hitch_team",
+diff --git a/chicago/4d/renderers/web/transport/parked-wagon/wagon-w01.json b/chicago/4d/renderers/web/transport/parked-wagon/wagon-w01.json
+index 73e76ffd6..59e6d6b47 100644
+--- a/chicago/4d/renderers/web/transport/parked-wagon/wagon-w01.json
++++ b/chicago/4d/renderers/web/transport/parked-wagon/wagon-w01.json
+@@ -956,8 +956,8 @@
+     "apply_materials.py": "0aaac1a3cbbfa9a6130722094b7fa9c29580db8da074b9bef24defadfc6da578",
+     "generate_parked_wagon.py": "45ca7a7ee5b14ae459cacdb3e549a4049f0fc7e8e491d6364ec3bc9d8b8c0e12",
+     "generate_tiles.py": "f7bcef9103a12dcd02d68396699d487cb7163fe266f5eba06dec074ff3d65df0",
+-    "generate_wagon_hardware.py": "99212c91c7255519e047222bb1e3833dfd54124bd587d7688639f2a355dccc88",
+-    "hardware_shapes.py": "31cf95fa435191fc472a0b8c98d7faac6d86672d831d9d3d2ead9595a9076355",
++    "generate_wagon_hardware.py": "451b37c475dcce5bbb571e0cb392d5fa1ef7ec077668df38c088613a0b18f18f",
++    "hardware_shapes.py": "2f69c0e8d04e8af1fd874f16c1a39c2b32fd2e0c5158484c63e668922d81cd12",
+     "refine_materials.py": "9fd59d5f9d6daac90d3488645c8f05a6161f9e88d0aadfb45dd0506a1db9f7c0",
+     "retired-parts.json": "d64f3560c70077008f32019eee99e9b9b48a7183b47ea970a288936d4c63e504"
+   },
+diff --git a/chicago/4d/tools/transport/wagon_covered/build.py b/chicago/4d/tools/transport/wagon_covered/build.py
+index 2b305cf73..ddccfeb89 100644
+--- a/chicago/4d/tools/transport/wagon_covered/build.py
++++ b/chicago/4d/tools/transport/wagon_covered/build.py
+@@ -10,10 +10,10 @@ def need(c,m):
+  if not c:raise ValueError(m)
+ def sha(b):return hashlib.sha256(b).hexdigest()
+ def unit(v):
+- d=math.sqrt(sum(x*x for x in v));need(d>1e-12,'Degenerate vector');return [x/d for x in v]
++ d=math.sqrt(math.fsum(x*x for x in v));need(d>1e-12,'Degenerate vector');return [x/d for x in v]
+ def cross(a,b):return [a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]]
+ def sub(a,b):return [x-y for x,y in zip(a,b)]
+-def dot(a,b):return sum(x*y for x,y in zip(a,b))
++def dot(a,b):return math.fsum(x*y for x,y in zip(a,b))
+ def srgb(hexvalue):
+  v=int(hexvalue.lstrip('#'),16);o=[]
+  for shift in [16,8,0]:
+@@ -118,7 +118,7 @@ def build(base,parts,variant,parameters,folder,textures):
+  for kind in ['color','normal','orm']:
+   raw=(textures/('canvas_'+kind+'.png')).read_bytes();iv=len(g['images']);g['images'].append({'bufferView':a.view(raw),'mimeType':'image/png','name':'covered_original_canvas_'+kind});ti=len(g['textures']);g['textures'].append({'source':iv,'sampler':sampler});refs[kind]=ti
+  import io
+- mean=sum((c/255/12.92 if c/255<=.04045 else ((c/255+.055)/1.055)**2.4) for p in Image.open(textures/'canvas_color.png').getdata() for c in p)/(512*256*3)
++ mean=math.fsum((c/255/12.92 if c/255<=.04045 else ((c/255+.055)/1.055)**2.4) for p in Image.open(textures/'canvas_color.png').getdata() for c in p)/(512*256*3)
+  fac=[c/mean for c in color['canvas']];need(max(fac)<=1,'Canvas mean normalization exceeds1')
+  canvas={'name':'covered_original_canvas','doubleSided':True,'pbrMetallicRoughness':{'baseColorFactor':[*fac,1],'baseColorTexture':{'index':refs['color']},'metallicFactor':0,'roughnessFactor':1,'metallicRoughnessTexture':{'index':refs['orm']}},'normalTexture':{'index':refs['normal'],'scale':.6},'extras':{'grade':'reconstructed','original_pixels':'CC0-1.0; source-generated analytic weave; no external pixels'}}
+  canvas_index=len(g['materials']);g['materials'].append(canvas);seam=copy.deepcopy(canvas);seam['name']='covered_original_folded_seams';seam['pbrMetallicRoughness']['baseColorFactor']=[v*.94 for v in fac]+[1];seam_index=len(g['materials']);g['materials'].append(seam)
+diff --git a/chicago/4d/tools/transport/wagon_parked/generate_wagon_hardware.py b/chicago/4d/tools/transport/wagon_parked/generate_wagon_hardware.py
+index 856c732c2..04d47b6fd 100644
+--- a/chicago/4d/tools/transport/wagon_parked/generate_wagon_hardware.py
++++ b/chicago/4d/tools/transport/wagon_parked/generate_wagon_hardware.py
+@@ -36,7 +36,7 @@ def geom(name,parent,vertices,faces,mat,t=(0,0,0),rotation=None):
+  pos=[];norm=[]
+  for face in faces:
+   for j in range(1,len(face)-1):
+-   a,b,c=[vertices[k] for k in (face[0],face[j],face[j+1])];u=[b[k]-a[k] for k in range(3)];v=[c[k]-a[k] for k in range(3)];n=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]];l=math.sqrt(sum(q*q for q in n));n=[q/l for q in n] if l else [0,1,0]
++   a,b,c=[vertices[k] for k in (face[0],face[j],face[j+1])];u=[b[k]-a[k] for k in range(3)];v=[c[k]-a[k] for k in range(3)];n=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]];l=math.sqrt(math.fsum(q*q for q in n));n=[q/l for q in n] if l else [0,1,0]
+    pos.extend(a+b+c);norm.extend(n*3);tris+=1
+  i=node(name,parent,t,rotation);geometry.append((i,pos,norm,mat));return i
+ 
+@@ -68,8 +68,8 @@ def chamfer_box(name,parent,size,t,mat,rx,bevel=.0012):
+  # Orient all faces outwards using center-to-face vector, including corner triangles.
+  for face in fs:
+   p,q,r=[vs[i] for i in face[:3]];u=[q[k]-p[k] for k in range(3)];v=[r[k]-p[k] for k in range(3)];normal=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]]
+-  center=[sum(vs[i][k] for i in face)/len(face) for k in range(3)]
+-  if sum(a*b for a,b in zip(normal,center))<0:face.reverse()
++  center=[math.fsum(vs[i][k] for i in face)/len(face) for k in range(3)]
++  if math.fsum(a*b for a,b in zip(normal,center))<0:face.reverse()
+  return geom(name,parent,vs,fs,mat,t,[math.sin(rx/2),0,0,math.cos(rx/2)] if rx else None)
+ 
+ def tapered_spoke(name,parent,r,angle,mat=1):
+@@ -84,8 +84,8 @@ def tapered_spoke(name,parent,r,angle,mat=1):
+  for k in range(8):j=(k+1)%8;fs.append([k,j,8+j,8+k])
+  center=[0,(.08+r-.07)/2*math.cos(angle),(.08+r-.07)/2*math.sin(angle)]
+  for face in fs:
+-  p,q,t=[vs[i] for i in face[:3]];u=[q[k]-p[k] for k in range(3)];v=[t[k]-p[k] for k in range(3)];n=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]];d=[sum(vs[i][k] for i in face)/len(face)-center[k] for k in range(3)]
+-  if sum(a*b for a,b in zip(n,d))<0:face.reverse()
++  p,q,t=[vs[i] for i in face[:3]];u=[q[k]-p[k] for k in range(3)];v=[t[k]-p[k] for k in range(3)];n=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]];d=[math.fsum(vs[i][k] for i in face)/len(face)-center[k] for k in range(3)]
++  if math.fsum(a*b for a,b in zip(n,d))<0:face.reverse()
+  return geom(name,parent,vs,fs,mat)
+ 
+ def box(name,parent,size,t,mat=0,rx=0):
+diff --git a/chicago/4d/tools/transport/wagon_parked/hardware_shapes.py b/chicago/4d/tools/transport/wagon_parked/hardware_shapes.py
+index 5eefd9155..4148d6160 100644
+--- a/chicago/4d/tools/transport/wagon_parked/hardware_shapes.py
++++ b/chicago/4d/tools/transport/wagon_parked/hardware_shapes.py
+@@ -14,8 +14,8 @@ def washer_y(outer_radius,bore_radius,thickness,segments=12):
+   faces.extend([[i,j,n+j,n+i],[2*n+j,2*n+i,3*n+i,3*n+j],[j,i,2*n+i,2*n+j],[n+i,n+j,3*n+j,3*n+i]])
+  # Explicit outward orientation (all quads planar, annulus has no center fan).
+  for f in faces:
+-  p,q,r=[vertices[k]for k in f[:3]];u=[q[k]-p[k]for k in range(3)];v=[r[k]-p[k]for k in range(3)];normal=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]];c=[sum(vertices[i][k]for i in f)/4 for k in range(3)]
++  p,q,r=[vertices[k]for k in f[:3]];u=[q[k]-p[k]for k in range(3)];v=[r[k]-p[k]for k in range(3)];normal=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]];c=[math.fsum(vertices[i][k]for i in f)/4 for k in range(3)]
+   radial=math.hypot(c[0],c[2]);desired=[0,1 if c[1]>0 else-1,0]if abs(normal[1])>abs(normal[0])+abs(normal[2])else[c[0]/radial,0,c[2]/radial]
+   if radial<(outer_radius+bore_radius)/2 and abs(normal[1])<abs(normal[0])+abs(normal[2]):desired=[-x for x in desired]
+-  if sum(a*b for a,b in zip(normal,desired))<0:f.reverse()
++  if math.fsum(a*b for a,b in zip(normal,desired))<0:f.reverse()
+  return vertices,faces

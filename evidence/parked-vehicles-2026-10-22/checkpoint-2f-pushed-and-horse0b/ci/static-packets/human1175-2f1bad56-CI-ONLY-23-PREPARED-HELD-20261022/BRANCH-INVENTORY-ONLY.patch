@@ -1,0 +1,16 @@
+--- generic779/collect-GET-only.py
++++ fresh2f/collect-GET-only.py
+@@ -237,9 +237,10 @@
+     content=api('merge-workflow-'+str(counter),'contents/'+path+'?ref='+merge)
+     need(content.get('encoding')=='base64' and sha(base64.b64decode(content['content']))==pins[path],'PR checkout workflow bytes differ from pinned source')
+   while time.monotonic()<deadline:
+-   tick=time.monotonic();listing=api('runs','actions/runs?head_sha='+head+'&per_page=100')
+-   need(listing['total_count']==len(listing['workflow_runs']),'Incomplete exact-head run listing')
+-   byid={r['id']:r for r in listing['workflow_runs']};expected=selected|set(normal_by_id)|set(guarded_by_id)
++   tick=time.monotonic();listing=api('branch-runs','actions/runs?branch='+BRANCH.replace('/','%2F')+'&per_page=100')
++   need(listing['total_count']==len(listing['workflow_runs']),'Incomplete complete-branch run inventory')
++   head_runs=[r for r in listing['workflow_runs'] if r['head_sha']==head];byid={r['id']:r for r in head_runs};expected=selected|set(normal_by_id)|set(guarded_by_id)
++   need(len(head_runs)==len(byid),'Duplicate exact-head IDs in complete branch inventory')
+    need(expected<=set(byid),'A pinned actual selected/normal run is absent; no implicit redispatch')
+    need(set(byid)==expected,'Unexpected exact-head runs; inspect before admitting duplicates or new scopes')
+    current=[]

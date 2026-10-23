@@ -1,0 +1,21 @@
+{
+  "at": "2026-10-22T04:58:19.101480+00:00",
+  "pid": 941141,
+  "parent": 941120,
+  "child_command": "python3 -c \nimport json, sys\nsys.path.insert(0, \"/workspace/chicago/chicago/4d/tools\")\nfrom compile_summaries import sentences\nprint(json.dumps([sentences(t) for t in json.loads(sys.stdin.read())])) ",
+  "parent_command": "node tools/test_fallback_summary.mjs ",
+  "reason": "Owned final full-gate child stalled >3minutes, noCPU, blocked stdin read awaiting EOF while parent waits epoll. Interrupt child; preserve actual incomplete/failed run, no pass claimed. Source and assertions unchanged.",
+  "signal": "SIGTERM",
+  "second_stalled_child": {
+    "at": "2026-10-22T04:58:44.329414+00:00",
+    "pid": 942109,
+    "command": "python3 -c \nimport json, sys\nsys.path.insert(0, \"/workspace/chicago/chicago/4d/tools\")\nfrom compile_summaries import lint_string\nprint(json.dumps([bool(lint_string(s)) for s in json.loads(sys.stdin.read())])) ",
+    "reason": "Next small-JSON stdin child stalls identically; stop same verified owned child, preserving failure."
+  },
+  "automatic_quiet_retry_interrupted": {
+    "at": "2026-10-22T05:00:18.472173+00:00",
+    "parent": 952113,
+    "child": 952122,
+    "reason": "Unmodified check_harness automatically retries failed pooled steps. Quiet retry reproduces same blocked stdin. Interrupt owned retry and child; preserve CHECK FAIL."
+  }
+}

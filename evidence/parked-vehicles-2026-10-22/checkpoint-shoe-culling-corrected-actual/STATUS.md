@@ -1,0 +1,1 @@
+Actual V3 CLOSED/PASS24images+framing+shoe-renderguards/0errors; complete images+exact inputs/CPUproof preserved. Root viewed4seatedimages; independentagentviewed6others, shoesvisible. Corrects V2previewculling only, unchanged geometry/pose/camera. Fullfit/periodtailoring/photo/LODs/40inheritedidleprojections remainopen; V5/V6unapplied.

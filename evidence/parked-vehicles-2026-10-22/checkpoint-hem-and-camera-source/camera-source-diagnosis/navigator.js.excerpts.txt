@@ -1,0 +1,55 @@
+navigator.js:162-185
+162:     const page = context();
+163:     const linked = link?.app === 'inspect' && link.id ? { selected: link.id } : null;
+164:     return { ...page, ...linked, link, target: near ?? page.target ?? null, isPhone: isPhone(), navigator: api };
+165:   };
+166:   // T-2621: who wants to hear the device change (nav-link.js holds Back for it).
+167:   const changeFns = new Set();
+168:   const changed = () => { for (const fn of changeFns) { try { fn({ app: registry?.current ?? null, level }); } catch { /* a listener never stops the device */ } } };
+169:   const registry = createRail({
+170:     rail, screens: root.querySelector('.nav-body'), codeEl: $('nav-code'), doc: root.ownerDocument,
+171:     context: ctx, before: collapse ?? null, storage,
+172:     onOpen: (id, by) => {
+173:       if (id !== link?.app) link = null;
+174:       queueMicrotask(changed);
+175:       paintDock(id);
+176:       if (by === 'quiet') return;
+177:       if (level === 0) setLevel(1, { by, focus: false });
+178:       if (by === 'hand') focusTarget(id)?.focus?.({ preventScroll: true });
+179:       if (id === 'home') refresh(true);
+180:     },
+181:     onLaunch: () => setLevel(0, { by: 'app' }),
+182:   });
+183:   let api = null; // filled in below; ctx() is only ever called after
+184:   const railShows = () => !isPhone() || level > 0;
+185:   let unNear = null;
+
+navigator.js:211-238
+211:     return detent;
+212:   }
+213:   function paintGrip() {
+214:     const name = dockApp ? appLabel(dockApp) : '';
+215:     grip?.setAttribute('aria-label', str(level > 0 ? 'nav.lower' : name ? 'nav.open.on' : 'nav.open', { app: name }));
+216:   }
+217:   function setLevel(next, { by = 'code', focus = by === 'hand' } = {}) {
+218:     const max = names().length - 1;
+219:     const was = level;
+220:     level = Math.max(0, Math.min(max, next));
+221:     paintLevel();
+222:     listen(level > 0);
+223:     listenNear();
+224:     // T-2620: an app holding the drawer's sections closes them while the screen is out of sight.
+225:     registry.setVisible(level > 0);
+226:     telemetry?.sync();
+227:     if (railShows()) registry.evaluate();
+228:     if (level > 0 && registry.current === 'home') refresh(true);
+229:     changed();
+230:     if (focus && was === 0 && level > 0) {
+231:       focusTarget(registry.current)?.focus?.({ preventScroll: true });
+232:     }
+233:     return root.dataset.detent;
+234:   }
+235: 
+236:   grip?.addEventListener('click', (e) => {
+237:     if (suppressClick) { suppressClick = false; e.preventDefault(); return; }
+238:     setLevel(tapLevel(level, names().length), { by: 'hand' });

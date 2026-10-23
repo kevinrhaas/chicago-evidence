@@ -1,0 +1,9 @@
+# Covered source full preflight RUNNING; all diagnostic browsers CLOSED
+
+Root updated only the owned uncommitted T2980 STATUS/ROADMAP suffixes after actual22/8/4mainPASS, preserving historicalprefix bytes and ROADMAP legacy encoding. Final26file stagedpatch9cf11402 is saved here and ALREADYAPPLIED; do notapplyoldornewpatch again. Current branchsteward/covered-period-wagons-20261021,HEAD2aeb,stagedsourceonly, noappcommit yet.
+
+Fullrequiredpreflight runningexec45235 at /workspace/shared/covered-2980-FULL-PREFLIGHT-2026-10-22.log, inner /tmp/preflight-check.log. Waitactualterminal, readlastfourlines; embedded selftestFAILs are deliberate. Copyfullinnerlogbeforeanotherpreflight. No browser whilefullgate. No counterpatch/coalescer/humanV5 applied.
+
+ActualoverlayV3 STOPPED/CLOSED afterNORMAL only: sourceentry22.348s and originalHoganpersonridebindcorrect, sameposition but13.05554degree orientationchange duringpreset/read. NORMAL primary/shipped3695/picking0/extra0 reconciled; allparkedgroupshiddenatthispose, ordinarystructurecoalescingeligible0. NoXray/Ghost/parent samples, noCI/baseline/causality. Capsule10803525 exactreceipt/caller/sourceoverlay/controls/requests/finitefindings; noautorerun. Agentci_parked onlyread-onlysource-traces cameradrift/recommendsnonhistoricstaticprotocol, no newfullcaller/guard orlaunch. Oldfrozenliveguards are nowstale dueexplicitowneddocchanges; rebindnewpreparationonlyafterreviewedsourcecommit, notblindrerun.
+
+Human V2 actual24framingPASS and inheritedseatedfootwearFAIL/Open arepushed inpreviouscheckpoint8fbfe7a7. V5notapplied/canonicalqualified. ParentPR1174stillred2budgetassertions; noDEVmerge orbudgetwaiver. Covered sourcecommit/push is priorityaftergreenfullgate. Models/seeds/stands/yokesunchangedandactualmainpassed; photographicfinishing/compressedLOD/physicaloccupiedcollisionremainopen.

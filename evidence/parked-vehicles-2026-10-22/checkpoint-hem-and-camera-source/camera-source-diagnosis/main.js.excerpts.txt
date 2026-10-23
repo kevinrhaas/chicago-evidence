@@ -1,0 +1,151 @@
+main.js:3358-3392
+3358:   api.router = router;
+3359:   const buildingBounds = buildings.instanceBounds();
+3360: 
+3361:   /**
+3362:    * Where the last arrival stood (T-0824). While its card is up the building is
+3363:    * framed into the free part of the screen; when the card closes and the
+3364:    * visitor has not moved, the look swings back to centre the building, so the
+3365:    * crosshair is on it and the view is the plain one.
+3366:    */
+3367:   let lastArrival = null;
+3368:   function reaimAfterCard() {
+3369:     if (!lastArrival) return;
+3370:     const st = walker.state;
+3371:     const moved = Math.hypot(st.e - lastArrival.e, st.n - lastArrival.n) > 0.5;
+3372:     const id = lastArrival.id;
+3373:     lastArrival = null;
+3374:     if (moved || st.flying) return;
+3375:     const aim = framing(id, { card: false })?.aim ?? focusPoint(id);
+3376:     if (!aim) return;
+3377:     const de = aim.x - st.e, dn = -aim.z - st.n;
+3378:     walker.teleport({
+3379:       local_e: st.e, local_n: st.n,
+3380:       yaw_deg: ((Math.atan2(de, dn) / DEG) + 360) % 360,
+3381:       pitch_deg: Math.atan2(aim.y - st.eyeY, Math.max(Math.hypot(de, dn), 0.1)) / DEG,
+3382:     });
+3383:   }
+3384:   new MutationObserver(() => {
+3385:     if (document.getElementById('popup')?.hasAttribute('hidden')) reaimAfterCard();
+3386:   }).observe(document.getElementById('popup'), { attributes: true, attributeFilter: ['hidden'] });
+3387: 
+3388:   // The town's FIRMS, read BEFORE the two directories that now cross-reference
+3389:   // them (T-1325). The index is one file and the crosswalk is one fold of it; a
+3390:   // person's card and a building's card both ask it the same two questions, so
+3391:   // neither is allowed to fold 196 rows for itself.
+3392:   api.businessIndex = !draws('businesses') ? null : await (async () => {
+
+main.js:3783-3800
+3783:   // The travel controller: instantly, on foot, by wagon, on horseback, or flying.
+3784:   // It writes the shared intent the way a backend does, so the walker keeps its
+3785:   // collision and terrain honesty whoever is steering — see travel.js.
+3786:   travel = createTravel({
+3787:     walker, intent, hud, settings: hud.settings, router, terrain, footprints,
+3788:     focusPoint, structurePosition,
+3789:     // Where a ride or a flight ends: the framed stand-off, the same one Go to uses.
+3790:     standFor: (id, options) => framing(id, { card: true, ...options }),
+3791:     registry: loaded.registry,
+3792:     frame: (id, options) => frame(id, { card: true, ...options }),
+3793:     teleport: (where) => walker.teleport(where),
+3794:     goToAnchor: (id) => api.goTo(id),
+3795:     setFly: (on) => hud.setFly(on, { announce: false }),
+3796:     // Arriving is what opens the card: the menu closes, the building's card opens.
+3797:     onArrive: (id) => { hud.setPanel(false); pick(id); lastArrival = { id, e: walker.state.e, n: walker.state.n }; },
+3798:   });
+3799:   api.travel = travel;
+3800:   // The stored pace and travel mode, through the one function that writes WALK
+
+main.js:4828-4847
+4828: 
+4829:   function resize() {
+4830:     const vv = window.visualViewport;
+4831:     const w = Math.max(1, Math.round(vv?.width ?? window.innerWidth));
+4832:     const h = Math.max(1, Math.round(vv?.height ?? window.innerHeight));
+4833:     renderer.setSize(w, h, true);
+4834:     camera.aspect = w / h;
+4835:     // Hor+ : hold the horizontal field of view and let the vertical follow, so a
+4836:     // portrait phone does not end up looking down a drinking straw.
+4837:     const hFov = H_FOV_DEG * DEG;
+4838:     const vFov = 2 * Math.atan(Math.tan(hFov / 2) / camera.aspect);
+4839:     camera.fov = THREE.MathUtils.clamp(vFov * 180 / Math.PI, 55, 94);
+4840:     camera.updateProjectionMatrix();
+4841:     document.documentElement.style.setProperty('--vh', `${h}px`);
+4842:     gate?.classList.toggle('welcome-compact', h <= 500);
+4843:   }
+4844:   window.addEventListener('resize', resize);
+4845:   window.addEventListener('orientationchange', resize);
+4846:   window.visualViewport?.addEventListener('resize', resize);
+4847:   resize();
+
+main.js:4904-4925
+4904:     const frameDt = animationHold || gateOpen ? 0 : elapsed;
+4905:     const dt = Math.min(frameDt, 0.05);
+4906: 
+4907:     if (!gateOpen) backends.active?.update?.(dt);
+4908:     else intent.clear();
+4909:     terrain.update(dt);
+4910:     const asked = intent.takeInteract();
+4911:     if (asked && !gateOpen) travel.stop('input');
+4912:     // The inspect KEY toggles: the reach that opened the card also closes it
+4913:     // (T-0108). Since T-2954 a click or tap on the scene does too: an open card
+4914:     // holds the visitor until it is closed or the town is touched again (the owner,
+4915:     // 2026-10-20), so a second building is one more click away, not one less.
+4916:     if (asked && popup.openId) popup.close();
+4917:     else if (asked) inspect(asked.point ? new THREE.Vector2(asked.point.x, asked.point.y) : null);
+4918:     const walkSteps = Math.max(1, Math.ceil(frameDt / 0.05));
+4919:     const walkDt = frameDt / walkSteps;
+4920:     if (!gateOpen) for (let i = 0; i < walkSteps; i++) {
+4921:       // Steering and movement consume the same time step. Reusing one steering
+4922:       // decision for five walker steps on a slow frame overshot street corners.
+4923:       travel.update(walkDt, intent);
+4924:       walker.update(walkDt, intent);
+4925:       travel.afterWalk(intent, walkDt);
+
+main.js:4950-4996
+4950:     // T-2598: which house pictures are on the GPU, from where the eye ended up; at
+4951:     // most a frame's allowance of them is uploaded here, before the draw.
+4952:     residency?.tick(camera.position);
+4953:     api.humans?.update(dt, camera, walker.state);
+4954: 
+4955:     // T-2113. Under the gate, draw only a frame that differs from the last one
+4956:     // drawn: the first, one a capture or a test asked for, or one in which
+4957:     // something the renderer reads has moved. Out in the town, every frame.
+4958:     if (!gateOpen || force || pendingCapture || gateFrame.due()) {
+4959:       // T-2646: `renderer.render(scene3d, camera)`, and — only while a grade is
+4960:       // ghosted with the Confidence view on — that grade drawn see-through, last,
+4961:       // in a pass of its own (confidence.js § render).
+4962:       confidence.render(renderer, scene3d, camera);
+4963:       bootController.frameRendered();
+4964:       resolveFirstFrame();
+4965:     }
+4966: 
+4967:     // Read back inside the frame that drew it. Outside the loop the drawing
+4968:     // buffer has already been composited and cleared, and readPixels quietly
+4969:     // returns the PREVIOUS frame — which makes a toggle look like it changed
+4970:     // nothing at all.
+4971:     if (pendingCapture) {
+4972:       const { grid, resolve } = pendingCapture;
+4973:       pendingCapture = null;
+4974:       resolve(readbackSignature(renderer, grid));
+4975:     }
+4976: 
+4977:     const st = walker.state;
+4978:     api.player.e = st.e;
+4979:     api.player.n = st.n;
+4980:     api.player.y = st.eyeY;
+4981:     api.player.bearingDeg = walker.bearingDeg;
+4982:     api.player.pitchDeg = st.pitch * 180 / Math.PI;
+4983:     api.player.speed = st.speed;
+4984:     api.player.moving = st.speed > 0.001;
+4985:     api.player.altitude = st.altitude;
+4986:     api.player.flying = st.flying;
+4987:     hud.setAltitude(st.altitude);
+4988:     navigation.update({ e: st.e, n: st.n, bearingDeg: walker.bearingDeg });
+4989:     if (!gateOpen) { target?.tick(performance.now()); navigatorUi?.update(); }
+4990: 
+4991:     // Wall-clock, not the clamped dt: a clamped dt reports a healthy 20 fps on
+4992:     // a machine that is actually drawing three frames a second.
+4993:     frames++;
+4994:     const now = performance.now();
+4995:     if (now - fpsMark >= 500) {
+4996:       fps = (frames * 1000) / (now - fpsMark);

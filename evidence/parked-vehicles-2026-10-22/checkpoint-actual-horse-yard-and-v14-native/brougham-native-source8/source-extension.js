@@ -1,0 +1,31 @@
+// Frozen catalogue camera and original light rig; only crop window and depth interval differ.
+const sourceResponse=await fetch('./plate0095.jpg');if(!sourceResponse.ok)throw Error('Source image HTTP');
+const sourceBytes=await sourceResponse.arrayBuffer();
+const digest=async b=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',b))).map(x=>x.toString(16).padStart(2,'0')).join('');
+window.sourceInputHash=()=>digest(sourceBytes);
+window.setSourceComparison=name=>{
+ if(disposed||!['detail','fullquarter'].includes(name))throw Error('Invalid finite source view');
+ const crop=name==='detail'?[900,450,1300,875]:[100,400,1500,1000],nearClip=100;
+ pole.visible=true;
+ const hiddenModelNodes=[];model.traverse(n=>{if(!n.visible)hiddenModelNodes.push(n.name)});if(hiddenModelNodes.length)throw Error('All model parts must remain visible');
+ const w=canvas.clientWidth,h=canvas.clientHeight,cw=crop[2]-crop[0],ch=crop[3]-crop[1],s=Math.min(w/cw,h/ch),padding=[(w-cw*s)/2,(h-ch*s)/2];
+ const panel=document.querySelector('#reference'),im=panel.querySelector('img'),clip=panel.querySelector('#crop');
+ if(panel.clientWidth!==w||panel.clientHeight!==h)throw Error('Source/render panel dimensions differ');
+ Object.assign(clip.style,{width:(cw*s)+'px',height:(ch*s)+'px',left:padding[0]+'px',top:padding[1]+'px'});
+ Object.assign(im.style,{width:(1556*s)+'px',height:(1145*s)+'px',left:(-crop[0]*s)+'px',top:(-crop[1]*s)+'px'});
+ const hh=hypothesis.fit,map=([x,y])=>[padding[0]+(x-crop[0])*s,padding[1]+(y-crop[1])*s];
+ const camera=perspective;activeCamera=camera;renderer.setSize(w,h,false);camera.position.fromArray(hh.basis.towardCamera).multiplyScalar(hh.distance_m);camera.lookAt(0,0,0);
+ camera.aspect=w/h;camera.near=.05;camera.far=1000;camera.filmOffset=0;camera.clearViewOffset();camera.fov=2*Math.atan(h/(2*hh.focal_px*s))*180/Math.PI;camera.updateProjectionMatrix();
+ const pp=map(hh.principal_px);camera.projectionMatrix.elements[8]=1-2*pp[0]/w;camera.projectionMatrix.elements[9]=2*pp[1]/h-1;
+ const originalProjection=camera.projectionMatrix.toArray();camera.near=nearClip;camera.updateProjectionMatrix();
+ for(let i=0;i<16;i++)if(i!==10&&i!==14)camera.projectionMatrix.elements[i]=originalProjection[i];
+ if(camera.projectionMatrix.toArray().some((v,i)=>i!==10&&i!==14&&v!==originalProjection[i]))throw Error('Source xy projection drift');
+ camera.projectionMatrixInverse.copy(camera.projectionMatrix).invert();camera.updateMatrixWorld(true);renderer.render(scene,camera);
+ const checks=[[0,0,0],[.67,.55,1.15],[.67,.72,-1.15],[0,2,0]].map(p=>{const v=new T.Vector3(...p),depth=hh.distance_m-v.dot(new T.Vector3(...hh.basis.towardCamera)),native=[hh.principal_px[0]+hh.focal_px*v.dot(new T.Vector3(...hh.basis.right))/depth,hh.principal_px[1]-hh.focal_px*v.dot(new T.Vector3(...hh.basis.up))/depth],expected=map(native),q=v.clone().project(camera),actual=[(q.x+1)*w/2,(1-q.y)*h/2];return{point:p,native,expected,actual,errorPx:Math.hypot(actual[0]-expected[0],actual[1]-expected[1])}});
+ if(checks.some(x=>x.errorPx>1e-6))throw Error('Source projection formula mismatch');
+ const points=[...corners(full),...[-50,50].flatMap(x=>[-50,50].map(z=>new T.Vector3(x,-.004,z)))],clipDistances=points.map(p=>-p.clone().applyMatrix4(camera.matrixWorldInverse).z),clipGuard={fullModelAndOriginalFloorInside:clipDistances.every(z=>z>camera.near&&z<camera.far),minDistance:Math.min(...clipDistances),maxDistance:Math.max(...clipDistances)};if(!clipGuard.fullModelAndOriginalFloorInside)throw Error('Depth interval clips original scene geometry');
+ const projected=corners(full).map(p=>p.clone().project(camera)),ndcMin=[0,1,2].map(k=>Math.min(...projected.map(p=>p.getComponent(k)))),ndcMax=[0,1,2].map(k=>Math.max(...projected.map(p=>p.getComponent(k)))),fullFraming={ndcMin,ndcMax,entireFullBoundsInside:ndcMin.every(x=>x>=-1)&&ndcMax.every(x=>x<=1)};
+ const actualGL=renderer.getContext(),defaultFramebuffer=renderer.getRenderTarget()===null&&actualGL.getParameter(actualGL.FRAMEBUFFER_BINDING)===null;if(!defaultFramebuffer)throw Error('Actual default framebuffer required for depth readback');
+ const rect=n=>document.querySelector(n).getBoundingClientRect().toJSON();
+ return{name,nearClip,depthBits:actualGL.getParameter(actualGL.DEPTH_BITS),defaultFramebuffer,clipGuard,crop,scale:s,paddingPx:padding,panel:[w,h],camera:{position:camera.position.toArray(),quaternion:camera.quaternion.toArray(),fov:camera.fov,aspect:camera.aspect,near:camera.near,far:camera.far,projection:camera.projectionMatrix.toArray(),world:camera.matrixWorld.toArray()},originalNear005Projection:originalProjection,nondepthProjectionExact:true,fixedFit:hh,projectionChecks:checks,fullBounds:{min:full.min.toArray(),max:full.max.toArray()},fullFraming,poleVisible:pole.visible,hiddenModelNodes,sourceTriangles:gltf.parser.json.extras.statistics.triangles,sourceBytes:buffer.byteLength,drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,glError:actualGL.getError(),lighting:{outputColorSpace:renderer.outputColorSpace,toneMapping:renderer.toneMapping,exposure:renderer.toneMappingExposure,shadowsEnabled:renderer.shadowMap.enabled,shadowType:renderer.shadowMap.type,background:scene.background.getHex(),hemisphere:scene.children.filter(x=>x.isHemisphereLight).map(x=>({color:x.color.getHex(),groundColor:x.groundColor.getHex(),intensity:x.intensity})),sun:{color:sun.color.getHex(),position:sun.position.toArray(),intensity:sun.intensity,bias:sun.shadow.bias,normalBias:sun.shadow.normalBias,mapSize:sun.shadow.mapSize.toArray(),camera:[sun.shadow.camera.left,sun.shadow.camera.right,sun.shadow.camera.top,sun.shadow.camera.bottom,sun.shadow.camera.near,sun.shadow.camera.far]}},dom:{canvas:rect('canvas'),reference:rect('#reference'),header:rect('header'),viewport:[innerWidth,innerHeight]},scope:name==='fullquarter'?'Full-carriage catalogue-direction view including inferred static pole; fixed crop, not physical source pole-pose attestation or clearance':'Source detail window; all geometry enabled but naturally cropped; hidden/opposite-side parts remain unqualified'};
+};

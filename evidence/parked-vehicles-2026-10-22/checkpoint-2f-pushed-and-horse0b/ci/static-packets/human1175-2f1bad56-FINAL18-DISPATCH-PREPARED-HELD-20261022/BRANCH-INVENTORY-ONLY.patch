@@ -1,0 +1,37 @@
+--- existing/dispatch-once.py
++++ 2f-branch/dispatch-once.py
+@@ -30,7 +30,7 @@
+  need(pins['chicago/4d/data/humans/instances/1835/hi_rc_bardwell_otis_1835.json']==baseline['instance_sha256'],'Reviewed actual standing instance changed')
+  for lod in baseline['web_lods']:
+   need(sha(git('show',head+':chicago/4d/assets/humans/web/'+lod['filename']))==lod['sha256'],'Final source no longer imports exact qualified canonical web bytes')
+- plan={'repository':REPO,'branch':BRANCH,'sha':head,'tree':tree,'pr':pr,'workflow':WORKFLOW,'canonical_baseline_sha256':sha(baseline_bytes),'focused_town_required_before_merge':True,'cells':cells,'pins':pins,'git_blob_pins':blob_pins,'prepared_workflow_identity_pins':json.loads((pathlib.Path(__file__).parent/'PREPARED-WORKFLOW-PINS.json').read_bytes())['pins'],'scope':'Exactly18 fresh final-standing-head published smoke requests may run concurrently with local final-town phases. Focused local proof is mandatory at final collector/merge qualification; automatic gate/report/humans plus moving proof are collected separately. No unfiltered duplicate, canonical human rebuild, bake or production promotion.'}
++ plan={'repository':REPO,'branch':BRANCH,'sha':head,'tree':tree,'pr':pr,'workflow':WORKFLOW,'canonical_baseline_sha256':sha(baseline_bytes),'focused_town_required_before_merge':True,'cells':cells,'pins':pins,'git_blob_pins':blob_pins,'prepared_workflow_identity_pins':json.loads((pathlib.Path(__file__).parent/'PREPARED-WORKFLOW-PINS.json').read_bytes())['pins'],'scope':'Exactly18 fresh final-standing-head published smoke requests may run concurrently with local final-town phases. Root independently reviews repository-required CI and actual published desktop/mobile evidence; automatic gate/report/humans plus moving proof are collected separately. Private supplemental focused-case flags remain false and are not a CI_ONLY gate. No unfiltered duplicate, canonical human rebuild, bake or production promotion.'}
+ 
+  if a.execute:
+   need(a.activation is not None,'HELD: explicit root activation required before POST')
+@@ -57,7 +57,7 @@
+   if body is not None:cmd+=['--input','-']
+   r=subprocess.run(cmd,input=json.dumps(body)if body is not None else None,text=True,capture_output=True,timeout=min(45,remaining));stem.with_suffix('.stdout').write_text(r.stdout);stem.with_suffix('.stderr').write_text(r.stderr);need(r.returncode==0,label+' API failure/ambiguity; do not retry POST');return json.loads(r.stdout)if r.stdout.strip()else None
+  def remote():return api('branch','git/ref/heads/'+BRANCH)['object']['sha']
+- listing='actions/workflows/'+WORKFLOW+'/runs?head_sha='+head+'&per_page=100'
++ listing='actions/runs?branch='+BRANCH.replace('/','%2F')+'&per_page=100'
+  try:
+   need(remote()==head,'Remote branch differs from qualified head');commit=api('commit','git/commits/'+head);need(commit['tree']['sha']==tree,'Remote tree differs');pull=api('pr','pulls/'+str(pr));need(pull['state']=='open'and pull['head']['sha']==head and pull['head']['ref']==BRANCH and pull['head']['repo']['full_name']==REPO and pull['base']['ref']=='dev','PR route/head changed')
+   record['PR_source_binding']={k:pull[k] for k in ['head','base','merge_commit_sha']}
+@@ -65,13 +65,13 @@
+   if original:
+    need(original['repository']==REPO and original['branch']==BRANCH and original['sha']==head and original['tree']==tree and original['pr']==pr and original['pins']==pins,'Original receipt identity/pins differ');need(original['caller_sha256']==record['caller_sha256'],'Caller source differs from original receipt');need(len(original['dispatches'])==18 and all(d.get('post_succeeded')for d in original['dispatches']),'Not18 accepted original POSTs; inspect ambiguity manually');record['original_receipt']={'path':str(a.reconcile),'sha256':sha(a.reconcile.read_bytes()),'original_error':original.get('error')};record['dispatches']=original['dispatches']
+   else:
+-   before=api('runs-before',listing);need(before['total_count']==len(before['workflow_runs'])==0,'Selected workflow runs already exist; inspect before duplicating');record['before_run_ids']=[]
++   before=api('runs-before',listing);need(before['total_count']==len(before['workflow_runs']),'Incomplete branch run inventory before POST');before_head=[r for r in before['workflow_runs'] if r['head_sha']==head and r['path']=='.github/workflows/'+WORKFLOW];need(not before_head,'Selected workflow runs already exist; inspect before duplicating');record['before_run_ids']=[];record['branch_inventory_before_total']=before['total_count']
+    (SHARED/('human-standing-1175-nexthead-'+head+'.POST.lock')).mkdir(exist_ok=False)
+    for viewport,stage in cells:
+     need(remote()==head,'Branch drift before POST; reconcile accepted work, never automatically redispatch');d={'viewport':viewport,'stage':stage,'requested':now(),'post_attempted':True,'post_succeeded':False};record['dispatches'].append(d);checkpoint();api('dispatch','actions/workflows/'+WORKFLOW+'/dispatches',{'ref':BRANCH,'inputs':{'viewport':viewport,'stage':stage}});d['post_succeeded']=True;checkpoint()
+    if deadline-time.monotonic()>2:time.sleep(2)
+-  runs=api('runs-after',listing);record['discovered_runs']=[{k:r.get(k)for k in ['id','head_sha','head_branch','event','path','run_attempt','status','conclusion','created_at','html_url']}for r in runs['workflow_runs']];checkpoint()
+-  need(runs['total_count']==len(record['discovered_runs'])==18,'Discovery incomplete/extra; preserve this receipt and reconcile GET-only without new POSTs');need(len({r['id']for r in record['discovered_runs']})==18,'Duplicate run IDs')
++  runs=api('runs-after',listing);need(runs['total_count']==len(runs['workflow_runs']),'Incomplete branch run inventory after POST');head_runs=[r for r in runs['workflow_runs'] if r['head_sha']==head and r['path']=='.github/workflows/'+WORKFLOW];record['branch_inventory_after_total']=runs['total_count'];record['run_inventory_method']='Complete branch listing filtered by exact per-run head SHA and smoke workflow path';record['discovered_runs']=[{k:r.get(k)for k in ['id','head_sha','head_branch','event','path','run_attempt','status','conclusion','created_at','html_url']}for r in head_runs];checkpoint()
++  need(len(head_runs)==len(record['discovered_runs'])==18,'Discovery incomplete/extra; preserve this receipt and reconcile GET-only without new POSTs');need(len({r['id']for r in record['discovered_runs']})==18,'Duplicate run IDs')
+   for r in record['discovered_runs']:need(r['head_sha']==head and r['head_branch']==BRANCH and r['event']=='workflow_dispatch'and r['path']=='.github/workflows/'+WORKFLOW and r['run_attempt']==1,'Discovered workflow identity changed')
+   need(remote()==head,'Branch changed after requests');final_pull=api('final-pr','pulls/'+str(pr));need(final_pull['base']['sha']==record['PR_source_binding']['base']['sha'] and final_pull['merge_commit_sha']==record['PR_source_binding']['merge_commit_sha'],'PR base/merge moved during requests');record['dispatch_complete']=True
+  except Exception as error:record['error']=str(error)

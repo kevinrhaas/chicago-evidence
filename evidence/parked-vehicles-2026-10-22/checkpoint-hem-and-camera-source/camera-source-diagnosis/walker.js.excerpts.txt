@@ -1,0 +1,52 @@
+walker.js:375-403
+375:     teleport({ local_e = state.e, local_n = state.n, yaw_deg = null,
+376:                altitude_m = null, pitch_deg = null } = {}) {
+377:       state.e = local_e;
+378:       state.n = local_n;
+379:       if (yaw_deg !== null) state.yaw = bearingToYaw(yaw_deg);
+380:       if (pitch_deg !== null) {
+381:         state.pitch = Math.max(-WALK.pitchLimit,
+382:           Math.min(WALK.pitchLimit, pitch_deg * DEG));
+383:       } else if (altitude_m === null) {
+384:         // Arriving on foot levels the view. Without this you keep whatever
+385:         // angle you had, so stepping off an aerial viewpoint down to a street
+386:         // corner lands you staring at the cobbles — and, less visibly, aims
+387:         // every crosshair inspection at the ground instead of the building.
+388:         state.pitch = 0;
+389:       }
+390:       state.groundY = surfaceAt(state.e, state.n);
+391:       if (altitude_m !== null) {
+392:         this.setFlying(true);
+393:         state.eyeY = state.groundY + Math.max(FLY.minClearance, altitude_m);
+394:         state.altitude = state.eyeY - state.groundY;
+395:       } else {
+396:         this.setFlying(false);
+397:         state.eyeY = state.groundY + WALK.eyeHeight;
+398:         state.altitude = 0;
+399:       }
+400:       this.apply();
+401:     },
+402: 
+403:     /** Stand `distance` metres from a world point, looking at it. */
+
+walker.js:513-532
+513:     /** Write the camera. The ONLY place the camera transform is authored. */
+514:     apply() {
+515:       enuToWorld(state.e, state.n, state.eyeY + state.bob, world);
+516:       camera.position.copy(world);
+517:       euler.set(state.pitch, state.yaw, 0, 'YXZ');
+518:       camera.quaternion.setFromEuler(euler);
+519:     },
+520: 
+521:     /**
+522:      * @param {number} dt seconds
+523:      * @param {object} intent  the shared intent object
+524:      */
+525:     update(dt, intent) {
+526:       state.yaw += intent.yawDelta;
+527:       state.pitch = Math.max(-WALK.pitchLimit,
+528:         Math.min(WALK.pitchLimit, state.pitch + intent.pitchDelta));
+529:       intent.clearLook();
+530: 
+531:       if (intent.flying !== state.flying) this.setFlying(intent.flying);
+532:       if (state.flying) { this.updateFly(dt, intent); return; }

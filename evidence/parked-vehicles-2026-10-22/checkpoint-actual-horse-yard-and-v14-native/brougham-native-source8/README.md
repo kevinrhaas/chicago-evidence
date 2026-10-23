@@ -1,0 +1,19 @@
+# V13→V14 native indexed-near source8 — HELD, no browser
+
+One copy of the actual-passed V13 source8 fixture/caller, with only version/model path+hash/size/triangle pins and precise display labels changed. Root approved preserving the original eight-frame contract: desktop1280×800/mobile390×780 ×V13baseline/V14candidate ×near-side source-detail/fullquarter. These are one fixed catalogue-direction camera with two crops, NOT a literal orthographic side profile. No new camera/function/light/pose/visibility/cleanup protocol is introduced.
+
+Actual V13 indexednear41d02aab02751e40b8f112fe4b4cf5ca439aa3011427c339cbd4a8dd53824232 =1,205,760B/32678tri. Actual V14 indexednear13fe72e80ad746e697088255dd0b8984bc8c4eafdd41ceb0ba4962a2001bf133 =1,213,592B/32830tri. Both are native, lossless expandedFloat32P/N deliveries from their qualified raw masters; here the loader receives the actual indexed files. V14 changes only the two tread parts;464others/nodes/materials/13anchors/globalbounds remain exact. Four straight support beams and finishes remain unchanged/open. Metadata targets do not render, enable occupants or change these pictures.
+
+Root's original full source image for personal comparison:
+`/workspace/shared/brougham-v12-largeforms-PROPOSAL-20261022/baseline/valid-1893-plate0095.jpg`
+1556×1145 JPEG, SHA b458565ec06ba1e8e59d1455cc2d3f277c2371910b3085c2085749fc59a68abe. Byteexact local served copies are fixture/transport/v13/plate0095.jpg and fixture/transport/v14/plate0095.jpg. Actual1893Studebaker Brougham catalogue image is public domain; type availability does not identify a Chicago specimen/owner. Rounded separated near footplates have visible support; exact metres/depth/opposite side remain reconstruction. The side-by-side source panel shows an untouched image crop, no retouch or generated pixels.
+
+Preserved byteexact: run_once.py owner, demo-prefix.js/demo-suffix.js/composed demo.js, source-extension.js, source-camera hypothesisdad2ebb2 and plate. Same original source-lit isolated hemisphere/sun, exposure1.3, shadowbias−.0002/normalBias0; same all-visible geometry/pole; same near100/far1000 depth interval with original nondepth XY projection; same pair equality of camera/lighting/crop/DOM/globalbounds; same normalpage screenshots10s each; same fullquarter bounds/pole framing and idempotent zero geometry/texture/actualDFG cleanup. Browser165s/owner175s, firstfailure retained, no retry. No light/shadow/material correction is smuggled into a model comparison.
+
+This is native ASSET appearance only. It does not use or prove normal1904mainPMREM, street/terrain/provider support, budget/loading, public main delivery, whole-scene population/visibility stability, door/boarding/hitch/human/horse/collision or photographic acceptance. Prior failed V13 normalmain screenshot attempt remains separate and unchanged. These new near images will not qualify mid/far. Root must actually view the resulting pixels before judging improvement.
+
+INPUTS and PREPARED-CALLER bind exact fixture/module/binary/caller bytes. Runtime binaries were read/verified, not launched. Root must explicitly release after horse desktop/mobile and any local heavy/browser lane is CLOSED. RELEASE-TEMPLATE.json remains FALSE; no RUN-INTENT/actual/output/log exists. Existing command after root writes ROOT-RELEASE.json with exact manifest pins and true lane booleans:
+
+    python3 -B /workspace/shared/brougham-v13-v14-footplates-native-source8-HELD-20261022/run_once.py --release /workspace/shared/brougham-v13-v14-footplates-native-source8-HELD-20261022/ROOT-RELEASE.json
+
+No generator/Blender/install/browser/app/Git/ticket/mirror/gate/network action during this preparation. V13/V14source-generation capsules stay frozen. NATIVE-REPIN-ONLY.patch and REPIN-CONTROLS.json show the small preparation delta; source-proof contains actual ownership/index/Khronos provenance, not future appearance claims.

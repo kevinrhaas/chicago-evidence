@@ -1,0 +1,18 @@
+controls/pointerlock.js:169-185
+169: 
+170:     /** Write this frame's intent. Called once per frame by main.js. */
+171:     update() {
+172:       if (!enabled) return;
+173:       if (holding()) held.clear();
+174:       intent.forward = (held.has('ahead') ? 1 : 0) - (held.has('back') ? 1 : 0);
+175:       intent.strafe = (held.has('right') ? 1 : 0) - (held.has('left') ? 1 : 0);
+176:       intent.rise = (held.has('up') ? 1 : 0) - (held.has('down') ? 1 : 0);
+177:       intent.sprint = held.has('sprint');
+178: 
+179:       euler.setFromQuaternion(rig.quaternion, 'YXZ');
+180:       intent.yawDelta += euler.y - prevYaw;
+181:       intent.pitchDelta += euler.x - prevPitch;
+182:       prevYaw = euler.y;
+183:       prevPitch = euler.x;
+184:     },
+185: 

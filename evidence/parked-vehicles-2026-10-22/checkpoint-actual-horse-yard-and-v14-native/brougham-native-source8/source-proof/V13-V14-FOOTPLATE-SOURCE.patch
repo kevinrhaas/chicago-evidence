@@ -1,0 +1,30 @@
+--- a/chicago/4d/tools/transport/brougham/generate.py
++++ b/chicago/4d/tools/transport/brougham/generate.py
+@@ -187,8 +187,25 @@
+         rt=[[side*(half+.028),y,z]for z,y in catmull(rearprof,4,True)];rt.append(rt[0]);tube('rear_quarter_fine_lining',body,rt,.0025,3,6)
+         for z,y in [(.36,1.10),(-.43,1.15),(-.43,.87)]:
+             box('small_door_hardware',body,(side*(width(y)+.066),y,z),(.016,.015,.045),3)
+-        # Original step under the door, narrow and low unlike an open flat wagon.
+-        box('door_step',body,(side*.72,.34,-.08),(.28,.027,.39),4)
++        # Prospective source-footplate refinement: the visible plate has two
++        # separated small treads. Exact metres/hidden/opposite construction are
++        # reconstructed. Preserve existing support endpoints and outerX; reconstructed
++        #20mm producer-thickness encloses each actual support end cap.
++        # One owned part per side still; no support/door/body/pivot amendment.
++        step_vertices=[];step_faces=[];step_sides=12
++        for step_z in [-.20,.07]:
++            step_base=len(step_vertices)
++            for step_y in [.34,.36]:
++                step_vertices.extend([[side*.72+.14*math.cos(step_i*math.tau/step_sides),
++                                       step_y,step_z+.065*math.sin(step_i*math.tau/step_sides)]
++                                      for step_i in range(step_sides)])
++            step_faces.extend([[step_base+step_i for step_i in range(step_sides)],
++                               [step_base+step_sides+step_i for step_i in reversed(range(step_sides))]])
++            step_faces.extend([[step_base+step_i,step_base+step_sides+step_i,
++                                step_base+step_sides+(step_i+1)%step_sides,
++                                step_base+(step_i+1)%step_sides]
++                               for step_i in range(step_sides)])
++        geometry('door_step',body,step_vertices,step_faces,4)
+         for z in [-.20,.07]:beam('step_support',body,(side*.45,.65,z),(side*.72,.35,z),.022,4)
+ 
+     # Front and rear cabin surfaces and original empty interior.

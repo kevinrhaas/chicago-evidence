@@ -1,0 +1,7 @@
+Finite source review CLEAR, 2026-10-22T16:25:48.708143+00:00.
+
+Actual original caller 85a25c2d220180194302b6339bfb9215970834ecc0a060ed32d79cf112ab8153 and arrival caller c76e6e316e2e7d36c21fd10af090a4c0515ae453bca3b8e2ac7405bf8128cad8 differ by exactly one waitForFunction line. The new callback invokes existing welcome.enter('spawn') only while the supported state is welcome, then requires actual world. Production welcome.js choose() changes state to world synchronously only after enter(target) succeeds; the existing smoke enterTown helper uses the same state-conditioned enter pattern. Arrival is therefore allowed to finish before the ordinary entry action, with the original30-second bound retained.
+
+No geometry, fixed camera, .97 all-indexed-vertex framing, native source/body/rig/material/confidence, no-horse-request-before-entry, public budget, ground contact, picking, source identity, teardown or cleanup assertion changed. run_owned.py is byte-identical and retains360-second whole/350-second execution caps. No browser, app write or model generation was performed for this review. Root had already released actual run60446 before this independent review; this is concurrent source review, not retroactive preapproval or an actual preview PASS.
+
+Provenance caution: the packet's earlier MANIFEST still identifies prearrival85a25c2d; it does not describe current arrival callerc76e6e31. Root's actual release must bind the actualc76 bytes. The original arrival/world timeout stays a failed historical run.

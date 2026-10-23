@@ -1,0 +1,3671 @@
+--- a/chicago/4d/data/transport/parked/placements.json
++++ b/chicago/4d/data/transport/parked/placements.json
+@@ -1,5 +1,5 @@
+ {
+-  "_doc": "Parked type reconstructions. Existing1835 coordinates are reused;1904 curbside parking is invented within the street grid. No model is assigned a maker or historical owner. L-parked-vehicles-2979.",
++  "_doc": "Parked type reconstructions. Existing1835 stands retained. The separate1904Brougham cites an evidenced1893catalogue design, not an attested local specimen or owner. L-parked-vehicles-2979; L-covered-wagons-2980; L-brougham-parked-2794.",
+   "models": {
+     "wagon_w01": {
+       "file": "transport/parked-wagon/wagon-w01.glb",
+@@ -93,6 +93,63 @@
+           1.175
+         ]
+       ]
++    },
++    "studebaker_brougham_1893": {
++      "file": "transport/parked-brougham/brougham-near.glb",
++      "type": "Brougham \u2014 after the 1893 Studebaker catalogue",
++      "basis": "Original empty, unhitched Brougham reconstruction guided by Studebaker's 1893 catalogue illustration (leaf 0095). Its dark green body, shaped roof, deep curved door and paired-team pole distinguish the design from generic C02. Dimensions, hidden construction, finish and this individual vehicle's presence, owner and location in 1904 are reconstructed. Photographic quality remains open. V14 separates the two near-side footplates with opposite-side symmetry reconstructed; source/main/published/phone and photographic review remain open. Only the exact indexed near is proposed; no V14mid/far delivery is claimed.",
++      "design_reference": {
++        "value": "Studebaker Brothers Manufacturing Company \u2014 Brougham, 1893 catalogue",
++        "confidence": "attested",
++        "sources": [
++          "studebaker_1893_illustrated_souvenir"
++        ],
++        "note": "The 1893 catalogue documents this maker and carriage type before the scene date. It does not document this reconstructed individual vehicle, its presence in Chicago or its ownership."
++      },
++      "wheel_contacts_m": [
++        [
++          -0.67,
++          -1.15
++        ],
++        [
++          0.67,
++          -1.15
++        ],
++        [
++          -0.67,
++          1.15
++        ],
++        [
++          0.67,
++          1.15
++        ]
++      ],
++      "static_support_contacts_m": [
++        [
++          -0.0325,
++          0,
++          3.725
++        ],
++        [
++          0.0325,
++          0,
++          3.725
++        ],
++        [
++          -0.0325,
++          0,
++          3.825
++        ],
++        [
++          0.0325,
++          0,
++          3.825
++        ]
++      ],
++      "delivery_lods": {
++        "near": "transport/parked-brougham/brougham-near.glb",
++        "runtime_distance_selection_enabled": false
++      }
+     }
+   },
+   "scenes": {
+@@ -195,6 +252,23 @@
+         "source_ids": [],
+         "liberty": "L-parked-vehicles-2979",
+         "note": "A reconstructed temporary curbside stop in the1904 carriageway, clear of the sidewalk and crossing. Its location does not identify the owner or imply use by the Glessner household. Empty and unhitched; doors remain closed and boarding is not enabled."
++      },
++      {
++        "id": "prairie_parked_studebaker_brougham",
++        "model": "studebaker_brougham_1893",
++        "name": "Brougham \u2014 after Studebaker\u2019s 1893 catalogue",
++        "belongs_to": null,
++        "location": "Prairie Avenue carriageway south of Eighteenth Street",
++        "at_local_enu_m": [
++          1397.9,
++          -3240.0
++        ],
++        "bearing_deg": 178.99,
++        "source_ids": [
++          "studebaker_1893_illustrated_souvenir"
++        ],
++        "liberty": "L-brougham-parked-2794",
++        "note": "Reconstructed empty, unhitched parked individual using the 1893 catalogue design reference. The catalogue establishes the maker/type before 1904; neither this particular vehicle, its owner, a household connection nor this curbside stop is documented. Generic C02 remains a separate unidentified reconstruction at its existing stand. Closed doors, no occupant, horse, boarding, traffic or driving."
+       }
+     ]
+   }
+--- a/chicago/4d/docs/LIBERTIES.md
++++ b/chicago/4d/docs/LIBERTIES.md
+@@ -31124,3 +31124,14 @@
+ 
+ 
+ **L418 connected-waistcoat followup (2026-10-22, T-1789):** The actual published-town Bardwell front exposed missing shoulder panels: the original waistcoat top used the upper-arm joint plus25mm and the arm-influence cut removed upper-front cloth. Bardwell alone now opts into an original source-triangle shoulder pattern that connects the existing waistcoat fronts to its back, with a neck-minus25mm upper plane,50mm neck-opening halfwidth,100-to15mm transition below the arm joint,26mm outer inset and40mm field scale. These are unmeasured reconstructed dimensions, not a traced or attested cutting pattern. The registered `mount_1835_bargaining_for_a_horse` and `mount_1835_bar_room_scene` supply qualitative shoulder-connected-waistcoat analogies only; their year-only dates do not prove pre-July1Chicago, and neither attests Bardwell's outfit, likeness, color or occupation. No painted pixels, measured cloth or archival likeness enter the asset. Original source UV/skin interpolation is retained, including bounded nonzero head/jaw weight below0.5%; no body mask, rig edit, extra garment/material, shoes, buttons or facings are added. Independent source topology and finite frozen idle shirt/body depth observations support the source repair, not canonical/reduced-LOD/continuous fit or photographic completion. Existing40 negative idle projections and full T-1789 remain open; actual new canonical source/published assets and desktop/mobile inspection are required before promoting this large-form correction.
++
++
++### L-brougham-parked-2794 — separate catalogue-guided1904Brougham
++
++**Decision:** Propose one additional empty closed Brougham at localENU E1397.9,N−3240,bearing178.99 in1904, without replacing or branding generic C02. The1893Studebaker catalogue leaf0095 (source `studebaker_1893_illustrated_souvenir`, actual plateSHA256 `b458565ec06ba1e8e59d1455cc2d3f277c2371910b3085c2085749fc59a68abe`) attests a maker/type design before1904. It does not attest this individual vehicle, Chicago/Prairie presence, ownership, a Pullman/Glessner connection or this stop. `belongs_to` remains null.
++
++**Reconstructed:** all absolute metres, unseen sides/interior/construction, material optics, colors as pigment, hardware attachment/strength, pad thickness/hidden opposite-side symmetry and world stand. V14 source geometry has two separated rounded footplates per side and a fixed parked-down paired-team pole with original ground shoe; it is not single-horse shafts or an invented hinge. Only the indexednear is proposed. ExactV14near source/main/published/phone photographs, all actual wheel/shoe/carriageway and body/pole/obstacle clearance, card/pick/tier/disposal and ordinary release checks remain pending; no visual/full-LOD/photographic acceptance is asserted by this entry.
++
++**Unsupported:** occupants, live boarding, doors/steering, horses/hitch coupling/reins, collisions/physics and traffic. Native hitch[0,.037,3.8]m is a parked-down datum, not a usable working-height team interface. Existing30mmwheel-plane bound and Full100m/Balanced65m/Light0 remain unchanged; static shoe guard refuses nonfinite ground, >1mm penetration or >30mmgap on the same rendered surface. No automatic stand move, model tilt, hitch adjustment or hidden fallback qualifies a failed stand.
++
++**Ticket:** T-2794. Photographic/occupied completion remains OPEN.
+--- a/chicago/4d/docs/ROADMAP.md
++++ b/chicago/4d/docs/ROADMAP.md
+@@ -6032,3 +6032,8 @@
+ 
+ 
+ T-1789 person-card honesty followup (2026-10-22): the existing invented trade-head mint category now reads reconstructed identity rather than named in a source, and model-assigned firm memberships disclose their reconstructed link. Exactly309 invented trade heads change classification; historically source-read residents retain theirs. Presence grades, identities, memberships, assets and the standing position are unchanged. This corrects a false provenance claim found in actual published-town card inspection; photographic finishing remains open.
++
++
++## T-2794 — V14 catalogue Brougham intake candidate (HELD)
++
++Exact near13fe72e8 (1,213,592B/32,830tri) and original rawed15f009 (2,445,452B) preserve native metres/+Y/+Z, 41nodes/24meshes/6materials and original source continuity. A separate1904Prairie stand E1397.9,N−3240,bearing178.99 is proposed, without replacing genericC02 or assigning any household owner.1893Studebakerleaf0095 supports the catalogue maker/type, not this specimen, dimensions or location. Onlynear exists for thisV14delivery; mid/far and distanceLOD selection are not claimed. App/public intake and actual V14source/main/published/phone imagery, terrain/shoe/pole/body clearance, card/picking/tier/disposal and normal qualification are pending. Footplates remain original reconstructed solids, with static sources/anchors and all occupied/doors/hitch/collision/traffic capabilities off. Photographic finish and fullT-2794 remain OPEN.
+--- a/chicago/4d/docs/STATUS.md
++++ b/chicago/4d/docs/STATUS.md
+@@ -24521,3 +24521,8 @@
+ 
+ 
+ T-1789 person-card honesty followup (2026-10-22): the existing invented trade-head mint category now reads reconstructed identity rather than named in a source, and model-assigned firm memberships disclose their reconstructed link. Exactly309 invented trade heads change classification; historically source-read residents retain theirs. Presence grades, identities, memberships, assets and the standing position are unchanged. This corrects a false provenance claim found in actual published-town card inspection; photographic finishing remains open.
++
++
++## T-2794 — V14 catalogue Brougham intake candidate (HELD)
++
++Exact near13fe72e8 (1,213,592B/32,830tri) and original rawed15f009 (2,445,452B) preserve native metres/+Y/+Z, 41nodes/24meshes/6materials and original source continuity. A separate1904Prairie stand E1397.9,N−3240,bearing178.99 is proposed, without replacing genericC02 or assigning any household owner.1893Studebakerleaf0095 supports the catalogue maker/type, not this specimen, dimensions or location. Onlynear exists for thisV14delivery; mid/far and distanceLOD selection are not claimed. App/public intake and actual V14source/main/published/phone imagery, terrain/shoe/pole/body clearance, card/picking/tier/disposal and normal qualification are pending. Footplates remain original reconstructed solids, with static sources/anchors and all occupied/doors/hitch/collision/traffic capabilities off. Photographic finish and fullT-2794 remain OPEN.
+--- a/chicago/4d/renderers/web/js/parked-transport.js
++++ b/chicago/4d/renderers/web/js/parked-transport.js
+@@ -18,8 +18,9 @@
+       position_sources: row.source_ids, position_note: row.note },
+     attributes: {
+       vehicle_type: { value: manifest.type, confidence: 'reconstructed', sources: [], note: manifest.basis },
+-      maker: { value: 'Unidentified; type reconstruction', confidence: 'reconstructed', sources: [],
+-        note: 'This model is not identified as a particular manufacturer or catalog model.' },
++      maker: { value: manifest.design_reference ? 'Reconstructed individual; no attested specimen' : 'Unidentified; type reconstruction', confidence: 'reconstructed', sources: [],
++        note: manifest.design_reference ? 'The catalogue design is identified separately; this parked individual and its ownership are reconstructed.' : 'This model is not identified as a particular manufacturer or catalog model.' },
++      ...(manifest.design_reference ? { design_reference: manifest.design_reference } : {}),
+       parked: { value: 'Unoccupied and unhitched', confidence: 'reconstructed', sources: [],
+         note: 'A parked example, without a driver, passengers or a claim of ownership.' },
+     },
+@@ -186,6 +187,21 @@
+           const base = Math.max(...heights);
+           const wheelGap = base - Math.min(...heights);
+           if (wheelGap > 0.03) throw Error(`Stand exceeds 30mm wheel-plane variation (${wheelGap})`);
++          // A pre-authored static pole shoe is not a hinge. Qualify its actual support
++          // points on the SAME rendered surface provider as the four wheel contacts.
++          let staticSupport = null;
++          if (spec.static_support_contacts_m) {
++            const contacts = spec.static_support_contacts_m;
++            if (!Array.isArray(contacts) || !contacts.length || contacts.some(p => !Array.isArray(p) || p.length !== 3 || !p.every(Number.isFinite))) throw Error('Invalid static support contacts');
++            const supportGrounds = contacts.map(([x, y, z]) => heightAt(
++              row.at_local_enu_m[0] + cos * x + sin * z,
++              row.at_local_enu_m[1] - (-sin * x + cos * z)));
++            // Missing carriageway is null; reject BEFORE subtraction can coerce it to zero.
++            if (!supportGrounds.every(Number.isFinite)) throw Error('No rendered ground under all static support contacts');
++            const gaps = contacts.map((point, index) => base + point[1] - supportGrounds[index]);
++            if (!gaps.every(Number.isFinite) || Math.min(...gaps) < -0.001 || Math.max(...gaps) > 0.03) throw Error('Static support exceeds 1mm penetration/30mm gap limits');
++            staticSupport = { minimum_gap_m: Math.min(...gaps), maximum_gap_m: Math.max(...gaps) };
++          }
+           const parking = parkTongue(root, row, terrain, base);
+           const model = staticBatches(root, confidence);
+           model.name = row.id; model.userData.parkedId = row.id;
+@@ -194,7 +210,7 @@
+           model.visible = false;
+           group.add(model);
+           instances.push({ row, group: model, card: card(row, spec), parking,
+-            wheel_clearance_m: wheelGap, draw_batches: model.children.length });
++            wheel_clearance_m: wheelGap, static_support: staticSupport, draw_batches: model.children.length });
+         } catch (error) { problems.push(`parked transport ${row.id}: ${error.message}; ${row.replaces ? 'existing yard vehicle retained' : 'vehicle not shown'}`); }
+       }
+       if (lastCamera) out.update(lastCamera);
+--- a/chicago/4d/renderers/web/transport/LICENSES.md
++++ b/chicago/4d/renderers/web/transport/LICENSES.md
+@@ -63,3 +63,8 @@
+ ## Original selected covered W01 derivatives (T-2980)
+ 
+ `covered-wagon/{covered_w01_western_blue,covered_w01_wolfpoint_oak}/{covered-w01.glb,covered-w01.json}` and `covered-wagon/LICENSE`: original reconstructed project-derived GPL-3.0-or-later geometry/source, with original CC0-1.0 analytic pixels. Reproduced by `tools/transport/generate_covered_wagons.py` from the original pinned W01 source chain and `data/transport/parked/covered-w01.json`; source/product hashes and original per-ID coat/age/yoke lineage are recorded in `assets/authored/transport/wagon_covered/SOURCE.json`. Five bows, canvas construction, seams, folds and weathering are original reconstruction, not an attested maker or historical wagon. No imported model, scan, photographic pixels, historical owner/load, occupied socket, horse or ride claim.
++
++
++## V14 separate catalogue-guided Brougham — proposed1904parked intake (T-2794)
++
++Original project GPL-3.0-or-later producer/source and generated geometry: tools/transport/brougham/{generate.py,source_details.py,index_streams.py,static_master.py,parameters.json,lods.json,LICENSE}; rawmastered15f00934809cf04f7946377c18a6d3c2c0a5501041ebcd5ff257b96a1d8f8e, indexednear13fe72e80ad746e697088255dd0b8984bc8c4eafdd41ceb0ba4962a2001bf133, sidecar/build receipt and LICENSE under transport/parked-brougham. No third-party model, texture or image pixels; solid proceduralPBR only. Exact source is original geometry guided by public-domain US1893Studebakercatalogue0095, source studebaker_1893_illustrated_souvenir /plateb458565ec06ba1e8e59d1455cc2d3f277c2371910b3085c2085749fc59a68abe. Maker/type availability is evidenced; local specimen, owner, metres, hidden construction and optical materials are reconstructed. No new file under assets/ is proposed. Original rawmaster/source must ship in reviewable source delivery; no binary artifact is a substitute for source. NoV14mid/far, photorealism or active occupied interface accepted.
+--- /dev/null
++++ b/chicago/4d/renderers/web/transport/parked-brougham/BUILD-RECEIPT.json
+@@ -0,0 +1,35 @@
++{
++  "source_generated_once": true,
++  "near_lossless_PN_exact": true,
++  "rows": [
++    {
++      "detail": "near",
++      "file": "brougham-near.glb",
++      "triangles": 32830,
++      "raw_mesh_batches": 24,
++      "parked_material_groups": 6,
++      "nodes": 41,
++      "bounds_m": {
++        "min": [
++          -0.8600000143051147,
++          0.0,
++          -1.8365528583526611
++        ],
++        "max": [
++          0.8600000143051147,
++          2.1882998943328857,
++          3.825000047683716
++        ]
++      },
++      "source_bytes": 2445452,
++      "indexed_bytes": 1213592,
++      "expanded_triangle_PN_sha256": "b922cad970bc823eae24c70f2871c777c97a5f8cd0eef88dc987e947b3847429",
++      "source_sha256": "ed15f00934809cf04f7946377c18a6d3c2c0a5501041ebcd5ff257b96a1d8f8e",
++      "indexed_sha256": "13fe72e80ad746e697088255dd0b8984bc8c4eafdd41ceb0ba4962a2001bf133",
++      "lossless_indexing": true,
++      "meshopt_or_quantization": false
++    }
++  ],
++  "not_regenerated_mid_far": true,
++  "originalV13_MASTER_guard_unmodified": true
++}
+--- /dev/null
++++ b/chicago/4d/renderers/web/transport/parked-brougham/LICENSE
+@@ -0,0 +1,674 @@
++                    GNU GENERAL PUBLIC LICENSE
++                       Version 3, 29 June 2007
++
++ Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
++ Everyone is permitted to copy and distribute verbatim copies
++ of this license document, but changing it is not allowed.
++
++                            Preamble
++
++  The GNU General Public License is a free, copyleft license for
++software and other kinds of works.
++
++  The licenses for most software and other practical works are designed
++to take away your freedom to share and change the works.  By contrast,
++the GNU General Public License is intended to guarantee your freedom to
++share and change all versions of a program--to make sure it remains free
++software for all its users.  We, the Free Software Foundation, use the
++GNU General Public License for most of our software; it applies also to
++any other work released this way by its authors.  You can apply it to
++your programs, too.
++
++  When we speak of free software, we are referring to freedom, not
++price.  Our General Public Licenses are designed to make sure that you
++have the freedom to distribute copies of free software (and charge for
++them if you wish), that you receive source code or can get it if you
++want it, that you can change the software or use pieces of it in new
++free programs, and that you know you can do these things.
++
++  To protect your rights, we need to prevent others from denying you
++these rights or asking you to surrender the rights.  Therefore, you have
++certain responsibilities if you distribute copies of the software, or if
++you modify it: responsibilities to respect the freedom of others.
++
++  For example, if you distribute copies of such a program, whether
++gratis or for a fee, you must pass on to the recipients the same
++freedoms that you received.  You must make sure that they, too, receive
++or can get the source code.  And you must show them these terms so they
++know their rights.
++
++  Developers that use the GNU GPL protect your rights with two steps:
++(1) assert copyright on the software, and (2) offer you this License
++giving you legal permission to copy, distribute and/or modify it.
++
++  For the developers' and authors' protection, the GPL clearly explains
++that there is no warranty for this free software.  For both users' and
++authors' sake, the GPL requires that modified versions be marked as
++changed, so that their problems will not be attributed erroneously to
++authors of previous versions.
++
++  Some devices are designed to deny users access to install or run
++modified versions of the software inside them, although the manufacturer
++can do so.  This is fundamentally incompatible with the aim of
++protecting users' freedom to change the software.  The systematic
++pattern of such abuse occurs in the area of products for individuals to
++use, which is precisely where it is most unacceptable.  Therefore, we
++have designed this version of the GPL to prohibit the practice for those
++products.  If such problems arise substantially in other domains, we
++stand ready to extend this provision to those domains in future versions
++of the GPL, as needed to protect the freedom of users.
++
++  Finally, every program is threatened constantly by software patents.
++States should not allow patents to restrict development and use of
++software on general-purpose computers, but in those that do, we wish to
++avoid the special danger that patents applied to a free program could
++make it effectively proprietary.  To prevent this, the GPL assures that
++patents cannot be used to render the program non-free.
++
++  The precise terms and conditions for copying, distribution and
++modification follow.
++
++                       TERMS AND CONDITIONS
++
++  0. Definitions.
++
++  "This License" refers to version 3 of the GNU General Public License.
++
++  "Copyright" also means copyright-like laws that apply to other kinds of
++works, such as semiconductor masks.
++
++  "The Program" refers to any copyrightable work licensed under this
++License.  Each licensee is addressed as "you".  "Licensees" and
++"recipients" may be individuals or organizations.
++
++  To "modify" a work means to copy from or adapt all or part of the work
++in a fashion requiring copyright permission, other than the making of an
++exact copy.  The resulting work is called a "modified version" of the
++earlier work or a work "based on" the earlier work.
++
++  A "covered work" means either the unmodified Program or a work based
++on the Program.
++
++  To "propagate" a work means to do anything with it that, without
++permission, would make you directly or secondarily liable for
++infringement under applicable copyright law, except executing it on a
++computer or modifying a private copy.  Propagation includes copying,
++distribution (with or without modification), making available to the
++public, and in some countries other activities as well.
++
++  To "convey" a work means any kind of propagation that enables other
++parties to make or receive copies.  Mere interaction with a user through
++a computer network, with no transfer of a copy, is not conveying.
++
++  An interactive user interface displays "Appropriate Legal Notices"
++to the extent that it includes a convenient and prominently visible
++feature that (1) displays an appropriate copyright notice, and (2)
++tells the user that there is no warranty for the work (except to the
++extent that warranties are provided), that licensees may convey the
++work under this License, and how to view a copy of this License.  If
++the interface presents a list of user commands or options, such as a
++menu, a prominent item in the list meets this criterion.
++
++  1. Source Code.
++
++  The "source code" for a work means the preferred form of the work
++for making modifications to it.  "Object code" means any non-source
++form of a work.
++
++  A "Standard Interface" means an interface that either is an official
++standard defined by a recognized standards body, or, in the case of
++interfaces specified for a particular programming language, one that
++is widely used among developers working in that language.
++
++  The "System Libraries" of an executable work include anything, other
++than the work as a whole, that (a) is included in the normal form of
++packaging a Major Component, but which is not part of that Major
++Component, and (b) serves only to enable use of the work with that
++Major Component, or to implement a Standard Interface for which an
++implementation is available to the public in source code form.  A
++"Major Component", in this context, means a major essential component
++(kernel, window system, and so on) of the specific operating system
++(if any) on which the executable work runs, or a compiler used to
++produce the work, or an object code interpreter used to run it.
++
++  The "Corresponding Source" for a work in object code form means all
++the source code needed to generate, install, and (for an executable
++work) run the object code and to modify the work, including scripts to
++control those activities.  However, it does not include the work's
++System Libraries, or general-purpose tools or generally available free
++programs which are used unmodified in performing those activities but
++which are not part of the work.  For example, Corresponding Source
++includes interface definition files associated with source files for
++the work, and the source code for shared libraries and dynamically
++linked subprograms that the work is specifically designed to require,
++such as by intimate data communication or control flow between those
++subprograms and other parts of the work.
++
++  The Corresponding Source need not include anything that users
++can regenerate automatically from other parts of the Corresponding
++Source.
++
++  The Corresponding Source for a work in source code form is that
++same work.
++
++  2. Basic Permissions.
++
++  All rights granted under this License are granted for the term of
++copyright on the Program, and are irrevocable provided the stated
++conditions are met.  This License explicitly affirms your unlimited
++permission to run the unmodified Program.  The output from running a
++covered work is covered by this License only if the output, given its
++content, constitutes a covered work.  This License acknowledges your
++rights of fair use or other equivalent, as provided by copyright law.
++
++  You may make, run and propagate covered works that you do not
++convey, without conditions so long as your license otherwise remains
++in force.  You may convey covered works to others for the sole purpose
++of having them make modifications exclusively for you, or provide you
++with facilities for running those works, provided that you comply with
++the terms of this License in conveying all material for which you do
++not control copyright.  Those thus making or running the covered works
++for you must do so exclusively on your behalf, under your direction
++and control, on terms that prohibit them from making any copies of
++your copyrighted material outside their relationship with you.
++
++  Conveying under any other circumstances is permitted solely under
++the conditions stated below.  Sublicensing is not allowed; section 10
++makes it unnecessary.
++
++  3. Protecting Users' Legal Rights From Anti-Circumvention Law.
++
++  No covered work shall be deemed part of an effective technological
++measure under any applicable law fulfilling obligations under article
++11 of the WIPO copyright treaty adopted on 20 December 1996, or
++similar laws prohibiting or restricting circumvention of such
++measures.
++
++  When you convey a covered work, you waive any legal power to forbid
++circumvention of technological measures to the extent such circumvention
++is effected by exercising rights under this License with respect to
++the covered work, and you disclaim any intention to limit operation or
++modification of the work as a means of enforcing, against the work's
++users, your or third parties' legal rights to forbid circumvention of
++technological measures.
++
++  4. Conveying Verbatim Copies.
++
++  You may convey verbatim copies of the Program's source code as you
++receive it, in any medium, provided that you conspicuously and
++appropriately publish on each copy an appropriate copyright notice;
++keep intact all notices stating that this License and any
++non-permissive terms added in accord with section 7 apply to the code;
++keep intact all notices of the absence of any warranty; and give all
++recipients a copy of this License along with the Program.
++
++  You may charge any price or no price for each copy that you convey,
++and you may offer support or warranty protection for a fee.
++
++  5. Conveying Modified Source Versions.
++
++  You may convey a work based on the Program, or the modifications to
++produce it from the Program, in the form of source code under the
++terms of section 4, provided that you also meet all of these conditions:
++
++    a) The work must carry prominent notices stating that you modified
++    it, and giving a relevant date.
++
++    b) The work must carry prominent notices stating that it is
++    released under this License and any conditions added under section
++    7.  This requirement modifies the requirement in section 4 to
++    "keep intact all notices".
++
++    c) You must license the entire work, as a whole, under this
++    License to anyone who comes into possession of a copy.  This
++    License will therefore apply, along with any applicable section 7
++    additional terms, to the whole of the work, and all its parts,
++    regardless of how they are packaged.  This License gives no
++    permission to license the work in any other way, but it does not
++    invalidate such permission if you have separately received it.
++
++    d) If the work has interactive user interfaces, each must display
++    Appropriate Legal Notices; however, if the Program has interactive
++    interfaces that do not display Appropriate Legal Notices, your
++    work need not make them do so.
++
++  A compilation of a covered work with other separate and independent
++works, which are not by their nature extensions of the covered work,
++and which are not combined with it such as to form a larger program,
++in or on a volume of a storage or distribution medium, is called an
++"aggregate" if the compilation and its resulting copyright are not
++used to limit the access or legal rights of the compilation's users
++beyond what the individual works permit.  Inclusion of a covered work
++in an aggregate does not cause this License to apply to the other
++parts of the aggregate.
++
++  6. Conveying Non-Source Forms.
++
++  You may convey a covered work in object code form under the terms
++of sections 4 and 5, provided that you also convey the
++machine-readable Corresponding Source under the terms of this License,
++in one of these ways:
++
++    a) Convey the object code in, or embodied in, a physical product
++    (including a physical distribution medium), accompanied by the
++    Corresponding Source fixed on a durable physical medium
++    customarily used for software interchange.
++
++    b) Convey the object code in, or embodied in, a physical product
++    (including a physical distribution medium), accompanied by a
++    written offer, valid for at least three years and valid for as
++    long as you offer spare parts or customer support for that product
++    model, to give anyone who possesses the object code either (1) a
++    copy of the Corresponding Source for all the software in the
++    product that is covered by this License, on a durable physical
++    medium customarily used for software interchange, for a price no
++    more than your reasonable cost of physically performing this
++    conveying of source, or (2) access to copy the
++    Corresponding Source from a network server at no charge.
++
++    c) Convey individual copies of the object code with a copy of the
++    written offer to provide the Corresponding Source.  This
++    alternative is allowed only occasionally and noncommercially, and
++    only if you received the object code with such an offer, in accord
++    with subsection 6b.
++
++    d) Convey the object code by offering access from a designated
++    place (gratis or for a charge), and offer equivalent access to the
++    Corresponding Source in the same way through the same place at no
++    further charge.  You need not require recipients to copy the
++    Corresponding Source along with the object code.  If the place to
++    copy the object code is a network server, the Corresponding Source
++    may be on a different server (operated by you or a third party)
++    that supports equivalent copying facilities, provided you maintain
++    clear directions next to the object code saying where to find the
++    Corresponding Source.  Regardless of what server hosts the
++    Corresponding Source, you remain obligated to ensure that it is
++    available for as long as needed to satisfy these requirements.
++
++    e) Convey the object code using peer-to-peer transmission, provided
++    you inform other peers where the object code and Corresponding
++    Source of the work are being offered to the general public at no
++    charge under subsection 6d.
++
++  A separable portion of the object code, whose source code is excluded
++from the Corresponding Source as a System Library, need not be
++included in conveying the object code work.
++
++  A "User Product" is either (1) a "consumer product", which means any
++tangible personal property which is normally used for personal, family,
++or household purposes, or (2) anything designed or sold for incorporation
++into a dwelling.  In determining whether a product is a consumer product,
++doubtful cases shall be resolved in favor of coverage.  For a particular
++product received by a particular user, "normally used" refers to a
++typical or common use of that class of product, regardless of the status
++of the particular user or of the way in which the particular user
++actually uses, or expects or is expected to use, the product.  A product
++is a consumer product regardless of whether the product has substantial
++commercial, industrial or non-consumer uses, unless such uses represent
++the only significant mode of use of the product.
++
++  "Installation Information" for a User Product means any methods,
++procedures, authorization keys, or other information required to install
++and execute modified versions of a covered work in that User Product from
++a modified version of its Corresponding Source.  The information must
++suffice to ensure that the continued functioning of the modified object
++code is in no case prevented or interfered with solely because
++modification has been made.
++
++  If you convey an object code work under this section in, or with, or
++specifically for use in, a User Product, and the conveying occurs as
++part of a transaction in which the right of possession and use of the
++User Product is transferred to the recipient in perpetuity or for a
++fixed term (regardless of how the transaction is characterized), the
++Corresponding Source conveyed under this section must be accompanied
++by the Installation Information.  But this requirement does not apply
++if neither you nor any third party retains the ability to install
++modified object code on the User Product (for example, the work has
++been installed in ROM).
++
++  The requirement to provide Installation Information does not include a
++requirement to continue to provide support service, warranty, or updates
++for a work that has been modified or installed by the recipient, or for
++the User Product in which it has been modified or installed.  Access to a
++network may be denied when the modification itself materially and
++adversely affects the operation of the network or violates the rules and
++protocols for communication across the network.
++
++  Corresponding Source conveyed, and Installation Information provided,
++in accord with this section must be in a format that is publicly
++documented (and with an implementation available to the public in
++source code form), and must require no special password or key for
++unpacking, reading or copying.
++
++  7. Additional Terms.
++
++  "Additional permissions" are terms that supplement the terms of this
++License by making exceptions from one or more of its conditions.
++Additional permissions that are applicable to the entire Program shall
++be treated as though they were included in this License, to the extent
++that they are valid under applicable law.  If additional permissions
++apply only to part of the Program, that part may be used separately
++under those permissions, but the entire Program remains governed by
++this License without regard to the additional permissions.
++
++  When you convey a copy of a covered work, you may at your option
++remove any additional permissions from that copy, or from any part of
++it.  (Additional permissions may be written to require their own
++removal in certain cases when you modify the work.)  You may place
++additional permissions on material, added by you to a covered work,
++for which you have or can give appropriate copyright permission.
++
++  Notwithstanding any other provision of this License, for material you
++add to a covered work, you may (if authorized by the copyright holders of
++that material) supplement the terms of this License with terms:
++
++    a) Disclaiming warranty or limiting liability differently from the
++    terms of sections 15 and 16 of this License; or
++
++    b) Requiring preservation of specified reasonable legal notices or
++    author attributions in that material or in the Appropriate Legal
++    Notices displayed by works containing it; or
++
++    c) Prohibiting misrepresentation of the origin of that material, or
++    requiring that modified versions of such material be marked in
++    reasonable ways as different from the original version; or
++
++    d) Limiting the use for publicity purposes of names of licensors or
++    authors of the material; or
++
++    e) Declining to grant rights under trademark law for use of some
++    trade names, trademarks, or service marks; or
++
++    f) Requiring indemnification of licensors and authors of that
++    material by anyone who conveys the material (or modified versions of
++    it) with contractual assumptions of liability to the recipient, for
++    any liability that these contractual assumptions directly impose on
++    those licensors and authors.
++
++  All other non-permissive additional terms are considered "further
++restrictions" within the meaning of section 10.  If the Program as you
++received it, or any part of it, contains a notice stating that it is
++governed by this License along with a term that is a further
++restriction, you may remove that term.  If a license document contains
++a further restriction but permits relicensing or conveying under this
++License, you may add to a covered work material governed by the terms
++of that license document, provided that the further restriction does
++not survive such relicensing or conveying.
++
++  If you add terms to a covered work in accord with this section, you
++must place, in the relevant source files, a statement of the
++additional terms that apply to those files, or a notice indicating
++where to find the applicable terms.
++
++  Additional terms, permissive or non-permissive, may be stated in the
++form of a separately written license, or stated as exceptions;
++the above requirements apply either way.
++
++  8. Termination.
++
++  You may not propagate or modify a covered work except as expressly
++provided under this License.  Any attempt otherwise to propagate or
++modify it is void, and will automatically terminate your rights under
++this License (including any patent licenses granted under the third
++paragraph of section 11).
++
++  However, if you cease all violation of this License, then your
++license from a particular copyright holder is reinstated (a)
++provisionally, unless and until the copyright holder explicitly and
++finally terminates your license, and (b) permanently, if the copyright
++holder fails to notify you of the violation by some reasonable means
++prior to 60 days after the cessation.
++
++  Moreover, your license from a particular copyright holder is
++reinstated permanently if the copyright holder notifies you of the
++violation by some reasonable means, this is the first time you have
++received notice of violation of this License (for any work) from that
++copyright holder, and you cure the violation prior to 30 days after
++your receipt of the notice.
++
++  Termination of your rights under this section does not terminate the
++licenses of parties who have received copies or rights from you under
++this License.  If your rights have been terminated and not permanently
++reinstated, you do not qualify to receive new licenses for the same
++material under section 10.
++
++  9. Acceptance Not Required for Having Copies.
++
++  You are not required to accept this License in order to receive or
++run a copy of the Program.  Ancillary propagation of a covered work
++occurring solely as a consequence of using peer-to-peer transmission
++to receive a copy likewise does not require acceptance.  However,
++nothing other than this License grants you permission to propagate or
++modify any covered work.  These actions infringe copyright if you do
++not accept this License.  Therefore, by modifying or propagating a
++covered work, you indicate your acceptance of this License to do so.
++
++  10. Automatic Licensing of Downstream Recipients.
++
++  Each time you convey a covered work, the recipient automatically
++receives a license from the original licensors, to run, modify and
++propagate that work, subject to this License.  You are not responsible
++for enforcing compliance by third parties with this License.
++
++  An "entity transaction" is a transaction transferring control of an
++organization, or substantially all assets of one, or subdividing an
++organization, or merging organizations.  If propagation of a covered
++work results from an entity transaction, each party to that
++transaction who receives a copy of the work also receives whatever
++licenses to the work the party's predecessor in interest had or could
++give under the previous paragraph, plus a right to possession of the
++Corresponding Source of the work from the predecessor in interest, if
++the predecessor has it or can get it with reasonable efforts.
++
++  You may not impose any further restrictions on the exercise of the
++rights granted or affirmed under this License.  For example, you may
++not impose a license fee, royalty, or other charge for exercise of
++rights granted under this License, and you may not initiate litigation
++(including a cross-claim or counterclaim in a lawsuit) alleging that
++any patent claim is infringed by making, using, selling, offering for
++sale, or importing the Program or any portion of it.
++
++  11. Patents.
++
++  A "contributor" is a copyright holder who authorizes use under this
++License of the Program or a work on which the Program is based.  The
++work thus licensed is called the contributor's "contributor version".
++
++  A contributor's "essential patent claims" are all patent claims
++owned or controlled by the contributor, whether already acquired or
++hereafter acquired, that would be infringed by some manner, permitted
++by this License, of making, using, or selling its contributor version,
++but do not include claims that would be infringed only as a
++consequence of further modification of the contributor version.  For
++purposes of this definition, "control" includes the right to grant
++patent sublicenses in a manner consistent with the requirements of
++this License.
++
++  Each contributor grants you a non-exclusive, worldwide, royalty-free
++patent license under the contributor's essential patent claims, to
++make, use, sell, offer for sale, import and otherwise run, modify and
++propagate the contents of its contributor version.
++
++  In the following three paragraphs, a "patent license" is any express
++agreement or commitment, however denominated, not to enforce a patent
++(such as an express permission to practice a patent or covenant not to
++sue for patent infringement).  To "grant" such a patent license to a
++party means to make such an agreement or commitment not to enforce a
++patent against the party.
++
++  If you convey a covered work, knowingly relying on a patent license,
++and the Corresponding Source of the work is not available for anyone
++to copy, free of charge and under the terms of this License, through a
++publicly available network server or other readily accessible means,
++then you must either (1) cause the Corresponding Source to be so
++available, or (2) arrange to deprive yourself of the benefit of the
++patent license for this particular work, or (3) arrange, in a manner
++consistent with the requirements of this License, to extend the patent
++license to downstream recipients.  "Knowingly relying" means you have
++actual knowledge that, but for the patent license, your conveying the
++covered work in a country, or your recipient's use of the covered work
++in a country, would infringe one or more identifiable patents in that
++country that you have reason to believe are valid.
++
++  If, pursuant to or in connection with a single transaction or
++arrangement, you convey, or propagate by procuring conveyance of, a
++covered work, and grant a patent license to some of the parties
++receiving the covered work authorizing them to use, propagate, modify
++or convey a specific copy of the covered work, then the patent license
++you grant is automatically extended to all recipients of the covered
++work and works based on it.
++
++  A patent license is "discriminatory" if it does not include within
++the scope of its coverage, prohibits the exercise of, or is
++conditioned on the non-exercise of one or more of the rights that are
++specifically granted under this License.  You may not convey a covered
++work if you are a party to an arrangement with a third party that is
++in the business of distributing software, under which you make payment
++to the third party based on the extent of your activity of conveying
++the work, and under which the third party grants, to any of the
++parties who would receive the covered work from you, a discriminatory
++patent license (a) in connection with copies of the covered work
++conveyed by you (or copies made from those copies), or (b) primarily
++for and in connection with specific products or compilations that
++contain the covered work, unless you entered into that arrangement,
++or that patent license was granted, prior to 28 March 2007.
++
++  Nothing in this License shall be construed as excluding or limiting
++any implied license or other defenses to infringement that may
++otherwise be available to you under applicable patent law.
++
++  12. No Surrender of Others' Freedom.
++
++  If conditions are imposed on you (whether by court order, agreement or
++otherwise) that contradict the conditions of this License, they do not
++excuse you from the conditions of this License.  If you cannot convey a
++covered work so as to satisfy simultaneously your obligations under this
++License and any other pertinent obligations, then as a consequence you may
++not convey it at all.  For example, if you agree to terms that obligate you
++to collect a royalty for further conveying from those to whom you convey
++the Program, the only way you could satisfy both those terms and this
++License would be to refrain entirely from conveying the Program.
++
++  13. Use with the GNU Affero General Public License.
++
++  Notwithstanding any other provision of this License, you have
++permission to link or combine any covered work with a work licensed
++under version 3 of the GNU Affero General Public License into a single
++combined work, and to convey the resulting work.  The terms of this
++License will continue to apply to the part which is the covered work,
++but the special requirements of the GNU Affero General Public License,
++section 13, concerning interaction through a network will apply to the
++combination as such.
++
++  14. Revised Versions of this License.
++
++  The Free Software Foundation may publish revised and/or new versions of
++the GNU General Public License from time to time.  Such new versions will
++be similar in spirit to the present version, but may differ in detail to
++address new problems or concerns.
++
++  Each version is given a distinguishing version number.  If the
++Program specifies that a certain numbered version of the GNU General
++Public License "or any later version" applies to it, you have the
++option of following the terms and conditions either of that numbered
++version or of any later version published by the Free Software
++Foundation.  If the Program does not specify a version number of the
++GNU General Public License, you may choose any version ever published
++by the Free Software Foundation.
++
++  If the Program specifies that a proxy can decide which future
++versions of the GNU General Public License can be used, that proxy's
++public statement of acceptance of a version permanently authorizes you
++to choose that version for the Program.
++
++  Later license versions may give you additional or different
++permissions.  However, no additional obligations are imposed on any
++author or copyright holder as a result of your choosing to follow a
++later version.
++
++  15. Disclaimer of Warranty.
++
++  THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY
++APPLICABLE LAW.  EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT
++HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM "AS IS" WITHOUT WARRANTY
++OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO,
++THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
++PURPOSE.  THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM
++IS WITH YOU.  SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF
++ALL NECESSARY SERVICING, REPAIR OR CORRECTION.
++
++  16. Limitation of Liability.
++
++  IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING
++WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MODIFIES AND/OR CONVEYS
++THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR DAMAGES, INCLUDING ANY
++GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE
++USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF
++DATA OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD
++PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS),
++EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF
++SUCH DAMAGES.
++
++  17. Interpretation of Sections 15 and 16.
++
++  If the disclaimer of warranty and limitation of liability provided
++above cannot be given local legal effect according to their terms,
++reviewing courts shall apply local law that most closely approximates
++an absolute waiver of all civil liability in connection with the
++Program, unless a warranty or assumption of liability accompanies a
++copy of the Program in return for a fee.
++
++                     END OF TERMS AND CONDITIONS
++
++            How to Apply These Terms to Your New Programs
++
++  If you develop a new program, and you want it to be of the greatest
++possible use to the public, the best way to achieve this is to make it
++free software which everyone can redistribute and change under these terms.
++
++  To do so, attach the following notices to the program.  It is safest
++to attach them to the start of each source file to most effectively
++state the exclusion of warranty; and each file should have at least
++the "copyright" line and a pointer to where the full notice is found.
++
++    <one line to give the program's name and a brief idea of what it does.>
++    Copyright (C) <year>  <name of author>
++
++    This program is free software: you can redistribute it and/or modify
++    it under the terms of the GNU General Public License as published by
++    the Free Software Foundation, either version 3 of the License, or
++    (at your option) any later version.
++
++    This program is distributed in the hope that it will be useful,
++    but WITHOUT ANY WARRANTY; without even the implied warranty of
++    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++    GNU General Public License for more details.
++
++    You should have received a copy of the GNU General Public License
++    along with this program.  If not, see <https://www.gnu.org/licenses/>.
++
++Also add information on how to contact you by electronic and paper mail.
++
++  If the program does terminal interaction, make it output a short
++notice like this when it starts in an interactive mode:
++
++    <program>  Copyright (C) <year>  <name of author>
++    This program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
++    This is free software, and you are welcome to redistribute it
++    under certain conditions; type `show c' for details.
++
++The hypothetical commands `show w' and `show c' should show the appropriate
++parts of the General Public License.  Of course, your program's commands
++might be different; for a GUI interface, you would use an "about box".
++
++  You should also get your employer (if you work as a programmer) or school,
++if any, to sign a "copyright disclaimer" for the program, if necessary.
++For more information on this, and how to apply and follow the GNU GPL, see
++<https://www.gnu.org/licenses/>.
++
++  The GNU General Public License does not permit incorporating your program
++into proprietary programs.  If your program is a subroutine library, you
++may consider it more useful to permit linking proprietary applications with
++the library.  If this is what you want to do, use the GNU Lesser General
++Public License instead of this License.  But first, please read
++<https://www.gnu.org/licenses/why-not-lgpl.html>.
+--- /dev/null
++++ b/chicago/4d/renderers/web/transport/parked-brougham/brougham.json
+@@ -0,0 +1,1000 @@
++{
++  "asset_id": "studebaker_1893_brougham_reconstruction_01",
++  "license": "GPL-3.0-or-later",
++  "frame": {
++    "units": "m",
++    "up": "+Y",
++    "forward": "+Z",
++    "origin": "ground midpoint between axles"
++  },
++  "scene_eligibility": "1904 reconstructed empty unhitched parked example;catalogue type predates scene,particular specimen/presence/owner/stop invented",
++  "grade": "reconstructed",
++  "design_reference": {
++    "maker": "Studebaker Brothers Manufacturing Company",
++    "type": "Brougham",
++    "date": 1893,
++    "source_id": "studebaker_1893_illustrated_souvenir",
++    "reference_sha256": "b458565ec06ba1e8e59d1455cc2d3f277c2371910b3085c2085749fc59a68abe",
++    "note": "Attested catalogue maker/type availability before1904;not household ownership or actual1904specimen evidence."
++  },
++  "source_master_sha256": "ed15f00934809cf04f7946377c18a6d3c2c0a5501041ebcd5ff257b96a1d8f8e",
++  "parameters_sha256": "e0cd31a992a466e0367625021f29aeee6e0a38bd7f252daa60d2caaa35173782",
++  "near_actual_visual_evidence": "No V14 image. Prior V13 matched8 had4V13/4V12 source-detail/fullquarter frames for the two joins only; this new footplate increment is unrendered.",
++  "lods": [
++    {
++      "detail": "near",
++      "file": "brougham-near.glb",
++      "triangles": 32830,
++      "raw_mesh_batches": 24,
++      "parked_material_groups": 6,
++      "nodes": 41,
++      "bounds_m": {
++        "min": [
++          -0.8600000143051147,
++          0.0,
++          -1.8365528583526611
++        ],
++        "max": [
++          0.8600000143051147,
++          2.1882998943328857,
++          3.825000047683716
++        ]
++      },
++      "source_bytes": 2445452,
++      "indexed_bytes": 1213592,
++      "expanded_triangle_PN_sha256": "b922cad970bc823eae24c70f2871c777c97a5f8cd0eef88dc987e947b3847429",
++      "source_sha256": "ed15f00934809cf04f7946377c18a6d3c2c0a5501041ebcd5ff257b96a1d8f8e",
++      "indexed_sha256": "13fe72e80ad746e697088255dd0b8984bc8c4eafdd41ceb0ba4962a2001bf133",
++      "lossless_indexing": true,
++      "meshopt_or_quantization": false
++    }
++  ],
++  "lod_runtime_selection_enabled": false,
++  "lod_appearance_accepted": {
++    "near_original_master_only": false,
++    "indexed_near": false,
++    "mid": false,
++    "far": false
++  },
++  "authored_texture_bytes": 0,
++  "rendering": "Original PBR factors;no image textures;native indexing only,no meshopt/quantization. Runtime static merger groups six shared materials;actual main cost remains to measure.",
++  "wheel_contacts_root_m": [
++    [
++      -0.67,
++      0,
++      -1.15
++    ],
++    [
++      0.67,
++      0,
++      -1.15
++    ],
++    [
++      -0.67,
++      0,
++      1.15
++    ],
++    [
++      0.67,
++      0,
++      1.15
++    ]
++  ],
++  "static_pole_ground_shoe_contact_root_m": [
++    [
++      -0.0325,
++      0,
++      3.725
++    ],
++    [
++      0.0325,
++      0,
++      3.725
++    ],
++    [
++      -0.0325,
++      0,
++      3.825
++    ],
++    [
++      0.0325,
++      0,
++      3.825
++    ]
++  ],
++  "pole_policy": "vehicle_team_pole is pre-authored static parked-down geometry with a ground shoe. It is NOT a hinged vehicle_tongue;do not rename it or rotate around root. Actual support height/road-plane qualification required.",
++  "anchors": [
++    {
++      "node_index": 0,
++      "node": "vehicle_root",
++      "translation_local_m": [
++        0,
++        0,
++        0
++      ],
++      "translation_root_m": [
++        0,
++        0,
++        0
++      ],
++      "rotation_xyzw": [
++        0,
++        0,
++        0,
++        1
++      ],
++      "scale": [
++        1,
++        1,
++        1
++      ],
++      "dynamic_binding_supported": false
++    },
++    {
++      "node_index": 1,
++      "node": "vehicle_body",
++      "translation_local_m": [
++        0,
++        0,
++        0
++      ],
++      "translation_root_m": [
++        0,
++        0,
++        0
++      ],
++      "rotation_xyzw": [
++        0,
++        0,
++        0,
++        1
++      ],
++      "scale": [
++        1,
++        1,
++        1
++      ],
++      "dynamic_binding_supported": false
++    },
++    {
++      "node_index": 2,
++      "node": "vehicle_running_gear_rear",
++      "translation_local_m": [
++        0,
++        0.65,
++        -1.15
++      ],
++      "translation_root_m": [
++        0,
++        0.65,
++        -1.15
++      ],
++      "rotation_xyzw": [
++        0,
++        0,
++        0,
++        1
++      ],
++      "scale": [
++        1,
++        1,
++        1
++      ],
++      "dynamic_binding_supported": false
++    },
++    {
++      "node_index": 3,
++      "node": "vehicle_steer_front",
++      "translation_local_m": [
++        0,
++        0.528,
++        1.15
++      ],
++      "translation_root_m": [
++        0,
++        0.528,
++        1.15
++      ],
++      "rotation_xyzw": [
++        0,
++        0,
++        0,
++        1
++      ],
++      "scale": [
++        1,
++        1,
++        1
++      ],
++      "dynamic_binding_supported": false
++    },
++    {
++      "node_index": 4,
++      "node": "vehicle_wheel_rear_right",
++      "translation_local_m": [
++        -0.67,
++        0,
++        0
++      ],
++      "translation_root_m": [
++        -0.67,
++        0.65,
++        -1.15
++      ],
++      "rotation_xyzw": [
++        0,
++        0,
++        0,
++        1
++      ],
++      "scale": [
++        1,
++        1,
++        1
++      ],
++      "dynamic_binding_supported": false
++    },
++    {
++      "node_index": 6,
++      "node": "vehicle_wheel_rear_left",
++      "translation_local_m": [
++        0.67,
++        0,
++        0
++      ],
++      "translation_root_m": [
++        0.67,
++        0.65,
++        -1.15
++      ],
++      "rotation_xyzw": [
++        0,
++        0,
++        0,
++        1
++      ],
++      "scale": [
++        1,
++        1,
++        1
++      ],
++      "dynamic_binding_supported": false
++    },
++    {
++      "node_index": 8,
++      "node": "vehicle_wheel_front_right",
++      "translation_local_m": [
++        -0.67,
++        0,
++        0
++      ],
++      "translation_root_m": [
++        -0.67,
++        0.528,
++        1.15
++      ],
++      "rotation_xyzw": [
++        0,
++        0,
++        0,
++        1
++      ],
++      "scale": [
++        1,
++        1,
++        1
++      ],
++      "dynamic_binding_supported": false
++    },
++    {
++      "node_index": 10,
++      "node": "vehicle_wheel_front_left",
++      "translation_local_m": [
++        0.67,
++        0,
++        0
++      ],
++      "translation_root_m": [
++        0.67,
++        0.528,
++        1.15
++      ],
++      "rotation_xyzw": [
++        0,
++        0,
++        0,
++        1
++      ],
++      "scale": [
++        1,
++        1,
++        1
++      ],
++      "dynamic_binding_supported": false
++    },
++    {
++      "node_index": 12,
++      "node": "vehicle_team_pole",
++      "translation_local_m": [
++        0,
++        0,
++        0
++      ],
++      "translation_root_m": [
++        0,
++        0,
++        0
++      ],
++      "rotation_xyzw": [
++        0,
++        0,
++        0,
++        1
++      ],
++      "scale": [
++        1,
++        1,
++        1
++      ],
++      "dynamic_binding_supported": false
++    },
++    {
++      "node_index": 13,
++      "node": "vehicle_hitch_team",
++      "translation_local_m": [
++        0.0,
++        0.037,
++        3.8
++      ],
++      "translation_root_m": [
++        0.0,
++        0.037,
++        3.8
++      ],
++      "rotation_xyzw": [
++        0,
++        0,
++        0,
++        1
++      ],
++      "scale": [
++        1,
++        1,
++        1
++      ],
++      "dynamic_binding_supported": false
++    },
++    {
++      "node_index": 14,
++      "node": "vehicle_seat_driver",
++      "translation_local_m": [
++        0,
++        1.7758499999999997,
++        0.76
++      ],
++      "translation_root_m": [
++        0,
++        1.7758499999999997,
++        0.76
++      ],
++      "rotation_xyzw": [
++        0,
++        0,
++        0,
++        1
++      ],
++      "scale": [
++        1,
++        1,
++        1
++      ],
++      "dynamic_binding_supported": false
++    },
++    {
++      "node_index": 15,
++      "node": "vehicle_seat_passenger_01",
++      "translation_local_m": [
++        0.23,
++        1.3068999999999997,
++        -0.72
++      ],
++      "translation_root_m": [
++        0.23,
++        1.3068999999999997,
++        -0.72
++      ],
++      "rotation_xyzw": [
++        0,
++        0,
++        0,
++        1
++      ],
++      "scale": [
++        1,
++        1,
++        1
++      ],
++      "dynamic_binding_supported": false
++    },
++    {
++      "node_index": 16,
++      "node": "vehicle_seat_passenger_02",
++      "translation_local_m": [
++        -0.23,
++        1.3068999999999997,
++        -0.72
++      ],
++      "translation_root_m": [
++        -0.23,
++        1.3068999999999997,
++        -0.72
++      ],
++      "rotation_xyzw": [
++        0,
++        0,
++        0,
++        1
++      ],
++      "scale": [
++        1,
++        1,
++        1
++      ],
++      "dynamic_binding_supported": false
++    }
++  ],
++  "unsupported_interfaces": [
++    "driver/passenger fit",
++    "door operation",
++    "boarding/disembark",
++    "hitch/team coupling",
++    "steering/wheel animation",
++    "traffic",
++    "collision/rider/camera",
++    "horse/tack binding"
++  ],
++  "status": "Actual V14 raw/indexed-near candidate only; no image/mainworld/publication/fullLOD/photographic/occupied acceptance",
++  "source_history_note": "Historical raw/parameter V10/V11/V12 notes remain lineage. BaselineV13 repaired two joins; V14 changes only2door_step parts into separated pads. Straight supports/finish/hiddenconstruction remain open.",
++  "revision": "v14_two_footplates_near_candidate",
++  "static_master": {
++    "revision": "static_master_interfaces_v1",
++    "source_master_sha256": "ed15f00934809cf04f7946377c18a6d3c2c0a5501041ebcd5ff257b96a1d8f8e",
++    "frame": {
++      "units": "m",
++      "up": "+Y",
++      "forward": "+Z",
++      "root": "vehicle_root"
++    },
++    "grade": "reconstructed",
++    "named_targets": [
++      {
++        "name": "vehicle_step_reference_left",
++        "parent": "vehicle_root",
++        "translation_root_m": [
++          0.7199999988079071,
++          0.4368000030517578,
++          -0.06499999016523361
++        ],
++        "rotation_xyzw": [
++          0,
++          -0.7071067811865476,
++          0,
++          0.7071067811865476
++        ],
++        "grade": "reconstructed",
++        "basis": "Source tread-bounds upper-plane datum only; not a validated foot contact or traversable tread",
++        "dynamic_binding_supported": false
++      },
++      {
++        "name": "vehicle_boarding_left",
++        "parent": "vehicle_root",
++        "translation_root_m": [
++          1.1600000143051148,
++          0,
++          -0.06499999016523361
++        ],
++        "rotation_xyzw": [
++          0,
++          -0.7071067811865476,
++          0,
++          0.7071067811865476
++        ],
++        "grade": "reconstructed",
++        "basis": "Original ground approach300mm outside source step extent; not an obstacle-cleared route",
++        "dynamic_binding_supported": false
++      },
++      {
++        "name": "vehicle_rein_left",
++        "parent": "vehicle_root",
++        "translation_root_m": [
++          0.16200000643730164,
++          1.9758499999999997,
++          1.06
++        ],
++        "rotation_xyzw": [
++          0,
++          0,
++          0,
++          1
++        ],
++        "grade": "reconstructed",
++        "basis": "Original prospective driver hand target200mm above/300mm forward of seat datum; no rein fitting or human pose attested",
++        "dynamic_binding_supported": false
++      },
++      {
++        "name": "vehicle_door_entry_left",
++        "parent": "vehicle_root",
++        "translation_root_m": [
++          0.5439538359642029,
++          0.9845610857009888,
++          -0.06223532557487488
++        ],
++        "rotation_xyzw": [
++          0,
++          -0.7071067811865476,
++          0,
++          0.7071067811865476
++        ],
++        "grade": "reconstructed",
++        "basis": "Closed lower-leaf bounds center facing inward; no door pivot or open passage",
++        "dynamic_binding_supported": false
++      },
++      {
++        "name": "vehicle_step_reference_right",
++        "parent": "vehicle_root",
++        "translation_root_m": [
++          -0.7199999988079071,
++          0.4368000030517578,
++          -0.06499999016523361
++        ],
++        "rotation_xyzw": [
++          0,
++          0.7071067811865476,
++          0,
++          0.7071067811865476
++        ],
++        "grade": "reconstructed",
++        "basis": "Source tread-bounds upper-plane datum only; not a validated foot contact or traversable tread",
++        "dynamic_binding_supported": false
++      },
++      {
++        "name": "vehicle_boarding_right",
++        "parent": "vehicle_root",
++        "translation_root_m": [
++          -1.1600000143051148,
++          0,
++          -0.06499999016523361
++        ],
++        "rotation_xyzw": [
++          0,
++          0.7071067811865476,
++          0,
++          0.7071067811865476
++        ],
++        "grade": "reconstructed",
++        "basis": "Original ground approach300mm outside source step extent; not an obstacle-cleared route",
++        "dynamic_binding_supported": false
++      },
++      {
++        "name": "vehicle_rein_right",
++        "parent": "vehicle_root",
++        "translation_root_m": [
++          -0.16200000643730164,
++          1.9758499999999997,
++          1.06
++        ],
++        "rotation_xyzw": [
++          0,
++          0,
++          0,
++          1
++        ],
++        "grade": "reconstructed",
++        "basis": "Original prospective driver hand target200mm above/300mm forward of seat datum; no rein fitting or human pose attested",
++        "dynamic_binding_supported": false
++      },
++      {
++        "name": "vehicle_door_entry_right",
++        "parent": "vehicle_root",
++        "translation_root_m": [
++          -0.5439538359642029,
++          0.9845610857009888,
++          -0.06223532557487488
++        ],
++        "rotation_xyzw": [
++          0,
++          0.7071067811865476,
++          0,
++          0.7071067811865476
++        ],
++        "grade": "reconstructed",
++        "basis": "Closed lower-leaf bounds center facing inward; no door pivot or open passage",
++        "dynamic_binding_supported": false
++      }
++    ],
++    "seats": [
++      {
++        "node": "vehicle_seat_driver",
++        "pelvis_reference_root_m": [
++          0,
++          1.7758499999999997,
++          0.76
++        ],
++        "prospective_feet_root_m": [
++          [
++            -0.16,
++            1.0893750190734863,
++            1.2600000500679016
++          ],
++          [
++            0.16,
++            1.0893750190734863,
++            1.2600000500679016
++          ]
++        ],
++        "feet_reference_surface_bounds_root_m": {
++          "min": [
++            -0.5199999809265137,
++            1.0498249530792236,
++            1.0800000429153442
++          ],
++          "max": [
++            0.5199999809265137,
++            1.0893750190734863,
++            1.440000057220459
++          ]
++        },
++        "fit_validated": false,
++        "basis": "Existing seat datum; original prospective foot placement on measured floor/footboard only, not a portable-human pose"
++      },
++      {
++        "node": "vehicle_seat_passenger_01",
++        "pelvis_reference_root_m": [
++          0.23,
++          1.3068999999999997,
++          -0.72
++        ],
++        "prospective_feet_root_m": [
++          [
++            0.15000000000000002,
++            0.9226999878883362,
++            -0.16999999999999993
++          ],
++          [
++            0.31,
++            0.9226999878883362,
++            -0.16999999999999993
++          ]
++        ],
++        "feet_reference_surface_bounds_root_m": {
++          "min": [
++            -0.48112088441848755,
++            0.8774999976158142,
++            -0.5136300325393677
++          ],
++          "max": [
++            0.48112088441848755,
++            0.9226999878883362,
++            0.35499998927116394
++          ]
++        },
++        "fit_validated": false,
++        "basis": "Existing seat datum; original prospective foot placement on measured floor/footboard only, not a portable-human pose"
++      },
++      {
++        "node": "vehicle_seat_passenger_02",
++        "pelvis_reference_root_m": [
++          -0.23,
++          1.3068999999999997,
++          -0.72
++        ],
++        "prospective_feet_root_m": [
++          [
++            -0.31,
++            0.9226999878883362,
++            -0.16999999999999993
++          ],
++          [
++            -0.15000000000000002,
++            0.9226999878883362,
++            -0.16999999999999993
++          ]
++        ],
++        "feet_reference_surface_bounds_root_m": {
++          "min": [
++            -0.48112088441848755,
++            0.8774999976158142,
++            -0.5136300325393677
++          ],
++          "max": [
++            0.48112088441848755,
++            0.9226999878883362,
++            0.35499998927116394
++          ]
++        },
++        "fit_validated": false,
++        "basis": "Existing seat datum; original prospective foot placement on measured floor/footboard only, not a portable-human pose"
++      }
++    ],
++    "entries": [
++      {
++        "side": "left",
++        "door_part_index": 16,
++        "closed_door_bounds_root_m": {
++          "min": [
++            0.4509076476097107,
++            0.49352574348449707,
++            -0.4138569235801697
++          ],
++          "max": [
++            0.6370000243186951,
++            1.4755964279174805,
++            0.2893862724304199
++          ]
++        },
++        "step_part_index": 27,
++        "step_bounds_root_m": {
++          "min": [
++            0.5799999833106995,
++            0.4142000079154968,
++            -0.26499998569488525
++          ],
++          "max": [
++            0.8600000143051147,
++            0.4368000030517578,
++            0.13500000536441803
++          ]
++        },
++        "floor_bounds_root_m": {
++          "min": [
++            -0.48112088441848755,
++            0.8774999976158142,
++            -0.5136300325393677
++          ],
++          "max": [
++            0.48112088441848755,
++            0.9226999878883362,
++            0.35499998927116394
++          ]
++        },
++        "ground_to_step_top_m": 0.4368000030517578,
++        "step_top_to_floor_top_m": 0.48589998483657837,
++        "entry_aperture_available": false,
++        "door_operation_supported": false,
++        "hinge_and_sweep_clearance_validated": false,
++        "note": "Closed door blocks entry; profile bounds and vertical rises are source geometry measurements, not an open aperture or feasible human passage"
++      },
++      {
++        "side": "right",
++        "door_part_index": 1,
++        "closed_door_bounds_root_m": {
++          "min": [
++            -0.6370000243186951,
++            0.49352574348449707,
++            -0.4138569235801697
++          ],
++          "max": [
++            -0.4509076476097107,
++            1.4755964279174805,
++            0.2893862724304199
++          ]
++        },
++        "step_part_index": 12,
++        "step_bounds_root_m": {
++          "min": [
++            -0.8600000143051147,
++            0.4142000079154968,
++            -0.26499998569488525
++          ],
++          "max": [
++            -0.5799999833106995,
++            0.4368000030517578,
++            0.13500000536441803
++          ]
++        },
++        "floor_bounds_root_m": {
++          "min": [
++            -0.48112088441848755,
++            0.8774999976158142,
++            -0.5136300325393677
++          ],
++          "max": [
++            0.48112088441848755,
++            0.9226999878883362,
++            0.35499998927116394
++          ]
++        },
++        "ground_to_step_top_m": 0.4368000030517578,
++        "step_top_to_floor_top_m": 0.48589998483657837,
++        "entry_aperture_available": false,
++        "door_operation_supported": false,
++        "hinge_and_sweep_clearance_validated": false,
++        "note": "Closed door blocks entry; profile bounds and vertical rises are source geometry measurements, not an open aperture or feasible human passage"
++      }
++    ],
++    "collision_proxy": {
++      "kind": "compound_conservative_root_AABBs",
++      "components": [
++        {
++          "source_frame": "vehicle_body",
++          "bounds_root_m": {
++            "min": [
++              -0.8600000143051147,
++              0.4142000079154968,
++              -1.1150000095367432
++            ],
++            "max": [
++              0.8600000143051147,
++              2.1882998943328857,
++              1.440000057220459
++            ]
++          }
++        },
++        {
++          "source_frame": "vehicle_root",
++          "bounds_root_m": {
++            "min": [
++              -0.722000002861023,
++              0.4124999940395355,
++              -1.8365528583526611
++            ],
++            "max": [
++              0.722000002861023,
++              1.3395963907241821,
++              1.4989999532699585
++            ]
++          }
++        },
++        {
++          "source_frame": "vehicle_running_gear_rear",
++          "bounds_root_m": {
++            "min": [
++              -0.7300000190734863,
++              0.6274999991059304,
++              -1.1725000008940696
++            ],
++            "max": [
++              0.7300000190734863,
++              0.6725000008940697,
++              -1.1274999991059302
++            ]
++          }
++        },
++        {
++          "source_frame": "vehicle_steer_front",
++          "bounds_root_m": {
++            "min": [
++              -0.7300000190734863,
++              0.5054999991059304,
++              1.1274999991059302
++            ],
++            "max": [
++              0.7300000190734863,
++              0.5505000008940697,
++              1.1725000008940696
++            ]
++          }
++        },
++        {
++          "source_frame": "vehicle_team_pole",
++          "bounds_root_m": {
++            "min": [
++              -0.11500000208616257,
++              0.0,
++              1.1447440385818481
++            ],
++            "max": [
++              0.11500000208616257,
++              0.5805000066757202,
++              3.825000047683716
++            ]
++          }
++        },
++        {
++          "source_frame": "vehicle_wheel_front_left",
++          "bounds_root_m": {
++            "min": [
++              0.6059999969601632,
++              2.8610229740877458e-09,
++              0.6220000028610229
++            ],
++            "max": [
++              0.766000000923872,
++              1.055999997138977,
++              1.677999997138977
++            ]
++          }
++        },
++        {
++          "source_frame": "vehicle_wheel_front_right",
++          "bounds_root_m": {
++            "min": [
++              -0.766000000923872,
++              2.8610229740877458e-09,
++              0.6220000028610229
++            ],
++            "max": [
++              -0.6059999969601632,
++              1.055999997138977,
++              1.677999997138977
++            ]
++          }
++        },
++        {
++          "source_frame": "vehicle_wheel_rear_left",
++          "bounds_root_m": {
++            "min": [
++              0.6059999969601632,
++              2.384185793236071e-08,
++              -1.799999976158142
++            ],
++            "max": [
++              0.766000000923872,
++              1.299999976158142,
++              -0.5000000238418578
++            ]
++          }
++        },
++        {
++          "source_frame": "vehicle_wheel_rear_right",
++          "bounds_root_m": {
++            "min": [
++              -0.766000000923872,
++              2.384185793236071e-08,
++              -1.799999976158142
++            ],
++            "max": [
++              -0.6059999969601632,
++              1.299999976158142,
++              -0.5000000238418578
++            ]
++          }
++        }
++      ],
++      "all_source_vertices_covered": true,
++      "runtime_enabled": false,
++      "purpose": "Coarse static obstacle candidate for later validation; includes closed glass/cabin and fills spoke/underbody gaps; not occupied containment, picking or physics"
++    },
++    "hitch": {
++      "node": "vehicle_hitch_team",
++      "parked_translation_root_m": [
++        0.0,
++        0.037,
++        3.8
++      ],
++      "hitch_ready_pose_available": false,
++      "team_coupling_supported": false,
++      "note": "Measured static parked-down pole tip, not working-height coupling; no invented pole pivot or horse binding"
++    },
++    "door_geometry": {
++      "owned_parts": [
++        "deep_U_closed_door",
++        "side_door_glass"
++      ],
++      "independent_door_node_available": false,
++      "hinge_axis_known": false
++    },
++    "capabilities": {
++      "driver_passenger_fit": false,
++      "boarding": false,
++      "rein_binding": false,
++      "door_operation": false,
++      "hitch_team_coupling": false,
++      "runtime_collision": false,
++      "steering_wheel_animation": false,
++      "traffic": false
++    },
++    "limits": [
++      "All coordinates and dimensions not attested by catalogue remain reconstruction",
++      "No actual human, entry sweep, continuous clearance, animated collision or horse force/profile qualification",
++      "Metadata does not enable a visitor interaction or replace final static and photographic acceptance"
++    ]
++  },
++  "pending_deliverables": [
++    "near appearance",
++    "mid/far V14 delivery",
++    "normalmain/phone/published qualification",
++    "photographic review",
++    "full fit/doors/hitch/boarding/collision"
++  ]
++}
+--- /dev/null
++++ b/chicago/4d/tools/transport/brougham/LICENSE
+@@ -0,0 +1,674 @@
++                    GNU GENERAL PUBLIC LICENSE
++                       Version 3, 29 June 2007
++
++ Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
++ Everyone is permitted to copy and distribute verbatim copies
++ of this license document, but changing it is not allowed.
++
++                            Preamble
++
++  The GNU General Public License is a free, copyleft license for
++software and other kinds of works.
++
++  The licenses for most software and other practical works are designed
++to take away your freedom to share and change the works.  By contrast,
++the GNU General Public License is intended to guarantee your freedom to
++share and change all versions of a program--to make sure it remains free
++software for all its users.  We, the Free Software Foundation, use the
++GNU General Public License for most of our software; it applies also to
++any other work released this way by its authors.  You can apply it to
++your programs, too.
++
++  When we speak of free software, we are referring to freedom, not
++price.  Our General Public Licenses are designed to make sure that you
++have the freedom to distribute copies of free software (and charge for
++them if you wish), that you receive source code or can get it if you
++want it, that you can change the software or use pieces of it in new
++free programs, and that you know you can do these things.
++
++  To protect your rights, we need to prevent others from denying you
++these rights or asking you to surrender the rights.  Therefore, you have
++certain responsibilities if you distribute copies of the software, or if
++you modify it: responsibilities to respect the freedom of others.
++
++  For example, if you distribute copies of such a program, whether
++gratis or for a fee, you must pass on to the recipients the same
++freedoms that you received.  You must make sure that they, too, receive
++or can get the source code.  And you must show them these terms so they
++know their rights.
++
++  Developers that use the GNU GPL protect your rights with two steps:
++(1) assert copyright on the software, and (2) offer you this License
++giving you legal permission to copy, distribute and/or modify it.
++
++  For the developers' and authors' protection, the GPL clearly explains
++that there is no warranty for this free software.  For both users' and
++authors' sake, the GPL requires that modified versions be marked as
++changed, so that their problems will not be attributed erroneously to
++authors of previous versions.
++
++  Some devices are designed to deny users access to install or run
++modified versions of the software inside them, although the manufacturer
++can do so.  This is fundamentally incompatible with the aim of
++protecting users' freedom to change the software.  The systematic
++pattern of such abuse occurs in the area of products for individuals to
++use, which is precisely where it is most unacceptable.  Therefore, we
++have designed this version of the GPL to prohibit the practice for those
++products.  If such problems arise substantially in other domains, we
++stand ready to extend this provision to those domains in future versions
++of the GPL, as needed to protect the freedom of users.
++
++  Finally, every program is threatened constantly by software patents.
++States should not allow patents to restrict development and use of
++software on general-purpose computers, but in those that do, we wish to
++avoid the special danger that patents applied to a free program could
++make it effectively proprietary.  To prevent this, the GPL assures that
++patents cannot be used to render the program non-free.
++
++  The precise terms and conditions for copying, distribution and
++modification follow.
++
++                       TERMS AND CONDITIONS
++
++  0. Definitions.
++
++  "This License" refers to version 3 of the GNU General Public License.
++
++  "Copyright" also means copyright-like laws that apply to other kinds of
++works, such as semiconductor masks.
++
++  "The Program" refers to any copyrightable work licensed under this
++License.  Each licensee is addressed as "you".  "Licensees" and
++"recipients" may be individuals or organizations.
++
++  To "modify" a work means to copy from or adapt all or part of the work
++in a fashion requiring copyright permission, other than the making of an
++exact copy.  The resulting work is called a "modified version" of the
++earlier work or a work "based on" the earlier work.
++
++  A "covered work" means either the unmodified Program or a work based
++on the Program.
++
++  To "propagate" a work means to do anything with it that, without
++permission, would make you directly or secondarily liable for
++infringement under applicable copyright law, except executing it on a
++computer or modifying a private copy.  Propagation includes copying,
++distribution (with or without modification), making available to the
++public, and in some countries other activities as well.
++
++  To "convey" a work means any kind of propagation that enables other
++parties to make or receive copies.  Mere interaction with a user through
++a computer network, with no transfer of a copy, is not conveying.
++
++  An interactive user interface displays "Appropriate Legal Notices"
++to the extent that it includes a convenient and prominently visible
++feature that (1) displays an appropriate copyright notice, and (2)
++tells the user that there is no warranty for the work (except to the
++extent that warranties are provided), that licensees may convey the
++work under this License, and how to view a copy of this License.  If
++the interface presents a list of user commands or options, such as a
++menu, a prominent item in the list meets this criterion.
++
++  1. Source Code.
++
++  The "source code" for a work means the preferred form of the work
++for making modifications to it.  "Object code" means any non-source
++form of a work.
++
++  A "Standard Interface" means an interface that either is an official
++standard defined by a recognized standards body, or, in the case of
++interfaces specified for a particular programming language, one that
++is widely used among developers working in that language.
++
++  The "System Libraries" of an executable work include anything, other
++than the work as a whole, that (a) is included in the normal form of
++packaging a Major Component, but which is not part of that Major
++Component, and (b) serves only to enable use of the work with that
++Major Component, or to implement a Standard Interface for which an
++implementation is available to the public in source code form.  A
++"Major Component", in this context, means a major essential component
++(kernel, window system, and so on) of the specific operating system
++(if any) on which the executable work runs, or a compiler used to
++produce the work, or an object code interpreter used to run it.
++
++  The "Corresponding Source" for a work in object code form means all
++the source code needed to generate, install, and (for an executable
++work) run the object code and to modify the work, including scripts to
++control those activities.  However, it does not include the work's
++System Libraries, or general-purpose tools or generally available free
++programs which are used unmodified in performing those activities but
++which are not part of the work.  For example, Corresponding Source
++includes interface definition files associated with source files for
++the work, and the source code for shared libraries and dynamically
++linked subprograms that the work is specifically designed to require,
++such as by intimate data communication or control flow between those
++subprograms and other parts of the work.
++
++  The Corresponding Source need not include anything that users
++can regenerate automatically from other parts of the Corresponding
++Source.
++
++  The Corresponding Source for a work in source code form is that
++same work.
++
++  2. Basic Permissions.
++
++  All rights granted under this License are granted for the term of
++copyright on the Program, and are irrevocable provided the stated
++conditions are met.  This License explicitly affirms your unlimited
++permission to run the unmodified Program.  The output from running a
++covered work is covered by this License only if the output, given its
++content, constitutes a covered work.  This License acknowledges your
++rights of fair use or other equivalent, as provided by copyright law.
++
++  You may make, run and propagate covered works that you do not
++convey, without conditions so long as your license otherwise remains
++in force.  You may convey covered works to others for the sole purpose
++of having them make modifications exclusively for you, or provide you
++with facilities for running those works, provided that you comply with
++the terms of this License in conveying all material for which you do
++not control copyright.  Those thus making or running the covered works
++for you must do so exclusively on your behalf, under your direction
++and control, on terms that prohibit them from making any copies of
++your copyrighted material outside their relationship with you.
++
++  Conveying under any other circumstances is permitted solely under
++the conditions stated below.  Sublicensing is not allowed; section 10
++makes it unnecessary.
++
++  3. Protecting Users' Legal Rights From Anti-Circumvention Law.
++
++  No covered work shall be deemed part of an effective technological
++measure under any applicable law fulfilling obligations under article
++11 of the WIPO copyright treaty adopted on 20 December 1996, or
++similar laws prohibiting or restricting circumvention of such
++measures.
++
++  When you convey a covered work, you waive any legal power to forbid
++circumvention of technological measures to the extent such circumvention
++is effected by exercising rights under this License with respect to
++the covered work, and you disclaim any intention to limit operation or
++modification of the work as a means of enforcing, against the work's
++users, your or third parties' legal rights to forbid circumvention of
++technological measures.
++
++  4. Conveying Verbatim Copies.
++
++  You may convey verbatim copies of the Program's source code as you
++receive it, in any medium, provided that you conspicuously and
++appropriately publish on each copy an appropriate copyright notice;
++keep intact all notices stating that this License and any
++non-permissive terms added in accord with section 7 apply to the code;
++keep intact all notices of the absence of any warranty; and give all
++recipients a copy of this License along with the Program.
++
++  You may charge any price or no price for each copy that you convey,
++and you may offer support or warranty protection for a fee.
++
++  5. Conveying Modified Source Versions.
++
++  You may convey a work based on the Program, or the modifications to
++produce it from the Program, in the form of source code under the
++terms of section 4, provided that you also meet all of these conditions:
++
++    a) The work must carry prominent notices stating that you modified
++    it, and giving a relevant date.
++
++    b) The work must carry prominent notices stating that it is
++    released under this License and any conditions added under section
++    7.  This requirement modifies the requirement in section 4 to
++    "keep intact all notices".
++
++    c) You must license the entire work, as a whole, under this
++    License to anyone who comes into possession of a copy.  This
++    License will therefore apply, along with any applicable section 7
++    additional terms, to the whole of the work, and all its parts,
++    regardless of how they are packaged.  This License gives no
++    permission to license the work in any other way, but it does not
++    invalidate such permission if you have separately received it.
++
++    d) If the work has interactive user interfaces, each must display
++    Appropriate Legal Notices; however, if the Program has interactive
++    interfaces that do not display Appropriate Legal Notices, your
++    work need not make them do so.
++
++  A compilation of a covered work with other separate and independent
++works, which are not by their nature extensions of the covered work,
++and which are not combined with it such as to form a larger program,
++in or on a volume of a storage or distribution medium, is called an
++"aggregate" if the compilation and its resulting copyright are not
++used to limit the access or legal rights of the compilation's users
++beyond what the individual works permit.  Inclusion of a covered work
++in an aggregate does not cause this License to apply to the other
++parts of the aggregate.
++
++  6. Conveying Non-Source Forms.
++
++  You may convey a covered work in object code form under the terms
++of sections 4 and 5, provided that you also convey the
++machine-readable Corresponding Source under the terms of this License,
++in one of these ways:
++
++    a) Convey the object code in, or embodied in, a physical product
++    (including a physical distribution medium), accompanied by the
++    Corresponding Source fixed on a durable physical medium
++    customarily used for software interchange.
++
++    b) Convey the object code in, or embodied in, a physical product
++    (including a physical distribution medium), accompanied by a
++    written offer, valid for at least three years and valid for as
++    long as you offer spare parts or customer support for that product
++    model, to give anyone who possesses the object code either (1) a
++    copy of the Corresponding Source for all the software in the
++    product that is covered by this License, on a durable physical
++    medium customarily used for software interchange, for a price no
++    more than your reasonable cost of physically performing this
++    conveying of source, or (2) access to copy the
++    Corresponding Source from a network server at no charge.
++
++    c) Convey individual copies of the object code with a copy of the
++    written offer to provide the Corresponding Source.  This
++    alternative is allowed only occasionally and noncommercially, and
++    only if you received the object code with such an offer, in accord
++    with subsection 6b.
++
++    d) Convey the object code by offering access from a designated
++    place (gratis or for a charge), and offer equivalent access to the
++    Corresponding Source in the same way through the same place at no
++    further charge.  You need not require recipients to copy the
++    Corresponding Source along with the object code.  If the place to
++    copy the object code is a network server, the Corresponding Source
++    may be on a different server (operated by you or a third party)
++    that supports equivalent copying facilities, provided you maintain
++    clear directions next to the object code saying where to find the
++    Corresponding Source.  Regardless of what server hosts the
++    Corresponding Source, you remain obligated to ensure that it is
++    available for as long as needed to satisfy these requirements.
++
++    e) Convey the object code using peer-to-peer transmission, provided
++    you inform other peers where the object code and Corresponding
++    Source of the work are being offered to the general public at no
++    charge under subsection 6d.
++
++  A separable portion of the object code, whose source code is excluded
++from the Corresponding Source as a System Library, need not be
++included in conveying the object code work.
++
++  A "User Product" is either (1) a "consumer product", which means any
++tangible personal property which is normally used for personal, family,
++or household purposes, or (2) anything designed or sold for incorporation
++into a dwelling.  In determining whether a product is a consumer product,
++doubtful cases shall be resolved in favor of coverage.  For a particular
++product received by a particular user, "normally used" refers to a
++typical or common use of that class of product, regardless of the status
++of the particular user or of the way in which the particular user
++actually uses, or expects or is expected to use, the product.  A product
++is a consumer product regardless of whether the product has substantial
++commercial, industrial or non-consumer uses, unless such uses represent
++the only significant mode of use of the product.
++
++  "Installation Information" for a User Product means any methods,
++procedures, authorization keys, or other information required to install
++and execute modified versions of a covered work in that User Product from
++a modified version of its Corresponding Source.  The information must
++suffice to ensure that the continued functioning of the modified object
++code is in no case prevented or interfered with solely because
++modification has been made.
++
++  If you convey an object code work under this section in, or with, or
++specifically for use in, a User Product, and the conveying occurs as
++part of a transaction in which the right of possession and use of the
++User Product is transferred to the recipient in perpetuity or for a
++fixed term (regardless of how the transaction is characterized), the
++Corresponding Source conveyed under this section must be accompanied
++by the Installation Information.  But this requirement does not apply
++if neither you nor any third party retains the ability to install
++modified object code on the User Product (for example, the work has
++been installed in ROM).
++
++  The requirement to provide Installation Information does not include a
++requirement to continue to provide support service, warranty, or updates
++for a work that has been modified or installed by the recipient, or for
++the User Product in which it has been modified or installed.  Access to a
++network may be denied when the modification itself materially and
++adversely affects the operation of the network or violates the rules and
++protocols for communication across the network.
++
++  Corresponding Source conveyed, and Installation Information provided,
++in accord with this section must be in a format that is publicly
++documented (and with an implementation available to the public in
++source code form), and must require no special password or key for
++unpacking, reading or copying.
++
++  7. Additional Terms.
++
++  "Additional permissions" are terms that supplement the terms of this
++License by making exceptions from one or more of its conditions.
++Additional permissions that are applicable to the entire Program shall
++be treated as though they were included in this License, to the extent
++that they are valid under applicable law.  If additional permissions
++apply only to part of the Program, that part may be used separately
++under those permissions, but the entire Program remains governed by
++this License without regard to the additional permissions.
++
++  When you convey a copy of a covered work, you may at your option
++remove any additional permissions from that copy, or from any part of
++it.  (Additional permissions may be written to require their own
++removal in certain cases when you modify the work.)  You may place
++additional permissions on material, added by you to a covered work,
++for which you have or can give appropriate copyright permission.
++
++  Notwithstanding any other provision of this License, for material you
++add to a covered work, you may (if authorized by the copyright holders of
++that material) supplement the terms of this License with terms:
++
++    a) Disclaiming warranty or limiting liability differently from the
++    terms of sections 15 and 16 of this License; or
++
++    b) Requiring preservation of specified reasonable legal notices or
++    author attributions in that material or in the Appropriate Legal
++    Notices displayed by works containing it; or
++
++    c) Prohibiting misrepresentation of the origin of that material, or
++    requiring that modified versions of such material be marked in
++    reasonable ways as different from the original version; or
++
++    d) Limiting the use for publicity purposes of names of licensors or
++    authors of the material; or
++
++    e) Declining to grant rights under trademark law for use of some
++    trade names, trademarks, or service marks; or
++
++    f) Requiring indemnification of licensors and authors of that
++    material by anyone who conveys the material (or modified versions of
++    it) with contractual assumptions of liability to the recipient, for
++    any liability that these contractual assumptions directly impose on
++    those licensors and authors.
++
++  All other non-permissive additional terms are considered "further
++restrictions" within the meaning of section 10.  If the Program as you
++received it, or any part of it, contains a notice stating that it is
++governed by this License along with a term that is a further
++restriction, you may remove that term.  If a license document contains
++a further restriction but permits relicensing or conveying under this
++License, you may add to a covered work material governed by the terms
++of that license document, provided that the further restriction does
++not survive such relicensing or conveying.
++
++  If you add terms to a covered work in accord with this section, you
++must place, in the relevant source files, a statement of the
++additional terms that apply to those files, or a notice indicating
++where to find the applicable terms.
++
++  Additional terms, permissive or non-permissive, may be stated in the
++form of a separately written license, or stated as exceptions;
++the above requirements apply either way.
++
++  8. Termination.
++
++  You may not propagate or modify a covered work except as expressly
++provided under this License.  Any attempt otherwise to propagate or
++modify it is void, and will automatically terminate your rights under
++this License (including any patent licenses granted under the third
++paragraph of section 11).
++
++  However, if you cease all violation of this License, then your
++license from a particular copyright holder is reinstated (a)
++provisionally, unless and until the copyright holder explicitly and
++finally terminates your license, and (b) permanently, if the copyright
++holder fails to notify you of the violation by some reasonable means
++prior to 60 days after the cessation.
++
++  Moreover, your license from a particular copyright holder is
++reinstated permanently if the copyright holder notifies you of the
++violation by some reasonable means, this is the first time you have
++received notice of violation of this License (for any work) from that
++copyright holder, and you cure the violation prior to 30 days after
++your receipt of the notice.
++
++  Termination of your rights under this section does not terminate the
++licenses of parties who have received copies or rights from you under
++this License.  If your rights have been terminated and not permanently
++reinstated, you do not qualify to receive new licenses for the same
++material under section 10.
++
++  9. Acceptance Not Required for Having Copies.
++
++  You are not required to accept this License in order to receive or
++run a copy of the Program.  Ancillary propagation of a covered work
++occurring solely as a consequence of using peer-to-peer transmission
++to receive a copy likewise does not require acceptance.  However,
++nothing other than this License grants you permission to propagate or
++modify any covered work.  These actions infringe copyright if you do
++not accept this License.  Therefore, by modifying or propagating a
++covered work, you indicate your acceptance of this License to do so.
++
++  10. Automatic Licensing of Downstream Recipients.
++
++  Each time you convey a covered work, the recipient automatically
++receives a license from the original licensors, to run, modify and
++propagate that work, subject to this License.  You are not responsible
++for enforcing compliance by third parties with this License.
++
++  An "entity transaction" is a transaction transferring control of an
++organization, or substantially all assets of one, or subdividing an
++organization, or merging organizations.  If propagation of a covered
++work results from an entity transaction, each party to that
++transaction who receives a copy of the work also receives whatever
++licenses to the work the party's predecessor in interest had or could
++give under the previous paragraph, plus a right to possession of the
++Corresponding Source of the work from the predecessor in interest, if
++the predecessor has it or can get it with reasonable efforts.
++
++  You may not impose any further restrictions on the exercise of the
++rights granted or affirmed under this License.  For example, you may
++not impose a license fee, royalty, or other charge for exercise of
++rights granted under this License, and you may not initiate litigation
++(including a cross-claim or counterclaim in a lawsuit) alleging that
++any patent claim is infringed by making, using, selling, offering for
++sale, or importing the Program or any portion of it.
++
++  11. Patents.
++
++  A "contributor" is a copyright holder who authorizes use under this
++License of the Program or a work on which the Program is based.  The
++work thus licensed is called the contributor's "contributor version".
++
++  A contributor's "essential patent claims" are all patent claims
++owned or controlled by the contributor, whether already acquired or
++hereafter acquired, that would be infringed by some manner, permitted
++by this License, of making, using, or selling its contributor version,
++but do not include claims that would be infringed only as a
++consequence of further modification of the contributor version.  For
++purposes of this definition, "control" includes the right to grant
++patent sublicenses in a manner consistent with the requirements of
++this License.
++
++  Each contributor grants you a non-exclusive, worldwide, royalty-free
++patent license under the contributor's essential patent claims, to
++make, use, sell, offer for sale, import and otherwise run, modify and
++propagate the contents of its contributor version.
++
++  In the following three paragraphs, a "patent license" is any express
++agreement or commitment, however denominated, not to enforce a patent
++(such as an express permission to practice a patent or covenant not to
++sue for patent infringement).  To "grant" such a patent license to a
++party means to make such an agreement or commitment not to enforce a
++patent against the party.
++
++  If you convey a covered work, knowingly relying on a patent license,
++and the Corresponding Source of the work is not available for anyone
++to copy, free of charge and under the terms of this License, through a
++publicly available network server or other readily accessible means,
++then you must either (1) cause the Corresponding Source to be so
++available, or (2) arrange to deprive yourself of the benefit of the
++patent license for this particular work, or (3) arrange, in a manner
++consistent with the requirements of this License, to extend the patent
++license to downstream recipients.  "Knowingly relying" means you have
++actual knowledge that, but for the patent license, your conveying the
++covered work in a country, or your recipient's use of the covered work
++in a country, would infringe one or more identifiable patents in that
++country that you have reason to believe are valid.
++
++  If, pursuant to or in connection with a single transaction or
++arrangement, you convey, or propagate by procuring conveyance of, a
++covered work, and grant a patent license to some of the parties
++receiving the covered work authorizing them to use, propagate, modify
++or convey a specific copy of the covered work, then the patent license
++you grant is automatically extended to all recipients of the covered
++work and works based on it.
++
++  A patent license is "discriminatory" if it does not include within
++the scope of its coverage, prohibits the exercise of, or is
++conditioned on the non-exercise of one or more of the rights that are
++specifically granted under this License.  You may not convey a covered
++work if you are a party to an arrangement with a third party that is
++in the business of distributing software, under which you make payment
++to the third party based on the extent of your activity of conveying
++the work, and under which the third party grants, to any of the
++parties who would receive the covered work from you, a discriminatory
++patent license (a) in connection with copies of the covered work
++conveyed by you (or copies made from those copies), or (b) primarily
++for and in connection with specific products or compilations that
++contain the covered work, unless you entered into that arrangement,
++or that patent license was granted, prior to 28 March 2007.
++
++  Nothing in this License shall be construed as excluding or limiting
++any implied license or other defenses to infringement that may
++otherwise be available to you under applicable patent law.
++
++  12. No Surrender of Others' Freedom.
++
++  If conditions are imposed on you (whether by court order, agreement or
++otherwise) that contradict the conditions of this License, they do not
++excuse you from the conditions of this License.  If you cannot convey a
++covered work so as to satisfy simultaneously your obligations under this
++License and any other pertinent obligations, then as a consequence you may
++not convey it at all.  For example, if you agree to terms that obligate you
++to collect a royalty for further conveying from those to whom you convey
++the Program, the only way you could satisfy both those terms and this
++License would be to refrain entirely from conveying the Program.
++
++  13. Use with the GNU Affero General Public License.
++
++  Notwithstanding any other provision of this License, you have
++permission to link or combine any covered work with a work licensed
++under version 3 of the GNU Affero General Public License into a single
++combined work, and to convey the resulting work.  The terms of this
++License will continue to apply to the part which is the covered work,
++but the special requirements of the GNU Affero General Public License,
++section 13, concerning interaction through a network will apply to the
++combination as such.
++
++  14. Revised Versions of this License.
++
++  The Free Software Foundation may publish revised and/or new versions of
++the GNU General Public License from time to time.  Such new versions will
++be similar in spirit to the present version, but may differ in detail to
++address new problems or concerns.
++
++  Each version is given a distinguishing version number.  If the
++Program specifies that a certain numbered version of the GNU General
++Public License "or any later version" applies to it, you have the
++option of following the terms and conditions either of that numbered
++version or of any later version published by the Free Software
++Foundation.  If the Program does not specify a version number of the
++GNU General Public License, you may choose any version ever published
++by the Free Software Foundation.
++
++  If the Program specifies that a proxy can decide which future
++versions of the GNU General Public License can be used, that proxy's
++public statement of acceptance of a version permanently authorizes you
++to choose that version for the Program.
++
++  Later license versions may give you additional or different
++permissions.  However, no additional obligations are imposed on any
++author or copyright holder as a result of your choosing to follow a
++later version.
++
++  15. Disclaimer of Warranty.
++
++  THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY
++APPLICABLE LAW.  EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT
++HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM "AS IS" WITHOUT WARRANTY
++OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO,
++THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
++PURPOSE.  THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM
++IS WITH YOU.  SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF
++ALL NECESSARY SERVICING, REPAIR OR CORRECTION.
++
++  16. Limitation of Liability.
++
++  IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING
++WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MODIFIES AND/OR CONVEYS
++THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR DAMAGES, INCLUDING ANY
++GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE
++USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF
++DATA OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD
++PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS),
++EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF
++SUCH DAMAGES.
++
++  17. Interpretation of Sections 15 and 16.
++
++  If the disclaimer of warranty and limitation of liability provided
++above cannot be given local legal effect according to their terms,
++reviewing courts shall apply local law that most closely approximates
++an absolute waiver of all civil liability in connection with the
++Program, unless a warranty or assumption of liability accompanies a
++copy of the Program in return for a fee.
++
++                     END OF TERMS AND CONDITIONS
++
++            How to Apply These Terms to Your New Programs
++
++  If you develop a new program, and you want it to be of the greatest
++possible use to the public, the best way to achieve this is to make it
++free software which everyone can redistribute and change under these terms.
++
++  To do so, attach the following notices to the program.  It is safest
++to attach them to the start of each source file to most effectively
++state the exclusion of warranty; and each file should have at least
++the "copyright" line and a pointer to where the full notice is found.
++
++    <one line to give the program's name and a brief idea of what it does.>
++    Copyright (C) <year>  <name of author>
++
++    This program is free software: you can redistribute it and/or modify
++    it under the terms of the GNU General Public License as published by
++    the Free Software Foundation, either version 3 of the License, or
++    (at your option) any later version.
++
++    This program is distributed in the hope that it will be useful,
++    but WITHOUT ANY WARRANTY; without even the implied warranty of
++    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++    GNU General Public License for more details.
++
++    You should have received a copy of the GNU General Public License
++    along with this program.  If not, see <https://www.gnu.org/licenses/>.
++
++Also add information on how to contact you by electronic and paper mail.
++
++  If the program does terminal interaction, make it output a short
++notice like this when it starts in an interactive mode:
++
++    <program>  Copyright (C) <year>  <name of author>
++    This program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
++    This is free software, and you are welcome to redistribute it
++    under certain conditions; type `show c' for details.
++
++The hypothetical commands `show w' and `show c' should show the appropriate
++parts of the General Public License.  Of course, your program's commands
++might be different; for a GUI interface, you would use an "about box".
++
++  You should also get your employer (if you work as a programmer) or school,
++if any, to sign a "copyright disclaimer" for the program, if necessary.
++For more information on this, and how to apply and follow the GNU GPL, see
++<https://www.gnu.org/licenses/>.
++
++  The GNU General Public License does not permit incorporating your program
++into proprietary programs.  If your program is a subroutine library, you
++may consider it more useful to permit linking proprietary applications with
++the library.  If this is what you want to do, use the GNU Lesser General
++Public License instead of this License.  But first, please read
++<https://www.gnu.org/licenses/why-not-lgpl.html>.
+--- /dev/null
++++ b/chicago/4d/tools/transport/brougham/generate.py
+@@ -0,0 +1,400 @@
++# SPDX-License-Identifier: GPL-3.0-or-later
++"""Original source-bounded Studebaker1893 Brougham, static1904 reconstruction.
++
++All dimensions and unseen construction are explicit engineering choices. The
++actual1893 public-domain plate0095 bounds silhouette/features; no C02 rebadge.
++No Blender or downloaded image/texture is used to generate the model.
++"""
++from pathlib import Path
++import argparse
++import hashlib
++import json
++import math
++import struct
++
++import numpy as np
++
++from source_details import feature_plan
++
++
++def main():
++    cli=argparse.ArgumentParser(description=__doc__)
++    cli.add_argument('--parameters',type=Path,default=Path(__file__).with_name('parameters.json'))
++    cli.add_argument('--output',type=Path,required=True)
++    cli.add_argument('--detail',choices=['near','mid','far'],default='near')
++    cli.add_argument('--lod-recipe',type=Path,default=Path(__file__).with_name('lods.json'))
++    a=cli.parse_args();p=json.loads(a.parameters.read_text())
++    if a.output.exists():raise ValueError('Fresh output required')
++    detail=json.loads(a.lod_recipe.read_text())['details'][a.detail]
++    def lod_n(original,key):
++        value=detail.get(key,original)
++        if type(value) is not int or value<2:raise ValueError('Invalid LOD sample count '+key)
++        return min(original,value)
++    for key in ['wheelbase_m','track_m','front_wheel_radius_m','rear_wheel_radius_m','body_half_width_m']:
++        if not isinstance(p[key],(int,float))or not math.isfinite(p[key])or p[key]<=0:raise ValueError('Invalid dimension '+key)
++    nodes=[];batches={};parts=[]
++    def node(name,parent=None,t=(0,0,0)):
++        if name.startswith('vehicle_seat_'):
++            shape=p['body_vertical_affine'];t=(t[0],t[1]*shape['scale_y']+shape['offset_y_m'],t[2])
++        i=len(nodes);nodes.append({'name':name,'translation':list(t),'children':[]})
++        if parent is not None:nodes[parent]['children'].append(i)
++        return i
++    root=node('vehicle_root');body=node('vehicle_body',root)
++    def geometry(name,parent,vertices,faces,mat,smooth=False):
++        vs=np.array(vertices,dtype=np.float64,copy=True)
++        if parent==body:
++            shape=p['body_vertical_affine'];vs[:,1]=vs[:,1]*shape['scale_y']+shape['offset_y_m']
++        tri=[]
++        for face in faces:
++            for k in range(1,len(face)-1):tri.append([face[0],face[k],face[k+1]])
++        tri=np.asarray(tri,dtype=int);tt=vs[tri];nn=np.cross(tt[:,1]-tt[:,0],tt[:,2]-tt[:,0]);length=np.linalg.norm(nn,axis=1)
++        if np.any(length<1e-13):raise ValueError('Degenerate original surface '+name)
++        if smooth:
++            vn=np.zeros_like(vs)
++            for k in range(3):np.add.at(vn,tri[:,k],nn)
++            vn/=np.linalg.norm(vn,axis=1)[:,None];normals=vn[tri]
++        else:normals=np.repeat((nn/length[:,None])[:,None,:],3,axis=1)
++        key=(parent,mat);entry=batches.setdefault(key,{'positions':[],'normals':[]})
++        start=len(entry['positions'])//3;entry['positions'].extend(tt.reshape((-1,3)));entry['normals'].extend(normals.reshape((-1,3)))
++        parts.append({'name':name,'frame':nodes[parent]['name'],'material':mat,'triangle_start_in_batch':start,'triangles':len(tri)})
++    faces_box=[[0,3,2,1],[4,5,6,7],[0,4,7,3],[1,2,6,5],[3,7,6,2],[0,1,5,4]]
++    def box(name,parent,center,size,mat):
++        c=np.array(center);x,y,z=np.array(size)/2
++        v=np.array([[-x,-y,-z],[x,-y,-z],[x,y,-z],[-x,y,-z],[-x,-y,z],[x,-y,z],[x,y,z],[-x,y,z]])+c
++        geometry(name,parent,v,faces_box,mat)
++    def beam(name,parent,start,end,width,mat,depth=None):
++        start,end=np.array(start),np.array(end);u=end-start;u/=np.linalg.norm(u)
++        ref=np.array([0.,1.,0.])if abs(u[1])<.9 else np.array([1.,0.,0.])
++        v=np.cross(u,ref);v/=np.linalg.norm(v);v*=width/2;q=np.cross(u,v)
++        if depth is not None:q*=depth/width
++        vv=np.array([c+x*v+y*q for c in [start,end]for x,y in [(-1,-1),(1,-1),(1,1),(-1,1)]])
++        ff=[[0,3,2,1],[4,5,6,7],[0,1,5,4],[1,2,6,5],[2,3,7,6],[3,0,4,7]];center=vv.mean(axis=0)
++        for f in ff:
++            if np.dot(np.cross(vv[f[1]]-vv[f[0]],vv[f[2]]-vv[f[0]]),vv[f].mean(axis=0)-center)<0:f.reverse()
++        geometry(name,parent,vv,ff,mat)
++    def tube(name,parent,path,r,mat,sides=8):
++        sides=lod_n(sides,'tube_sides');path=np.array(path,dtype=float);closed=bool(np.linalg.norm(path[0]-path[-1])<1e-10)
++        if closed:path=path[:-1]
++        tangents=[]
++        for i in range(len(path)):
++            u=(path[(i+1)%len(path)]-path[(i-1)%len(path)]) if closed else (path[min(i+1,len(path)-1)]-path[max(0,i-1)])
++            tangents.append(u/np.linalg.norm(u))
++        tangents=np.array(tangents)
++        # One axis for the complete curve avoids discontinuous per-ring switches.
++        ref=np.eye(3)[int(np.argmin(np.max(np.abs(tangents),axis=0)))];v=[]
++        for c,u in zip(path,tangents):
++            n=np.cross(u,ref);n/=np.linalg.norm(n);b=np.cross(u,n)
++            v.extend([c+r*(math.cos(t)*n+math.sin(t)*b)for t in np.arange(sides)*math.tau/sides])
++        f=[] if closed else [list(range(sides-1,-1,-1)),list(range((len(path)-1)*sides,len(path)*sides))]
++        for i in range(len(path) if closed else len(path)-1):
++            nxt=(i+1)%len(path)
++            for j in range(sides):k=(j+1)%sides;f.append([i*sides+j,i*sides+k,nxt*sides+k,nxt*sides+j])
++        # Face normals preserve sharp cap/barrel boundaries on these thin trim parts.
++        geometry(name,parent,v,f,mat,smooth=False)
++    def circle_tube(name,parent,radius,width,radial,mat,segments=80):
++        # Elliptic cross-section rounded iron/wood rim; portable explicit normals.
++        v=[];N=lod_n(segments,'ring_segments');K=lod_n(8,'ring_cross_sides')
++        for j in range(N):
++            theta=j*math.tau/N
++            for k in range(K):
++                phi=k*math.tau/K;rr=radius+radial*math.cos(phi)
++                v.append([width/2*math.sin(phi),rr*math.cos(theta),rr*math.sin(theta)])
++        f=[]
++        for j in range(N):
++            for k in range(K):f.append([j*K+k,((j+1)%N)*K+k,((j+1)%N)*K+(k+1)%K,j*K+(k+1)%K])
++        # Winding outward is determined at each convex tube section.
++        vv=np.array(v)
++        for fi,f0 in enumerate(f):
++            center=vv[f0].mean(axis=0);ring_center=np.array([0,radius*center[1]/np.linalg.norm(center[1:]),radius*center[2]/np.linalg.norm(center[1:])])
++            if np.dot(np.cross(vv[f0[1]]-vv[f0[0]],vv[f0[2]]-vv[f0[0]]),center-ring_center)<0:f0.reverse()
++        geometry(name,parent,v,f,mat,smooth=True)
++    def solid_axial_body(name,parent,profile,mat,segments,side=1):
++        segments=lod_n(segments,'hub_segments')
++        # Original closed axial hub/button with real center faces, not a torus.
++        # The profile is disclosed in parameters, not claimed as measured hardware.
++        v=[]
++        for x,radius in profile:
++            for k in range(segments):
++                t=k*math.tau/segments;v.append([side*x,radius*math.cos(t),radius*math.sin(t)])
++        v.extend([[side*profile[0][0],0,0],[side*profile[-1][0],0,0]])
++        f=[];rings=len(profile);start_center=rings*segments;end_center=start_center+1
++        for k in range(segments):
++            j=(k+1)%segments
++            f.append([start_center,j,k]);f.append([end_center,(rings-1)*segments+k,(rings-1)*segments+j])
++            for ring in range(rings-1):
++                f.append([ring*segments+k,ring*segments+j,(ring+1)*segments+j,(ring+1)*segments+k])
++        # Standard angular direction makes the left cap normal -X. Mirror the
++        # entire closed surface coherently for the opposite wheel side.
++        if side<0:f=[list(reversed(face))for face in f]
++        # At a positive-radius midsegment the surface normal must be radial out.
++        vv=np.array(v);probe=f[2];center=vv[probe].mean(axis=0)
++        if np.dot(np.cross(vv[probe[1]]-vv[probe[0]],vv[probe[2]]-vv[probe[0]]),[0,center[1],center[2]])<0:
++            f=[list(reversed(face))for face in f]
++        geometry(name,parent,v,f,mat,smooth=True)
++    def earclip(profile):
++        q=np.array(profile,dtype=float)
++        area=np.sum(q[:,0]*np.roll(q[:,1],-1)-q[:,1]*np.roll(q[:,0],-1))
++        order=list(range(len(q)))if area>0 else list(range(len(q)-1,-1,-1));out=[]
++        cross=lambda x,y,z:float((y[0]-x[0])*(z[1]-x[1])-(y[1]-x[1])*(z[0]-x[0]))
++        while len(order)>3:
++            found=False
++            for k,b in enumerate(order):
++                aa=order[k-1];c=order[(k+1)%len(order)]
++                if cross(q[aa],q[b],q[c])<=1e-12:continue
++                if any(j not in (aa,b,c)and min(cross(q[aa],q[b],q[j]),cross(q[b],q[c],q[j]),cross(q[c],q[aa],q[j]))>=-1e-12 for j in order):continue
++                out.append([aa,b,c]);order.pop(k);found=True;break
++            if not found:raise ValueError('Non-simple original profile')
++        return out+[order]
++    def profile_solid(name,parent,profile,side,width,thickness,mat):
++        profile=np.array(profile);n=len(profile);w=np.array([width(y)if callable(width)else width for z,y in profile]);inner=side*w;outer=side*(w+thickness)
++        lo=np.minimum(inner,outer);hi=np.maximum(inner,outer)
++        v=[[lo[i],y,z]for i,(z,y)in enumerate(profile)]+[[hi[i],y,z]for i,(z,y)in enumerate(profile)]
++        tt=earclip(profile);f=tt+[[n+k for k in reversed(t)]for t in tt]
++        # Ear triangles have CCW(z,y), hence negativeX; derive ordered boundary.
++        area=np.sum(profile[:,0]*np.roll(profile[:,1],-1)-profile[:,1]*np.roll(profile[:,0],-1));order=list(range(n))if area>0 else list(range(n-1,-1,-1))
++        f.extend([[i,n+i,n+j,j]for i,j in zip(order,order[1:]+order[:1])])
++        geometry(name,parent,v,f,mat)
++    def catmull(points,steps=5,closed=False):
++        q=np.array(points,dtype=float);out=[];n=len(q)
++        for i in range(n if closed else n-1):
++            v0=q[(i-1)%n]if closed else q[max(0,i-1)];v1=q[i];v2=q[(i+1)%n];v3=q[(i+2)%n]if closed else q[min(n-1,i+2)]
++            for t in np.arange(steps)/steps:
++                out.append(.5*((2*v1)+(-v0+v2)*t+(2*v0-5*v1+4*v2-v3)*t*t+(-v0+3*v1-3*v2+v3)*t*t*t))
++        if not closed:out.append(q[-1])
++        return np.array(out)
++
++    WB=p['wheelbase_m'];TRACK=p['track_m'];RF=p['front_wheel_radius_m'];RR=p['rear_wheel_radius_m'];half=p['body_half_width_m']
++    lower=catmull(p['lower_side_profile_z_y_m'][:-1],4).tolist()+[p['lower_side_profile_z_y_m'][-1]]
++    width=lambda y:half-.18*max(0,min(1,(1.26-y)/.91))
++    door=catmull(p['door_profile_z_y_m'],p['door_profile_sampling']['steps'],True).tolist()
++    for side in [-1,1]:
++        profile_solid('deep_curved_lower_body',body,lower,side,width,.026,0)
++        profile_solid('deep_U_closed_door',body,door,side,lambda y:width(y)+.034,.018,0)
++        # Fine bright trim follows the actual newly authored U, not an old box.
++        trace=[[side*(width(y)+.055),y,z]for z,y in door]
++        trace.append(trace[0]);tube('door_edge_lining',body,trace,.0032,3,6)
++        # Main glazed door with narrow central division and shaped upper rail.
++        glassprof=p['side_door_glass_profile_z_y_m']
++        profile_solid('side_door_glass',body,glassprof,side,half+.010,.009,5)
++        outline=[[side*(half+.027),y,z]for z,y in glassprof];outline.append(outline[0])
++        tube('side_window_frame',body,outline,.013,1,8)
++        dy0,dy1,dz=p['side_glass_division_y_y_z_m']
++        beam('side_glass_division',body,(side*(half+.028),dy0,dz),(side*(half+.028),dy1,dz),.015,1)
++        beam('rear_window_pillar',body,(side*(half+.013),1.315,-.398),(side*(half+.013),1.74,-.398),.090,1,depth=.025)
++        # Bowed, solid rear quarter and narrow upper rear pillar.
++        rearprof=[[-.45,1.28],[-.44,1.69],[-.61,1.72],[-1.04,1.70],[-1.09,1.54],[-1.08,1.30],[-.98,1.19],[-.73,1.18]]
++        profile_solid('rear_quarter_panel',body,catmull(rearprof,4,True),side,half,.025,0)
++        rt=[[side*(half+.028),y,z]for z,y in catmull(rearprof,4,True)];rt.append(rt[0]);tube('rear_quarter_fine_lining',body,rt,.0025,3,6)
++        for z,y in [(.36,1.10),(-.43,1.15),(-.43,.87)]:
++            box('small_door_hardware',body,(side*(width(y)+.066),y,z),(.016,.015,.045),3)
++        # Prospective source-footplate refinement: the visible plate has two
++        # separated small treads. Exact metres/hidden/opposite construction are
++        # reconstructed. Preserve existing support endpoints and outerX; reconstructed
++        #20mm producer-thickness encloses each actual support end cap.
++        # One owned part per side still; no support/door/body/pivot amendment.
++        step_vertices=[];step_faces=[];step_sides=12
++        for step_z in [-.20,.07]:
++            step_base=len(step_vertices)
++            for step_y in [.34,.36]:
++                step_vertices.extend([[side*.72+.14*math.cos(step_i*math.tau/step_sides),
++                                       step_y,step_z+.065*math.sin(step_i*math.tau/step_sides)]
++                                      for step_i in range(step_sides)])
++            step_faces.extend([[step_base+step_i for step_i in range(step_sides)],
++                               [step_base+step_sides+step_i for step_i in reversed(range(step_sides))]])
++            step_faces.extend([[step_base+step_i,step_base+step_sides+step_i,
++                                step_base+step_sides+(step_i+1)%step_sides,
++                                step_base+(step_i+1)%step_sides]
++                               for step_i in range(step_sides)])
++        geometry('door_step',body,step_vertices,step_faces,4)
++        for z in [-.20,.07]:beam('step_support',body,(side*.45,.65,z),(side*.72,.35,z),.022,4)
++
++    # Front and rear cabin surfaces and original empty interior.
++    # V13: close on the existing inner shell, including width()'s1.26m breakpoint.
++    # Same Y/Z envelope, material and part; three rows avoid a tiny open join.
++    closure_levels=[.97,1.26,1.27]
++    front_closure=[[closure_side*width(closure_y),closure_y,closure_z]
++                   for closure_z in [.4125,.4475] for closure_y in closure_levels
++                   for closure_side in [-1,1]]
++    closure_faces=[[0,1,7,6],[4,10,11,5]]
++    for closure_i in [0,2]:
++        closure_a,closure_b,closure_c,closure_d=closure_i,closure_i+1,closure_i+2,closure_i+3
++        closure_faces.extend([[closure_a,closure_c,closure_d,closure_b],
++                              [closure_a+6,closure_b+6,closure_d+6,closure_c+6],
++                              [closure_a,closure_a+6,closure_c+6,closure_c],
++                              [closure_b,closure_d,closure_d+6,closure_b+6]])
++    geometry('cabin_front_lower',body,front_closure,closure_faces,0)
++    box('front_glass',body,(0,1.55,.255),(1.12,.46,.009),5)
++    geometry('front_sill_connector',body,[[-half,1.27,.43],[half,1.27,.43],[half,1.34,.27],[-half,1.34,.27]],[[0,1,2,3]],0)
++    for x in [-half,0,half]:beam('front_window_stile',body,(x,1.31,.27),(x,1.81,.27),.022,1)
++    for y in [1.31,1.81]:beam('front_window_rail',body,(-half,y,.27),(half,y,.27),.025,1)
++    # Convex rear bulkhead instead of C02's flat rectangular rear box.
++    v=[];ny=lod_n(14,'rear_rows');nx=lod_n(20,'rear_columns')
++    for iy in range(ny+1):
++        y=1.03+(1.73-1.03)*iy/ny
++        for ix in range(nx+1):
++            x=-half+2*half*ix/nx;z=-1.045-.07*(1-(x/half)**2)*math.sin(math.pi*(y-1.03)/.70)
++            v.append([x,y,z])
++    ff=[]
++    for iy in range(ny):
++        for ix in range(nx):i=iy*(nx+1)+ix;ff.append([i,i+1,i+nx+2,i+nx+1])
++    # Rear surface normal faces -Z.
++    geometry('rounded_rear_bulkhead',body,v,[list(reversed(f))for f in ff],0,smooth=True)
++    # V13: retain the floor, but keep its entire thickness inside the SAME side profile.
++    #3mm is an original engineering inset, not a catalogue measurement. Coordinates
++    #are producer-frame; geometry() applies the existing bodyY affine exactly once.
++    floor_y0,floor_y1=.75,.79
++    floor_levels=sorted(set([floor_y0,floor_y1]+[y for z,y in lower if floor_y0<y<floor_y1]))
++    def floor_span(y):
++        crossings=sorted(z0+(z1-z0)*(y-y0)/(y1-y0)
++                         for (z0,y0),(z1,y1) in zip(lower,lower[1:]+lower[:1])
++                         if (y0<=y<y1) or (y1<=y<y0))
++        if len(crossings)!=2:raise ValueError('Floor needs one unambiguous body-profile interval')
++        return crossings
++    floor_spans=[floor_span(y) for y in floor_levels]
++    floor_z0=max(-.595,max(span[0] for span in floor_spans)+.003)
++    floor_z1=min(.355,min(span[1] for span in floor_spans)-.003)
++    floor_half=min(width(y) for y in floor_levels)-.003
++    if not(floor_z1>floor_z0 and floor_half>0):raise ValueError('Empty inset floor section')
++    box('interior_floor',body,(0,.77,(floor_z0+floor_z1)/2),(2*floor_half,.04,floor_z1-floor_z0),1)
++    box('passenger_bench_base',body,(0,.94,-.72),(1.01,.22,.36),1)
++    box('passenger_cushion',body,(0,1.08,-.72),(1.00,.08,.36),2)
++    box('passenger_back',body,(0,1.28,-.94),(.99,.37,.045),2)
++    # Longitudinally shaped closed roof and a softly crowned cross section.
++    roof=catmull(p['roof_longitudinal_profile_z_y_m'],lod_n(5,'roof_longitudinal_steps'));nx=lod_n(20,'roof_cross_steps');v=[]
++    roof_thickness=p['roof_sheet_thickness_m']
++    for z,edge_y in roof:
++        for ix in range(nx+1):x=-.64+1.28*ix/nx;y=edge_y+p['roof_cross_crown_m']*(1-(x/.64)**2);v.append([x,y,z])
++    ff=[]
++    for iz in range(len(roof)-1):
++        for ix in range(nx):i=iz*(nx+1)+ix;ff.append([i,i+1,i+nx+2,i+nx+1])
++    geometry('swept_crowned_roof',body,v,[list(reversed(f))for f in ff],0,smooth=True)
++    geometry('roof_underside',body,[[x,y-roof_thickness,z]for x,y,z in v],ff,0,smooth=True)
++    # Close the physical roof edge rather than leaving a one-sided floating sheet.
++    boundary=list(range(nx+1))+[i*(nx+1)+nx for i in range(1,len(roof))]+list(range((len(roof)-1)*(nx+1)+nx-1,(len(roof)-1)*(nx+1)-1,-1))+[i*(nx+1)for i in range(len(roof)-2,0,-1)]
++    roofedge=[]
++    for i,j in zip(boundary,boundary[1:]+boundary[:1]):
++        roofedge.append([v[i],[v[i][0],v[i][1]-roof_thickness,v[i][2]],[v[j][0],v[j][1]-roof_thickness,v[j][2]],v[j]])
++    for quad in roofedge:geometry('roof_edge_fascia',body,quad,[[3,2,1,0]],1)
++    for side in [-1,1]:
++        tube('roof_drip_edge',body,[[side*.64,y,z]for z,y in roof],p['roof_drip_edge_radius_m'],1,8)
++        headprof=[[.33,1.78],[.22,1.76],[.07,1.80],[-.12,1.78],[-.35,1.72],[-1.10,1.68]]+[[z,y-.018]for z,y in p['roof_longitudinal_profile_z_y_m']]
++        profile_solid('closed_upper_side_header',body,headprof,side,half-.01,.04,0)
++    for z,y in [roof[0],roof[-1]]:tube('roof_end_lip',body,[[x,y+p['roof_cross_crown_m']*(1-(x/.64)**2),z]for x in np.linspace(-.64,.64,lod_n(20,'roof_cross_steps')+1)],p['roof_end_lip_radius_m'],1,8)
++    for z,edge_y,bottom in [(.28,float(np.interp(.28,roof[:,0],roof[:,1])),1.79),(-1.065,float(roof[0,1]),1.70)]:
++        xx=np.linspace(-half,half,lod_n(20,'roof_cross_steps')+1);upper=[[x,edge_y+p['roof_cross_crown_m']*(1-(x/.64)**2)-.025,z]for x in xx]
++        lower=[[x,bottom,z]for x in xx]
++        hf=[[i,i+1,len(xx)+i+1,len(xx)+i]for i in range(len(xx)-1)]
++        geometry('closed_end_crown_header',body,lower+upper,hf if z>0 else[list(reversed(f))for f in hf],0)
++
++    # Empty elevated driver seat; source coachmen do not attest hidden upholstery.
++    sy,sz=p['driver_bench_center_y_z_m'];sw=p['driver_bench_width_m'];sd=p['driver_bench_depth_m']
++    box('driver_perch_base',body,(0,sy-.07,sz),(sw,.09,sd),1)
++    # Rounded capsule-like cushion loft, original unoccupied reconstruction.
++    section=[];n=lod_n(40,'cushion_sections')
++    for i in range(n):
++        t=math.tau*i/n;section.append([math.copysign(abs(math.cos(t))**.28,math.cos(t))*sw/2,math.copysign(abs(math.sin(t))**.28,math.sin(t))*sd/2])
++    vv=[]
++    for yy,scale in [(sy-.015,.94),(sy+.020,1),(sy+.055,.94)]:
++        for x,z in section:vv.append([x*scale,yy,sz+z*scale])
++    fs=[list(range(n-1,-1,-1)),list(range(2*n,3*n))]
++    for j in range(2):
++        for i in range(n):k=(i+1)%n;fs.append([j*n+i,j*n+k,(j+1)*n+k,(j+1)*n+i])
++    geometry('rounded_empty_driver_cushion',body,vv,[list(reversed(f))for f in fs],2,smooth=True)
++    box('driver_backboard',body,(0,sy+.14,sz-.19),(sw,.25,.035),1)
++    fy,fz=p['driver_footboard_y_z_m'];box('driver_footboard',body,(0,fy,fz),(1.04,.035,.36),1)
++    for side in [-1,1]:
++        beam('perch_support',body,(side*.43,.78,.65),(side*.43,sy-.10,sz),.040,4)
++        tube('driver_side_rail',body,[[side*.53,sy+.03,sz+.17],[side*.53,sy+.16,sz+.12],[side*.53,sy+.19,sz-.18]],.015,1,8)
++        beam('footboard_support',body,(side*.43,.78,.60),(side*.43,fy-.02,fz+.10),.024,4)
++
++    # Faceted lamp glass in fine black metal frames, not solid square toy lamps.
++    for side in [-1,1]:
++        cx=side*.60;cy=1.53;cz=.44;rad=.065;h=.105;N=8
++        beam('lamp_arm',body,(side*.49,1.30,.40),(cx,cy-.12,cz),.018,4)
++        v=[[cx+rad*math.cos(i*math.tau/N),cy+y,cz+rad*math.sin(i*math.tau/N)]for y in [-h,h]for i in range(N)]
++        geometry('lamp_glass',body,v,[[i,(i+1)%N,(i+1)%N+N,i+N]for i in range(N)],5)
++        for y in [cy-h,cy+h]:
++            ring=[[cx+rad*math.cos(i*math.tau/N),y,cz+rad*math.sin(i*math.tau/N)]for i in range(N)];ring.append(ring[0]);tube('lamp_frame_ring',body,ring,.005,4,6)
++        for i in range(0,N,2):
++            x=cx+rad*math.cos(i*math.tau/N);z=cz+rad*math.sin(i*math.tau/N);beam('lamp_corner_stile',body,(x,cy-h,z),(x,cy+h,z),.006,4)
++        top=[[cx+rad*1.12*math.cos(i*math.tau/N),cy+h+.01,cz+rad*1.12*math.sin(i*math.tau/N)]for i in range(N)]+[[cx,cy+h+.065,cz]]
++        geometry('lamp_pitched_cap',body,top,[[i,(i+1)%N,N]for i in range(N)],4)
++        tube('lamp_finial',body,[[cx,cy+h+.06,cz],[cx,cy+h+.092,cz]],.009,3,8)
++
++    rear=node('vehicle_running_gear_rear',root,(0,RR,-WB/2));front=node('vehicle_steer_front',root,(0,RF,WB/2))
++    for frame in [rear,front]:box('black_axle',frame,(0,0,0),(TRACK+.12,.045,.045),4)
++    beam('longitudinal_reach',root,(0,.44,-WB/2),(0,.44,WB/2),.055,4)
++    for z,r in [(-WB/2,RR),(WB/2,RF)]:
++        for x in [-.39,.39]:
++            for layer in range(4):
++                extent=.34-layer*.045
++                path=[[x,r+.065+layer*.010+.105*(q/.34)**2,z+q]for q in np.linspace(-extent,extent,lod_n(11,'spring_steps'))]
++                for q1,q2 in zip(path,path[1:]):beam('leaf_spring',root,q1,q2,.017,4,depth=.006)
++            for q in [-.34,.34]:beam('spring_hanger',root,(x,r+.18,z+q),(x,.80,z+q),.018,4)
++    for frame,r,label in [(rear,RR,'rear'),(front,RF,'front')]:
++        for side,side_name in [(-1,'right'),(1,'left')]:
++            wheel=node('vehicle_wheel_'+label+'_'+side_name,frame,(side*TRACK/2,0,0))
++            circle_tube('rounded_iron_tire',wheel,r-.004,.041,.004,4)
++            circle_tube('slender_painted_felloe',wheel,r-.021,.038,.016,1)
++            circle_tube('rounded_hub',wheel,.049,.128,.017,1,40)
++            solid_axial_body('solid_painted_hub_core',wheel,p['hub_core_profile_axial_radial_m'],1,p['hub_core_segments'])
++            for i in range(p['spokes_per_wheel']):
++                t=i*math.tau/p['spokes_per_wheel'];direction=np.array([0,math.cos(t),math.sin(t)]);tangent=np.array([0,-math.sin(t),math.cos(t)])
++                vv=[]
++                for distance,wid,axial in [(.060,.025,.028),(r-.035,.014,.018)]:
++                    c=direction*distance
++                    for k in range(8):phi=k*math.tau/8;vv.append(c+np.array([axial/2*math.cos(phi),0,0])+tangent*wid/2*math.sin(phi))
++                ff=[list(range(7,-1,-1)),list(range(8,16))]+[[k,(k+1)%8,(k+1)%8+8,k+8]for k in range(8)]
++                geometry('tapered_rounded_spoke',wheel,vv,ff,1,smooth=True)
++            cap=node('hubcap',wheel,(side*.079,0,0));circle_tube('bright_hubcap_rim',cap,.037,.020,.009,3,40)
++            solid_axial_body('solid_bright_hub_button',cap,p['hub_button_profile_axial_radial_m'],3,p['hub_button_segments'],side)
++            # Original functional support frames are retained as named geometry,
++            # but the specimen is static and no steering/motion is accepted.
++            if label=='rear':
++                arc=np.linspace(.10,math.pi-.10,lod_n(44,'mudguard_steps'));rr=r+.040;v=[]
++                for xx in [side*TRACK/2-.052,side*TRACK/2+.052]:
++                    for aa in arc:v.append([xx,r+rr*math.sin(aa),-WB/2+rr*math.cos(aa)])
++                n=len(arc);geometry('thin_rear_mudguard',root,v,[[i,i+1,n+i+1,n+i]for i in range(n-1)],0,smooth=True)
++
++    # Paired-team central pole, deliberately parked down; no single-horse shafts.
++    pole=node('vehicle_team_pole',root);start=np.array([0,RF+.025,WB/2]);end=np.array([0,p['pole_parked_tip_y_m'],WB/2+p['pole_length_m']])
++    beam('central_team_pole_parked',pole,start,end,.055,1)
++    # Small explicit ground shoe under pole tip, original reconstructed hardware.
++    box('parked_pole_ground_shoe',pole,(0,.017,end[2]-.025),(.065,.034,.10),4)
++    box('team_pole_yoke_bracket',pole,(0,RF+.025,WB/2+.22),(.23,.055,.06),4)
++    node('vehicle_hitch_team',pole,end)
++    # Additive plate-observed near-side details; all pre-existing parts stay exact.
++    # Hidden attachment depth is inferred. No opposite-side or step-count claim.
++    for detail in feature_plan(p):
++        if detail['kind']=='tube':
++            tube(detail['name'],body,detail['path'],detail['radius_m'],detail['material'],detail['sides'])
++        elif detail['kind']=='beam':
++            beam(detail['name'],body,detail['start'],detail['end'],detail['width_m'],detail['material'])
++        else:raise ValueError('Unknown proposed detail primitive')
++    node('vehicle_seat_driver',body,(0,sy+.065,sz))
++    node('vehicle_seat_passenger_01',body,(.23,1.13,-.72));node('vehicle_seat_passenger_02',body,(-.23,1.13,-.72))
++    # No occupant, door, board or driving animations are supplied.
++    materials=[
++        {'name':'deep_green_painted_body','pbrMetallicRoughness':{'baseColorFactor':[.020,.038,.029,1],'metallicFactor':0,'roughnessFactor':.29},'extensions':{'KHR_materials_clearcoat':{'clearcoatFactor':.28,'clearcoatRoughnessFactor':.20}}},
++        {'name':'black_painted_timber','pbrMetallicRoughness':{'baseColorFactor':[.016,.019,.018,1],'metallicFactor':0,'roughnessFactor':.35}},
++        {'name':'reconstructed_brown_leather','pbrMetallicRoughness':{'baseColorFactor':[.082,.029,.014,1],'metallicFactor':0,'roughnessFactor':.67}},
++        {'name':'unmeasured_bright_trim','pbrMetallicRoughness':{'baseColorFactor':[.40,.42,.37,1],'metallicFactor':.85,'roughnessFactor':.25}},
++        {'name':'blackened_iron','pbrMetallicRoughness':{'baseColorFactor':[.023,.026,.025,1],'metallicFactor':.85,'roughnessFactor':.40}},
++        {'name':'reconstructed_clear_glass','pbrMetallicRoughness':{'baseColorFactor':[.38,.49,.50,.25],'metallicFactor':0,'roughnessFactor':.10},'alphaMode':'BLEND'},
++    ]
++    binary=bytearray();views=[];access=[];meshes=[]
++    def append(arr,kind):
++        arr=np.asarray(arr,dtype='<f4');off=len(binary);binary.extend(arr.tobytes());vi=len(views);views.append({'buffer':0,'byteOffset':off,'byteLength':arr.nbytes,'target':34962});ai=len(access);access.append({'bufferView':vi,'componentType':5126,'count':len(arr),'type':kind,'min':arr.min(axis=0).tolist(),'max':arr.max(axis=0).tolist()});return ai
++    for (parent,mat),b in batches.items():
++        positions=np.asarray(b['positions'],dtype='<f4');normals=np.asarray(b['normals'],dtype='<f4')
++        if not(np.isfinite(positions).all()and np.isfinite(normals).all()):raise ValueError('Non-finite original geometry')
++        ai=append(positions,'VEC3');ni=append(normals,'VEC3');mi=len(meshes);meshes.append({'name':'surface_'+nodes[parent]['name']+'_'+str(mat),'primitives':[{'attributes':{'POSITION':ai,'NORMAL':ni},'material':mat}]});n=node(meshes[-1]['name'],parent);nodes[n]['mesh']=mi
++    extra={'asset_id':p['asset_id'],'license':'GPL-3.0-or-later','units':'m','up_axis':'+Y','forward_axis':'+Z','root_datum':'ground midpoint between axles','source_id':p['source_id'],'source_reference':{'scan_leaf':p['reference_scan_leaf'],'sha256':p['reference_sha256'],'actually_viewed':True,'usage':'Appearance-guided original geometry with manually estimated source landmarks; no image pixels embedded as textures','claim':'Catalogmaker/type1893; specific1904specimen/owner/placement reconstructed'},'scene_year':1904,'confidence':'reconstructed','status':'Original1893StudebakerBrougham appearance reconstruction; static empty closed specimen; photographic acceptance pending actual source comparison','dimensions_tier':p['dimension_tier'],'parameters':p,'statistics':{'triangles':sum(len(b['positions'])//3 for b in batches.values()),'meshes':len(meshes),'nodes':len(nodes)},'parts':parts,'door_interaction_enabled':False,'boarding_enabled':False,'traffic_enabled':False,'occupants':False,'liberties':p['limits']}
++    nodes=[{k:v for k,v in n.items()if k!='children'or v}for n in nodes]
++    doc={'asset':{'version':'2.0','generator':'Chicago4D original StudebakerBrougham source reconstruction'},'scene':0,'scenes':[{'nodes':[root]}],'nodes':nodes,'meshes':meshes,'materials':materials,'bufferViews':views,'accessors':access,'buffers':[{'byteLength':len(binary)}],'extensionsUsed':['KHR_materials_clearcoat'],'extras':extra}
++    j=json.dumps(doc,separators=(',',':')).encode();j+=b' '*((-len(j))%4);binary+=b'\0'*((-len(binary))%4)
++    out=struct.pack('<III',0x46546c67,2,12+8+len(j)+8+len(binary))+struct.pack('<II',len(j),0x4e4f534a)+j+struct.pack('<II',len(binary),0x004e4942)+binary
++    a.output.mkdir(parents=True);(a.output/'brougham.glb').write_bytes(out);(a.output/'brougham.json').write_text(json.dumps(extra,indent=2)+'\n');print(json.dumps({'sha256':hashlib.sha256(out).hexdigest(),'bytes':len(out),'stats':extra['statistics']}))
++
++
++if __name__=='__main__':main()
+--- /dev/null
++++ b/chicago/4d/tools/transport/brougham/index_streams.py
+@@ -0,0 +1,55 @@
++# SPDX-License-Identifier: GPL-3.0-or-later
++"""Lossless native glTF indexing. No quantization, omitted triangles or external codec."""
++from pathlib import Path
++import copy,hashlib,json,struct
++
++def read_glb(path):
++    raw=Path(path).read_bytes();magic,version,total=struct.unpack_from('<III',raw)
++    if (magic,version,total)!=(0x46546c67,2,len(raw)):raise ValueError('Invalid GLB envelope')
++    size,kind=struct.unpack_from('<II',raw,12)
++    if kind!=0x4e4f534a:raise ValueError('Missing JSON chunk')
++    doc=json.loads(raw[20:20+size]);off=20+size;length,kind=struct.unpack_from('<II',raw,off)
++    if kind!=0x004e4942:raise ValueError('Missing binary chunk')
++    return doc,raw[off+8:off+8+length]
++
++def attribute_rows(doc,binary,index):
++    a=doc['accessors'][index];view=doc['bufferViews'][a['bufferView']]
++    if a['componentType']!=5126 or a['type']!='VEC3' or a.get('sparse') or view.get('byteStride') not in (None,12):raise ValueError('Expected original packed Float32 VEC3')
++    off=view.get('byteOffset',0)+a.get('byteOffset',0)
++    return [binary[off+i*12:off+(i+1)*12] for i in range(a['count'])]
++
++def expanded_signature(doc,binary):
++    h=hashlib.sha256()
++    for mesh in doc['meshes']:
++        for prim in mesh['primitives']:
++            rows=[attribute_rows(doc,binary,prim['attributes'][k]) for k in ['POSITION','NORMAL']]
++            if 'indices' in prim:
++                a=doc['accessors'][prim['indices']];v=doc['bufferViews'][a['bufferView']];fmt={5123:'H',5125:'I'}[a['componentType']];off=v.get('byteOffset',0)+a.get('byteOffset',0)
++                idx=struct.unpack_from('<'+fmt*a['count'],binary,off)
++            else:idx=range(len(rows[0]))
++            for i in idx:h.update(rows[0][i]);h.update(rows[1][i])
++    return h.hexdigest()
++
++def write_indexed(source,destination):
++    original,binary=read_glb(source);doc=copy.deepcopy(original);views=[];access=[];out=bytearray();before=expanded_signature(original,binary)
++    def append(data,target):
++        out.extend(b'\0'*((-len(out))%4));i=len(views);views.append({'buffer':0,'byteOffset':len(out),'byteLength':len(data),'target':target});out.extend(data);return i
++    for mesh in doc['meshes']:
++        for prim in mesh['primitives']:
++            if 'indices' in prim or set(prim['attributes'])!={'POSITION','NORMAL'}:raise ValueError('Only original nonindexed P/N primitives accepted')
++            p=attribute_rows(original,binary,prim['attributes']['POSITION']);n=attribute_rows(original,binary,prim['attributes']['NORMAL'])
++            unique={};positions=[];normals=[];indices=[]
++            for pp,nn in zip(p,n):
++                key=pp+nn
++                if key not in unique:unique[key]=len(unique);positions.append(pp);normals.append(nn)
++                indices.append(unique[key])
++            for key,rows in [('POSITION',positions),('NORMAL',normals)]:
++                a=copy.deepcopy(original['accessors'][prim['attributes'][key]]);a['count']=len(rows);a['bufferView']=append(b''.join(rows),34962);a.pop('byteOffset',None);prim['attributes'][key]=len(access);access.append(a)
++            fmt,ctype=('H',5123) if len(unique)<=65536 else ('I',5125)
++            prim['indices']=len(access);access.append({'bufferView':append(struct.pack('<'+fmt*len(indices),*indices),34963),'componentType':ctype,'count':len(indices),'type':'SCALAR','min':[min(indices)],'max':[max(indices)]})
++    doc['bufferViews']=views;doc['accessors']=access;doc['buffers']=[{'byteLength':len(out)}]
++    if expanded_signature(doc,out)!=before:raise ValueError('Indexed triangle P/N stream drift')
++    encoded=json.dumps(doc,separators=(',',':')).encode();encoded+=b' '*((-len(encoded))%4);out+=b'\0'*((-len(out))%4)
++    raw=struct.pack('<III',0x46546c67,2,28+len(encoded)+len(out))+struct.pack('<II',len(encoded),0x4e4f534a)+encoded+struct.pack('<II',len(out),0x004e4942)+out
++    Path(destination).write_bytes(raw)
++    return {'source_bytes':Path(source).stat().st_size,'indexed_bytes':len(raw),'expanded_triangle_PN_sha256':before,'source_sha256':hashlib.sha256(Path(source).read_bytes()).hexdigest(),'indexed_sha256':hashlib.sha256(raw).hexdigest(),'lossless_indexing':True,'meshopt_or_quantization':False}
+--- /dev/null
++++ b/chicago/4d/tools/transport/brougham/lods.json
+@@ -0,0 +1,33 @@
++{
++  "_doc": "Source-derived original tessellation alternatives;near must reproduce actualrawV13 two-join repair exactly. Mid/far are delivery candidates,not automatically scene/photoqualified.",
++  "source_sha256": "469ff52b2166a41e3aa1ee0a0d49ca91f86d7f108d0f743893098ca74c2f8fee",
++  "details": {
++    "near": {},
++    "mid": {
++      "tube_sides": 6,
++      "ring_segments": 40,
++      "ring_cross_sides": 6,
++      "hub_segments": 16,
++      "rear_rows": 8,
++      "rear_columns": 12,
++      "roof_longitudinal_steps": 3,
++      "roof_cross_steps": 10,
++      "cushion_sections": 24,
++      "spring_steps": 7,
++      "mudguard_steps": 24
++    },
++    "far": {
++      "tube_sides": 4,
++      "ring_segments": 20,
++      "ring_cross_sides": 4,
++      "hub_segments": 8,
++      "rear_rows": 4,
++      "rear_columns": 6,
++      "roof_longitudinal_steps": 2,
++      "roof_cross_steps": 6,
++      "cushion_sections": 12,
++      "spring_steps": 5,
++      "mudguard_steps": 12
++    }
++  }
++}
+--- /dev/null
++++ b/chicago/4d/tools/transport/brougham/parameters.json
+@@ -0,0 +1,371 @@
++{
++  "asset_id": "studebaker_1893_brougham_reconstruction_01",
++  "scene_year": 1904,
++  "source_id": "studebaker_1893_illustrated_souvenir",
++  "reference_file": "studebaker-brougham-cdn.jpg",
++  "reference_sha256": "b458565ec06ba1e8e59d1455cc2d3f277c2371910b3085c2085749fc59a68abe",
++  "reference_scan_leaf": "0095",
++  "dimension_tier": "reconstructed; unscaled oblique catalog lithograph supplies appearance, not metres",
++  "wheelbase_m": 2.3,
++  "track_m": 1.34,
++  "front_wheel_radius_m": 0.528,
++  "rear_wheel_radius_m": 0.65,
++  "spokes_per_wheel": 16,
++  "body_half_width_m": 0.585,
++  "lower_side_profile_z_y_m": [
++    [
++      0.43,
++      1.26
++    ],
++    [
++      0.5280575100541398,
++      1.0591465801570792
++    ],
++    [
++      0.496780337124207,
++      0.8772129243411678
++    ],
++    [
++      0.4553104748672183,
++      0.6864381152612931
++    ],
++    [
++      0.39090975165809994,
++      0.5430084138369865
++    ],
++    [
++      0.2738140250729799,
++      0.44239685127065936
++    ],
++    [
++      0.11911137520969106,
++      0.39343290602753783
++    ],
++    [
++      -0.059207553332271345,
++      0.37459685128737663
++    ],
++    [
++      -0.24155798690054553,
++      0.3817361566267804
++    ],
++    [
++      -0.387426955038336,
++      0.4412175414622753
++    ],
++    [
++      -0.4666334665002765,
++      0.566283934070431
++    ],
++    [
++      -0.51,
++      0.74
++    ],
++    [
++      -0.67,
++      0.92
++    ],
++    [
++      -0.86,
++      1.0
++    ],
++    [
++      -1.05,
++      1.01
++    ],
++    [
++      -1.08,
++      1.26
++    ]
++  ],
++  "door_profile_z_y_m": [
++    [
++      0.28160730754447627,
++      1.2572208976871815
++    ],
++    [
++      0.2603279827530116,
++      0.8807656132243503
++    ],
++    [
++      0.23674693456738538,
++      0.6424896735903629
++    ],
++    [
++      0.17244072363815377,
++      0.5033623525510104
++    ],
++    [
++      0.061174756321300094,
++      0.4287787870923288
++    ],
++    [
++      -0.08751912283720031,
++      0.41019976820229775
++    ],
++    [
++      -0.23496040300814514,
++      0.426305065288164
++    ],
++    [
++      -0.3409702331025741,
++      0.49477643883881905
++    ],
++    [
++      -0.4004108638597259,
++      0.6199678188267599
++    ],
++    [
++      -0.4104904434028356,
++      0.8754589751260531
++    ],
++    [
++      -0.39594490922028314,
++      1.2607571620641722
++    ],
++    [
++      -0.22984665014682548,
++      1.2187615150751292
++    ],
++    [
++      -0.057911955588160424,
++      1.2027642970338166
++    ],
++    [
++      0.1154176261062787,
++      1.2257008567431873
++    ]
++  ],
++  "roof_longitudinal_profile_z_y_m": [
++    [
++      -1.1,
++      1.74
++    ],
++    [
++      -0.9,
++      1.77
++    ],
++    [
++      -0.65,
++      1.77
++    ],
++    [
++      -0.38,
++      1.78
++    ],
++    [
++      -0.12,
++      1.85
++    ],
++    [
++      -0.04,
++      1.865
++    ],
++    [
++      0.12,
++      1.85
++    ],
++    [
++      0.33,
++      1.82
++    ]
++  ],
++  "roof_cross_crown_m": 0.045,
++  "driver_bench_center_y_z_m": [
++    1.48,
++    0.76
++  ],
++  "driver_bench_width_m": 1.08,
++  "driver_bench_depth_m": 0.39,
++  "driver_footboard_y_z_m": [
++    0.92,
++    1.26
++  ],
++  "pole_length_m": 2.65,
++  "pole_parked_tip_y_m": 0.037,
++  "limits": [
++    "One source view; opposite side, width, interior, exact suspension, spoke count, dimensions and paint optics reconstructed",
++    "Maker and catalog type are documented1893; no particular1904 household ownership or exact specimen presence",
++    "Driver and passengers omitted; their source clothing is not converted into empty-seat upholstery evidence",
++    "Closed static specimen only, no animation, steering, boarding or forces acceptance",
++    "Original solid hub cores/buttons correct an exposed torus-center defect; cap/nut dimensions/shape are unmeasured reconstruction, not source-measured mechanics",
++    "Wheelbase/radius ratio revised using corrected informal plate controls front810,820 +/-3px radius106 +/-5px; rear1277,795 +/-4px radius137 +/-5px. Absolute metres remain nonunique reconstruction; cabin and hub shapes preserved from v6; all prior approximate calibration controls withdrawn.",
++    "V8 uses rounded ratio hypothesis WB2.30/RF.528/RR.65 with positive-Z front-oblique comparison. Original body vertically reshaped and roof crown deepened against source appearance; hidden cross-width/seat details remain reconstruction. No claim of exact lithograph calibration or photographic acceptance.",
++    "V9 narrows/shapes glazed door, moves only upper-front cabin/roof rearward, and adds a black rear window pillar/front sill connector. New profiles are original 3D reconstruction guided by manual visible source contours; hidden framing and exact thickness are not attested. Transverse crown eased while near longitudinal crown rises to match observed contour. Running gear and solid hubs retain v8 geometry.",
++    "Closed original trim paths remove duplicate coincident end caps; one stable reference axis per path avoids frame flips. Tiny tube surfaces use geometric face normals rather than averaging sharp caps into the barrel. Door depth offset increases6mm to remove sampled internal body overlap; this is a construction repair, not a measured historical dimension.",
++    "V10 bounded UNRENDERED roof proposal: retain front/back ends, roof width/cross-crown and maximum profile height, move the front longitudinal crown peak rearward0.16m and ease its approach to reduce the exaggerated leading curl; reduce original roof sheet35to25mm, drip radius15to10mm, end lip12to9mm. Numerical dimensions are original reconstruction guided by the broad plate contour; source camera is nonunique and coachmen obscure the far front. All other parts/materials/guards retained. No actual render/source-match/photo acceptance.",
++    "V11 source-visible near-side latch/central fitting proposal UNGENERATED/UNRENDERED; metric size, attachment depth and exact outline reconstructed. Extra bead deferred pending owned door/waist contour correction. Ambiguous lower mark and opposite-side fittings unmodeled; step count unchanged.",
++    "V12 UNGENERATED source-guided lower-door waist/roundedU and lowerbody-front contour proposal. Only six named panel/lining instances may change P/N; all other component P/N inclnineV11fittings remain protected. Door operation, opposite-side exactness and hidden rearwing remain unqualified."
++  ],
++  "revision": 12,
++  "hub_core_profile_axial_radial_m": [
++    [
++      -0.064,
++      0.034
++    ],
++    [
++      -0.05,
++      0.042
++    ],
++    [
++      0.05,
++      0.042
++    ],
++    [
++      0.064,
++      0.034
++    ]
++  ],
++  "hub_core_segments": 16,
++  "hub_button_profile_axial_radial_m": [
++    [
++      -0.017,
++      0.03
++    ],
++    [
++      -0.012,
++      0.035
++    ],
++    [
++      0.009,
++      0.035
++    ],
++    [
++      0.017,
++      0.025
++    ]
++  ],
++  "hub_button_segments": 24,
++  "body_vertical_affine": {
++    "scale_y": 1.13,
++    "offset_y_m": 0.03,
++    "scope": "All original vehicle_body surfaces and seat sockets; running gear and solid hubs unchanged",
++    "basis": "Coordinated source-guided silhouette: approximately +.078m at lower U, +.196m at window sill and +.303m at crowned roof; engineering reconstruction, not historic metres"
++  },
++  "side_door_glass_profile_z_y_m": [
++    [
++      0.22,
++      1.34
++    ],
++    [
++      0.22,
++      1.78
++    ],
++    [
++      0.07,
++      1.82
++    ],
++    [
++      -0.12,
++      1.8
++    ],
++    [
++      -0.35,
++      1.74
++    ],
++    [
++      -0.35,
++      1.315
++    ],
++    [
++      -0.07,
++      1.27
++    ]
++  ],
++  "side_glass_division_y_y_z_m": [
++    1.27,
++    1.81,
++    -0.07
++  ],
++  "roof_sheet_thickness_m": 0.025,
++  "roof_drip_edge_radius_m": 0.01,
++  "roof_end_lip_radius_m": 0.009,
++  "source_detail_v11": {
++    "state": "PROPOSED_UNGENERATED_UNRENDERED; metric dimensions are reconstruction, not historical measurements",
++    "source_sha256": "b458565ec06ba1e8e59d1455cc2d3f277c2371910b3085c2085749fc59a68abe",
++    "observed_side_x_sign": 1,
++    "forward_oval_latch": {
++      "native_region_px": [
++        981,
++        630,
++        1009,
++        646
++      ],
++      "native_center_px": [
++        995,
++        638
++      ],
++      "center_producer_y_z_m": [
++        1.2134723533159713,
++        0.2134952751100272
++      ],
++      "radii_producer_y_z_m": [
++        0.031,
++        0.065
++      ],
++      "tube_radius_m": 0.004,
++      "ring_samples": 32,
++      "claim": "Visible oval loop location/outline only; lock action/backplate/attachment depth not attested"
++    },
++    "central_pronged_fitting": {
++      "native_region_px": [
++        1039,
++        651,
++        1068,
++        671
++      ],
++      "native_center_px": [
++        1053,
++        661
++      ],
++      "center_producer_y_z_m": [
++        1.1117885736543536,
++        -0.07609885452975362
++      ],
++      "cup_offsets_z_y_m": [
++        [
++          -0.06,
++          0.01
++        ],
++        [
++          -0.048,
++          -0.02
++        ],
++        [
++          0,
++          -0.023
++        ],
++        [
++          0.048,
++          -0.02
++        ],
++        [
++          0.06,
++          0.01
++        ]
++      ],
++      "tube_radius_m": 0.0038,
++      "claim": "Visible open pronged/bar-like fitting; no crown/heraldic/household/maker identity. Smaller lower mark remains unresolved and omitted"
++    },
++    "steps": "UNCHANGED: two visible source tread images may be a near/far pair; no new treads or new side identity claim",
++    "hidden_construction": "Two small original attachment pins per fitting inferred only to avoid floating hardware; no historic lock/mechanism/fastener identity asserted",
++    "geometry_policy": "Additive source-visible fittings only after all existing geometry. Inner bead DEFERRED after independent source review: current flat upperdoor edge must not be reinforced. No existing door/body/roof/window/trim/wheel/pole/step/seat/anchor/material changes; depth artifact fixed in preview instrument only."
++  },
++  "door_profile_sampling": {
++    "kind": "closed_catmull",
++    "steps": 5,
++    "scope": "All near-source appearance controls, mirrored for opposite-side reconstruction; no operation claim"
++  },
++  "large_forms_v12": {
++    "state": "PROPOSED_UNGENERATED_UNRENDERED",
++    "owned_part_families": [
++      "deep_curved_lower_body",
++      "deep_U_closed_door",
++      "door_edge_lining"
++    ],
++    "owned_instances": 6,
++    "source_edge_landmarks": "witnesses/SOURCE-EDGE-LANDMARKS.json",
++    "preserved": "V11fittings9/componentP-N,glass/frame,roof/runninggear/pole/steps/anchors/materials/camera/fullbounds",
++    "source_limits": "Multiple bright edges/door operation/hidden rear/opposite side remain partly inferred. These contours guide appearance rather than measured historic metres or construction."
++  }
++}
+--- /dev/null
++++ b/chicago/4d/tools/transport/brougham/source_details.py
+@@ -0,0 +1,51 @@
++# SPDX-License-Identifier: GPL-3.0-or-later
++"""Original manually landmark-guided fittings; hidden construction reconstructed.
++
++No image pixels are embedded. This module plans additive near-side detail only;
++no lock mechanism, heraldry, opposite-side duplicate or new step is attested.
++"""
++import math
++
++
++def sample_open(points, steps):
++    out=[]
++    for i in range(len(points)-1):
++        a,b,c,d=points[max(0,i-1)],points[i],points[i+1],points[min(len(points)-1,i+2)]
++        for k in range(steps):
++            t=k/steps
++            out.append([.5*(2*b[j]+(-a[j]+c[j])*t+(2*a[j]-5*b[j]+4*c[j]-d[j])*t*t+(-a[j]+3*b[j]-3*c[j]+d[j])*t*t*t) for j in range(2)])
++    return out+[list(points[-1])]
++
++
++def feature_plan(p):
++    detail=p['source_detail_v11'];side=detail['observed_side_x_sign']
++    if side!=1:raise ValueError('Only the actually observed positive-X side is proposed')
++    half=p['body_half_width_m']
++    width=lambda y:half-.18*max(0,min(1,(1.26-y)/.91))
++    f=[]
++    def tube(name,path,r):
++        if not math.isfinite(r) or r<=0:raise ValueError('Invalid detail radius')
++        f.append({'kind':'tube','name':name,'path':path,'radius_m':r,'material':3,'sides':8})
++    def pin(name,y,z):
++        # Small attachment depth/section is engineering reconstruction, not source evidence.
++        f.append({'kind':'beam','name':name,'start':[width(y)+.050,y,z],
++                  'end':[width(y)+.060,y,z],'width_m':.010,'material':3})
++    latch=detail['forward_oval_latch'];y,z=latch['center_producer_y_z_m'];ry,rz=latch['radii_producer_y_z_m'];n=latch['ring_samples']
++    path=[]
++    for k in range(n):
++        a=math.tau*k/n;yy=y+ry*math.sin(a);zz=z+rz*math.cos(a)
++        path.append([width(yy)+.060,yy,zz])
++    path.append(path[0]);tube('source_near_forward_oval_latch',path,latch['tube_radius_m'])
++    for zz in [z-rz,z+rz]:pin('source_near_latch_attachment_inferred',y,zz)
++    fitting=detail['central_pronged_fitting'];y,z=fitting['center_producer_y_z_m']
++    cup=sample_open(fitting['cup_offsets_z_y_m'],6)
++    tube('source_near_central_open_fitting',[[width(y+dy)+.060,y+dy,z+dz] for dz,dy in cup],fitting['tube_radius_m'])
++    for dz in [-.035,0,.035]:
++        lean=0 if dz==0 else math.copysign(.006,dz)
++        local=[[dz,-.016],[dz,.015],[dz+lean,.034]]
++        tube('source_near_central_fitting_prong',[[width(y+dy)+.060,y+dy,z+zz] for zz,dy in local],.0030)
++    for dz in [-.038,.038]:pin('source_near_fitting_attachment_inferred',y-.020,z+dz)
++    for item in f:
++        values=item.get('path',[item.get('start'),item.get('end')])
++        if not all(math.isfinite(x) for v in values for x in v):raise ValueError('Nonfinite detail witness')
++    return f
+--- /dev/null
++++ b/chicago/4d/tools/transport/brougham/static_master.py
+@@ -0,0 +1,74 @@
++# SPDX-License-Identifier: GPL-3.0-or-later
++"""Original static master references derived from actual source geometry.
++
++Conservative metadata only. No runtime collision, boarding, rein, door, occupant
++or team coupling is enabled; proposed hand/foot frames are not human-fit proof.
++"""
++import math
++import struct
++from index_streams import attribute_rows
++
++
++def static_master_contract(doc, binary, world, source_sha256):
++    if len(source_sha256)!=64 or any(c not in '0123456789abcdef' for c in source_sha256):
++        raise ValueError('Actual source hash required')
++    parent={child:i for i,n in enumerate(doc['nodes']) for child in n.get('children',[])}
++    named={n['name']:i for i,n in enumerate(doc['nodes']) if n['name'].startswith('vehicle_')}
++    batches={};groups={}
++    def points(prim,i):
++        return [[v[k]+world[i][k] for k in range(3)] for raw in attribute_rows(doc,binary,prim['attributes']['POSITION']) for v in [struct.unpack('<fff',raw)]]
++    def bound(ps):
++        if not ps or not all(math.isfinite(v) for p in ps for v in p):raise ValueError('Finite nonempty source component required')
++        return {'min':[min(p[k] for p in ps) for k in range(3)],'max':[max(p[k] for p in ps) for k in range(3)]}
++    for i,n in enumerate(doc['nodes']):
++        if 'mesh' not in n:continue
++        frame=parent[i];group=frame
++        while not doc['nodes'][group]['name'].startswith('vehicle_'):
++            group=parent[group]
++        name=doc['nodes'][group]['name']
++        for prim in doc['meshes'][n['mesh']]['primitives']:
++            ps=points(prim,i);key=(frame,prim['material'])
++            if key in batches:raise ValueError('Expected one raw source batch per frame/material')
++            batches[key]=ps;groups.setdefault(name,[]).extend(ps)
++    parts=[]
++    required_parts={'interior_floor','driver_footboard','rounded_empty_driver_cushion','door_step','deep_U_closed_door'}
++    for index,p in enumerate(doc['extras']['parts']):
++        if p['name'] not in required_parts:continue
++        frames=[i for i,n in enumerate(doc['nodes']) if n['name']==p['frame']]
++        if len(frames)!=1:raise ValueError('Unambiguous measured source part frame required')
++        start=3*p['triangle_start_in_batch'];stop=start+3*p['triangles'];stream=batches[(frames[0],p['material'])]
++        if not 0<=start<stop<=len(stream):raise ValueError('Source component range outside batch')
++        parts.append({'part_index':index,'name':p['name'],'bounds_root_m':bound(stream[start:stop])})
++    def selected(name):return [p for p in parts if p['name']==name]
++    def side_part(name,sign):
++        ps=[p for p in selected(name) if (p['bounds_root_m']['min'][0]+p['bounds_root_m']['max'][0])*sign>0]
++        if len(ps)!=1:raise ValueError('One measured source '+name+' required per side')
++        return ps[0]
++    def one(name):
++        ps=selected(name)
++        if len(ps)!=1:raise ValueError('One source component required: '+name)
++        return ps[0]['bounds_root_m']
++    def center(b):return [(a+c)/2 for a,c in zip(b['min'],b['max'])]
++    def frame(name):return list(world[named[name]])
++    def target(name,p,basis,inward_side=0):
++        return {'name':name,'parent':'vehicle_root','translation_root_m':p,'rotation_xyzw':[0,-inward_side*math.sqrt(.5),0,math.sqrt(.5)] if inward_side else [0,0,0,1],'grade':'reconstructed','basis':basis,'dynamic_binding_supported':False}
++    floor=one('interior_floor');footboard=one('driver_footboard');driver=frame('vehicle_seat_driver');bench=one('rounded_empty_driver_cushion')
++    anchors=[];entries=[]
++    for side,sign in [('left',1),('right',-1)]:
++        step=side_part('door_step',sign)
++        door=side_part('deep_U_closed_door',sign)
++        b=step['bounds_root_m'];c=center(b);c[1]=b['max'][1]
++        anchors.extend([target('vehicle_step_reference_'+side,c,'Source tread-bounds upper-plane datum only; not a validated foot contact or traversable tread',sign),target('vehicle_boarding_'+side,[sign*(max(abs(b['min'][0]),abs(b['max'][0]))+.30),0,c[2]],'Original ground approach300mm outside source step extent; not an obstacle-cleared route',sign),target('vehicle_rein_'+side,[sign*(bench['max'][0]-bench['min'][0])*.15,driver[1]+.20,driver[2]+.30],'Original prospective driver hand target200mm above/300mm forward of seat datum; no rein fitting or human pose attested')])
++        anchors.append(target('vehicle_door_entry_'+side,center(door['bounds_root_m']),'Closed lower-leaf bounds center facing inward; no door pivot or open passage',sign))
++        entries.append({'side':side,'door_part_index':door['part_index'],'closed_door_bounds_root_m':door['bounds_root_m'],'step_part_index':step['part_index'],'step_bounds_root_m':b,'floor_bounds_root_m':floor,'ground_to_step_top_m':b['max'][1],'step_top_to_floor_top_m':floor['max'][1]-b['max'][1],'entry_aperture_available':False,'door_operation_supported':False,'hinge_and_sweep_clearance_validated':False,'note':'Closed door blocks entry; profile bounds and vertical rises are source geometry measurements, not an open aperture or feasible human passage'})
++    seats=[]
++    for name in ['vehicle_seat_driver','vehicle_seat_passenger_01','vehicle_seat_passenger_02']:
++        p=frame(name)
++        if name.endswith('driver'):
++            feet=[[x,footboard['max'][1],center(footboard)[2]] for x in [-.16,.16]]
++            surface=footboard
++        else:
++            feet=[[p[0]+x,floor['max'][1],max(floor['min'][2]+.05,min(floor['max'][2]-.05,p[2]+.55))] for x in [-.08,.08]]
++            surface=floor
++        seats.append({'node':name,'pelvis_reference_root_m':p,'prospective_feet_root_m':feet,'feet_reference_surface_bounds_root_m':surface,'fit_validated':False,'basis':'Existing seat datum; original prospective foot placement on measured floor/footboard only, not a portable-human pose'})
++    return {'revision':'static_master_interfaces_v1','source_master_sha256':source_sha256,'frame':{'units':'m','up':'+Y','forward':'+Z','root':'vehicle_root'},'grade':'reconstructed','named_targets':anchors,'seats':seats,'entries':entries,'collision_proxy':{'kind':'compound_conservative_root_AABBs','components':[{'source_frame':n,'bounds_root_m':bound(ps)} for n,ps in sorted(groups.items())],'all_source_vertices_covered':True,'runtime_enabled':False,'purpose':'Coarse static obstacle candidate for later validation; includes closed glass/cabin and fills spoke/underbody gaps; not occupied containment, picking or physics'},'hitch':{'node':'vehicle_hitch_team','parked_translation_root_m':frame('vehicle_hitch_team'),'hitch_ready_pose_available':False,'team_coupling_supported':False,'note':'Measured static parked-down pole tip, not working-height coupling; no invented pole pivot or horse binding'},'door_geometry':{'owned_parts':['deep_U_closed_door','side_door_glass'],'independent_door_node_available':False,'hinge_axis_known':False},'capabilities':{k:False for k in ['driver_passenger_fit','boarding','rein_binding','door_operation','hitch_team_coupling','runtime_collision','steering_wheel_animation','traffic']},'limits':['All coordinates and dimensions not attested by catalogue remain reconstruction','No actual human, entry sweep, continuous clearance, animated collision or horse force/profile qualification','Metadata does not enable a visitor interaction or replace final static and photographic acceptance']}
+--- a/chicago/4d/tools/transport/check_parked_placements.py
++++ b/chicago/4d/tools/transport/check_parked_placements.py
+@@ -19,7 +19,7 @@
+             ids.add(row['id'])
+             assert len(row['at_local_enu_m']) == 2 and all(math.isfinite(x) for x in row['at_local_enu_m'])
+             assert math.isfinite(row['bearing_deg'])
+-            assert row['liberty'] == ('L-covered-wagons-2980' if row['model'] in COVERED_MODELS else 'L-parked-vehicles-2979')
++            assert row['liberty'] == ('L-brougham-parked-2794' if row['model'] == 'studebaker_brougham_1893' else 'L-covered-wagons-2980' if row['model'] in COVERED_MODELS else 'L-parked-vehicles-2979')
+             assert row['note'] and row['location']
+             for source in row['source_ids']:
+                 assert (ROOT/f'data/sources/{source}.json').is_file(), ('Missing source', source)
+@@ -32,6 +32,11 @@
+                 assert row['at_local_enu_m'] == old['at_local_enu_m'], 'Replacement must keep its existing stand'
+                 assert row['bearing_deg'] == old['bearing_deg'], 'Replacement must keep its existing bearing'
+                 assert row['belongs_to'] == old.get('belongs_to'), 'Do not invent a vehicle owner'
++            elif row['model'] == 'studebaker_brougham_1893':
++                assert year == '1904' and row['id'] == 'prairie_parked_studebaker_brougham', 'Catalogue type never backdated or aliased'
++                assert row.get('belongs_to') is None and not row.get('replaces'), 'No owner claim or existing C02 rebranding'
++                assert row['at_local_enu_m'] == [1397.9, -3240.0] and row['bearing_deg'] == 178.99, 'Explicit separately qualified reconstructed stand'
++                assert row['source_ids'] == ['studebaker_1893_illustrated_souvenir']
+             else:
+                 assert row['model'] == 'carriage_c02' and year == '1904', 'Never backdate the enclosed carriage'
+                 assert not row.get('replaces') and row.get('belongs_to') is None
+@@ -41,6 +46,20 @@
+         assert (ROOT/'renderers/web'/path).is_file(), ('Missing model', path)
+         assert len(model['wheel_contacts_m']) == 4
+         assert all(len(p) == 2 and all(math.isfinite(x) for x in p) for p in model['wheel_contacts_m'])
++    if 'studebaker_brougham_1893' in record['models']:
++        spec = record['models']['studebaker_brougham_1893']
++        assert spec['file'] == 'transport/parked-brougham/brougham-near.glb'
++        assert spec['wheel_contacts_m'] == [[-.67,-1.15],[.67,-1.15],[-.67,1.15],[.67,1.15]]
++        assert spec['static_support_contacts_m'] == [[-.0325,0,3.725],[.0325,0,3.725],[-.0325,0,3.825],[.0325,0,3.825]]
++        ref = spec['design_reference']
++        assert ref['confidence'] == 'attested' and ref['sources'] == ['studebaker_1893_illustrated_souvenir']
++        assert spec['delivery_lods'] == {'near':'transport/parked-brougham/brougham-near.glb','runtime_distance_selection_enabled':False}
++        assert sum(r['model'] == 'studebaker_brougham_1893' for r in record['scenes']['1904']) == 1
++        # The pre-existing unidentified reconstruction remains separate at its exact stand.
++        generic = [r for r in record['scenes']['1904'] if r['id'] == 'prairie_parked_carriage']
++        assert len(generic) == 1 and generic[0]['model'] == 'carriage_c02'
++        assert generic[0]['at_local_enu_m'] == [1397.6,-3228.2] and generic[0]['bearing_deg'] == 178.99
++        assert not record['models']['carriage_c02'].get('design_reference'), 'Catalogue must not retrospectively brand generic C02'
+     validate_covered(record, originals, ROOT)
+     return len(ids)
+ 
+--- a/chicago/4d/tools/transport/wagon_covered/check.py
++++ b/chicago/4d/tools/transport/wagon_covered/check.py
+@@ -27,7 +27,10 @@
+                 elif yard_source[end] == '}': depth -= 1
+                 end += 1
+         assert hashlib.sha256(yard_source[start:end].encode()).hexdigest() == contract['sha256'], 'Original seeded finish contract changed; re-audit its legacy colors'
+-    assert set(record['models']) == {'wagon_w01', 'carriage_c02'} | COVERED_MODELS, 'Unknown model family'
++    # This checker owns the covered subset. Keep every existing required family,
++    # allow only the separately validated named Brougham addition, reject all others.
++    required_models = {'wagon_w01', 'carriage_c02'} | COVERED_MODELS
++    assert required_models <= set(record['models']) <= required_models | {'studebaker_brougham_1893'}, 'Unknown or missing model family'
+     variants = {v['asset_id']: v for v in recipe['variants']}
+     products = {v['model']: v for v in source['variants']}
+     assert set(variants) == set(products) == COVERED_MODELS, 'Only two reviewed covered variants'
+--- a/chicago/4d/tools/transport/wagon_covered/test_identity.py
++++ b/chicago/4d/tools/transport/wagon_covered/test_identity.py
+@@ -12,6 +12,12 @@
+ record = json.loads((ROOT/'data/transport/parked/placements.json').read_text())
+ originals = {r['id']: r for r in json.loads((ROOT/'data/yard/town_trade_goods.json').read_text())['wagons']}
+ assert validate_covered(record, originals, ROOT) == 2
++# Both pre-existing and new separately validated families must retain the same covered subset.
++without_brougham = deepcopy(record)
++without_brougham['models'].pop('studebaker_brougham_1893', None)
++for rows in without_brougham['scenes'].values():
++    rows[:] = [row for row in rows if row['model'] != 'studebaker_brougham_1893']
++assert validate_covered(without_brougham, originals, ROOT) == 2
+ cases = []
+ 
+ 
+@@ -38,6 +44,8 @@
+ refuse('bearing cannot change', lambda c, o: covered(c).update(bearing_deg=356.3))
+ refuse('no unreviewed individual substitution', lambda c, o: covered(c).update(replaces='town_wagon_western_hotel_wagon_yard_2'))
+ refuse('no duplicate covered replacement', lambda c, o: c['scenes']['1835'].append(deepcopy(covered(c))))
++refuse('unknown family cannot use optional Brougham allowance', lambda c, o: c['models'].__setitem__('unreviewed_family', deepcopy(c['models']['carriage_c02'])))
++refuse('required generic family cannot disappear', lambda c, o: c['models'].pop('carriage_c02'))
+ 
+ 
+ def wrong_era(candidate, old):

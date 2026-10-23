@@ -1,0 +1,50 @@
+--- stopped-fresh2f/collect-GET-only.py
++++ immutable-source-snapshot/collect-GET-only.py
+@@ -174,6 +174,10 @@
+  else:need(guard is None,'Unpriced extra guard run is not allowed')
+  expected_events['.github/workflows/chicago-4d-moving-frames.yml']=price['moving_required_event']
+  need(all(x.get('event')==expected_events[x['path']] for x in normal),'Normal trigger route does not match actual final diff')
++ need(release.get('source_snapshot_only') is True,'Explicit immutable source-snapshot-only release required')
++ prior_path=pathlib.Path(release['prior_observer_terminal_path']);prior_raw=prior_path.read_bytes();need(sha(prior_raw)==release.get('prior_observer_terminal_sha256'),'Original stopped observer byte binding differs');prior=json.loads(prior_raw)
++ need(prior['status']=='STOPPED_WITH_EVIDENCE' and prior['head']==head and prior['tree']==tree and prior['base_sha']==base and prior['merge_sha']==merge and prior['deadline_utc']==release.get('source_snapshot_deadline_utc'),'Original source-snapshot/deadline differs')
++ source_deadline=datetime.datetime.fromisoformat(prior['deadline_utc']);need((source_deadline-datetime.datetime.now(datetime.timezone.utc)).total_seconds()>0,'Original150min deadline expired; no reset authorized')
+  out=a.output.resolve();need(out.is_relative_to('/workspace/shared') and not out.exists(),'Fresh shared output required')
+  # A persistent exact-head lock prevents duplicate owners, even after interruption.
+  for proc in pathlib.Path('/proc').iterdir():
+@@ -181,9 +185,9 @@
+   try:args=[x.decode(errors='replace') for x in (proc/'cmdline').read_bytes().split(b'\0') if x]
+   except (FileNotFoundError,PermissionError,ProcessLookupError):continue
+   need(not(args and 'python' in pathlib.Path(args[0]).name and any(x.endswith('/collect-GET-only.py') for x in args[1:]) and '--release' in args),'A GET collector is already live; no duplicate owner')
+- lock=pathlib.Path('/workspace/shared')/('human-standing-1175-'+head+'.GET-owner.lock');lock.mkdir(exist_ok=False);out.mkdir(exist_ok=False)
+- started=time.monotonic();deadline=started+150*60;counter=0;audited={};bound={};last=None;workflow_ids={}
+- state={'status':'GET_COLLECTING','focused_town_proof':focused_proof,'qualification_pass':False,'ci_only_pass':False,'ready_for_root_fresh_merge_review':False,'collection_mode':'CI_ONLY','head':head,'tree':tree,'base_ref':'dev','base_sha':base,'merge_sha':merge,'pr':1175,'branch':BRANCH,'observer_pid':os.getpid(),'started':now(),'deadline_utc':(datetime.datetime.now(datetime.timezone.utc)+datetime.timedelta(minutes=150)).isoformat(),'poll_seconds':61,'max_minutes':150,'collector_sha256':sha(source.read_bytes()),'release_sha256':sha(a.release.read_bytes()),'dispatch_receipt_sha256':sha(receipt_path.read_bytes()),'POSTs':0,'reruns':0,'cancellations':0,'scope':'CI_ONLY exact-head remote18+normal4+guardedbake1 with exact head/base/workflow/job/log bindings. Supplementary local stress failures remain documented separately. No final qualification, merge readiness or merge permission is supplied.'}
++ lock=pathlib.Path('/workspace/shared')/('human-standing-1175-'+head+'.SOURCE-SNAPSHOT.GET-owner.lock');lock.mkdir(exist_ok=False);out.mkdir(exist_ok=False)
++ started=time.monotonic();deadline=started+min(150*60,(source_deadline-datetime.datetime.now(datetime.timezone.utc)).total_seconds());counter=0;audited={};bound={};last=None;workflow_ids={}
++ state={'status':'GET_COLLECTING','focused_town_proof':focused_proof,'qualification_pass':False,'ci_only_pass':False,'ready_for_root_fresh_merge_review':False,'collection_mode':'CI_ONLY','head':head,'tree':tree,'base_ref':'dev','base_sha':base,'merge_sha':merge,'pr':1175,'branch':BRANCH,'observer_pid':os.getpid(),'started':now(),'deadline_utc':source_deadline.isoformat(),'source_snapshot_only':True,'live_target_eligible':False,'prior_stopped_observer':str(prior_path),'prior_stopped_observer_sha256':sha(prior_raw),'poll_seconds':61,'max_minutes':150,'collector_sha256':sha(source.read_bytes()),'release_sha256':sha(a.release.read_bytes()),'dispatch_receipt_sha256':sha(receipt_path.read_bytes()),'POSTs':0,'reruns':0,'cancellations':0,'scope':'HISTORICAL IMMUTABLE SOURCE-SNAPSHOT CI_ONLY: exact2f remote18+normal4+guardedbake1 at pinned runbase459/checkout642. Live DEV/base/merge drift is separately recorded and never supplies target eligibility. Actual job/attempt/source/workflow/checkout guards unchanged; no final qualification, merge readiness or merge permission.'}
+  save(out/'owner.json',state);save(lock/'owner.json',{'pid':os.getpid(),'output':str(out),'release':str(a.release),'started':state['started']})
+  def api(label,endpoint,kind='json'):
+   nonlocal counter
+@@ -203,9 +207,10 @@
+   return {'file':str(stem.with_suffix('.stdout')),'bytes':len(result.stdout),'sha256':sha(result.stdout)}
+  def bind_pr():
+   pull=api('PR1175','pulls/1175')
+-  need(pull['state']=='open' and pull['head']['sha']==head and pull['head']['ref']==BRANCH and pull['head']['repo']['full_name']==REPO and pull['base']['ref']=='dev' and pull['base']['sha']==base and pull['merge_commit_sha']==merge,'PR source/base/merge changed; qualification held')
++  need(pull['state']=='open' and pull['head']['sha']==head and pull['head']['ref']==BRANCH and pull['head']['repo']['full_name']==REPO and pull['base']['ref']=='dev','Open PR/repository/source route changed; immutable source snapshot held')
+   need(api('human-ref','git/ref/heads/'+BRANCH)['object']['sha']==head,'Human source ref moved')
+-  return {k:pull.get(k) for k in ['number','state','draft','mergeable','mergeable_state','updated_at']}
++  live_dev=api('live-dev-ref','git/ref/heads/dev')['object']['sha'];need(re.fullmatch('[a-f0-9]{40}',live_dev) is not None,'Invalid fresh DEV ref')
++  return {**{k:pull.get(k) for k in ['number','state','draft','mergeable','mergeable_state','updated_at']},'immutable_test_snapshot':{'head':head,'tree':tree,'run_base_sha':base,'job_checkout_merge_sha':merge},'live_target':{'base_ref':pull['base']['ref'],'base_sha':pull['base']['sha'],'merge_commit_sha':pull.get('merge_commit_sha'),'mergeable':pull.get('mergeable'),'mergeable_state':pull.get('mergeable_state'),'dirty':pull.get('mergeable_state')=='dirty','fresh_dev_ref_sha':live_dev,'target_advanced':pull['base']['sha']!=base or live_dev!=base,'merge_snapshot_changed':pull.get('merge_commit_sha')!=merge,'eligible_for_merge':False}}
+  def retain_failure(run,jobs):
+   evidence={'run':run,'jobs':jobs,'job_logs':[],'retrieval_errors':[]}
+   for job in jobs.get('jobs',[]):
+@@ -286,8 +291,9 @@
+     checks={c['url']:c for c in state['final_check_runs']['check_runs']}
+     for proof in audited.values():
+      check=checks.get(proof['check_run_url']);need(check is not None and check['head_sha']==head and check['status']=='completed' and check['conclusion']=='success' and check['name']==proof['job_name'],'Final check-run/job binding differs')
++    state['final_pr_state']=bind_pr()
+     need(audit_ci_only_scope(release,head,baseline)==focused_proof,'Pinned CI_ONLY canonical/local evidence changed during remote collection')
+-    state.update(status='CI_ONLY_ACTUAL_23_QUALIFIED',ci_only_pass=True,qualification_pass=False,ready_for_root_fresh_merge_review=False);break
++    state.update(status='CI_ONLY_SOURCE_SNAPSHOT_23_VERIFIED',ci_only_pass=True,qualification_pass=False,ready_for_root_fresh_merge_review=False);break
+    remaining=min(61-(time.monotonic()-tick),deadline-time.monotonic())
+    # Never block the steward for >60s; cadence remains at least61s.
+    while remaining>0:

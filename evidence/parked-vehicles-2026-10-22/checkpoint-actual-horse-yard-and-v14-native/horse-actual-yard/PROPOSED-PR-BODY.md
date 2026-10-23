@@ -1,0 +1,5 @@
+Adds one reconstructed standing horse beside the1835Western Hotel stable, with bounded lazy loading, source credit and a selectable evidence card. Light mode avoids fetching the model; full/balanced use the original licensed skinned source with disclosed scale/support placement and a cloned nonmetallic material response. A tiny pre-upload yard-triangle cache supports the animal after mobile CPU arrays are released.
+
+Validation on pushed0b051fd: full preflight1047checks/381self-tests, published mirror, actual1280x800desktop and390x780coarse-pointer mobile passed. Four actual yard PNGs were reviewed; contact samples, no-fetch/disposal, confidence/picking and original source-byte guards passed. The first welcome-entry test failure and precise caller correction are preserved.
+
+This is an untied, unhitched, unmounted static development example. Photographic/anatomical refinement, tack, movement and riding remain open underT-2800. Depends on the person integration inPR1175; final DEV integration and any newly affected checks must be completed before merge.
