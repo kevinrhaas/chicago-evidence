@@ -23,6 +23,9 @@ DEST.mkdir(parents=True, exist_ok=True)
 selected = [WORK / name for name in ['ARCHIVES.json', 'RECOVERY.md', 'PR-SNAPSHOT.json', 'SCHOOL-SELECTION.json']]
 selected += sorted(WORK.glob('*.py'))
 selected += sorted((WORK / 'archives').iterdir())
+selected += sorted((WORK / 'publications').glob('*.json'))
+if (WORK / 'TICKETS-POINTER-RECEIPT.json').exists():
+    selected.append(WORK / 'TICKETS-POINTER-RECEIPT.json')
 assert selected and all(p.is_file() and not p.is_symlink() for p in selected)
 copied = []
 for source in selected:
@@ -63,5 +66,8 @@ for row in verify:
     assert len(data) == row['bytes'] and hashlib.sha256(data).hexdigest() == row['sha256'], row['path']
     receipt['remote_readback'].append({'path': row['path'], 'git_blob': blob_sha, 'bytes': len(data), 'sha256': row['sha256'], 'status': 'PASS'})
 (WORK / 'LATEST-PUBLICATION.json').write_text(json.dumps(receipt, indent=2) + '\n')
+history = WORK / 'publications'
+history.mkdir(exist_ok=True)
+(history / (head + '.json')).write_text(json.dumps(receipt, indent=2) + '\n')
 assert not run(['git', 'status', '--porcelain']).stdout
 print(json.dumps({'commit': head, 'remote_main': remote, 'remote_readback_files': len(verify), 'status': 'PUBLISHED_AND_READBACK_PASS', 'index': f'https://github.com/kevinrhaas/chicago-evidence/blob/{head}/{REL}/RECOVERY.md'}, indent=2))
