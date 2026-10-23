@@ -1,0 +1,11 @@
+# Actual source-specific checkpoint, 2026-10-23 00:48 UTC
+
+PR1175 source3f73940923 completed both current desktop/mobile part14 with140 assertions and0 failures each, plus all four normal source checks. This proves that source and its DEV73 base, not newer DEV. A fresh ordinary merge audit refused the dirty branch; no merge attempted. Selected incoming workflow39880078603 was dispatched once against actual DEVb6eb3e5f after verifying and releasing root-owned leaseae423. Sole GET watcher session62305/PID2094569; do not duplicate dispatch or polling. The abandoned1c8 guarded attempt performed no mutation.
+
+DEV73→1c8 changes building date wording and sources graph; no numeric date bounds or render geometry change, including byte-identical Glessner light BIN. Subsequent1c8→b6 introduces actual Ames1904 +543 triangles/+1 material, and analysis tooling; fresh affected date/source and1904 rendered qualification is needed after incoming push. Do not import old proofs as whole-current PASS.
+
+Carriage1213 stagedtree d6aff82fac67dfac64d8c1c483d53edff55e1d22 has23 files, genuine22,238-triangle mid LOD and Brougham-only fetch/parse loader repair. Fullgate67595 owns the exclusive local heavy lane; not yet terminal at checkpoint. Agentcarriage_gate_commit will commit/push only if PASS, then do actualHEAD/publication checks. Original desktop native silhouette comparison is accepted narrowly; repaired mobile four-image native comparison PASS7.376s/zero browser errors was personally viewed by root. Both preceding actual loader failures remain failures and are included. No whole-world/photo acceptance or original7placement change.
+
+W01V3B actual four-image capture passed technically but root rejected washed MDF-looking wood. Its source and failure history are preserved. ReplacementV4B uses official CC0 PolyHaven fine_grained_wood maps, unique grain without mirrored halves, corrected GL normal rotation and bounded1.5 exposure. Candidatee1e5b4f has a fresh original-pipeline reproduction13.14s; no app changes. Final fixed-camera four-image capture is HELD until carriage postpublication closes. No photographic claim.
+
+Horse1212 sourcea474 remains pushed/draft: mobile PASS, desktop overallFAIL on original timing/tail motion. Four original transport foundation tickets are done through1174; eight broader claims remain active. No production/admin changes.

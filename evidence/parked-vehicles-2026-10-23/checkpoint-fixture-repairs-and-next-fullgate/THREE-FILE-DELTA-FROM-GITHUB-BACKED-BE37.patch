@@ -1,0 +1,109 @@
+diff --git a/chicago/4d/docs/STATUS.md b/chicago/4d/docs/STATUS.md
+index 563fb6263..5fcc643cb 100644
+--- a/chicago/4d/docs/STATUS.md
++++ b/chicago/4d/docs/STATUS.md
+@@ -1,3 +1,29 @@
++## T-2800 — planted standing horse integration (2026-10-23)
++
++One reconstructed horse is placed in the 1835 Western Hotel yard with a
++12-second planted weight shift, a selectable provenance card and the existing
++host visibility, pause and resource-lifetime policies. The licensed canonical
++asset is `b479442c`. Its standard-loader standing check passed all 65 keys and
++64 midpoints. Actual published mobile/desktop qualification is still pending;
++photographic anatomy, walking, tack, teams and riding remain open.
++
++The complete serial preflight on the preceding tree finished with three failures
++among 1054 steps. Two exposed a test that mistook the deliberately inherited
++`CHECK_JOBS=1` for the default policy. Its child-local four-core and one-core
++fixtures now test the documented defaults independently of caller settings;
++the production harness is unchanged. Both focused harness modes pass, and a
++forced-serial-default negative control still fails the four-core assertion.
++
++The lap-lock fixture also failed its mid-rebuild case. Its original nested-CLI
++diagnostic passed on the subsequent quiet reproduction, so neither a production
++locking defect nor a particular resource failure is established. The fixture now
++executes the real sibling CLI in the rebuild process on its first `--run`, then
++independently verifies the real live marker before the original race assertions.
++This removes one nested Node process. Production lock scripts are unchanged;
++the integrated test passes and omitting the lock still fails both setup and race
++checks. All original nonpasses are retained. These focused results do not replace
++the new exact-tree complete preflight required before committing this change.
++
+ ## T-1789 — connected Bardwell waistcoat source repair (2026-10-22)
+ 
+ Actual published-town front inspection of the qualified Bardwell asset showed a
+diff --git a/chicago/4d/tools/test_check_harness.sh b/chicago/4d/tools/test_check_harness.sh
+index 4b5fde0b9..6ba1e64e3 100755
+--- a/chicago/4d/tools/test_check_harness.sh
++++ b/chicago/4d/tools/test_check_harness.sh
+@@ -343,13 +343,13 @@ fi
+ 
+ # THE DEFAULT ITSELF. T-1289 built the pool and left it off, and for three months the
+ # only caller that turned it on was CI — so the sandbox that could not afford a serial
+-# gate was the one running one. A default back at 1 is that regression, silently.
+-default_jobs="$(bash -c 'source tools/check_harness.sh; printf "%s" "$CHECK_JOBS"')"
+-if [ "$default_jobs" -gt 1 ] 2>/dev/null; then
+-  ok "the pool is on by default ($default_jobs jobs on $(nproc 2>/dev/null || echo '?') cores)"
+-else
+-  bad "CHECK_JOBS defaults to [$default_jobs] — a serial gate does not fit a 600 s run (T-1578)"
+-fi
++# gate was the one running one. Returning 1 on four available cores is that regression.
++# Child-local CPU fixtures isolate policy from outer CHECK_JOBS/math-thread limits;
++# one actual available core legitimately defaults to 1.
++default_jobs="$(bash -c 'unset CHECK_JOBS; nproc() { printf "4\n"; }; source tools/check_harness.sh; printf "%s" "$CHECK_JOBS"')"
++want "$default_jobs" "4" "the default uses all four available fixture cores"
++one_core_jobs="$(bash -c 'unset CHECK_JOBS; nproc() { printf "1\n"; }; source tools/check_harness.sh; printf "%s" "$CHECK_JOBS"')"
++want "$one_core_jobs" "1" "a single available fixture core legitimately defaults to one job"
+ want "$(CHECK_JOBS=1 bash -c 'source tools/check_harness.sh; printf "%s" "$CHECK_JOBS"')" "1" \
+      "…and an explicit CHECK_JOBS still wins, which is the escape hatch"
+ 
+diff --git a/chicago/4d/tools/test_pr_lap_lock.mjs b/chicago/4d/tools/test_pr_lap_lock.mjs
+index 459aada8b..ee889b3cf 100644
+--- a/chicago/4d/tools/test_pr_lap_lock.mjs
++++ b/chicago/4d/tools/test_pr_lap_lock.mjs
+@@ -236,8 +236,18 @@ function lap({ lock = 'none', midLap = false, noTool = false, source = null }) {
+   // A sibling run, ready to take the lock from inside the lap if the case asks.
+   const sibling = runClone(box, 'sibling', bare);
+   const takeFromInside = midLap
+-    ? `import { spawnSync } from 'node:child_process';
+-spawnSync('node', [${JSON.stringify(path.join(sibling, 'chicago', '4d', 'tools', 'ticket.mjs'))}, 'lap', '${PR}', '--by', 'sibling run'], { cwd: ${JSON.stringify(sibling)} });
++    ? `import { pathToFileURL } from 'node:url';
++// This clean fixture rebuilds once with --run, then once with --tail. Invoke
++// the REAL CLI only on --run; a second take would correctly refuse the first.
++if (process.argv.includes('--run')) {
++  const savedCwd = process.cwd(), savedArgv = process.argv;
++  const ticket = ${JSON.stringify(path.join(sibling, 'chicago', '4d', 'tools', 'ticket.mjs'))};
++  process.chdir(${JSON.stringify(sibling)});
++  process.argv = [process.execPath, ticket, 'lap', '${PR}', '--by', 'sibling run'];
++  await import(pathToFileURL(ticket).href);
++  process.chdir(savedCwd);
++  process.argv = savedArgv;
++}
+ `
+     : '';
+   writeFileSync(path.join(tools, 'rederive.mjs'), `${takeFromInside}console.log('[1/1] ok');\n`);
+@@ -286,9 +296,12 @@ exit 0
+     env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, GH_TOKEN: 'fake', LAP_BASE: 'dev', LAP_ONLY: '' },
+   });
+   const after = git(box, '--git-dir', bare, 'rev-parse', 'refs/heads/claude/resume-1132').trim();
++  // Read from the outer test after the lap; the production lap only reads
++  // markers, so this independently proves the rebuild created a real live one.
++  const midLapMarker = midLap ? tool(sibling, 'lap', String(PR), '--status') : null;
+   rmSync(box, { recursive: true, force: true });
+   const out = `${r.stdout || ''}${r.stderr || ''}`;
+-  return { code: r.status, out, moved: after !== head, summary: (out.match(/^PR lap: .*$/m) || ['no summary'])[0] };
++  return { code: r.status, out, moved: after !== head, midLapMarker, summary: (out.match(/^PR lap: .*$/m) || ['no summary'])[0] };
+ }
+ 
+ console.log('\npr-lap.sh — a PR a live run is lapping is left to that run');
+@@ -310,6 +323,10 @@ console.log('\npr-lap.sh — a PR a live run is lapping is left to that run');
+ }
+ {
+   const r = lap({ lock: 'none', midLap: true });
++  check('the rebuild actually took a live sibling marker before judging the push guard',
++        r.midLapMarker?.code === 3 && /^held lap\/pr-7\b/.test(r.midLapMarker.out)
++          && /sibling run/.test(r.midLapMarker.out),
++        r.midLapMarker ? `exit ${r.midLapMarker.code}: ${r.midLapMarker.out}` : 'missing fixture marker read');
+   check('a lock taken WHILE the lap rebuilt stops the push — read again at the push',
+         !r.moved && /took lap\/pr-7 while this lap rebuilt — NOT pushed/.test(r.out), r.summary);
+   check('…and counts it being-lapped', /being-lapped=1/.test(r.summary), r.summary);

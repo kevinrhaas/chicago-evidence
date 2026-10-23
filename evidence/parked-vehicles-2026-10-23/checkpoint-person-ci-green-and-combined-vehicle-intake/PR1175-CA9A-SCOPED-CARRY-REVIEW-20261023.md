@@ -1,0 +1,24 @@
+# PR1175 current integration and scoped carry review
+
+This is a review of which earlier evidence remains applicable, NOT a statement that a new whole18-cell matrix passed. All original failures retain their verdicts.
+
+Actual pushed PR source is4766644295b5668084130fed80c6a18c9f0e6a04/treec9d944caaca53cce404e8706e0f92534fd8e52a3/parents64b126d52b49cb3576c9921b82bd2a7cf2cef802+58fd2216a9312295cefbcc08c301852db09ea199. Its localfullpreflight1048/381, committedHEAD checks and postpublication/site validation passed. Source remains protected onGitHub.
+
+Current immutable qualification source is GitHubtestmergeca9a89eb4108d09ff0a8f1941f5b7f2294cc0097/tree967213de77a9ca54ebadfbd2d165b6245474170d, directparents6c3603ff3019b8600a8945433f9196f4d861fd2d+4766644295b5668084130fed80c6a18c9f0e6a04. Its tree matches independent clean merge simulation. All63 protected source blobs match476; earlier64/476 integration receipts establish62 person/main/scene/runtime pins unchanged3f and only the expected upstreamHogan wording update in smoke. Entire current smoke SHA256d5d0d2974e4d1dc5cb9977a05402c85a4f5f4460dcef5d5953deb79d3fb68e45. No threshold/camera/budget/ground/gait assertion was weakened.
+
+## Fresh proof required before ordinary DEV merge
+
+Exactly four supported immutableca9a workflow requests: desktop/mobile3–4 and desktop/mobilefull14. These cover incoming building date wording, source graph/catalog changes, eight house summary branches, existing Glessner liberty-note expansion and the actual Ames1904 geometry change. Both full14 cells must pass their actual current rendered budget checks. The normalgate/humans/moving contexts must checkout the same reviewedtestmerge tree9672 and pass all required steps, alongside source476 report. Fresh base/head/ownedlease checks and normal native merge policy also remain required. At this review these jobs are PENDING; no merge is approved merely by this document.
+
+## Prior source-specific evidence and carry limits
+
+- Originalfe98 full18 matrix is COMPLETE12PASS/6FAIL, foreveroverallFAIL. Its passingboth5,6–7,8,13,15 results remain labeledfe98. Desktop13 reported160/0; all originalrawlogs/sourcepins are preserved in capsule206e43db and prior canonical checkpoints.
+- Authored248 repaired exactly the three obsolete assertions, with unchanged semantics: actual top-face111472→111470, actual1904 census174→201, and current Welcome/Reconstructed glossary entry after the Home control was removed upstream. Its full1048/381+HEAD/publication passed; repairedboth1–2 each194/0 andboth9–12 each69/0 passed (capsule5a50a741). These repairs are still present in unchangedd5 current smoke. The newer Hogan wording is independently inherited and qualified by the fresh mappeddate scopes.
+- Later8f/8fc actual14/15 and source3f actualboth14 passed with their own labels; source3f both14 were140/0 each, normalfour passed. These demonstrate earlier affected-source behavior but DO NOT substitute for currentca9a14 after Ames geometry and summary/date UI changes.
+- Earlierfocused8f UI observations retain original desktopTIMEOUT124 verdicts; separately observed mobile20/0 and returning-profile16/0 remain narrow evidence only. No timeout is relabeledPASS. Changelog source/publication/walkshim contract and source flags remain unchanged consumer logic; incoming feed entries are valid plain-text append with preserved prior suffix. Literal old catalog totals are NOT carried: current published source index is412.
+
+The unchanged1835 person/rig/garment/foot/identity/resident/role-card/main and scene evidence can carry only through the exact protected-pin receipts. New dated-building/source/story/inspect branches are covered by current3–4/full14 rather than inferred from old UI screenshots. The incoming73→1c8 audit found no physical/numericdate endpoint changes, including identical Glessnerlight BIN;1c8→b6 adds actualAmes+543tri/+1material, covered by current14. Subsequent58/6c changes add no geometry/actor placement/eligibility changes. Global source counts/prose and source-use aggregates must be read from the current publication, not copied from old totals.
+
+WagonW01 timber, new11706 Brougham distance geometry, C02replacement, horseidle/gait/driver/route studies are in OTHER branches or external proposals. None is included in this PR's currenttestmerge. Their evidence must not be imported as currentPR proof or called complete here. BroadT1789 photographic-library acceptance remains open even if this bounded foundation PR merges.
+
+Ordinary head-pinnedDEV merge is authorized only once the actual pending checks above pass, with reviewedsource/base and no bypass. Preserve this scope statement in final merge receipt/PR body; verify resulting tree9672 and the DEV deployment, then release ownlap. New unrelated upstream data/code requires finite review before any carry, not an automatic all-green claim.

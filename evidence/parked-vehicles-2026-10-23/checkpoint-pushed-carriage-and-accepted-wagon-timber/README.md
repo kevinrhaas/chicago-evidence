@@ -1,0 +1,11 @@
+# Pushed carriage checkpoint and accepted material increment
+
+CarriagePR1213 actualpushed0be5e645e016a212bd04eeda58e893472650d3d0/exacttreed6aff82fac67dfac64d8c1c483d53edff55e1d22. Fullgate1049checks/381selftestsPASS696.251s; committedHEADchecksPASS; postcommitpublish45.298s/mirror1.119sPASS/clean. PRdraft/bodytruthful, latestDEVb6notintegrated and actualworld/photo acceptancepending. No merge or ticketclosure claimed.
+
+Root personally reviewed all4actualV4B timberPNGs and accepts a bounded material increment. CorrectedunitPASS5.46s/zeroerrors/GL0/cleanupclosed. Original attemptFAILED3.28s on a stale embeddedV4Aassetpin, retained; corrected exactsinglehashdiff preservesview/light/ROI/errors/timing. Dark weathered timber improves flat tan baseline, but repeatedslantgrain/facetedgreenpaint/iron remain. No photographic completion. Normalfreshoriginalpipeline13.14s reproduced candidatee1e5b4f. Projectgeometry/chartsGPL3+, sourcepixelmapsCC0PolyHaven/RobTuytel, modernopticalanalogyonly. App intake is now assigned to carriageagent in existingcheckout after clean0be5, together with reviewedDEVb6 integration, followed by ONEnewauthoredfullgate beforecommit/push. No automaticmerge/photoclaim.
+
+Eight independentrootclaims renewed/pushed00:49UTC; the canonical repo commit is their lock (no embeddedclaimbranch exists in repo mode). Next expiry about03:49UTC. Claims have not been grouped. Rootsolecanonicalwriter. Earlier fourboundedticketcompletions1174 remain; broadparents remainopen/claimed until fullacceptance.
+
+PR1175 selectedincoming39880078603 started after guardedcancel of ONEblockingautomatedbroadintegration39879008747. No gate/smoke canceled; completedpushespreserved. SoleGETwatcher62305 watches acceptedrun. Historical3fcurrent14BOTH140/0+normalfourPASS retainexactsource; newerDEVb6needsfreshdateUI/1904qualification. Compact658pathaudit plus HELDfour-cell packet included, finalheadpinsunset.
+
+GaitV9 source-only mask was tested once2.184s andREJECTED: edge.06487–8.28369/area.03165–11.09850/38negative normals/minY−2.149mm. No export/activation. OriginalwalkingV8andnewV9failuresremain; anatomicalinfluencefieldneedsfurtherdesign. No localheavyworkactiveatthischeckpoint.

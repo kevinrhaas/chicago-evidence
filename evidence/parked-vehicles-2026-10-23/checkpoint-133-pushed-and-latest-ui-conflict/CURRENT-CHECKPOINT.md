@@ -1,0 +1,36 @@
+# People and transport handover — 2026-10-23, 05:55 UTC
+
+## Latest checkpoint: actual source pushed, one new integration test failure
+
+Vehicle PR1213 is now pushed and normally published at **13375406538e76e8c1deadf18165089f7145ea28**, tree **ea747ccc5dbd095522140a21f1cfcd11e7cbf9b7**, parents[cbb94c2d,575b4968]. Actual full preflight1,052steps/382selftests PASS651.869s, terminal05:35:22. ActualHEAD checks, normal publisher47.419s/mirror1.077s/site25.865s PASS05:37:11, build133754065/05:36:33Z. Heavy lane CLOSED05:37:46, closured362b92a. Complete63-file source/rawproof archive295439a0 is saved in the current checkpoint. The former active49579 gate is FINISHED/PASS; do not rerun it. App checkout is clean/frozen133; no new authored edits yet.
+
+New DEV progressed to **5135fb7674eea8cf5b140a7cf0c8bc208b0b1f4e**. Finite auditfb8fc2c8:575→a3d4070788785d1426e1c41d219d1b4a3b5f51c9 adds Ames roof−2,519native triangles and T3022 Inspect/Expert UI; a3→513 is only a three-file changelog fold. Transport assets/placements/terrain/LOD/caps/provider code are unchanged, but popup rendering and building inspection UI changed. Do not relabel old133 world output as latest513 output.
+
+Actual GitHub testmerge **36546dcf99d17f74c83262843b2b5f2025610216**, tree9929329a373328f4427716b2c449826d6d326f73, parents[a3,133], has a REAL normal gate failure: run39906632536/job120259990595, exactly1/1052steps red, `tools/test_brougham_card.mjs:36: Legacy popup HTML changed parked_western_hotel_wagon_yard_wagon`. Raw log/checkout proof saved. It is not a self-test failure. Report39906626618 is strictPASS; moving39906632519 remains collecting. Applicable-normal3 collector PID2350831/session52527 in `/workspace/shared/PR1213-1337540653-APPLICABLE-NORMAL3-TERMINAL-GET-owner1`; fixed IDs only/no reruns. Human workflow did not trigger because none of63 changed paths match its explicit filters: root reviewed pinned62048ede workflow/zero-match proof. Status is NOT_TRIGGERED, never fabricatedPASS; no human dispatch needed for this vehicle-only source.
+
+Carriage agent is preparing a SOURCE-ONLY minimal513 intake/test-baseline proposal outside the app. It must independently render unchanged legacy records with exact latestDEV513 popup.js+transitive code, then compare against the combined feature. Do not blindly rebaseline feature hashes or drop card facts. Root will review before authorizing actual incoming merge, exact fixture repair and ONE required gate/immediate push. No new app merge/gate/publisher is released yet. Sharedorigin/dev stays8249. Final merge guard remainsHELD; PR staysdraft/unmerged.
+
+## Actual world and harness state
+
+The fresh V4 freeze on133 completedPASS0.851s, PREPARED **887b6720ee6fe2a0ca818db9b2b2a676a15d935fb6fa84b3d5d17827485ef8c0**,57bytepairs/1062paths/current Glessner manifest/normal publisher transforms. Archivead73b1e8 and owner publication proof preserve the bridge.
+
+ONE1904desktop V4 unit ran and FAILED at270s during `readNormalVehicleWorld`; owned cleanup completed273.327s at05:45:23. Browser/server/all5adoptedchildren closed, no owned process remains. Three actual spawn frames were **4,569,463triangles/4,668draws**, within4.6M/7,800; Full, GL0/problems[]. No world result/card/controls/disposal measurement completed and **NO PNGs** were produced. Sole network event: optional1904people.json HEAD aborted in boot at64.6s. It remains an overallFAIL, capsulec094ad5d. Do not call it a visual pass or repeat it blindly.
+
+Geometry agent is preparing SOURCE-ONLY V5 harness correction: batch independent immutable fetch/body/hash work, cache those proofs once per unit, keep all live per-view geometry/LOD/contact/card/control assertions; passive subphase timings; move existing normal PNG before expensive reader and label unqualified until checks pass. Deadline/cameras/caps unchanged. The exact stalled substage is unproved; sequential await scheduling against expensive software frames is source-supported, not yet measured causality.
+
+Network policy correction is narrowly proposed and not executed: canonical smoke1759–1761 already ignores ERR_ABORTED; main4453 explicitly treats no-residents people-directory HEAD as optional and catches failure. V4’s zero-all-requestfailed criterion is stricter. Root permits a SOURCE-ONLY proposal classifying ONLY exact1904/no-residents/source-pinned URL+HEAD+ERR_ABORTED+boot as an optional probe, retaining all raw events and unproved directory availability. Every other HEAD/GET/GLB/KTX2/HTTP/page/console/GL failure stays fatal. OldV4FAIL staysFAIL. V5 must remain unbound until next actual source is pushed/published; no133freeze/browser released. No app changes, timer increase, camera movement, extra model injection or culler flag change. Fullculler staysOFF. Other three world units never ran.
+
+## Other parallel work
+
+Person integration agent prepared exact seven-file proposed resolution against vehicle133, compact capsule770b3575; primary `/workspace/chicago` remains clean/pushed person476. It preserves human assertions, both tooltip checks,222fixture,61person pins plus explicitly reviewed incoming main callback exception,38person-only paths and generated liberty union696. It awaits actual vehicle DEV landing and root intake release; no app/index/network/heavy changes. Later513 UI changes still need incorporation. Historical personca9 desktop14FAIL305over and original whole18FAIL12/6 remain unchanged.
+
+Horse V12 actual16-section preflight ran once0.357554s/73MiB, no solver/pose/field/model/export. It FAILED two hind nesting checks under the old V10 cropped mask, all16closed contours/hoof seeds/ground/protected anchors passed;128proposed V10-only foot-row previews, no rows applied. Capsule5b40af48 saved. Root released only source/scalar readback afterward. That readback proved all8 offending hind classes are39.94–97.85mm distal of originalb-plane, have actual edges into its already-proved domain and belong to crossing triangle stars deliberately cropped by old optimization. This is evidence for correcting the anatomical domain reference, not an erasedV12FAIL or physical gaitPASS. Horse agent is preparing a precise proposal; no new section/pose/solver/export execution authorized. PriorV10QP and65physicalFAIL remain.
+
+Wagon agent assessed1812: zero parked vehicles, versusfive1835/one1904. Minimum later candidate is one empty, unhitched reconstructed baggage-type wagon near firstfort exterior stable. Exact W01 bytes may be reusable after a dated construction check. Loader/schema/validator must add1812 narrowly; terrain proof must cover both wheels and all tongue vertices because parkTongue bypasses groundHeight. Existing horse4m²region does not qualify a wagon. No1812placement/app changes have been made.
+
+Latest recovery: `evidence/parked-vehicles-2026-10-23/checkpoint-133-pushed-and-latest-ui-conflict/`. Older detailed handover is saved there. Claimsrenewbefore06:40; own1175lease234funtil06:44:17 and1213lease47ecuntil06:59:44. No user input is needed. Continue fixing actual failures, checkpointing/pushing and working toward ordinary greenDEV landing. Rootsolecanonicalticketwriter, no production/admin/workflow changes or dishonest ticket completion.
+
+---
+
+The following is earlier source-specific context. Its former active gate states and next-step releases are superseded above.
+
