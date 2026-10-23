@@ -1,0 +1,14 @@
+Adds a visible transport-study gallery with an articulated W01 wagon, open C01 and enclosed C02 carriage, skinned horse, harness and coupling previews. The separate W01 driver-bench variant has a timber seat supported on both rails, retaining hardware and a floor-supported footboard. C02 includes a movable door with discrete collision checks. These remain reconstructed engineering studies with period and photographic acceptance open.
+
+Existing reconstructed1835 residents Otis Bardwell, Joseph Dufresne and Martin Flynn supply the named workwear references. The portable authoring/export path now offers an opt-in `sit_drive` study bound to the actual supported W01 bytes, preserving identity/date checks, the existing runtime, and ordinary idle/walk authoring. Canonical seated exports and actual clothed inspections run in the manual workflow; their current result is pending. Source and published bench browser probes are included in that qualification.
+
+Validation at `09a3ad1d4af7c87c5026de1077497d8a04a5a562` (tree `5e0bfad5fd30b322596efd469ab4dcc3f962c63d`):
+
+- Full preflight passed:1,016 steps, including377 deliberate refusal self-tests; changelog and ID checks passed. The saved command exit is0; the tool wrapper reported1 despite the complete passing transcripts, and this anomaly is retained in recovery evidence.
+- Actual published bench passed desktop1280×800 and mobile390×780 checks, eight views, steering/rolling/reset/touch controls, actual GLB hash, framing and zero page/console/GL errors. Browser/server cleanup completed.
+- Ten installed named-body pose checks and actual supported/baseline GLB substitution and cleanup regressions passed.
+- Fresh complete18-cell published smoke qualification and canonical workwear+seated qualification are dispatched at this exact revision. Remote results remain pending; merge is gated on their actual mandatory steps and ordinary PR checks.
+
+The fe414 dev geometry changes are incorporated. Further dev changes must remain cleanly mergeable and pass the final consistency audit. New horse neck and harness candidates and GPU traffic research remain outside the app; their separate progress does not qualify these installed studies. Photographic masters, complete tack/bit fit, actual occupied drivers/riders, main-scene traffic and boarding/riding remain open. No production promotion is included.
+
+Passed CI stdout union and artifact contents remain uninspected; no individual run/input pairing or photographic acceptance is inferred from workflow metadata. Durable source, measurements and handoff records are saved in chicago-tickets evidence/period-transport-2026-10-18/.

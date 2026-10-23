@@ -1,0 +1,3 @@
+New connected head ecab3aad is NOT accepted:84 strict non-edge-adjacent selfcrossings, all involving lip annuli/floors. Closed manifold/owned boundary controls and7negative topology controls pass; exact9688nonhead/ear oriented face remap/allvertexattributes,48portalbandattributes,bones,IBMs,sockets,clips pass. Failure demonstrates topology closure alone insufficient. No gear sweep, reroute or browser occurred. Archive preserves exact failed source/GLB/witnesses. Source-bounded ordered longitudinal/theta UV lip fix authorized in a new outside directory, pending. No app writes, no production acceptance.
+
+SHA256 318f05ce6012f3366465ba5f0ed64289eac380db27581ef330b824ee0f20c206

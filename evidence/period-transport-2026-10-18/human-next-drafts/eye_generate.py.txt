@@ -1,0 +1,56 @@
+"""Original CC0 procedural eye component study; no app or Blender edits."""
+import pathlib,json,math,hashlib
+from PIL import Image
+P=pathlib.Path(__file__).parent
+BODY=pathlib.Path('/workspace/chicago/chicago/4d/assets/authored/humans/makehuman_hm08/prepared_adult_25.json')
+d=json.loads(BODY.read_text());bones={b['name']:b for b in d['skeleton']};R=.012;IR=.0055;PR=.0022
+materials={'eyes__sclera':{'base_color':[.82,.79,.72,1],'roughness':.38},'eyes__iris':{'base_color':[1,1,1,1],'roughness':.42,'texture':'original_iris.png'},'eyes__pupil':{'base_color':[.002,.0015,.001,1],'roughness':.25},'eyes__cornea':{'base_color':[1,1,1,.05],'roughness':.045,'alpha_mode':'BLEND','limitation':'thin transparent highlight shell; no physically refractive cornea, no unsupported glTF extension'}}
+meshes={n:{'name':n,'material':n,'positions_m':[],'triangles':[],'uvs':[],'weights':[]} for n in materials};eyes=[]
+def add(a,b):return [x+y for x,y in zip(a,b)]
+def mul(a,w):return [x*w for x in a]
+def cross(a,b):return [a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]]
+def norm(a):return mul(a,1/math.sqrt(sum(x*x for x in a)))
+for side,cell in [('l',0),('r',1)]:
+ center=bones['eye_'+side]['head_m'];fwd=norm([b-a for a,b in zip(center,bones['eye_'+side]['tail_m'])]);right=norm(cross([0,1,0],fwd));up=norm(cross(fwd,right));eye={'side':side,'center_m':center,'forward':fwd,'radius_m':R,'iris_radius_m':IR,'pupil_radius_m':PR,'source':'actual prepared eye helper head/tail; radius and iris/pupil dimensions reconstructed, not inferred from bone length'};eyes.append(eye)
+ def pos(x,y,z):return add(center,add(mul(right,x),add(mul(up,y),mul(fwd,z))))
+ def rings(material,rs,zs,radialuv=False,N=64):
+  m=meshes[material];base=len(m['positions_m'])
+  for j,(r,z) in enumerate(zip(rs,zs)):
+   for k in range(N+1):
+    t=2*math.pi*k/N;x=r*math.cos(t);y=r*math.sin(t);m['positions_m'].append(pos(x,y,z));m['weights'].append({'eye_'+side:1.})
+    m['uvs'].append([(cell+.5+.45*x/IR)/2,.5+.45*y/IR] if radialuv else [(cell+.05+.9*k/N)/2,.05+.9*j/max(1,len(rs)-1)])
+  for j in range(len(rs)-1):
+   for k in range(N):
+    a=base+j*(N+1)+k;b=a+1;c=b+N+1;dd=a+N+1;m['triangles'].extend([(a,b,c),(a,c,dd)])
+ # Sclera excludes the anterior iris aperture. No opaque sphere cap covers iris.
+ theta0=math.asin(IR/R);angles=[theta0+(math.pi-.0001-theta0)*j/24 for j in range(25)]
+ rings('eyes__sclera',[R*math.sin(t) for t in angles],[R*math.cos(t) for t in angles])
+ plane=math.sqrt(R*R-IR*IR)
+ rings('eyes__iris',[PR,IR],[plane-.00008,plane-.00008],True)
+ rings('eyes__pupil',[.000001,PR],[plane-.00004,plane-.00004],True)
+ rs=[IR*j/12 for j in range(13)];zs=[plane+.0021*(1-(r/IR)**2) for r in rs]
+ rings('eyes__cornea',rs,zs)
+# Original radial fibers and limbal ring; no baked highlight/no sampled photograph.
+im=Image.new('RGB',(1024,512));pix=im.load()
+for y in range(512):
+ for x in range(1024):
+  u=((x%512)/511-.5)/.45;v=(y/511-.5)/.45;r=math.hypot(u,v);a=math.atan2(v,u)
+  fiber=.50+.20*math.sin(77*a+18*r)+.12*math.sin(139*a-11*r)+.08*math.sin(233*a+41*r)
+  ring=max(.13,1-.80*math.exp(-((r-.98)/.055)**2));radial=.65+.35*math.sin(min(1,r)*math.pi)
+  col=[.24,.14,.065];pix[x,y]=tuple(max(0,min(255,round(255*c*(.65+.65*fiber)*ring*radial))) for c in col)
+im.save(P/'original_iris.png')
+# Correct winding by expected radial/forward surface normal, and reject degeneracy.
+for mat,m in meshes.items():
+ corrected=[]
+ for a,b,c in m['triangles']:
+  v=[m['positions_m'][i] for i in (a,b,c)];u=[v[1][j]-v[0][j] for j in range(3)];w=[v[2][j]-v[0][j] for j in range(3)];n=cross(u,w)
+  if math.sqrt(sum(t*t for t in n))<1e-15:continue
+  side='l' if sum(t[0] for t in v)>0 else 'r';eye=next(e for e in eyes if e['side']==side);wanted=eye['forward'] if mat!='eyes__sclera' else [sum(t[j] for t in v)/3-eye['center_m'][j] for j in range(3)]
+  corrected.append([a,c,b] if sum(n[j]*wanted[j] for j in range(3))<0 else [a,b,c])
+ m['triangles']=corrected
+out={'license':'CC0-1.0','status':'original procedural anatomical component study; placement/fitting/physical eye response not accepted','body_input_sha256':hashlib.sha256(BODY.read_bytes()).hexdigest(),'eyes':eyes,'materials':materials,'meshes':list(meshes.values()),'hair':'not implemented; separate source/fitting/groom study remains required'}
+(P/'eyes.json').write_text(json.dumps(out,separators=(',',':'))+'\n')
+report={'eyes':eyes,'mesh_counts':{n:{'vertices':len(m['positions_m']),'triangles':len(m['triangles'])} for n,m in meshes.items()},'uv_bounds':{n:[min(v[a] for v in m['uvs']) for a in [0,1]]+[max(v[a] for v in m['uvs']) for a in [0,1]] for n,m in meshes.items()},'skin_weights':'one exact semantic eye influence per vertex','validation':'finite vertices/UVs, triangle indices, nonzero areas and outward winding checked; no Blender/glTF/browser execution','image_sha256':hashlib.sha256((P/'original_iris.png').read_bytes()).hexdigest()}
+for m in meshes.values():
+ assert all(math.isfinite(v) for p in m['positions_m'] for v in p);assert all(0<=x<=1 for uv in m['uvs'] for x in uv);assert all(min(f)>=0 and max(f)<len(m['positions_m']) for f in m['triangles'])
+(P/'validation.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report))

@@ -1,0 +1,38 @@
+{
+  "scope": "Read-only installed diff and existing pinned canary source/receipt audit; no rerun, browser, Blender, CI calls or app writes",
+  "blocking_findings": [],
+  "installed_change": {
+    "authored_only": true,
+    "fixture_command_text_unchanged": true,
+    "flags": ["--quantization-volume scene", "--level medium", "--quantize-normal 16"],
+    "source_glb_write_path_unchanged": true,
+    "texture_pipeline_unchanged": true,
+    "runtime_and_contract_threshold_changes": false,
+    "other_error_handling_changes": false
+  },
+  "pinned_source_evidence": {
+    "package_versions": "CLI/core/functions/extensions 4.5.0 checked by canary before execution",
+    "meshopt_source": "/tmp/hair-normal-450-npm/_npx/c14427ece02cd616/node_modules/@gltf-transform/functions/src/meshopt.ts",
+    "high_normal_cap": "Math.min(quantizeNormal,8)",
+    "medium_method": "QUANTIZE rather than high FILTER"
+  },
+  "canary_review": {
+    "actual_cli_processes_and_meshopt_decoder": true,
+    "actual_vendored_Three_BufferAttribute_normalized_reads": true,
+    "original_input_normal_unit_length": true,
+    "default_and_flag_only_reproduce_actual_error": 0.005252806465905091,
+    "medium16_error": 0.000002434157153174965,
+    "unchanged_normal_guard": 0.005,
+    "exact_asserted_cross_output_invariants": ["position storage", "joint indices", "inverse bind matrices", "node transforms", "UV storage", "weight storage", "joint lists"],
+    "medium_clip_equals_original_Float32_clip": true,
+    "high_vs_medium_clip_difference_disclosed": true,
+    "dependency_adapter": "Outside-only absolute cache and vendor paths; meaningful reproducible local evidence but not an app-portable installed test"
+  },
+  "limits": [
+    "Tiny single-joint three-vertex canary is numerical/codec evidence, not resident skin deformation or rendered-quality proof.",
+    "Cross-output invariants compare attribute storage and node transforms; they do not constitute general actual resident surface correspondence qualification.",
+    "Medium changes compression/filter strategy and may change authored derivative sizes or animation rounding; existing full resident contract, frame comparison, validator, budgets and browser checks remain required.",
+    "Comment preserve unit hair normals means bounded quantization error, not mathematically exact unit normals. Actual new resident outputs remain pending."
+  ],
+  "conclusion": "No source-level blocker found; authored-only flags remedy the specifically reproduced codec precision failure without weakening acceptance."
+}

@@ -1,0 +1,37 @@
+--- watch_transport_metadata_only.py
++++ watch_transport_metadata_only_resume_09a.py
+@@ -15,7 +15,7 @@
+ CANONICAL = 'chicago-4d-humans.yml'
+ RANGES = ['1-2', '3-4', '5', '6-7', '8', '9-12', '13', '14', '15']
+ POLL_SECONDS = 60
+-MAX_SECONDS = 90 * 60
++MAX_SECONDS = 30 * 60
+ API_TIMEOUT_SECONDS = 45
+ 
+ 
+@@ -163,11 +163,22 @@
+     smoke, canonical, sha, expected = load_dispatches(args.smoke_dispatch, args.canonical)
+     out = args.out.resolve()
+     require(out.is_relative_to(Path('/workspace/shared').resolve()), 'Explicit outside shared evidence directory required')
+-    out.mkdir(parents=True, exist_ok=False)
+-    save(out / 'dispatch.json', smoke); save(out / 'canonical-dispatch.json', canonical)
++    require(out.is_dir(), 'Existing sole observer collection required')
++    prior = json.loads((out / 'observer.json').read_text())
++    require(prior.get('sha') == sha and prior.get('expected_runs') == {str(k): v for k, v in expected.items()}, 'Exact prior collection identity required')
++    require(prior.get('stop_reason') == 'bounded wall expired; unfinished evidence stays unproven' and prior.get('finished_utc'), 'Old observer must have stopped at its bound')
++    require(not (out / 'continuation-authority.json').exists(), 'Only one bounded continuation permitted')
++    latest = json.loads((out / 'latest.json').read_text())
++    require(any(x['status'] != 'completed' for x in latest['runs']), 'No continuation for complete collection')
++    require(all(x['conclusion'] in (None, 'success') for x in latest['runs']), 'Refuse continuation after selected failure')
++    require(json.loads((out / 'dispatch.json').read_text()) == smoke and json.loads((out / 'canonical-dispatch.json').read_text()) == canonical, 'Dispatch bytes semantics changed')
++    save(out / 'observer-original-bounded.json', prior)
++    save(out / 'continuation-authority.json', {'at': now(), 'sha': sha, 'max_seconds': args.max_seconds, 'scope': 'one root-authorized same-collection continuation; no redispatch, retry or repeated terminal reads'})
+     started = time.monotonic(); deadline = started + args.max_seconds
+     api = MetadataAPI(deadline, out)
+-    jobs, attempted_jobs = {}, set()
++    jobs = json.loads((out / 'terminal-jobs.json').read_text())
++    attempted_jobs = set(json.loads((out / 'terminal-jobs-attempted.json').read_text()))
++    require(attempted_jobs <= set(expected) and set(map(int, jobs)) <= attempted_jobs, 'Existing terminal inventory mismatch')
+     receipt = {'repository': REPO, 'sha': sha, 'branch': smoke['branch'], 'pr': args.pr, 'started_utc': now(),
+                'limits': {'wall_seconds': args.max_seconds, 'poll_seconds': POLL_SECONDS, 'subprocess_timeout_seconds': API_TIMEOUT_SECONDS},
+                'policy': 'GET-only whitelisted metadata; no logs/artifacts/downloads/POST/retries; any API failure stops',

@@ -1,0 +1,9 @@
+# V3 prepared source only — DO NOT RUN until root release
+
+New module hud-qualification-v3.mjs SHA2569eebb6401ab37a8e7d5badcbdbf987394e7bc727fc3402ebee713a0b2daf433d. v1/v2 remain unchanged. API runHudQualification(existingPage,{output:ABS_FRESH_PATH_ENDING_v3}). Caller must create output parent; module creates final fresh directory nonrecursive and refuses existing output. Recommended new path shared-run/hud-v3, not old hud/. Browser/server still owned exclusively by environment_validation.
+
+V2 actual failure is preserved: first screenshot timedout60000ms before baseline was appended, so runs[]/negatives[] retained no actual numeric evidence. V3 fixes evidence ordering, not a footprint result. It saves row/stage beforelead, baseline immediatelyaftermeasurement BEFOREcapture, eachplantmeasurement beforecleanup, eachnegative and finalrestoration. Screenshot error retained while other numerical controls can proceed; any screenshot failure prevents overallpass. No pass invented from partialdata.
+
+Measurement/readiness function prefix is BYTEIDENTICAL to frozenv2 (v3-preparation.json).10%/bothplantsready/2pxgrid/visibleUI/negativecriteria unchanged. The EXACTexisting smoke holdDraws implementation replaces renderer.render only while page.screenshot runs (15s bounded capture); restores finally before any latermeasure, with live-renderer precondition. CSS/nativeanimations/rAF remainlive, noUIhidden or CSSfreeze. Capture receipt explicitlylabels WebGLheld. Ghostbillboardpixel/drawtrace measurements MUSToccurseparately withactualrenderslive. This HUDimage is not freshWebGLframequality evidence.
+
+Module refuses preheldcallerstate beforeenteringcleanup, records actualfinalrenderer/nativecontrol/plant/nav/viewportstate, and fails ifrestorationdoesnotmatch. App selectors may have normal internalcached effects as inoriginalsmoke; no productionruntime source is edited. No browser run performed during preparation; only syntaxcheck.

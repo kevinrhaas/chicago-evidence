@@ -1,0 +1,1 @@
+Initial source-only assertion harness returned undefined because extracted expression began with a newline after return (JavaScript ASI). The mock harness was corrected to parenthesize the actual source expression. Proposed smoke patch was unchanged; no browser/app code was altered. Initial failing case: normalphone, expected true, got undefined.

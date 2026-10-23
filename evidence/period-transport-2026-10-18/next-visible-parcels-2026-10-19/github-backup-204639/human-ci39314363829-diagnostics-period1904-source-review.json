@@ -1,0 +1,33 @@
+{
+  "PASS": true,
+  "reviewer": "period_1904",
+  "scope": "Frozen diagnostics-only source patch, exact git preimages, unchanged acceptance AST and isolated handler/source controls; no Blender or CI execution.",
+  "inventorySHA256": "d0cddd3ca9b98cdb80dd5eef247163922a9ae3e14540f57293b4afaf4d70fe22",
+  "filesVerified": 14,
+  "patchSHA256": "d9009211b0e50bb14e89d1c539bc47762b72754ead42ac7205a93b30c0f47ede",
+  "independentSourceControls": {
+    "PASS": true,
+    "scope": "Exact proposed handler/entrypoint and AST-preservation controls only; no BPy/model/export/browser/network.",
+    "controls": [
+      "Original parse AST unchanged",
+      "Original checked_inputs AST unchanged",
+      "Original main AST unchanged",
+      "Actual traceback, explicit failed receipt, escaped one-line annotation, no success receipt",
+      "Previous failure evidence cannot be overwritten",
+      "Exact entrypoint reraises original failure after secondary diagnostic I/O error",
+      "Successful entrypoint never emits failure",
+      "Entire common helper AST exact except diagnostic message; RAW1e-3 predicate unchanged"
+    ]
+  },
+  "isolatedPatchApplyCheck": true,
+  "findings": [
+    "Original parse/checked_inputs/main and all normal acceptance predicates remain unchanged.",
+    "Traceback is from the caught actual exception, limited to 6000 pre-escape characters, and percent/CR/LF escaped before emitting a one-line GitHub annotation. Era title comes from the existing finite parser choice.",
+    "Fresh failure receipt uses exclusive creation and contains PASS=false; success receipt remains untouched. Original exception is reraised even when diagnostic receipt output fails.",
+    "This catches ordinary Python authoring exceptions after parse; process termination, import-time failure, native Blender crash or an earlier shell failure will not necessarily yield this receipt.",
+    "Stored metadata establishes canonical step failure only. Exact cause remains UNKNOWN; RAW1e-3 normal readback is only an explicitly labeled source hypothesis."
+  ],
+  "actualBPyOrExportExecuted": false,
+  "networkOrLogCalls": false,
+  "appWrites": false
+}

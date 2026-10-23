@@ -1,0 +1,49 @@
+--- a/chicago/4d/tools/smoke_renderer.mjs
++++ b/chicago/4d/tools/smoke_renderer.mjs
+@@ -10274,19 +10274,22 @@
+           // drawing what the frustum used to skip would be a ceiling breach
+           // wearing a saving's clothes.
+           if (st.id === 'lake_at_canal' && level === 'full') {
++            // Same-camera deterministic frames: step drains pending flora work.
++            // The reverse comparison proves the instrument restored its baseline.
++            a.step();
++            const on = a.stats();
+             row.mergeClusters = a.farMerge.clusters;
+             row.mergeMerged = a.farMerge.merged;
+             a.setFarMerge(false);
+-            await settle();
++            a.step();
+             const off = a.stats();
+-            // Restored without a settle of its own, deliberately: this stand is
+-            // never the last of the order, `setFarMerge` puts the visibility
+-            // back synchronously, and the next stand settles before it reads.
+-            // Part 4 is the thinnest margin in the desktop suite (T-0173) and a
+-            // frame here costs about three seconds on the software renderer.
+             a.setFarMerge(true);
+-            row.mergeTris = off.triangles - r.triangles;
+-            row.mergeCalls = off.drawCalls - r.drawCalls;
++            a.step();
++            const again = a.stats();
++            row.mergeTris = off.triangles - on.triangles;
++            row.mergeCalls = off.drawCalls - on.drawCalls;
++            row.mergeResidualTris = again.triangles - on.triangles;
++            row.mergeResidualCalls = again.drawCalls - on.drawCalls;
+           }
+           atStands.push(row);
+         }
+@@ -10520,11 +10523,13 @@
+      */
+     const merged = full.atStands.find((x) => x.id === 'lake_at_canal');
+     check(`${label}: the far merge gives back draw calls down the axial street and moves no triangle doing it`,
+-      !!merged && merged.mergeTris === 0 && merged.mergeCalls >= 25
++      !!merged && merged.mergeTris === 0 && merged.mergeResidualTris === 0
++      && merged.mergeResidualCalls === 0 && merged.mergeCalls >= 25
+       && merged.mergeMerged > 0,
+       merged
+         ? `${merged.mergeCalls} call(s) saved over ${merged.mergeMerged} of `
+-          + `${merged.mergeClusters} cluster(s), ${merged.mergeTris} triangle(s) moved`
++          + `${merged.mergeClusters} cluster(s), ${merged.mergeTris} triangle(s) moved; `
++          + `restore residual ${merged.mergeResidualTris} triangle(s), ${merged.mergeResidualCalls} call(s)`
+         : 'the axial stand was not walked at full');
+     const axial = light.atStands.find((x) => x.id === 'lake_at_canal');
+     check(`${label}: the light tier holds furniture back down the axial street`,

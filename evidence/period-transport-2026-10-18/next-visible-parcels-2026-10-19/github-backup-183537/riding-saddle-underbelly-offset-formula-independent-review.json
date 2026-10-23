@@ -1,0 +1,71 @@
+{
+  "scope": "Pure offset algebra/synthetic normals only; no model/hull/offset helper/build evaluated",
+  "formula": "q=P_i+d*(n_prev+n_next)/(1+dot(n_prev,n_next))",
+  "assessment": "Correct in real arithmetic for finite consistently oriented UNIT outward normals and non-antiparallel neighbors. Stable for almost parallel aligned normals where determinant inversion is ill-conditioned. Exact aligned case chooses P_i+d*n along the common offset line.",
+  "proof": "n_prev dot(n_prev+n_next)=1+dot(n_prev,n_next), identically for n_next; hence each incident support equation gains d.",
+  "synthetic_cases": [
+    {
+      "normal_turn_rad": 0.0,
+      "denominator": 2.0,
+      "miter_length_m": 0.006,
+      "two_line_offset_residual_m": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "normal_turn_rad": 1e-14,
+      "denominator": 2.0,
+      "miter_length_m": 0.006,
+      "two_line_offset_residual_m": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "normal_turn_rad": 1e-10,
+      "denominator": 2.0,
+      "miter_length_m": 0.006,
+      "two_line_offset_residual_m": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "normal_turn_rad": 0.01,
+      "denominator": 1.9999500004166653,
+      "miter_length_m": 0.006000075000781258,
+      "two_line_offset_residual_m": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "normal_turn_rad": 1.5707963267948966,
+      "denominator": 1.0,
+      "miter_length_m": 0.00848528137423857,
+      "two_line_offset_residual_m": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "normal_turn_rad": 3.141582653589793,
+      "denominator": 5.000000413701855e-11,
+      "miter_length_m": 1199.9999007291206,
+      "two_line_offset_residual_m": [
+        8.673617379884035e-19,
+        9.92533223144465e-10
+      ]
+    }
+  ],
+  "required_guards": [
+    "Keep all original hull vertices/edge planes and6/10mm distances; no simplification, tolerance relaxation or search.",
+    "Require finite positive distance, finite nonzero source edges, CCW convex ownership, finite normalized outward normals.",
+    "Refuse near-antiparallel/zero denominator and nonfinite or unbounded miter; do not mask sharp-corner geometry failure as parallel alignment.",
+    "Independently check each resulting vertex against BOTH actual incident offset support planes with an explicit floating-roundoff bound; retain complete polygon simplicity/support/serialized topology and all physical guards.",
+    "Algebraic exactness applies to ideal unit normals, not exact binary floating arithmetic; do not describe emitted coordinates as exact offset without residual receipts.",
+    "New fixed source revision, pure nearparallel/aligned/opposite controls and newpins require review and root bounded rerun release; prior failed candidate directory stays immutable."
+  ],
+  "trial_released": false
+}

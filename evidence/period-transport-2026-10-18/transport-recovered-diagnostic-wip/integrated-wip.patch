@@ -1,0 +1,1115 @@
+diff --git a/chicago/4d/docs/RESEARCH/period-transport-2026-10-18/README.md b/chicago/4d/docs/RESEARCH/period-transport-2026-10-18/README.md
+index 3f94cbbe8..5fd08159f 100644
+--- a/chicago/4d/docs/RESEARCH/period-transport-2026-10-18/README.md
++++ b/chicago/4d/docs/RESEARCH/period-transport-2026-10-18/README.md
+@@ -102,3 +102,32 @@ Stage5 now forces a production step after its existing two animation callbacks b
+ Conscious measured repricing follows the standing rule: full 3,449,919 +18,059 rounded to 5,000 gives 3,470,000; balanced 2,607,952 +16,806 gives 2,625,000. These maxima are desktop West prairie. Upstream T2807 tree integration and the measurement freshness correction are distinct; the whole change is not attributed to new trees. Historical notes remain. Light stays at 1,190,000 triangles, measured 1,154,091. General draw calls stay at 330; Light's separate 90-call limit stays strict, measured 89. No future actors are prepaid. See docs/measurements/period-transport-fresh-detail-2026-10-19.json.
+ 
+ Full preflight and complete published desktop/mobile coverage of this corrected merged head are required before merge. Photographic fidelity, anatomy/material refinement, harness forces, traffic, boarding, riders and driver occupation remain open production work.
++
++
++
++
++## Recovery diagnostics on current dev
++
++The frozen9a84 full fast gate passed983 steps. Its newer stage1-2 restoration and
++stage5 budget checks passed both viewports, but mobile6-7 refused two old
++`notice === null` assertions. T-2826 on dev intentionally shows the previous
++reset diagnostic even when the prior page subsequently left cleanly. Actual
++receipts showed the expected navigation counts and tier changes; this was a
++conflict between the old smoke predicate and the new feature contract.
++
++The next revision retains dev43d8f0a04, including Researcher mode, and requires
++that exact prior-reset diagnostic: readable rendered text equals the notice,
++Copy matches the actual previous record, no extra Reload prompt appears, and
++its previous-page ID equals the page that just reset. Navigation counts,
++single automatic reload and balanced-to-light policy stay strict. The manual
++reload also requires null pending lowering, two session losses and active
++watching. A regression imports the real blackbox and actual smoke predicate,
++checks two clean navigation sequences, and refuses eleven wrong/missing states.
++It proves the predicate and record semantics; actual browser context loss and
++tier behavior still require the complete published smoke on the next commit.
++
++The old e5 batch finished with16 successful legs and two failures. The frozen9a84
++batch had15 accepted successes, one mobile6-7 failure and two desktop legs still
++running at last observation. These results are retained, not replaced with a
++new-head pass. No model photographic gate, occupied traffic or boarding/riding
++acceptance follows from a corrected test predicate.
+diff --git a/chicago/4d/docs/ROADMAP.md b/chicago/4d/docs/ROADMAP.md
+index 3c37111c4..8b623d61c 100644
+--- a/chicago/4d/docs/ROADMAP.md
++++ b/chicago/4d/docs/ROADMAP.md
+@@ -5521,3 +5521,6 @@ Transport integration validation (2026-10-18): the original full mobile smoke fa
+ 
+ 
+ Transport integration repair, 2026-10-19: merge current dev, rebuild conflicted source-use outputs from source, await bounded baseline readiness and force fresh stage5 frames. Measured full/balanced caps become 3.47m/2.625m under the existing absolute-margin rule; Light stays at 1.19m and 90 calls. New exact-head full desktop/mobile coverage remains required; production photographic/traffic/riding tickets remain open.
++
++
++Transport recovery assertions: retain currentdev Researcher mode and T-2826 prior-reset diagnostic. Replace stale no-notice predicates with exact readable diagnostic/Copy/previous-page checks while preserving navigation, autoreload and tier invariants. Focused actual blackbox regression passes; next exact-head full preflight and all published desktop/mobile stage groups remain required before dev merge. No horse-head/wheel trial is included in this correction.
+diff --git a/chicago/4d/docs/STATUS.md b/chicago/4d/docs/STATUS.md
+index 51874448f..f579b2c91 100644
+--- a/chicago/4d/docs/STATUS.md
++++ b/chicago/4d/docs/STATUS.md
+@@ -24002,3 +24002,6 @@ Stage5 now forces a production step after its existing two animation callbacks b
+ Conscious measured repricing follows the standing rule: full 3,449,919 +18,059 rounded to 5,000 gives 3,470,000; balanced 2,607,952 +16,806 gives 2,625,000. These maxima are desktop West prairie. Upstream T2807 tree integration and the measurement freshness correction are distinct; the whole change is not attributed to new trees. Historical notes remain. Light stays at 1,190,000 triangles, measured 1,154,091. General draw calls stay at 330; Light's separate 90-call limit stays strict, measured 89. No future actors are prepaid. See docs/measurements/period-transport-fresh-detail-2026-10-19.json.
+ 
+ Full preflight and complete published desktop/mobile coverage of this corrected merged head are required before merge. Photographic fidelity, anatomy/material refinement, harness forces, traffic, boarding, riders and driver occupation remain open production work.
++
++
++Transport recovery validation: current dev43d8f0a04 merges cleanly into9a84, retaining the Researcher mode UI. The frozen9a84 mobile6-7 failure was an outdated notice===null expectation: T-2826 deliberately retains the prior display-reset diagnostic after a clean reload. Smoke assertions now require its readable exact text, no Reload prompt, Copy bytes matching the actual previous blackbox record, and the previous-page ID matching the exact page that just reset. Existing navigation counts, single autoreload and lowered-tier checks remain; the manual reload additionally requires watching/session-loss state. Actual blackbox records across two navigation sequences and eleven refusal cases pass without a browser. New complete published desktop/mobile coverage remains pending. Older failures and logs stay retained; no dev merge yet.
+diff --git a/chicago/4d/renderers/web/css/skins.css b/chicago/4d/renderers/web/css/skins.css
+index 6c98e8762..b1174e5fe 100644
+--- a/chicago/4d/renderers/web/css/skins.css
++++ b/chicago/4d/renderers/web/css/skins.css
+@@ -180,8 +180,12 @@ html[data-recall]::after { content:'';position:fixed;left:50%;top:50%;z-index:20
+ @keyframes recall-tail { from{transform:scale(.6);opacity:.45} to{transform:scale(.02);opacity:0} }
+ @media (prefers-reduced-motion:reduce) { html[data-recall]::after{content:none} html[data-transfer] .gate-card{animation:none} html[data-transfer] .gate::before{content:none} .machine-dial,.machine-dial *,.gate-btn{transition:none!important} }
+ /* T-2668 — Researcher mode's contract, on every page this sheet dresses. An element marked
+-   [data-researcher] is research-only (the order book, ids, file paths, the full essays): it
++   [data-researcher] is research-only (the order book, the full essays; never an id, a path or a
++   ticket number, owner 2026-10-18 — a ticket reaches a researcher only as a link): it
+    stays off the visitor's screen until Researcher mode (T-2657) sets <html
+    data-researcher-mode>, and tools/check_visitor_ui.py exempts it from the visitor-UI lint
+    for exactly that reason. */
+ html:not([data-researcher-mode]) [data-researcher] { display: none !important; }
++/* T-2657 — and the other half: a visitor's stand-in for something Researcher mode shows in
++   full (the short "Why" hint) steps aside while it is on, so the full text is read once. */
++html[data-researcher-mode] [data-visitor-only] { display: none !important; }
+diff --git a/chicago/4d/renderers/web/css/walk.css b/chicago/4d/renderers/web/css/walk.css
+index 6a0816f25..b6ca1c0cb 100644
+--- a/chicago/4d/renderers/web/css/walk.css
++++ b/chicago/4d/renderers/web/css/walk.css
+@@ -2274,3 +2274,16 @@ html[data-skin="brass"] .arrival-year.is-arrived .arrival-digit, html[data-skin=
+   #__dev { display: none !important; }
+   #__devpill { display: inline-block !important; }
+ }
++/* T-2657 — Researcher mode. Its label is an item of the HUD's top row, between the year chip
++   and the instrument, so the row's own layout keeps it clear of both; level with the chip's
++   middle, it takes no pointer, and it is drawn only while the mode is on (css/skins.css).
++   A full essay it brings back is set off by a dashed rule in the skin's accent. */
++.research-badge {
++  flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
++  align-self: flex-start; margin-top: 10px; pointer-events: none; padding: 3px 9px; border-radius: 999px;
++  font: 500 9px/1.2 var(--font-mono, ui-monospace, monospace); letter-spacing: .16em;
++  color: var(--accent); background: var(--panel, rgba(16, 32, 58, .94));
++  border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
++}
++.why-full { border-left: 2px dashed color-mix(in srgb, var(--accent) 70%, transparent); padding-left: 8px; }
++.research-link { color: var(--accent); }
+diff --git a/chicago/4d/renderers/web/index.html b/chicago/4d/renderers/web/index.html
+index cb6492416..30cc73df0 100644
+--- a/chicago/4d/renderers/web/index.html
++++ b/chicago/4d/renderers/web/index.html
+@@ -196,6 +196,9 @@
+       class="badge-year">1835</span><span class="badge-dot" aria-hidden="true">·</span><span class="badge-sub">07.01</span><span
+       class="badge-alt" id="badge-alt" hidden></span><span
+       class="badge-version" id="badge-version" role="note" hidden></span></button>
++    <!-- T-2657: Researcher mode's label, in the row between the year chip and the instrument,
++         shown only while it is on (css/skins.css). -->
++    <span class="research-badge" id="research-badge" data-researcher data-str="research.badge">RESEARCHER</span>
+     <div class="hud-actions">
+       <!-- T-2625 (§10 "In-world HUD"): Start / Jaunts, the pace chip and the light / dark
+            switch left this row. Start / Jaunts's three choices are the Navigator's Jaunts app
+@@ -349,7 +352,9 @@
+       <label class="field"><span>Eye height <b id="v-eye"></b></span>
+         <input type="range" id="s-eye" min="1.4" max="2.6" step="0.02"></label>
+       <details class="why"><summary>Why this default</summary>
+-        <p class="legend-note" id="eye-note">The default, 1.68 m, is the mean stature of an adult
++        <p class="legend-note" data-visitor-only data-str="research.why.eye">The default, 1.68 m, is the average height of an American man in the 1830s. Raise it if the view feels low; it moves only the camera, never the town.</p>
++        <!-- T-2657: the full essay, for Researcher mode. -->
++        <p class="legend-note why-full" id="eye-note" data-researcher>The default, 1.68 m, is the mean stature of an adult
+           man in the 1830s United States — this walkthrough puts your eye where a person of the
+           period had theirs, which is lower than a modern viewer expects and lower than the
+           prairie grass beside you, because both of those are true of the place. Raise it if the
+@@ -572,8 +577,8 @@
+             minus what the sources can name, bucket by bucket — people by sex, age, division,
+             household and trade; households by kind; the December 1835 trade census against the
+             firms the town already holds; and the roofs the building programme still owes. Each
+-            bucket names the ticket that owes it and carries a counter the reconstruction tools
+-            write, so the bars fill as the town does. The section at the top is the other
++            bucket carries a counter the reconstruction tools write, so the bars fill as the town
++            does. The section at the top is the other
+             direction: how many of the households the book ordered now have ground under them,
+             how many of the town&rsquo;s standing roofs carry one, and which houses have been asked
+             for and not yet built. Nothing here is a claim about 1835: it is
+@@ -613,7 +618,8 @@
+         <label class="field"><span>Brightness <b id="v-brightness"></b></span>
+           <input type="range" id="s-brightness" min="0" max="1" step="0.05"></label>
+         <details class="why"><summary>Why this default</summary>
+-          <p class="legend-note" id="brightness-note">The scene is lit by a sky whose colour was
++          <p class="legend-note" data-visitor-only data-str="research.why.brightness">The default is the light matched to a July photograph taken at this latitude. Raise it for a dim room or a bright window. It changes nothing else.</p>
++          <p class="legend-note why-full" id="brightness-note" data-researcher>The scene is lit by a sky whose colour was
+             matched to a July photograph taken at this latitude, and the default position of this
+             slider is that measured light — which is why it says "calibrated" rather than showing a
+             number. Raise it if the scene is hard to see: a dim room, a bright window, a phone at
+@@ -630,7 +636,8 @@
+         <label class="field"><span>Road visibility <b id="v-road-aid"></b></span>
+           <input type="range" id="s-road-aid" min="0" max="1" step="0.05"></label>
+         <details class="why"><summary>Why this default</summary>
+-          <p class="legend-note" id="road-aid-note">These are worn earth tracks through prairie
++          <p class="legend-note" data-visitor-only data-str="research.why.road">The default paints the worn earth tracks as the record describes them. Raise it if they are hard to follow; it changes your screen, not the past.</p>
++          <p class="legend-note why-full" id="road-aid-note" data-researcher>These are worn earth tracks through prairie
+             grass, and how much bare earth shows is a modelled figure with its own evidence behind
+             it — so the default paints them exactly as the record describes. Raise this if they are
+             hard to follow: on a phone in daylight, or if faint contrast is difficult to see. It
+@@ -747,6 +754,10 @@
+         <!-- T-2656: What's new, from About. T-2657 adds Researcher mode below it. -->
+         <div class="field row"><span data-str="settings.whatsnew.line">Release notes</span>
+           <button class="setting-button" id="s-open-whatsnew" type="button" data-str="hud.tab.whatsnew">What's new</button></div>
++        <!-- T-2657: Researcher mode (js/researcher.js), off by default, remembered per device. -->
++        <label class="field row check-field"><span data-str="research.switch">Researcher mode</span>
++          <input type="checkbox" id="s-researcher"></label>
++        <p class="legend-note" id="s-researcher-note" data-str="research.switch.note">Shows the full reasoning and the working records we keep for researchers, in place. This device remembers it.</p>
+       </div>
+     </section>
+     <section class="panel-body" data-panel="controls" hidden>
+diff --git a/chicago/4d/renderers/web/js/changelog.js b/chicago/4d/renderers/web/js/changelog.js
+index 65f65d588..5bbcd129a 100644
+--- a/chicago/4d/renderers/web/js/changelog.js
++++ b/chicago/4d/renderers/web/js/changelog.js
+@@ -1,4 +1,11 @@
+ export const CHANGELOG = [ // newest first
++  { v: 2029, ts: '2026-10-19T00:43:32.707Z', date: 'Oct 18, 2026, 7:43 PM CT', title: 'Researcher mode: the full reasoning, back in place behind a switch', kind: 'feature',
++    items: [
++      'Settings › About has a Researcher mode switch. It is off unless you turn it on, and this device remembers your choice.',
++      'While it is on, a small RESEARCHER label sits at the top of the screen, between the year and the compass.',
++      'Each "Why this default" now opens on a one-line reason. Researcher mode shows the full essay in its place.',
++      'Researcher mode never shows internal record numbers or file names; where it points to how something was worked out, it is a plain link.',
++    ] },
+   { v: 2028, ts: '2026-10-18T23:27:40.956Z', date: 'Oct 18, 2026, 6:27 PM CT', title: 'Guide › About this destination: the research in four cards', kind: 'feature',
+     items: [
+       'The old Sources section is now Guide › About this destination, in four cards: How we grade, Sources, Liberties, and What lived and grew here. Each card holds the lists that belong to it, from the town in numbers to the animals, plants and open questions.',
+diff --git a/chicago/4d/renderers/web/js/evidence.js b/chicago/4d/renderers/web/js/evidence.js
+index 9ac4037e4..ede9be1e4 100644
+--- a/chicago/4d/renderers/web/js/evidence.js
++++ b/chicago/4d/renderers/web/js/evidence.js
+@@ -176,8 +176,11 @@ export function hubPlan(omit = []) {
+  *  a heading, its line, its topics' tiles and, for Sources and Liberties, the pointer to
+  *  Inspect. `topics` maps a topic id to { id, title, gloss, icon }. */
+ export function hubHtml(plan, topics) {
++  // T-2657: a topic that is Researcher mode's (`researcher`, or its markup's `data-researcher`)
++  // marks its own tile too, so it stays off a visitor's screen whichever card it is filed under.
++  const mine = (t) => !!(t.researcher || t.el?.hasAttribute?.('data-researcher'));
+   const tile = (t) => `<button class="ev-tile" type="button" data-topic="${t.id}"`
+-    + ` aria-label="${escapeHtml(t.title)}">`
++    + `${mine(t) ? ' data-researcher' : ''} aria-label="${escapeHtml(t.title)}">`
+     + `<span class="ev-tile-head">${t.icon}<b class="ev-count" aria-label="entries">…</b></span>`
+     + `<span class="ev-tile-title">${escapeHtml(t.title)}</span>`
+     + `<span class="ev-gloss">${escapeHtml(t.gloss)}</span></button>`;
+diff --git a/chicago/4d/renderers/web/js/main.js b/chicago/4d/renderers/web/js/main.js
+index 163894baa..d5ab9f137 100644
+--- a/chicago/4d/renderers/web/js/main.js
++++ b/chicago/4d/renderers/web/js/main.js
+@@ -104,6 +104,7 @@ import { createEvidenceHub } from './evidence.js';
+ import { parseNavLink, createNavHistory } from './nav-link.js';
+ import { createNavigator } from './navigator.js';
+ import { paintAbout } from './about.js';
++import { createResearcherMode } from './researcher.js';
+ import { createTour } from './tour.js';
+ import { createTourOverlay } from './tour-overlay.js';
+ import { markTerms } from './term-tips.js';
+@@ -1523,6 +1524,9 @@ const api = {
+   textureResidency: null,
+ };
+ window.__chicago4d = api;
++// T-2657: Researcher mode, Settings › About. Read from this device before anything paints,
++// so a researcher's page opens with the research already in place.
++api.researcher = createResearcherMode({ storage: safeStorage() });
+ // The gate is up exactly when no control backend is live, so its hint row cannot wait
+ // for one: it follows the device's best guess (T-2045). A phone was shown W A S D and
+ // Esc through the whole arrival, on a failed boot, and back on the welcome.
+diff --git a/chicago/4d/renderers/web/js/researcher.js b/chicago/4d/renderers/web/js/researcher.js
+new file mode 100644
+index 000000000..e6298837e
+--- /dev/null
++++ b/chicago/4d/renderers/web/js/researcher.js
+@@ -0,0 +1,99 @@
++/**
++ * Researcher mode (T-2657, NAV-S03; design doc "Field Navigator Mk II" §12, owner ruling
++ * 2026-10-16: no /research page, the internal views are hidden behind a toggle).
++ *
++ * A switch in Settings › About, OFF by default and remembered per device. While it is on,
++ * <html> carries `data-researcher-mode`, a small RESEARCHER label sits in the HUD's top row,
++ * and what the visitor pages hold back comes back where it was cut:
++ *
++ *   - every element marked `data-researcher` (css/skins.css hides them until the root has
++ *     the attribute): the full "Why this default" essays, and anything another app marks —
++ *     the order book, once T-2667 moves it behind the mode;
++ *   - and the visitor's stand-ins step aside: an element marked `data-visitor-only` (the
++ *     one-line "Why" hint) is hidden while it is on, so the full text is read once.
++ *
++ * WHAT IT NEVER SHOWS. The owner, 2026-10-18: "rewrite the records so you are not referring
++ * to internal ticket numbers or internal record ids in researcher or educator mode", and "If
++ * in that mode you want to refer to the tickets as a link or something as an external source
++ * or link back, ok, but I don't want to talk internal ticket language to researchers." So no
++ * ticket number, record id or file path is shown here either; tools/check_visitor_ui.py and
++ * tools/check_strings.py read Researcher-mode text with the visitor's rules (only "order
++ * book" is allowed). A ticket may appear only as a LINK, the way an external source would:
++ * `ticketLinkHtml` writes one, behind a plain-words label, marked `data-researcher`.
++ *
++ * NOTHING IS RE-RENDERED. Both halves are in the page from the first paint and the switch
++ * is one attribute, so turning it on or off never reloads a panel and cannot lose a place.
++ */
++import { t } from './strings/index.js';
++import './strings/research.js';
++
++export const STORAGE_KEY = 'chicago4d.researcher';
++export const MODE_ATTR = 'data-researcher-mode';
++/** Where a ticket opens: the tickets repository, by the path tickets.json gives it. */
++export const TICKETS_BASE = 'https://github.com/kevinrhaas/chicago-tickets/blob/main/';
++
++const escape = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
++
++/** The address of a ticket from its `path` in tickets.json (`T-1500-1749/T-1519-….md`), or ''. */
++export function ticketUrl(path) {
++  const p = String(path ?? '').trim();
++  return /^T-\d{4}-\d{4}\/T-\d{4}(-[\w.-]+)?\.md$/.test(p) ? TICKETS_BASE + p : '';
++}
++
++/**
++ * A ticket as Researcher mode may show one: a link behind plain words ("how this was
++ * decided", "the work record"), opening in a new tab, marked `data-researcher` so a visitor
++ * never sees it. No number in the label, ever; '' when there is no address to link.
++ * @param {{ path: string, label?: 'decided'|'record' }} o
++ */
++export function ticketLinkHtml({ path, label = 'decided' } = {}) {
++  const href = ticketUrl(path);
++  if (!href) return '';
++  const words = t(label === 'record' ? 'research.link.record' : 'research.link.decided');
++  return `<a class="research-link" data-researcher href="${escape(href)}" target="_blank" rel="noopener">${escape(words)}</a>`;
++}
++
++/** What this device remembers; off when nothing is stored or storage is unavailable. */
++export function readMode(storage) {
++  try { return storage?.getItem?.(STORAGE_KEY) === 'on'; } catch { return false; }
++}
++
++function writeMode(storage, on) {
++  try { if (on) storage?.setItem?.(STORAGE_KEY, 'on'); else storage?.removeItem?.(STORAGE_KEY); } catch { /* private window */ }
++}
++
++/** Set or clear the root attribute the stylesheet keys on. */
++export function applyMode(on, doc = globalThis.document) {
++  const root = doc?.documentElement;
++  if (!root) return;
++  if (on) root.setAttribute(MODE_ATTR, ''); else root.removeAttribute(MODE_ATTR);
++}
++
++/**
++ * Wire the switch (#s-researcher in Settings › About) to the page and to this device.
++ * @returns {{ readonly on: boolean, set(on: boolean): boolean, toggle(): boolean, onChange(fn): () => void }}
++ */
++export function createResearcherMode({ doc = globalThis.document, storage = null } = {}) {
++  let on = readMode(storage);
++  const listeners = new Set();
++  const box = doc?.getElementById?.('s-researcher') ?? null;
++  const sync = () => { if (box) box.checked = on; };
++  applyMode(on, doc);
++  sync();
++  function set(next) {
++    const was = on;
++    on = !!next;
++    applyMode(on, doc);
++    writeMode(storage, on);
++    sync();
++    if (on !== was) for (const fn of listeners) { try { fn(on); } catch { /* a listener's fault is its own */ } }
++    return on;
++  }
++  box?.addEventListener?.('change', () => set(box.checked));
++  return {
++    get on() { return on; },
++    set,
++    toggle: () => set(!on),
++    onChange(fn) { listeners.add(fn); return () => listeners.delete(fn); },
++  };
++}
+diff --git a/chicago/4d/renderers/web/js/strings/index.js b/chicago/4d/renderers/web/js/strings/index.js
+index a592ce10c..1471e4287 100644
+--- a/chicago/4d/renderers/web/js/strings/index.js
++++ b/chicago/4d/renderers/web/js/strings/index.js
+@@ -27,10 +27,11 @@ const sections = new Map();
+ 
+ /**
+  * T-2668 — Researcher mode's strings. A string only Researcher mode (T-2657) shows — the
+- * order book, a source id, a file path, a full "Why this default" essay — lives under a key
+- * with a `researcher` segment: the `researcher` namespace, or `researcher` inside an app's
+- * own section (`guide.researcher.why-full`). The visitor-UI lint (tools/check_visitor_ui.py)
+- * exempts exactly those keys, so a caller shows one only while Researcher mode is on; on a
++ * order book, a full "Why this default" essay — lives under a key with a `researcher`
++ * segment: the `researcher` namespace, or `researcher` inside an app's own section
++ * (`guide.researcher.why-full`). The lints read those keys too, and allow them only the words
++ * "order book" and sentences past 20 words: no ticket number, record id or file path in any
++ * mode (owner, 2026-10-18). A caller shows such a string only while Researcher mode is on; on a
+  * static page the marker is a `data-researcher` attribute, hidden by css/skins.css until
+  * <html data-researcher-mode> is set.
+  */
+diff --git a/chicago/4d/renderers/web/js/strings/research.js b/chicago/4d/renderers/web/js/strings/research.js
+new file mode 100644
+index 000000000..4d9070bb7
+--- /dev/null
++++ b/chicago/4d/renderers/web/js/strings/research.js
+@@ -0,0 +1,19 @@
++/** T-2657 — Researcher mode (js/researcher.js) and the visitor's stand-ins for what it holds
++ * back. Every string here is linted like any other: no mode shows an internal ticket number,
++ * record id or file path (owner, 2026-10-18). */
++import { register } from './index.js';
++
++export default register('research', {
++  switch: 'Researcher mode',
++  'switch.note': 'Shows the full reasoning and the working records we keep for researchers, in place. This device remembers it.',
++  badge: 'RESEARCHER',
++  // The three "Why this default" essays, each cut to the reason and what it changes (§12:
++  // 40 words at most). Researcher mode shows the full essay beneath.
++  'why.eye': 'The default, 1.68 m, is the average height of an American man in the 1830s. Raise it if the view feels low; it moves only the camera, never the town.',
++  'why.road': 'The default paints the worn earth tracks as the record describes them. Raise it if they are hard to follow; it changes your screen, not the past.',
++  'why.brightness': 'The default is the light matched to a July photograph taken at this latitude. Raise it for a dim room or a bright window. It changes nothing else.',
++  // A link to the record of how something was worked out, as an external source would be
++  // linked (owner, 2026-10-18): plain words, never a number.
++  'link.decided': 'How this was decided',
++  'link.record': 'The work record',
++});
+diff --git a/chicago/4d/tools/check.sh b/chicago/4d/tools/check.sh
+index ef9a449c5..dda9d7794 100755
+--- a/chicago/4d/tools/check.sh
++++ b/chicago/4d/tools/check.sh
+@@ -184,6 +184,9 @@ step "Finishing the Field Check awards the Navigator License once per device, ne
+ # T-2629: Settings › About.
+ step "Settings › About shows the build stamp, and the DEV mark on a dev build only (T-2629)" \
+   node tools/test_about.mjs
++# T-2657: Researcher mode, the Settings › About switch.
++step "Researcher mode is off by default and remembered per device, and shows research prose in place while on (T-2657)" \
++  node tools/test_researcher_mode.mjs
+ step "Navigator Jump: three era cards with HERE, the in-world ring and transfer stamp, Escape aborts, RECALL the one signal-red key (T-2655)" \
+   node tools/test_nav_jump.mjs
+ # T-2643: Inspect's Story tab.
+@@ -249,6 +252,8 @@ step "The building card prints no '[object Object]' and no other year's law (T-2
+   node tools/test_claim_value.mjs
+ step "A smoke oracle a sparse bake leg lacks is read from the commit under test (T-2331)" \
+   node tools/test_repo_file.mjs
++step "Recovered display diagnostics preserve actual previous-reset records and strict smoke assertions (T-2793)" \
++  node tools/test_recovered_display_diagnostic.mjs
+ step "Drawn placement rejects shifted, mirrored and rotated camps (T-1805)" \
+   node tools/test_drawn_placement_census.mjs
+ step "Jaunt session history, cancellation and replacement (T-1279)" \
+@@ -7392,8 +7397,9 @@ step "string table: sections register and extend, placeholders fill, no key ever
+ 
+ # T-2668 (NAV-1003). The visitor-UI lint: no file path, link, id, snake_case word, ticket
+ # number, or the words "tier", "ticket" or "order book" in what a visitor reads — the string
+-# table, the static pages' visible text, and the Go to list's business rows from
+-# data/businesses/index.json. Researcher-mode strings are exempt (a `researcher` key segment;
++# table, the static pages' visible text, the Go to list's business rows from
++# data/businesses/index.json and the Shops & work card's location lines (T-2657, which holds
++# a record sentence that fails for Researcher mode where the page gates it). Researcher-mode strings are exempt (a `researcher` key segment;
+ # a [data-researcher] element, which css/skins.css hides until Researcher mode is on), and a
+ # leak another ticket owns sits on the tool's allowlist with that ticket, failing once stale.
+ step "no path, id, snake_case, 'tier', 'ticket' or 'order book' in what a visitor reads (T-2668)" \
+diff --git a/chicago/4d/tools/check_strings.py b/chicago/4d/tools/check_strings.py
+index 2edf9cd9d..72897ac95 100644
+--- a/chicago/4d/tools/check_strings.py
++++ b/chicago/4d/tools/check_strings.py
+@@ -20,8 +20,11 @@ reads those strings exactly as written, so this refuses, in every section:
+     recorded …), each named with the word that replaced it;
+   - an id, snake_case word, file path, link or ticket number (compile_summaries.lint_string,
+     imported, so this gate and the summary and Guide gates agree), and a sentence over 20
+-    words — except in a string only Researcher mode shows, a key with a `researcher`
+-    segment (T-2668; tools/check_visitor_ui.py has the contract), which keeps the term rules;
++    words — except that a string only Researcher mode shows, a key with a `researcher`
++    segment (T-2668; tools/check_visitor_ui.py has the contract), may run a sentence past
++    20 words. It keeps every other rule: the owner, 2026-10-18 (T-2657), "rewrite the records
++    so you are not referring to internal ticket numbers or internal record ids in researcher
++    or educator mode", so it still refuses an id, a file path and a ticket number;
+   - in renderers/web/index.html, a [data-str] / [data-str-title] / [data-str-label] naming a
+     key the table does not hold, or whose first-paint words differ from the table's (the
+     page would change under the visitor as the module arrives);
+@@ -80,8 +83,9 @@ def read_table(strings=STRINGS):
+ 
+ 
+ def term_errors(where, text, locked, retired, renamed, researcher=False):
+-    """`researcher`: a string only Researcher mode shows (T-2668) keeps the terms rules and
+-    may carry the ids, paths and long sentences an adult researcher reads."""
++    """`researcher`: a string only Researcher mode shows (T-2668) may run a sentence past the
++    visitor's 20 words (a full essay), and keeps every other rule: no id, path or ticket
++    number reaches a researcher either (owner, 2026-10-18, T-2657)."""
+     errs = []
+     bare = re.sub(r"\{\w+\}", "x", text)
+     # Machine lore stays in mono caps (section 03): a string set wholly in capitals, a
+@@ -103,10 +107,10 @@ def term_errors(where, text, locked, retired, renamed, researcher=False):
+     for old, new in renamed:
+         if re.search(rf"(?<![\w-]){re.escape(old)}(?![\w-])", bare):
+             errs.append(f"{where}: `{old}` was renamed `{new}` (section 03)")
++    for found in lint_string(bare):
++        errs.append(f"{where}: {found} in a string a {'researcher' if researcher else 'visitor'} reads")
+     if researcher:
+         return errs
+-    for found in lint_string(bare):
+-        errs.append(f"{where}: {found} in a string a visitor reads")
+     for s in re.split(r"(?<=[.!?])\s+", bare):
+         if len(words(s)) > MAX_SENTENCE_WORDS:
+             errs.append(f"{where}: a sentence of {len(words(s))} words, over {MAX_SENTENCE_WORDS}")
+@@ -243,8 +247,14 @@ def self_test():
+     plant("a long sentence", "a sentence of 21 words", " ".join(["word"] * 21) + ".")
+     dump3 = json.loads(json.dumps(base)); dump3["entries"].append(["researcher.planted", "See data/scenes/1835.json, attested."])
+     errs3 = gate(dump3, page)
+-    expect(not any("file path" in e for e in errs3) and any("spelled another way" in e for e in errs3),
+-           "a Researcher-mode string may carry a path (T-2668) and still keeps the locked terms")
++    expect(any("file path" in e for e in errs3) and any("spelled another way" in e for e in errs3),
++           "a Researcher-mode string refuses a path (T-2657) and keeps the locked terms")
++    for label, value, needle in [("a ticket number", "Fixed under T-2624.", "ticket number"),
++                                 ("a snake_case id", "Inspect glessner_house.", "snake_case")]:
++        d = json.loads(json.dumps(base)); d["entries"].append(["guide.researcher.planted", value])
++        expect(any(needle in e for e in gate(d, page)), f"{label} in a Researcher-mode string is refused (owner, 2026-10-18)")
++    d = json.loads(json.dumps(base)); d["entries"].append(["researcher.planted", " ".join(["word"] * 30) + "."])
++    expect(not any("a sentence of" in e for e in gate(d, page)), "a Researcher-mode string may run past 20 words (a full essay)")
+     plant("markup naming no string", "names no string", markup='<b data-str="hud.no-such">x</b>')
+     first = next((k for k, v in base["entries"]), None)
+     plant("markup whose first paint differs", "paints", markup=f'<b data-str="{first}">Something else</b>')
+diff --git a/chicago/4d/tools/check_visitor_ui.py b/chicago/4d/tools/check_visitor_ui.py
+index 2c1d6167c..bf33986a2 100644
+--- a/chicago/4d/tools/check_visitor_ui.py
++++ b/chicago/4d/tools/check_visitor_ui.py
+@@ -37,14 +37,25 @@ WHAT IT READS — the surfaces, and why each is one:
+   read: telling a visible literal from a class name or a key statically is noise, and the
+   honest check is the rendered DOM in the smoke, which wants the runner. The Shops & work
+   card's location lines (`basis` and every location's `limit_reason`, js/businesses.js)
+-  are research prose that Researcher mode (T-2657) takes off the visitor's path. Guide ›
+-  About this destination (T-2667) folded the old hub into four cards and put its order
+-  book behind `data-researcher`; its topics' JS-filled entries are the research records
+-  themselves, rendered from the data, and no gate reads them for a visitor yet. What's New (js/changelog.js) is the release history Manager and the launcher parse,
++  are research prose that T-2825 rewrites (no mode shows internal ids or ticket numbers,
++  owner 2026-10-18). Guide › About this destination (T-2667) folded the old hub into four
++  cards and put its order book behind `data-researcher`; its topics' JS-filled entries are
++  the research records themselves, rendered from the data. What's New (js/changelog.js) is the release history Manager and the launcher parse,
+   held by its own length budget, and is not rewritten after the fact.
+ 
+-THE RESEARCHER-MODE EXEMPTION (owner ruling 2026-10-16: strings shown only in Researcher
+-mode are exempt). Researcher mode itself is T-2657; this is the contract it builds on:
++THE RESEARCHER-MODE EXEMPTION, AND HOW NARROW IT IS. The owner ruled on 2026-10-16 that
++strings shown only in Researcher mode (T-2657) are exempt, and narrowed it on 2026-10-18:
++"rewrite the records so you are not referring to internal ticket numbers or internal record
++ids in researcher or educator mode", and "If in that mode you want to refer to the tickets as
++a link or something as an external source or link back, ok, but I don't want to talk internal
++ticket language to researchers." So a Researcher-mode string is READ like any other and may
++carry exactly one thing a visitor's may not: the words "order book" (Researcher mode is where
++the order book lives). It still refuses a path, a link, an id, snake_case, a ticket number,
++"tier" and "ticket". A ticket may reach a researcher only as a LINK: an <a> whose href opens
++it in kevinrhaas/chicago-tickets, behind a label in plain words, inside a `data-researcher`
++element. A ticket link anywhere else is refused, and so is one whose label is empty.
++
++Which strings are Researcher mode's:
+ 
+   - in the table, a key with a `researcher` segment — the `researcher` namespace
+     (js/strings/researcher.js) or a key such as `guide.researcher.why-full` in an app's own
+@@ -86,16 +97,21 @@ WORDS = [
+ 
+ RESEARCHER = "researcher"
+ MARKER = "data-researcher"
++# The one word a Researcher-mode string may carry that a visitor's may not.
++RESEARCHER_ALLOWS = {"the words `order book`"}
++# A link that opens a ticket: the tickets repository, or a ticket number in the address.
++TICKET_HREF = re.compile(r"github\.com/kevinrhaas/chicago-tickets|\bT-\d{3,5}\b")
+ 
+ # Each entry: surface, a regex the finding's "where: text" must match, why, and the ticket
+ # that owns the fix. An entry that matches nothing fails the gate (it is stale).
+ ALLOWLIST = [
+     {"surface": "goto", "match": r"^businesses/index\.json biz_(chicago_post_office|cook_county_offices|"
+                                  r"indian_agency_chicago|us_land_office_chicago) ",
+-     "ticket": "T-2657",
++     "ticket": "T-2825",
+      "why": "Four authored civic-office records whose limit is a research ruling that cites research "
+-            "notes, exclusion ids and a file path. Rewording it here would drop the pointers a "
+-            "researcher follows; Researcher mode is where those ids and paths are shown."},
++            "notes, exclusion ids and a file path. The owner ruled on 2026-10-18 that no mode shows "
++            "internal ids or ticket numbers, so Researcher mode does not hold them either: T-2825 "
++            "rewrites the records themselves."},
+ ]
+ 
+ 
+@@ -103,10 +119,13 @@ def is_researcher_key(key):
+     return RESEARCHER in str(key).split(".")
+ 
+ 
+-def problems(text):
+-    """What in this string a visitor must never read."""
++def problems(text, researcher=False):
++    """What in this string a visitor must never read. `researcher`: a string only Researcher
++    mode shows, which may carry the words "order book" and nothing else a visitor's may not."""
+     found = list(lint_string(text))
+     for pattern, what in WORDS:
++        if researcher and what in RESEARCHER_ALLOWS:
++            continue
+         for m in pattern.finditer(text):
+             found.append(f"{what} (`{m.group(0)}`)")
+     return found
+@@ -115,13 +134,12 @@ def problems(text):
+ # ------------------------------------------------------------------- the surfaces
+ 
+ def table_strings(dump=None):
+-    """(where, text) for the string table and the app manifests, Researcher keys left out."""
++    """(where, text, researcher) for the string table and the app manifests."""
+     if dump is None:
+         from check_strings import read_table
+         dump = read_table()
+     for key, value in list(dump["entries"]) + list(dump.get("apps", [])):
+-        if not is_researcher_key(key):
+-            yield f"{key}", value
++        yield f"{key}", value, is_researcher_key(key)
+ 
+ 
+ VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param",
+@@ -133,13 +151,16 @@ AUTO_CLOSE = {"li", "p", "dt", "dd", "option", "tr", "td", "th"}
+ 
+ 
+ class _Visible(HTMLParser):
+-    """The text a visitor can read on a static page, each piece with its line, skipping
+-    scripts, styles, comments and every element under a `data-researcher` marker."""
++    """The text a reader can see on a static page, each piece with its line and whether it
++    sits under a `data-researcher` marker (Researcher mode's), skipping scripts, styles and
++    comments; and every link that opens a ticket, with its label and the same flag."""
+ 
+     def __init__(self):
+         super().__init__(convert_charrefs=True)
+-        self.stack = []      # (tag, exempt)
+-        self.out = []        # (line, text)
++        self.stack = []      # (tag, researcher)
++        self.out = []        # (line, text, researcher)
++        self.links = []      # [line, researcher, label] for each ticket link
++        self.open_link = None
+         self.skip = 0        # inside <script>/<style>
+ 
+     def exempt(self):
+@@ -152,43 +173,71 @@ class _Visible(HTMLParser):
+         exempt = self.exempt() or MARKER in names
+         if tag in ("script", "style"):
+             self.skip += 1
+-        if not exempt and not self.skip:
++        if not self.skip:
+             for a in VISIBLE_ATTRS:
+                 if names.get(a):
+-                    self.out.append((self.getpos()[0], names[a]))
++                    self.out.append((self.getpos()[0], names[a], exempt))
++            if tag == "a" and TICKET_HREF.search(names.get("href") or ""):
++                self.open_link = [self.getpos()[0], exempt, ""]
++                self.links.append(self.open_link)
+         if tag not in VOID:
+             self.stack.append((tag, exempt))
+ 
+     def handle_startendtag(self, tag, attrs):
+         names = dict(attrs)
+-        if not (self.exempt() or MARKER in names or self.skip):
++        if not self.skip:
+             for a in VISIBLE_ATTRS:
+                 if names.get(a):
+-                    self.out.append((self.getpos()[0], names[a]))
++                    self.out.append((self.getpos()[0], names[a], self.exempt() or MARKER in names))
+ 
+     def handle_endtag(self, tag):
+         if tag in ("script", "style") and self.skip:
+             self.skip -= 1
++        if tag == "a":
++            self.open_link = None
+         for i in range(len(self.stack) - 1, -1, -1):
+             if self.stack[i][0] == tag:
+                 del self.stack[i:]
+                 break
+ 
+     def handle_data(self, data):
+-        if self.skip or self.exempt() or not data.strip():
++        if self.skip or not data.strip():
+             return
+-        self.out.append((self.getpos()[0], " ".join(data.split())))
++        text = " ".join(data.split())
++        if self.open_link is not None:
++            self.open_link[2] = f"{self.open_link[2]} {text}".strip()
++        self.out.append((self.getpos()[0], text, self.exempt()))
++
++
++def _parse(path):
++    parser = _Visible()
++    parser.feed(Path(path).read_text(encoding="utf-8"))
++    parser.close()
++    return parser
+ 
+ 
+ def page_strings(pages=PAGES):
+     for path in pages:
+         if not Path(path).is_file():
+             continue
+-        parser = _Visible()
+-        parser.feed(Path(path).read_text(encoding="utf-8"))
+-        parser.close()
+-        for line, text in parser.out:
+-            yield f"{Path(path).name}:{line}", text
++        for line, text, researcher in _parse(path).out:
++            yield f"{Path(path).name}:{line}", text, researcher
++
++
++def ticket_link_errors(pages=PAGES):
++    """A ticket reaches a reader only as a link in Researcher mode, behind plain words
++    (owner, 2026-10-18). Its label is linted with the page's other text."""
++    errs = []
++    for path in pages:
++        if not Path(path).is_file():
++            continue
++        for line, researcher, label in _parse(path).links:
++            where = f"link | {Path(path).name}:{line}"
++            if not researcher:
++                errs.append(f"{where}: a link to a ticket outside Researcher mode (a `data-researcher` element)")
++            if not label:
++                errs.append(f"{where}: a link to a ticket with no label in plain words")
++    return errs
+ 
+ 
+ def goto_strings(index=None):
+@@ -212,8 +261,8 @@ def lint(surfaces, allowlist=ALLOWLIST):
+     """(failures, allowed, stale): each failure "surface | where: problem — in 'text'"."""
+     failures, allowed, used = [], [], set()
+     for surface, strings in surfaces:
+-        for where, text in strings:
+-            found = problems(text)
++        for where, text, *flag in strings:
++            found = problems(text, researcher=bool(flag and flag[0]))
+             if not found:
+                 continue
+             subject = f"{where}: {text}"
+@@ -261,6 +310,7 @@ def self_test():
+     index = json.loads(BUSINESSES.read_text(encoding="utf-8")) if BUSINESSES.is_file() else {"businesses": []}
+     base = surfaces(dump, PAGES, index)
+     f, _, stale = lint(base)
++    f += ticket_link_errors()
+     expect(not f and not stale, f"the committed visitor UI passes ({(f + stale)[:2]})")
+ 
+     def planted_table(value, key="planted.string"):
+@@ -277,12 +327,20 @@ def self_test():
+         ("a ticket number", "Fixed under T-2624.", "ticket number"),
+     ]:
+         expect(any(needle in e for e in planted_table(value)), f"{label} in the string table is refused")
+-    expect(not planted_table("See data/scenes/1835.json, tier 1.", key="researcher.planted"),
+-           "the same string under the researcher namespace is exempt")
+-    expect(not planted_table("ticket T-2624", key="guide.researcher.why"),
+-           "a researcher segment inside an app's own section is exempt")
+-    expect(planted_table("ticket", key="researchers.note"),
+-           "a namespace merely starting with `researcher` is not exempt")
++    # The owner, 2026-10-18 (T-2657): no internal ticket number or record id in any mode.
++    expect(not planted_table("Open the order book.", key="researcher.planted"),
++           "the words order book under the researcher namespace are allowed (Researcher mode holds it)")
++    expect(not planted_table("The order book, bucket by bucket.", key="guide.researcher.why"),
++           "and under a researcher segment inside an app's own section")
++    for label, value, needle in [("a ticket number", "Fixed under T-2624.", "ticket number"),
++                                 ("a snake_case id", "Inspect glessner_house.", "snake_case"),
++                                 ("a file path", "See data/scenes/1835.json.", "file path"),
++                                 ("the word ticket", "Its own ticket will settle it.", "`ticket`"),
++                                 ("the word tier", "A tier 1 source.", "`tier`")]:
++        expect(any(needle in e for e in planted_table(value, key="researcher.planted")),
++               f"{label} in a Researcher-mode string is still refused")
++    expect(planted_table("Open the order book.", key="researchers.note"),
++           "a namespace merely starting with `researcher` is not Researcher mode's")
+ 
+     with tempfile.TemporaryDirectory() as tmp:
+         page = Path(tmp) / "index.html"
+@@ -291,7 +349,7 @@ def self_test():
+             "<p>Straight from <code>docs/LIBERTIES.md</code>.</p>\n"
+             "<button title=\"Open the order book\">x</button>\n"
+             "<img alt=\"tier_one\">\n"
+-            "<section data-researcher><p>ticket T-1 at data/x.json</p><br><b title=\"tier\">y</b></section>\n"
++            "<section data-researcher><p>The order book.</p><br><b title=\"The order book\">y</b></section>\n"
+             "<div data-researcher title=\"order book\"></div>\n"
+             "<p>After the marker: the tickets.</p>\n"
+             "<script>const a = 'data/x.json';</script><style>.tier{}</style><!-- tier -->\n"
+@@ -300,10 +358,31 @@ def self_test():
+         expect(any("index.html:2" in e and "file path" in e for e in got), "a path in a page's <code> is refused, with its line")
+         expect(any("index.html:3" in e and "`order book`" in e for e in got), "a title attribute is read")
+         expect(any("index.html:4" in e and "snake_case" in e for e in got), "an alt attribute is read")
+-        expect(not any(":5" in e or ":6" in e for e in got), "a data-researcher subtree and its own attributes are exempt")
++        expect(not any(":5" in e or ":6" in e for e in got),
++               "a data-researcher subtree and its own attributes may name the order book")
+         expect(any("index.html:7" in e and "`ticket`" in e for e in got), "the exemption ends with the marked element")
+         expect(not any(":8" in e for e in got), "scripts, styles and comments are not visible text")
+ 
++    with tempfile.TemporaryDirectory() as tmp:
++        page = Path(tmp) / "index.html"
++        page.write_text(
++            "<main><section data-researcher><p>Seated by T-1198 at data/x.json.</p>\n"
++            "<p><a href=\"https://github.com/kevinrhaas/chicago-tickets/blob/main/T-1000-1249/T-1198-x.md\">How this was decided</a></p>\n"
++            "<p><a href=\"https://github.com/kevinrhaas/chicago-tickets/blob/main/T-1198.md\"></a></p></section>\n"
++            "<p><a href=\"https://github.com/kevinrhaas/chicago-tickets/blob/main/T-1198.md\">The work record</a></p>\n"
++            "<p><a href=\"https://example.org/x\">A source</a></p>\n"
++            "<section data-researcher><a href=\"#T-1198\">T-1198</a></section></main>", encoding="utf-8")
++        got = lint([("page", list(page_strings([page])))], allowlist=[])[0]
++        links = ticket_link_errors([page])
++        expect(any("index.html:1" in e and "ticket number" in e for e in got) and any("index.html:1" in e and "file path" in e for e in got),
++               "a ticket number and a path in Researcher-mode text are refused")
++        expect(not any(":2" in e for e in got + links),
++               "a ticket as a link behind plain words, in Researcher mode, is allowed")
++        expect(any(":3" in e and "no label" in e for e in links), "a ticket link with no label is refused")
++        expect(any(":4" in e and "outside Researcher mode" in e for e in links), "a ticket link outside Researcher mode is refused")
++        expect(not any(":5" in e for e in got + links), "a link to anything else is not a ticket link")
++        expect(any(":6" in e and "ticket number" in e for e in got), "a ticket link labelled with its number is refused")
++
+     def planted_goto(row):
+         idx = json.loads(json.dumps(index))
+         idx.setdefault("businesses", []).append(row)
+@@ -343,7 +422,7 @@ def main(argv=None):
+         return self_test()
+     found = surfaces()
+     failures, allowed, stale = lint(found)
+-    failures += contract_errors()
++    failures += contract_errors() + ticket_link_errors()
+     print("  read " + ", ".join(f"{len(s)} {name} string(s)" for name, s in found))
+     for line in allowed:
+         print(f"  allowed {line}")
+diff --git a/chicago/4d/tools/smoke_renderer.mjs b/chicago/4d/tools/smoke_renderer.mjs
+index 9508d2e79..be11a3ce6 100644
+--- a/chicago/4d/tools/smoke_renderer.mjs
++++ b/chicago/4d/tools/smoke_renderer.mjs
+@@ -1227,6 +1227,16 @@ const launchBrowser = () => chromium.launch({
+   args: ['--enable-unsafe-swiftshader'],
+ });
+ 
++function recoveredDisplayDiagnostic(state, priorPage) {
++  const d = state?.diagnostic;
++  return state?.readable === true && state.reloadButton === false
++    && /^Display reset /.test(state.notice ?? '') && state.text === state.notice
++    && d?.previousLost === true && d.previousPage !== d.currentPage
++    && typeof priorPage === 'string' && d.previousPage === priorPage
++    && typeof d.previousPage === 'string' && typeof d.currentPage === 'string'
++    && d.copyVisible === true && d.copyMatchesPrevious === true;
++}
++
+ /** How different are two pixel signatures, 0..255 per cell. */
+ function signatureDistance(a, b) {
+   if (!a?.cells || !b?.cells || a.cells.length !== b.cells.length) return Infinity;
+@@ -10951,7 +10961,14 @@ for (const [label, viewport, touch] of [
+           readable = r.width > 0 && r.top >= 0 && r.bottom <= innerHeight && r.left >= 0 && r.right <= innerWidth
+             && !!top && card.contains(top);
+         }
+-        return g ? { boot: g.boot, lowered: g.lowered, notice: g.notice, reloads: g.reloads,
++        const box = window.__chicago4d?.blackbox;
++        const previous = box?.previous;
++        const copy = card?.querySelector('.crash-notice-copy');
++        const diagnostic = { previousLost: previous?.entries?.some(e => e.k === 'lost') === true,
++          previousPage: previous?.page ?? null, currentPage: box?.box?.page ?? null,
++          copyVisible: !!copy && !copy.hidden,
++          copyMatchesPrevious: !!previous && copy?.dataset.copy === JSON.stringify(previous) };
++        return g ? { diagnostic, boot: g.boot, lowered: g.lowered, notice: g.notice, reloads: g.reloads,
+           watching: g.watching, sessionLosses: g.sessionLosses, readable,
+           text: card && !card.hidden ? card.querySelector('.crash-notice-text').textContent : null,
+           reloadButton: !!card && !card.hidden && !card.querySelector('.crash-notice-reload').hidden } : null;
+@@ -10992,12 +11009,13 @@ for (const [label, viewport, touch] of [
+       const after = await guardState();
+       check(`${label}: two lost contexts reload the page once at most, then lower the next boot a tier`,
+         /reset/.test(firstLoss.notice ?? '') && loads === 2 && reloaded?.boot?.detail === 'balanced'
+-        && reloaded.lowered === null && reloaded.notice === null
++        && reloaded.lowered === null && recoveredDisplayDiagnostic(reloaded, firstLoss.diagnostic.currentPage)
+         && after?.reloads === 1 && after.sessionLosses === 2 && after.lowered?.why === 'context'
+         && after.lowered.to.detail === 'light' && after.readable && after.reloadButton
+         && /^Detail lowered to Light/.test(secondLoss.notice ?? ''),
+         JSON.stringify({ firstLoss, loads, reloaded, secondLoss, after }));
+-      // The visitor taps Reload: the boot that follows is the lowered tier, and silent.
++      // T-2826 retains the prior reset record after Reload; require its exact Copy record,
++      // readable status and absence of another Reload prompt, alongside the lowered tier.
+       const at = await pc.evaluate(() => {
+         const r = document.querySelector('#crash-notice .crash-notice-reload').getBoundingClientRect();
+         return { x: r.x + r.width / 2, y: r.y + r.height / 2 };
+@@ -11005,8 +11023,10 @@ for (const [label, viewport, touch] of [
+       await pc.mouse.click(at.x, at.y);
+       await pc.waitForFunction(() => window.__chicago4d?.crashGuard?.watching === true, null, { timeout: 120_000, polling: 500 });
+       const lowered = await guardState();
+-      check(`${label}: the boot after Reload runs at the lowered tier with no card`,
+-        loads === 3 && lowered?.boot?.detail === 'light' && lowered.notice === null && lowered.reloads === 1,
++      check(`${label}: the boot after Reload runs at the lowered tier with only the prior-reset diagnostic`,
++        loads === 3 && lowered?.boot?.detail === 'light' && lowered.lowered === null
++        && recoveredDisplayDiagnostic(lowered, after.diagnostic.currentPage) && lowered.reloads === 1
++        && lowered.sessionLosses === 2 && lowered.watching === true,
+         JSON.stringify({ loads, lowered }));
+       check(`${label}: no page errors through the crash, the lost contexts and the reloads`,
+         crashErrors.length === 0, crashErrors.slice(0, 5).join(' | '));
+@@ -15764,6 +15784,60 @@ for (const [label, viewport, touch] of [
+       && Object.keys(settingsApp.clipped).length >= 6 && Object.values(settingsApp.clipped).every((list) => list.length === 0),
+       JSON.stringify({ scale: settingsApp.scale, stored: settingsApp.storedScale, back: settingsApp.back, clipped: settingsApp.clipped }));
+     // <<< T-2656
++    // >>> T-2657: Researcher mode, the Settings › About switch. Off by default: no RESEARCHER
++    // label, no [data-researcher] element drawn, the short "Why" hints shown and the full
++    // essays not. The switch (a hit-tested click; a miss is this check's failure, read below,
++    // and never aborts the part) turns it on: the label sits at the top, clear of the year
++    // chip and the instrument and inside the screen; every research element is drawn and
++    // every visitor stand-in put away; the device remembers it. Off again puts all of it back
++    // and forgets it. (No mode shows a ticket number or record id: owner, 2026-10-18.)
++    const researchRead = () => page.evaluate(async () => {
++      const api = window.__chicago4d;
++      const shown = (el) => !!el && getComputedStyle(el).display !== 'none';
++      const box = (el) => { const b = el?.getBoundingClientRect(); return b ? { l: b.left, r: b.right, t: b.top, b: b.bottom, w: b.width, h: b.height } : null; };
++      const badge = document.getElementById('research-badge');
++      const marked = [...document.querySelectorAll('[data-researcher]')].filter((el) => !el.hidden);
++      const stand = [...document.querySelectorAll('[data-visitor-only]')].filter((el) => !el.hidden);
++      const whys = [...document.querySelectorAll('details.why')];
++      return {
++        attr: document.documentElement.hasAttribute('data-researcher-mode'), apiOn: api.researcher?.on ?? null,
++        checked: document.getElementById('s-researcher')?.checked ?? null,
++        inAbout: !!document.getElementById('s-researcher')?.closest('#s-about'),
++        stored: localStorage.getItem('chicago4d.researcher'),
++        badge: shown(badge) && !!box(badge)?.w, badgeText: badge?.textContent.trim() ?? '', badgeBox: box(badge),
++        year: box(document.getElementById('year-badge')), instrument: box(document.getElementById('hud-instrument')),
++        researchAll: marked.length, researchShown: marked.filter(shown).length,
++        standAll: stand.length, standShown: stand.filter(shown).length,
++        whys: whys.length, full: whys.filter((d) => shown(d.querySelector('.why-full'))).length,
++        hints: whys.filter((d) => shown(d.querySelector('[data-visitor-only]'))).length,
++        innerW: innerWidth, innerH: innerHeight,
++      };
++    });
++    const researchOff = await researchRead();
++    const researchClick = await clickChrome('#s-researcher').then(() => null, (e) => page.evaluate(() => document.getElementById('s-researcher')?.click()).then(() => e.message));
++    await page.waitForFunction(() => document.documentElement.hasAttribute('data-researcher-mode'), null, { timeout: 30_000, polling: 100 }).catch(() => {});
++    const researchOn = await researchRead();
++    await openSection('settings');
++    const researchClick2 = await clickChrome('#s-researcher').then(() => null, (e) => page.evaluate(() => document.getElementById('s-researcher')?.click()).then(() => e.message));
++    await page.waitForFunction(() => !document.documentElement.hasAttribute('data-researcher-mode'), null, { timeout: 30_000, polling: 100 }).catch(() => {});
++    const researchBack = await researchRead();
++    // Never leave the mode on for the parts after this one, whatever happened above.
++    await page.evaluate(() => window.__chicago4d.researcher?.set(false));
++    {
++      const a = researchOff, b = researchOn, c = researchBack;
++      const clear = (x, y) => !x || !y || x.r <= y.l || y.r <= x.l || x.b <= y.t || y.b <= x.t;
++      const inView = (x) => !!x && x.l >= 0 && x.r <= b.innerW + 1 && x.t >= 0 && x.b <= b.innerH;
++      check(`${label}: Researcher mode is off by default; Settings › About's switch shows the RESEARCHER label and the full "Why this default" essays, is remembered, and turns off again (T-2657)`,
++        a.inAbout && !a.attr && a.apiOn === false && a.checked === false && a.stored === null && !a.badge
++        && a.researchAll > 0 && a.researchShown === 0 && a.standShown === a.standAll && a.whys === 3 && a.full === 0 && a.hints === 3
++        && !researchClick && b.attr && b.apiOn === true && b.checked === true && b.stored === 'on'
++        && b.badge && b.badgeText === 'RESEARCHER' && inView(b.badgeBox) && clear(b.badgeBox, b.year) && clear(b.badgeBox, b.instrument)
++        && b.researchShown === b.researchAll && b.standShown === 0 && b.full === 3 && b.hints === 0
++        && !researchClick2 && !c.attr && c.apiOn === false && c.checked === false && c.stored === null && !c.badge
++        && c.researchShown === 0 && c.standShown === c.standAll && c.full === 0 && c.hints === 3,
++        JSON.stringify({ off: a, click: researchClick, on: b, click2: researchClick2, back: c }));
++    }
++    // <<< T-2657
+     await clickChrome('#panel-close');
+     // T-2620: Settings is a Navigator app now, so closing it leaves the device docked on
+     // Settings; give it back as found (Home, docked) for the Navigator's own checks below.
+diff --git a/chicago/4d/tools/step_isolation.json b/chicago/4d/tools/step_isolation.json
+index 015c0c928..d47fe3398 100644
+--- a/chicago/4d/tools/step_isolation.json
++++ b/chicago/4d/tools/step_isolation.json
+@@ -5738,10 +5738,18 @@
+       "wrote": [],
+       "wrote_ignored": []
+     },
++    "tools/test_recovered_display_diagnostic.mjs": {
++      "wrote": [],
++      "wrote_ignored": []
++    },
+     "tools/test_repo_file.mjs": {
+       "wrote": [],
+       "wrote_ignored": []
+     },
++    "tools/test_researcher_mode.mjs": {
++      "wrote": [],
++      "wrote_ignored": []
++    },
+     "tools/test_restamp_inputs.py": {
+       "wrote": [],
+       "wrote_ignored": []
+diff --git a/chicago/4d/tools/test_check_visitor_ui.py b/chicago/4d/tools/test_check_visitor_ui.py
+index 15762b87d..57d185fe1 100644
+--- a/chicago/4d/tools/test_check_visitor_ui.py
++++ b/chicago/4d/tools/test_check_visitor_ui.py
+@@ -43,24 +43,44 @@ class Exemption(unittest.TestCase):
+         self.assertFalse(v.is_researcher_key("researchers.note"))
+         self.assertFalse(v.is_researcher_key("hud.tab.sources"))
+ 
+-    def test_table_skips_researcher_keys(self):
++    def test_table_flags_researcher_keys(self):
++        # T-2657: a researcher key is read, flagged, not skipped.
+         dump = {"entries": [["hud.a", "ticket"], ["researcher.b", "ticket"]], "apps": [["app.x.label", "Tier"]]}
+-        self.assertEqual([k for k, _ in v.table_strings(dump)], ["hud.a", "app.x.label"])
++        self.assertEqual([(k, r) for k, _, r in v.table_strings(dump)],
++                         [("hud.a", False), ("researcher.b", True), ("app.x.label", False)])
++
++    def test_researcher_may_name_the_order_book_and_nothing_else(self):
++        # The owner, 2026-10-18: no internal ticket number or record id in researcher mode.
++        self.assertEqual(v.problems("the order book", researcher=True), [])
++        self.assertTrue(v.problems("the order book"))
++        for text in ("under T-2624", "Open glessner_house", "See docs/LIBERTIES.md", "its own ticket", "a Tier 1 source"):
++            with self.subTest(text=text):
++                self.assertTrue(v.problems(text, researcher=True))
+ 
+     def test_page_marker_covers_its_subtree_only(self):
+         with tempfile.TemporaryDirectory() as tmp:
+             page = Path(tmp) / "p.html"
+             page.write_text('<div><p>one</p><aside data-researcher title="t"><p>two<img alt="a"></p>'
+                             '<ul><li>three</li></ul></aside><p title="four">five</p></div>', encoding="utf-8")
+-            texts = [t for _, t in v.page_strings([page])]
+-        self.assertEqual(texts, ["one", "four", "five"])
++            texts = [(t, r) for _, t, r in v.page_strings([page])]
++        self.assertEqual(texts, [("one", False), ("t", True), ("two", True), ("a", True), ("three", True),
++                                 ("four", False), ("five", False)])
+ 
+     def test_unclosed_marked_item_does_not_spread(self):
+         with tempfile.TemporaryDirectory() as tmp:
+             page = Path(tmp) / "p.html"
+             page.write_text("<ul><li data-researcher>hidden<li>shown</ul>", encoding="utf-8")
+-            texts = [t for _, t in v.page_strings([page])]
+-        self.assertEqual(texts, ["shown"])
++            texts = [(t, r) for _, t, r in v.page_strings([page])]
++        self.assertEqual(texts, [("hidden", True), ("shown", False)])
++
++    def test_ticket_links(self):
++        with tempfile.TemporaryDirectory() as tmp:
++            page = Path(tmp) / "p.html"
++            page.write_text('<div data-researcher><a href="https://github.com/kevinrhaas/chicago-tickets/x">how this was decided</a></div>'
++                            '<a href="https://github.com/kevinrhaas/chicago-tickets/y">the work record</a>', encoding="utf-8")
++            errs = v.ticket_link_errors([page])
++        self.assertEqual(len(errs), 1)
++        self.assertIn("outside Researcher mode", errs[0])
+ 
+ 
+ class GoTo(unittest.TestCase):
+diff --git a/chicago/4d/tools/test_move_comfort.mjs b/chicago/4d/tools/test_move_comfort.mjs
+index fb8d4ba7e..a63a50826 100644
+--- a/chicago/4d/tools/test_move_comfort.mjs
++++ b/chicago/4d/tools/test_move_comfort.mjs
+@@ -69,7 +69,8 @@ for (const id of ['s-head-bob', 's-eye', 'v-eye', 'eye-note', 's-snap-turn']) {
+   assert(comfort.includes(`id="${id}"`), `#${id} is in Move › Comfort`);
+   assert.equal(html.split(`id="${id}"`).length, 2, `#${id} is on the page once`);
+ }
+-assert(/<details class="why"><summary>Why this default<\/summary>\s*<p class="legend-note" id="eye-note">The default, 1\.68 m/.test(comfort),
++// T-2657: a one-line hint for a visitor, and the full essay (#eye-note) for Researcher mode.
++assert(/<details class="why"><summary>Why this default<\/summary>\s*<p class="legend-note" data-visitor-only data-str="research\.why\.eye">The default, 1\.68 m[\s\S]*?<p class="legend-note why-full" id="eye-note" data-researcher>The default, 1\.68 m/.test(comfort),
+   'the eye height keeps its "Why this default", naming the researched figure');
+ const settingsPanel = html.slice(html.indexOf('data-panel="settings"'), html.indexOf('</section>', html.indexOf('data-panel="settings"')));
+ assert(!settingsPanel.includes('id="s-eye"'), 'eye height has left Settings');
+diff --git a/chicago/4d/tools/test_researcher_mode.mjs b/chicago/4d/tools/test_researcher_mode.mjs
+new file mode 100644
+index 000000000..f0eff5344
+--- /dev/null
++++ b/chicago/4d/tools/test_researcher_mode.mjs
+@@ -0,0 +1,131 @@
++#!/usr/bin/env node
++// T-2657 (NAV-S03): Researcher mode, a Settings › About switch, off by default and remembered
++// per device. While it is on, <html data-researcher-mode> shows every [data-researcher]
++// element and hides every [data-visitor-only] stand-in (css/skins.css). The owner, 2026-10-18:
++// no internal ticket number, record id or file path in any mode, and a ticket only as a link
++// behind plain words. This reads, with no browser: the switch's state and storage, the ticket
++// link, and the page's markup and stylesheet. The rendered page is the smoke's, part 13.
++import assert from 'node:assert/strict';
++import fs from 'node:fs';
++import path from 'node:path';
++import { fileURLToPath } from 'node:url';
++import { createResearcherMode, readMode, ticketUrl, ticketLinkHtml, STORAGE_KEY, MODE_ATTR }
++  from '../renderers/web/js/researcher.js';
++import { t } from '../renderers/web/js/strings/index.js';
++import { visitorTextProblems } from '../renderers/web/js/fallback-summary.js';
++import { hubHtml, hubPlan, TOPIC_IDS } from '../renderers/web/js/evidence.js';
++
++const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
++const WEB = path.join(ROOT, 'renderers', 'web');
++const json = (p) => JSON.parse(fs.readFileSync(path.join(ROOT, p), 'utf8'));
++
++// ---- the switch: off by default, on and off, remembered, survives no storage --------------
++function fakeDoc() {
++  const attrs = new Map();
++  const box = { checked: false, handlers: [], addEventListener(type, fn) { if (type === 'change') this.handlers.push(fn); } };
++  return {
++    box, attrs,
++    documentElement: { setAttribute: (k, v) => attrs.set(k, v), removeAttribute: (k) => attrs.delete(k) },
++    getElementById: (id) => (id === 's-researcher' ? box : null),
++  };
++}
++function fakeStorage() {
++  const m = new Map();
++  return { m, getItem: (k) => (m.has(k) ? m.get(k) : null), setItem: (k, v) => m.set(k, String(v)), removeItem: (k) => m.delete(k) };
++}
++{
++  const store = fakeStorage();
++  const doc = fakeDoc();
++  const mode = createResearcherMode({ doc, storage: store });
++  assert.equal(mode.on, false, 'off by default');
++  assert.equal(doc.attrs.has(MODE_ATTR), false, 'and the root carries no attribute');
++  assert.equal(doc.box.checked, false, 'the switch reads off');
++  let heard = [];
++  mode.onChange((on) => heard.push(on));
++  doc.box.checked = true; doc.box.handlers.forEach((fn) => fn());
++  assert.equal(mode.on, true, 'the switch turns it on');
++  assert.equal(doc.attrs.has(MODE_ATTR), true, 'the root carries data-researcher-mode');
++  assert.equal(store.m.get(STORAGE_KEY), 'on', 'remembered on this device');
++  // A reload: a new page reads the same storage.
++  const doc2 = fakeDoc();
++  const again = createResearcherMode({ doc: doc2, storage: store });
++  assert.equal(again.on, true, 'it persists across a reload');
++  assert.equal(doc2.attrs.has(MODE_ATTR), true, 'and the reloaded page opens with it on');
++  assert.equal(doc2.box.checked, true, 'with the switch on');
++  mode.set(false);
++  assert.equal(doc.attrs.has(MODE_ATTR), false, 'turning it off clears the attribute');
++  assert.equal(store.m.has(STORAGE_KEY), false, 'and forgets it on this device');
++  assert.deepEqual(heard, [true, false], 'listeners hear each change once');
++  mode.set(false);
++  assert.deepEqual(heard, [true, false], 'and not a no-op');
++  assert.equal(createResearcherMode({ doc: fakeDoc(), storage: fakeStorage() }).on, false, 'a fresh device is off');
++  const broken = { getItem() { throw new Error('denied'); }, setItem() { throw new Error('denied'); }, removeItem() { throw new Error('denied'); } };
++  assert.equal(readMode(broken), false, 'storage that throws reads off');
++  const b = createResearcherMode({ doc: fakeDoc(), storage: broken });
++  assert.equal(b.set(true), true, 'and the switch still works for this page');
++  assert.equal(createResearcherMode({ doc: null, storage: null }).toggle(), true, 'no page, no storage: no throw');
++}
++
++// ---- a ticket, only as a link behind plain words ----------------------------------------
++{
++  // The tickets clone (tools/tickets.sh) writes tickets.json; a tree without it reads a fixture.
++  const tickets = fs.existsSync(path.join(ROOT, 'tickets/tickets.json')) ? json('tickets/tickets.json')
++    : { tickets: [{ id: 'T-2657', path: 'T-2500-2749/T-2657-researcher-mode-a-settings-about-switch-off-by-d.md' }] };
++  const one = tickets.tickets.find((x) => x.id === 'T-2657') ?? tickets.tickets[0];
++  const url = ticketUrl(one.path);
++  assert.equal(url, `https://github.com/kevinrhaas/chicago-tickets/blob/main/${one.path}`, 'a ticket opens in the tickets repository');
++  assert.ok(tickets.tickets.every((x) => !x.path || ticketUrl(x.path)), 'every path tickets.json gives makes an address');
++  assert.equal(ticketUrl('../etc/passwd'), '', 'and nothing else does');
++  assert.equal(ticketUrl('javascript:alert(1)'), '');
++  const html = ticketLinkHtml({ path: one.path });
++  assert.match(html, /^<a class="research-link" data-researcher href="https:\/\/github\.com\/kevinrhaas\/chicago-tickets\/blob\/main\/[^"]+" target="_blank" rel="noopener">How this was decided<\/a>$/,
++    'Researcher mode only, opening in a new tab');
++  const label = html.replace(/<[^>]+>/g, '');
++  assert.deepEqual(visitorTextProblems(label), [], 'its label is plain words');
++  assert.doesNotMatch(label, /T-\d|ticket/i, 'with no number and no ticket language');
++  assert.match(ticketLinkHtml({ path: one.path, label: 'record' }), />The work record<\/a>$/);
++  assert.equal(ticketLinkHtml({ path: '' }), '', 'no address, no link');
++}
++
++// ---- the page and the stylesheet --------------------------------------------------------
++{
++  const page = fs.readFileSync(path.join(WEB, 'index.html'), 'utf8');
++  const about = page.slice(page.indexOf('id="s-about"'), page.indexOf('</div>', page.indexOf('id="s-researcher"')));
++  assert.match(about, /<input type="checkbox" id="s-researcher">/, 'the switch is in Settings › About');
++  assert.doesNotMatch(about, /id="s-researcher"[^>]*checked/, 'and is not checked in the markup');
++  assert.match(page, /<span class="research-badge" id="research-badge" data-researcher data-str="research.badge">RESEARCHER<\/span>/,
++    'a small RESEARCHER label, shown only while it is on');
++  const whys = [...page.matchAll(/<details class="why">([\s\S]*?)<\/details>/g)].map((m) => m[1]);
++  assert.equal(whys.length, 3, 'three "Why this default" essays');
++  for (const w of whys) {
++    const short = w.match(/<p class="legend-note" data-visitor-only data-str="(research\.why\.\w+)">/);
++    assert.ok(short, 'each has a short visitor hint');
++    const words = t(short[1]).split(/\s+/).length;
++    assert.ok(words <= 40, `${short[1]} is ${words} words (40 at most)`);
++    const full = w.match(/<p class="legend-note why-full" id="[\w-]+" data-researcher>([\s\S]*?)<\/p>/);
++    assert.ok(full && full[1].split(/\s+/).length > 40, 'and the full essay, for Researcher mode');
++    assert.deepEqual(visitorTextProblems(full[1]), [], 'which carries no id, path or ticket number');
++  }
++  const css = fs.readFileSync(path.join(WEB, 'css', 'skins.css'), 'utf8');
++  assert.match(css, /html:not\(\[data-researcher-mode\]\) \[data-researcher\] \{ display: none !important; \}/, 'off, research is hidden');
++  assert.match(css, /html\[data-researcher-mode\] \[data-visitor-only\] \{ display: none !important; \}/, 'on, its stand-ins are');
++  // The hub (T-2667's hubHtml): the order book's card is Researcher mode's, and a topic marked
++  // `data-researcher` marks its own tile, whichever card it is filed under.
++  const topic = (id, researcher) => [id, { id, title: id, gloss: 'g', icon: '',
++    el: { hasAttribute: (a) => researcher && a === 'data-researcher' } }];
++  const topics = new Map([topic('grades', false), topic('city', true), topic('orderbook', true)]);
++  const hub = hubHtml([{ id: 'grading', researcher: false, topics: ['grades', 'city'], title: 'A', line: 'a' },
++    { id: 'research', researcher: true, topics: ['orderbook'], title: 'B', line: 'b' }], topics);
++  assert.match(hub, /<section class="ev-card" data-card="research" data-researcher/, 'the order book\'s card is Researcher mode\'s');
++  assert.match(hub, /data-topic="orderbook" data-researcher /, 'and so is its tile');
++  assert.match(hub, /data-topic="city" data-researcher /, 'a Researcher-mode topic\'s tile is marked too, in a visitor\'s card');
++  assert.match(hub, /data-topic="grades" aria-label/, 'a visitor\'s topic\'s tile is not');
++  assert.doesNotMatch(hub, /data-card="grading" data-researcher/, 'nor its card');
++  const real = hubHtml(hubPlan(), new Map(TOPIC_IDS.map((id) => [id, { id, title: id, gloss: '', icon: '' }])));
++  assert.match(real, /<section class="ev-card" data-card="research" data-researcher[\s\S]*?data-topic="orderbook"/,
++    'in the committed plan, the order book\'s tile sits in the Researcher-mode card');
++  const page2 = fs.readFileSync(path.join(WEB, 'index.html'), 'utf8');
++  assert.match(page2, /<div class="ev-topic" data-topic="orderbook" data-researcher>/, 'and its topic is marked in the page');
++}
++
++console.log('RESEARCHER MODE PASS — off by default, remembered per device, the full essays in place while on, and a ticket only as a link behind plain words');

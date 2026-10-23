@@ -1,0 +1,73 @@
+--- verify_normal_dev_gates_v6_09a_aux.py
++++ verify_normal_dev_gates_v7_09a_attempt2.py
+@@ -31,14 +31,24 @@
+ def load(p):return json.loads(pathlib.Path(p).read_text())
+ def committed(path):return subprocess.check_output(['git','-C',str(ROOT),'show',SHA+':'+path])
+ def success(x,label):need(x.get('status')=='completed' and x.get('conclusion')=='success',label+' not completed SUCCESS')
++RERUN_IDS={39266459095,39266463876}
++def expected_attempt(rid):return 2 if rid in RERUN_IDS else 1
++def rerun_receipt_ok(receipt):
++ need(receipt.get('repository')==REPO and receipt.get('sha')==AUX_HEAD==SHA and receipt.get('branch')==BRANCH,'rerun receipt frozen identity mismatch')
++ rows=receipt.get('reruns',[])
++ need(len(rows)==2 and {r.get('run_id') for r in rows}==RERUN_IDS,'exact two diagnosed rerun IDs required')
++ for r in rows:
++  need(r.get('previous_attempt')==1 and r.get('required_attempt')==2 and r.get('post_succeeded') is True and r.get('method')=='POST' and r.get('endpoint')=='actions/runs/'+str(r['run_id'])+'/rerun','exact successful whole-workflow attempt2 rerun required')
++  need(r.get('reason')=='contradictory terminal mandatory-step metadata' and r.get('preserved_attempt1_evidence_sha256') and re.fullmatch('[0-9a-f]{64}',r['preserved_attempt1_evidence_sha256']),'diagnosed preserved attempt1 evidence required')
+ def run_ok(x,path):
+- need(x.get('head_sha')==SHA and x.get('head_branch')==BRANCH and x.get('event')=='workflow_dispatch' and x.get('path')==path and x.get('run_attempt')==1,'wrong run identity/attempt')
++ need(x.get('head_sha')==SHA and x.get('head_branch')==BRANCH and x.get('event')=='workflow_dispatch' and x.get('path')==path and x.get('run_attempt')==expected_attempt(x.get('id')),'wrong run identity/attempt')
+  success(x,'workflow '+str(x.get('id')))
+ def jobs_ok(jobs,rid,names):
+  need(len({j['id'] for j in jobs})==len(jobs),'duplicate job IDs')
+  for name,steps in names.items():
+   js=[j for j in jobs if j.get('name')==name];need(len(js)==1,'missing/duplicate mandatory job '+name);j=js[0]
+-  need(j.get('run_id')==rid and j.get('head_sha')==SHA and j.get('run_attempt')==1,'wrong job identity');success(j,name)
++  need(j.get('run_id')==rid and j.get('head_sha')==SHA and j.get('run_attempt')==expected_attempt(rid),'wrong job identity');success(j,name)
++  need(j.get('html_url')=='https://github.com/'+REPO+'/actions/runs/'+str(rid)+'/job/'+str(j['id']),'mandatory job/check ID mismatch')
+   for step in steps:
+    ss=[s for s in j.get('steps',[]) if s.get('name')==step];need(len(ss)==1,'missing/duplicate test step '+step);success(ss[0],step)
+   # All non-post steps must finish SUCCESS; upload's always() is not a test substitute.
+@@ -113,7 +123,7 @@
+ 
+ def main():
+  global SHA
+- ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--verify',action='store_true');ap.add_argument('--sha',required=True);ap.add_argument('--out',required=True);ap.add_argument('--dispatch',required=True);ap.add_argument('--canonical',required=True);ap.add_argument('--terminal-jobs',required=True);args=ap.parse_args();need(re.fullmatch(r'[0-9a-f]{40}',args.sha) is not None,'--sha must be full40hex');SHA=args.sha
++ ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--verify',action='store_true');ap.add_argument('--sha',required=True);ap.add_argument('--out',required=True);ap.add_argument('--dispatch',required=True);ap.add_argument('--canonical',required=True);ap.add_argument('--terminal-jobs',required=True);ap.add_argument('--reruns',required=True);args=ap.parse_args();need(re.fullmatch(r'[0-9a-f]{40}',args.sha) is not None,'--sha must be full40hex');SHA=args.sha
+  if not args.verify:print(json.dumps({'execute':False,'pins_finalized':PINS_FINALIZED,'pinned_tree':PINNED_TREE,'canonical_inputs':SEATED_INPUTS,'sha':SHA,'source_pins':PINS,'source_blob_ids':BLOB_IDS,'network':'GET JSON only; total45second audit deadline; no retries/logs/artifacts','out':args.out},indent=2));return 0
+  need(PINS_FINALIZED,'final reviewed source pins not yet frozen; execution prohibited')
+  out=pathlib.Path(args.out);need(out.is_absolute() and str(out).startswith('/workspace/shared/'),'outside shared output required');out.mkdir(exist_ok=False)
+@@ -122,7 +132,7 @@
+   need(subprocess.check_output(['git','-C',str(ROOT),'rev-parse','HEAD'],text=True).strip()==SHA,'local HEAD differs')
+   need(subprocess.check_output(['git','-C',str(ROOT),'rev-parse',SHA+'^{tree}'],text=True).strip()==PINNED_TREE,'final commit tree differs reviewedstagedtree')
+   raw={p:committed(p) for p in PINS};source_ok(raw)
+-  dispatch=load(args.dispatch);can=load(args.canonical);saved=load(args.terminal_jobs)
++  dispatch=load(args.dispatch);can=load(args.canonical);saved=load(args.terminal_jobs);rerun_receipt_ok(load(args.reruns))
+   for d in [dispatch,can]:need(d['repository']==REPO and d['branch']==BRANCH and d['sha']==SHA and d['remote_head_after']==SHA,'dispatch frozen identity mismatch')
+   ds=dispatch['dispatches'];need(len(ds)==18 and {(x['viewport'],x['stage']) for x in ds}==GRID and all(x['post_succeeded'] is True for x in ds),'not exact18 successful grid POSTs')
+   ids={x['id'] for x in dispatch['discovered_runs']};need(len(ids)==18 and all(x['head_sha']==SHA and x['run_attempt']==1 for x in dispatch['discovered_runs']),'wrong18 discovered runs')
+@@ -147,16 +157,24 @@
+    need(subprocess.check_output(['git','-C',str(ROOT),'rev-parse',SHA+':'+p],text=True).strip()==BLOB_IDS[p],'local committed blob identity mismatch '+p)
+   runs=results['smoke_runs'];need(runs['total_count']==18 and len(runs['workflow_runs'])==18 and {r['id'] for r in runs['workflow_runs']}==ids,'remote dispatch run set differs: extras/missing')
+   for r in runs['workflow_runs']:
+-   run_ok(r,SMOKE);record=saved.get(str(r['id']));need(record is not None,'missing terminal job evidence');need(record['attempt']==1 and record['head_sha']==SHA,'wrong saved job record');jobs_ok(record['jobs'],r['id'],{'smoke':SMOKE_STEPS})
++   run_ok(r,SMOKE);record=saved.get(str(r['id']));need(record is not None,'missing terminal job evidence');need(record['attempt']==expected_attempt(r['id']) and record['head_sha']==SHA,'wrong saved job record');jobs_ok(record['jobs'],r['id'],{'smoke':SMOKE_STEPS})
+   run_ok(results['canonical_run'],HUMAN);cj=results['canonical_jobs'];need(cj['total_count']==len(cj['jobs']),'truncated canonical jobs');jobs_ok(cj['jobs'],cid,{'humans':HUMAN_STEPS,'teamster-studies':TEAM_STEPS})
+   report['auxiliary_skip_classification']=auxiliary_jobs_ok(results['auxiliary_run'],results['auxiliary_jobs'])
+   checks=results['checks'];need(checks['total_count']==len(checks['check_runs']),'truncated check list')
++  current_ids={c['id'] for c in checks['check_runs']}
++  for rid in ids:
++   for j in saved[str(rid)]['jobs']:
++    if j['name']=='smoke':need(j['id'] in current_ids,'selected attempt mandatory job/check not current')
++  for j in cj['jobs']:
++   if j['name'] in ('humans','teamster-studies'):need(j['id'] in current_ids,'canonical mandatory job/check not current')
+   for c in checks['check_runs']:
+    need(c.get('head_sha')==SHA and c.get('status')=='completed','wronghead/pending check')
+    need(c.get('conclusion')=='success' or (c['name']=='teamster-studies' and c.get('conclusion')=='skipped') or auxiliary_skip_check(c),'non-success check '+c['name'])
+   for n in ['gate','moving-frames','humans','report']:need(any(c['name']==n and c['conclusion']=='success' for c in checks['check_runs']),'mandatory check absent '+n)
+   statuses=results['statuses'];need(statuses['total_count']==len(statuses['statuses']),'truncated statuses');need(all(s['state']=='success' for s in statuses['statuses']),'non-success legacy status')
+   report['report_ci_steps_passed']=True
++  report['chosen_attempts']={str(rid):expected_attempt(rid) for rid in ids|{cid}}
++  report['attempt1_contradictions_preserved']=True
+   pr=results['pr'];need(pr['base']['sha']==results['dev_ref']['object']['sha'],'PR base metadata stale relative to actualdev');need(pr['state']=='open' and pr['head']['sha']==SHA and pr['head']['repo']['full_name']==REPO and pr['head']['ref']==BRANCH and pr['base']['ref']=='dev' and pr['mergeable'] is True and pr['mergeable_state']=='clean','PR not exacthead/open/dev/clean/mergeable')
+   # A final bounded consistency read detects dev/PR advancement during this audit;
+   # this is a distinct final snapshot, not a retry of a failed request.

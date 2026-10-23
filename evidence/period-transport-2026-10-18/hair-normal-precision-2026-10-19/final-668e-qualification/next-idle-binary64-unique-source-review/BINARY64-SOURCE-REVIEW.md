@@ -1,0 +1,13 @@
+# Binary64 revision review — no actual horse execution
+
+Reviewed NEW horse-ear-root-idle-checker-f64-next and archive lineage216352ee separately from preserved a5dc source. No capture, actual SAT/checker, synthetic tests, browser, CI or application changes by this reviewer.
+
+The capture correction is sound: Three getVertexPosition followed by matrixWorld produces JavaScript binary64 coordinates; Float64Array storage and explicit Buffer.writeDoubleLE preserve them without an extra float32 round. Metadata states IEEE754 binary64, little-endian,8bytes/coordinate and72bytes/triangle at the actual post-skin/post-world stage. Checker requires that exact metadata, .f64 hash/extent and NumPy<f8. This does not pretend to change original GLB inputs or emulate GPU arithmetic. Input/scene/index association and idle0 source scope remain as previously reviewed.
+
+Prior exact_contact/classify_contact/source_edges/official SAT logic remains unchanged. Actual edge endpoints/planes/opposite coplanar halfplanes guard adjacency, proper-first point dispatch cannot waive strict crossings, and all source ownership stays pinned and semantic. No broad proximity alias or new tolerance was introduced.
+
+Known negative derivation now checks SHA-pinned historical posed-head-self and witness-owner receipts, one idle0 row, twelve strict-proper entries, unambiguous source owners and exact explicit signature set: headface17 against ear_outer_-1 faces259..265 and ear_concave_-1 faces10,12,13,14,15. Incomplete scopes or signatures present only as raw SAT cannot pass. New checker persists baseline-negative-control.json before refusing incomplete qualification and before any candidate scan/gear.
+
+**Remaining blocker: duplicate actual witness detection.** verify_negative_cohort uses a set of found signatures, so twelve valid strict signatures plus a duplicate known witness still produce complete=true. Root explicitly requires duplicates to STOP. Add per-signature occurrences and actual pair/scope duplicate tracking, require each expected signature exactly once, preserve duplicate witnesses and a synthetic all12-plus-extra-duplicate rejection. The old provenance itself is protected by explicit twelve-entry/set equality; the gap concerns newly scanned witness qualification. Author has been asked for a separately preserved correction.
+
+Pending that one guard, release remains withheld. After it is source-reviewed and hash-pinned, recommend only the previously bounded120second sequential CPU capture then checker, with a NEW output directory, first-failure stop and retained logs/partial outputs; no actual run performed here. This remains an idle0 geometry diagnostic, not gear/63pose/anatomy/period/photographic acceptance.

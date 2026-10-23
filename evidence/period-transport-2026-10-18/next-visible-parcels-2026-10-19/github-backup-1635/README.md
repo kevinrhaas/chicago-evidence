@@ -1,0 +1,9 @@
+# Recovery checkpoint 2026-10-19 16:35 UTC
+
+PR1041 NOTMERGED. App HEAD09a/pushed; merge ofdev28c53 uncommitted, soleHUDconflict fixedpreservingbothfields. Exactresolvedsourcearchived6b79 forrecovery; allotherfilesnormal3way merge, independentnoasset/libertylossreviewPASS. NoappcommituntilrequiredcheckPASS.
+
+Default-sandbox preflight77558 blocked at unchanged test_fallback_summary childstdin. Saved901partial-worker status/outputfiles, oldlog, exactprocessidentities/fd/wchan. Identical20,438bytepayload/SAMENode24.19/Python canary: permittedexecutionPASS59ms, restricteddefaultTIMEDOUT3004ms. Exactdeniedsyscall remainsUNPROVEN. Agentunderpriorauthority terminatedONLYverifiedstuckNode/Python; rootthenpreservedallpartialpool andstoppedverifiedownedwholedefaultpreflightgroup1393497. No assertion/code/runtimeversionchanged or manualPASS. FreshFULLUNCHANGEDpreflight nowONE active session10021 require_escalated, log transport-2793-merge-dev-28c53-preflight-permitted.log. Rootsolegateowner. Oldpartial notgatePASS.
+
+AfteractualpreflightPASS: ordinarycommitTicketT2793/pushfeaturebranch, freezeactualSHA/tree, finaldispatch/verifierpins+newauxDAGactualmetadata, rootreviewthenONEfresh18+canonical+normalCI. Approveddurableobserver e34bd7/launcherf885 unchanged, NOTLAUNCHED yet. Allchecksstrict; normalDEVmergeonlywhenactualgreen, noadmin/bypass/directdevpush/prod. Old09a19proofand2rerunauthorityinvalidated.
+
+Newhorsechunks contain actualcompletedfitposesonly; full63 originalstillRUNNING, nofullgridacceptanceuntilterminalproof. Mouthfootprint7266 andsharedsaddle b5b8 areSOURCEONLY, finalsourceproofs/reviewpending; no newmodelsfromthese. Primarytext33c1 savedpriorbackup; no clearedsaddleprimarypixels. Photographic/riding/named-modeldeliveryacceptance open. Networkdraft16 applicationstillawaitsuserUI; no deniedassetretry/relay.

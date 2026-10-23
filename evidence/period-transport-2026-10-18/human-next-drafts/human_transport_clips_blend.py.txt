@@ -1,0 +1,170 @@
+#!/usr/bin/env python3
+"""Add transport pose actions to an existing canonical adult Blender master.
+
+blender -b --factory-startup --python human_transport_clips_blend.py -- \
+  --master ADULT.blend --profile transport_pose_profile.json --output ADULT_transport.blend
+
+Draft outside checkout during root gate freeze. Uses actual rest bone geometry and
+analytic two-link IK; unreachable targets fail. Does not edit fixtures or invent
+new wardrobe. Existing idle/walk/actions are preserved. No saddle => no sit_ride.
+"""
+import argparse
+import json
+import math
+import sys
+from pathlib import Path
+
+import bpy
+from mathutils import Matrix, Vector
+
+
+def gltf(v):
+    """glTF +Y up/+Z front -> canonical Blender +Z up/-Y front."""
+    return Vector((v[0], -v[2], v[1]))
+
+
+def two_link(a, target, pole, first, second, tolerance):
+    delta = target - a
+    distance = delta.length
+    if distance < abs(first - second) + 1e-7 or distance > first + second - 1e-7:
+        raise ValueError(f"unreachable IK: distance={distance:.6f}, lengths={first:.6f},{second:.6f}")
+    direction = delta.normalized()
+    bend = pole - direction * pole.dot(direction)
+    if bend.length < 1e-7:
+        raise ValueError("IK pole parallel to target; choose a meaningful bending plane")
+    bend.normalize()
+    along = (first * first - second * second + distance * distance) / (2 * distance)
+    height = math.sqrt(max(0, first * first - along * along))
+    joint = a + direction * along + bend * height
+    if abs((joint - a).length - first) > tolerance or abs((target - joint).length - second) > tolerance:
+        raise AssertionError("IK length preservation failed")
+    return joint
+
+
+def orient(rig, name, head, tail, rest):
+    pb = rig.pose.bones[name]
+    rest_direction = rest[name]['tail'] - rest[name]['head']
+    rotation = rest_direction.rotation_difference(tail - head).to_matrix().to_4x4()
+    basis = rest[name]['matrix'].copy()
+    basis.translation = Vector((0, 0, 0))
+    pb.matrix = Matrix.Translation(head) @ rotation @ basis
+    bpy.context.view_layer.update()
+
+
+def solve_chain(rig, first, second, target, pole, rest, report, tolerance):
+    a = rig.pose.bones[first].head.copy()
+    length1 = (rest[first]['tail'] - rest[first]['head']).length
+    length2 = (rest[second]['tail'] - rest[second]['head']).length
+    joint = two_link(a, target, pole, length1, length2, tolerance)
+    orient(rig, first, a, joint, rest)
+    orient(rig, second, joint, target, rest)
+    endpoint = rig.pose.bones[second].tail.copy()
+    error = (endpoint - target).length
+    report.append({'chain': [first, second], 'target_blender_m': list(target),
+                   'actual_endpoint_blender_m': list(endpoint), 'error_m': error,
+                   'lengths_m': [length1, length2]})
+    if error > tolerance:
+        raise AssertionError(f"{second} endpoint error {error:.8f} exceeds {tolerance}")
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--master', required=True)
+    parser.add_argument('--profile', required=True)
+    parser.add_argument('--output', required=True)
+    args = parser.parse_args(sys.argv[sys.argv.index('--') + 1:])
+    master, output = Path(args.master).resolve(), Path(args.output).resolve()
+    if master == output:
+        raise ValueError('output must differ from canonical input master')
+    profile = json.loads(Path(args.profile).read_text())
+    if profile.get('rider', {}).get('enabled'):
+        raise ValueError('sit_ride requires physical saddle/stirrup constraints; this draft supports driver only')
+    bpy.ops.wm.open_mainfile(filepath=str(master))
+    rig = bpy.data.objects.get('c4d_armature')
+    if rig is None or rig.type != 'ARMATURE':
+        raise ValueError('master lacks canonical c4d_armature')
+    if any(abs(s - 1) > 1e-6 for s in rig.scale):
+        raise ValueError('canonical rig must have baked metre scale1')
+    if len(rig.data.bones) < 56:
+        raise ValueError('expected complete portable56-joint rig')
+    required = ['pelvis'] + [p + s for s in ('l', 'r') for p in
+                            ('thigh_', 'calf_', 'foot_', 'upperarm_', 'lowerarm_', 'hand_')]
+    for name in required:
+        if name not in rig.data.bones:
+            raise ValueError(f'missing canonical bone {name}')
+    rig.animation_data_create()
+    rig.animation_data.action = None
+    for pb in rig.pose.bones:
+        pb.matrix_basis = Matrix.Identity(4)
+    bpy.context.view_layer.update()
+    rest = {b.name: {'head': b.head_local.copy(), 'tail': b.tail_local.copy(),
+                     'matrix': b.matrix_local.copy()} for b in rig.data.bones}
+    driver = profile['driver']
+    tolerance = driver['target_tolerance_m']
+    pelvis = rig.pose.bones['pelvis']
+    desired = gltf(driver['seat_surface_m']) + Vector((0, 0, driver['pelvis_head_above_seat_m']))
+    pose = pelvis.matrix.copy()
+    pose.translation += desired - pelvis.head
+    pelvis.matrix = pose
+    bpy.context.view_layer.update()
+    report = []
+    for index, side in enumerate(('l', 'r')):
+        solve_chain(rig, 'thigh_' + side, 'calf_' + side,
+                    gltf(driver['ankle_targets_m'][index]), gltf(driver['knee_pole_direction']),
+                    rest, report, tolerance)
+        pole = gltf(driver['elbow_pole_direction'])
+        if side == 'r':
+            pole.x *= -1
+        solve_chain(rig, 'upperarm_' + side, 'lowerarm_' + side,
+                    gltf(driver['wrist_targets_m'][index]), pole, rest, report, tolerance)
+        # Keep the authored foot's world rest orientation instead of inheriting
+        # the seated calf rotation (which would point toes through the board).
+        # Sole contact still needs the actual skinned-foot mesh and board surface.
+        foot = rig.pose.bones['foot_' + side]
+        foot_pose = rest[foot.name]['matrix'].copy()
+        foot_pose.translation = gltf(driver['ankle_targets_m'][index])
+        foot.matrix = foot_pose
+        bpy.context.view_layer.update()
+    pelvis_error = (rig.pose.bones['pelvis'].head - desired).length
+    if pelvis_error > tolerance:
+        raise AssertionError('pelvis registration failed')
+    if bpy.data.actions.get('sit_drive'):
+        raise ValueError('master already contains sit_drive; refusing silent action overwrite')
+    action = bpy.data.actions.new('sit_drive')
+    action.use_fake_user = True
+    rig.animation_data.action = action
+    bpy.context.scene.render.fps = 30
+    # Static one-second in-place pose, not driving motion or a rein simulation.
+    for frame in (1, 31):
+        for pb in rig.pose.bones:
+            pb.rotation_mode = 'QUATERNION'
+            pb.keyframe_insert('location', frame=frame, group=pb.name)
+            pb.keyframe_insert('rotation_quaternion', frame=frame, group=pb.name)
+            pb.keyframe_insert('scale', frame=frame, group=pb.name)
+    action['transport_profile'] = profile['profile_id']
+    action['in_place'] = True
+    action['status'] = 'engineering seated driver pose; no dynamic reins or historical validation'
+    root = rig.pose.bones.get('root')
+    if root is None or root.location.length > tolerance:
+        raise AssertionError('in-place study must leave root translation zero')
+    rig.animation_data.action = None
+    # Canonical master/export bind pose must remain the original rest pose.
+    # The seated registration belongs to the action, not saved pose/bind matrices.
+    for pb in rig.pose.bones:
+        pb.matrix_basis = Matrix.Identity(4)
+    bpy.context.view_layer.update()
+    output.parent.mkdir(parents=True, exist_ok=True)
+    bpy.ops.wm.save_as_mainfile(filepath=str(output))
+    output.with_suffix('.transport-report.json').write_text(json.dumps({
+        'profile': profile['profile_id'], 'master': str(master), 'output': str(output),
+        'pelvis_error_m': pelvis_error, 'constraints': report,
+        'unverified': ['skin deformation', 'seat/footboard contact surfaces', 'hand grasp',
+                       'reins', 'clothing clearance', 'riding tack', 'historical posture'],
+        'sit_ride_generated': False,
+        'existing_actions_preserved': True,
+    }, indent=2) + '\n')
+    print('sit_drive authored; numerical IK endpoints checked, physical/visual fitting still owed')
+
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,40 @@
+--- verify_668e_normal_dev_gates_v3.py
++++ verify_normal_dev_gates_v4.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Read-only normal CI gate audit. Never proves stdout union, artifacts or photographs.
++"""Read-only parameterized exact-head normal CI gate audit. Never proves stdout union, artifacts or photographs.
+ No request occurs without --verify. Requires PyYAML; only normal configured gh api GET.
+ """
+ import argparse,base64,concurrent.futures,hashlib,json,pathlib,re,subprocess,sys,time,datetime
+@@ -61,10 +61,11 @@
+  smoke=raw['chicago/4d/tools/smoke_renderer.mjs'].decode();need('process.exit(1)' in smoke and "console.log('SMOKE PASS')" in smoke,'smoke failure propagation absent')
+  need('const PARTS = 15' in smoke,'unexpected stage topology')
+ def main():
+- ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--verify',action='store_true');ap.add_argument('--out',required=True);ap.add_argument('--dispatch',default=str(SHARED/'transport-smoke-dispatch-c02-668e48180.json'));ap.add_argument('--canonical',default=str(SHARED/'human-probe-dispatch-668e48180.json'));ap.add_argument('--terminal-jobs',default=str(SHARED/'final-668e-metadata/terminal-jobs.json'));args=ap.parse_args()
++ global SHA
++ ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--verify',action='store_true');ap.add_argument('--sha',required=True);ap.add_argument('--out',required=True);ap.add_argument('--dispatch',required=True);ap.add_argument('--canonical',required=True);ap.add_argument('--terminal-jobs',required=True);args=ap.parse_args();need(re.fullmatch(r'[0-9a-f]{40}',args.sha) is not None,'--sha must be full40hex');SHA=args.sha
+  if not args.verify:print(json.dumps({'execute':False,'sha':SHA,'source_pins':PINS,'source_blob_ids':BLOB_IDS,'network':'GET JSON only; total45second audit deadline; no retries/logs/artifacts','out':args.out},indent=2));return 0
+  out=pathlib.Path(args.out);need(out.is_absolute() and str(out).startswith('/workspace/shared/'),'outside shared output required');out.mkdir(exist_ok=False)
+- report={'sha':SHA,'source_blob_ids':BLOB_IDS,'standard_ci_gate_passed':False,'coverage_proof_passed':False,'strict_log_union':'UNPROVEN','artifacts':'UNINSPECTED','photographic_acceptance':'UNACCEPTED','errors':[],'scope':'Normal CI metadata gate only; no ready/merge action or stdout-equivalence claim'}
++ report={'sha':SHA,'source_blob_ids':BLOB_IDS,'standard_ci_gate_passed':False,'report_ci_steps_passed':False,'coverage_proof_passed':False,'strict_log_union':'UNPROVEN','artifacts':'UNINSPECTED','photographic_acceptance':'UNACCEPTED','errors':[],'scope':'Normal CI metadata gate only; no ready/merge action or stdout-equivalence claim'}
+  try:
+   need(subprocess.check_output(['git','-C',str(ROOT),'rev-parse','HEAD'],text=True).strip()==SHA,'local HEAD differs')
+   raw={p:committed(p) for p in PINS};source_ok(raw)
+@@ -100,7 +101,16 @@
+    need(c.get('conclusion')=='success' or (c['name']=='teamster-studies' and c.get('conclusion')=='skipped'),'non-success check '+c['name'])
+   for n in ['gate','moving-frames','humans','report']:need(any(c['name']==n and c['conclusion']=='success' for c in checks['check_runs']),'mandatory check absent '+n)
+   statuses=results['statuses'];need(statuses['total_count']==len(statuses['statuses']),'truncated statuses');need(all(s['state']=='success' for s in statuses['statuses']),'non-success legacy status')
++  report['report_ci_steps_passed']=True
+   pr=results['pr'];need(pr['base']['sha']==results['dev_ref']['object']['sha'],'PR base metadata stale relative to actualdev');need(pr['state']=='open' and pr['head']['sha']==SHA and pr['head']['repo']['full_name']==REPO and pr['head']['ref']==BRANCH and pr['base']['ref']=='dev' and pr['mergeable'] is True and pr['mergeable_state']=='clean','PR not exacthead/open/dev/clean/mergeable')
++  # A final bounded consistency read detects dev/PR advancement during this audit;
++  # this is a distinct final snapshot, not a retry of a failed request.
++  with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
++   pf=pool.submit(get,'pulls/1041');df=pool.submit(get,'git/ref/heads/dev');last_pr=pf.result();last_dev=df.result()
++  (out/'pr_final.json').write_text(json.dumps(last_pr,indent=2)+'\n');(out/'dev_ref_final.json').write_text(json.dumps(last_dev,indent=2)+'\n')
++  need(last_dev['object']['sha']==results['dev_ref']['object']['sha'],'actual dev advanced during audit')
++  need(last_pr['state']=='open' and last_pr['head']['sha']==SHA and last_pr['base']['ref']=='dev' and last_pr['base']['sha']==last_dev['object']['sha'] and last_pr['mergeable'] is True and last_pr['mergeable_state']=='clean','PR changed/not clean at final consistency read')
++  report['fresh_final_base_sha']=last_dev['object']['sha']
+   report.update(standard_ci_gate_passed=True,smoke_workflows_success=18,canonical_workflows_success=1,pr_draft=pr['draft'],input_pairing='Individual run-to-input pairing not inferred; successful dispatchset and exact remote runset independently reconciled',verified_utc=datetime.datetime.now(datetime.timezone.utc).isoformat())
+  except Exception as e:report['errors'].append(str(e))
+  (out/'summary.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report,indent=2));return 0 if report['standard_ci_gate_passed'] else 1

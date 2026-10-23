@@ -1,0 +1,7 @@
+# V2 source-only helper — not used by the running old diagnostic
+
+`hud-qualification.mjs` remains frozenfd3ec... and may only supply diagnostic evidence with its disclosed readiness limitations. Newfile `hud-qualification-v2.mjs` SHA256822a5b9519f94266775f49a44ea5eba9eadd07ab9b660a9fa61ed24cdf71a531 is a separate candidate; never hot-edit a module named by an active run.
+
+V2 measurement body is derived from carriage_model `/workspace/shared/hud-footprint-review/smoke_renderer.mjs` with revised-settle.patch SHA358f08ce67ce67e472b14b52e72df3d0011ad77f432b18bd5e3b35ee31dbc6ed. Only harness additions are initial actual readiness snapshot and configurable timeout (normal60000ms, refusalcontrols2000ms). Body waits hint first, then immediately before synchronous2pxunion samples requires connected/ancestorvisible/positiveheight/fullyinviewport actualdock, semantic0/correctdetent, nativeanimationsdone, exactdocumenteddockdimensions. Runner checks readiness on baseline ANDbothplantedcaptures. Thresholds/union/exclusions/labels unchanged. No appstyle/runtime/UI hiding or redocking inside readiness.
+
+Same API: `runHudQualification(page,{output})`, shared existingpage/caller-ownedbrowser. Same3viewports/originalappsequence/plantrows/open+nonsettlingnativeanimationnegatives/finalrestore. Source syntax checked only. Do not import until root coordinates a new explicitrun; current run names oldfrozenmodule and may continue diagnostic only.

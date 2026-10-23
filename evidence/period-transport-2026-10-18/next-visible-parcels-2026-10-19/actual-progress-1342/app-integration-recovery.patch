@@ -1,0 +1,315 @@
+diff --git a/.github/workflows/chicago-4d-humans.yml b/.github/workflows/chicago-4d-humans.yml
+index 7ace02ed7..bbeb04e12 100644
+--- a/.github/workflows/chicago-4d-humans.yml
++++ b/.github/workflows/chicago-4d-humans.yml
+@@ -62,6 +62,10 @@ on:
+         description: 'Build and inspect existing residents’ reconstructed 1835 workwear masters (prototype artifacts)'
+         type: boolean
+         default: false
++      build_seated_driver_study:
++        description: 'Add reconstructed named1835 sit_drive on physical W01 bench; no production promotion'
++        type: boolean
++        default: false
+ 
+ concurrency:
+   group: chicago-4d-humans-${{ github.ref }}
+@@ -127,7 +131,7 @@ jobs:
+   # placements or production promotion: canonical masters and measurements are
+   # reviewable artifacts. Existing fixture verification must pass first.
+   teamster-studies:
+-    if: github.event_name == 'workflow_dispatch' && inputs.build_teamsters
++    if: github.event_name == 'workflow_dispatch' && (inputs.build_teamsters || inputs.build_seated_driver_study)
+     needs: humans
+     runs-on: ubuntu-latest
+     timeout-minutes: 30
+@@ -161,6 +165,14 @@ jobs:
+             python tools/human_base_prepare.py --target-recipe "assets/authored/humans/makehuman_hm08/adult_$age.recipe.json" --output "/tmp/prepared_adult_$age.json" > "/tmp/teamster-body-$age.log"
+             cmp "assets/authored/humans/makehuman_hm08/prepared_adult_$age.json" "/tmp/prepared_adult_$age.json"
+           done
++      - name: Prepare opt-in physical W01 seated study
++        if: inputs.build_seated_driver_study
++        working-directory: chicago/4d
++        run: |
++          set -euo pipefail
++          python3 tools/transport/generate_wagon.py --parameters data/transport/studies/wagon-driver-bench.json --output-dir renderers/web/transport/wagon-driver
++          python3 tools/test_human_seated_study.py --vehicle renderers/web/transport/wagon-driver/wagon-w01.json
++          node tools/test_human_seated_runtime.mjs --supported renderers/web/transport/wagon-driver/wagon-w01.glb --baseline renderers/web/transport/wagon/wagon-w01.glb
+       - name: Build three canonical masters and export through the portable path
+         working-directory: chicago/4d
+         env:
+@@ -170,13 +182,17 @@ jobs:
+           set -euo pipefail
+           source generators/blender.pin
+           mkdir -p /tmp/teamster-studies
++          sit_args=()
++          if [ "${{ inputs.build_seated_driver_study }}" = "true" ]; then
++            sit_args=(--sit-drive-study data/humans/poses/w01/resident-driver-bindings.json --sit-drive-vehicle renderers/web/transport/wagon-driver/wagon-w01.json)
++          fi
+           for variant in bardwell_otis_1835 dufresne_joseph_1835 flynn_martin_1835; do
+             master="assets/authored/humans/teamsters/$variant/canonical.blend"
+             "$BLENDER_CACHE/$BLENDER_DIR/blender" -b -noaudio --factory-startup --python-exit-code 1 \
+               --python tools/human_teamster_blend.py -- \
+               --recipe data/humans/recipes/worker_1835.json --variant "$variant" \
+               --liberty L418 --output "$master" \
+-              --experimental-normal-probes --normal-probe-receipts /tmp/teamster-studies/normal-probes \
++              --experimental-normal-probes --normal-probe-receipts /tmp/teamster-studies/normal-probes "${sit_args[@]}" \
+               2>&1 | tee "/tmp/teamster-studies/$variant-build.log"
+             bash tools/human_export.sh --master "$master" 2>&1 | tee "/tmp/teamster-studies/$variant-export.log"
+           done
+@@ -276,6 +292,14 @@ jobs:
+             --frame-pair /tmp/teamster-studies/export-evidence/flynn_martin_1835.lod0.raw.glb assets/humans/flynn_martin_1835.lod0.glb 2>&1 | tee /tmp/teamster-studies/inspection.log
+           NODE_PATH="$(npm root -g)" node tools/human_teamster.mjs --masters --sole-contact \
+             --output /tmp/teamster-studies/source 2>&1 | tee /tmp/teamster-studies/source-inspection.log
++      - name: Inspect actual exported named seated residents on W01
++        if: inputs.build_seated_driver_study
++        working-directory: chicago/4d
++        run: |
++          set -euo pipefail
++          NODE_PATH="$(npm root -g)" node tools/human_seated_driver.cjs /tmp/teamster-studies/seated-driver
++          NODE_PATH="$(npm root -g)" node tools/transport/smoke_wagon_driver.cjs . /tmp/teamster-studies/wagon-driver-source
++          NODE_PATH="$(npm root -g)" node tools/transport/smoke_wagon_driver.cjs ../../site/4d /tmp/teamster-studies/wagon-driver-published --published
+       - name: Preserve masters, exports and inspection evidence
+         if: always()
+         uses: actions/upload-artifact@v4
+@@ -288,6 +312,7 @@ jobs:
+             chicago/4d/assets/humans/*_1835.lod*.glb
+             chicago/4d/assets/humans/web/*_1835.lod*.glb
+             chicago/4d/data/humans/fixture.measure.json
++            chicago/4d/renderers/web/transport/wagon-driver/
+             /tmp/teamster-studies/
+             /tmp/body-preparation.log
+             /tmp/prepared*.json
+diff --git a/chicago/4d/assets/LICENSES.md b/chicago/4d/assets/LICENSES.md
+index 2e8c5aaf0..f0d1e0a81 100644
+--- a/chicago/4d/assets/LICENSES.md
++++ b/chicago/4d/assets/LICENSES.md
+@@ -1280,3 +1280,10 @@ All cabin/hardware/color dimensions are reconstructed. Reference catalog wording
+ 
+ 
+ **Metadata and articulation qualification:** The pre-door project scope quotation is preserved separately with its original branch and explicit non-period origin; the enabled branch now describes reconstructed rigid door/hinge geometry and endpoint transforms. Current model metadata hash is 93d4020036e5c685ce95010fe64b26c55a1561db4517405f0590f7a398253331 (860956 bytes). Corrected checks bind all 424 actual moving triangles to the unique active exported door and compose actual hierarchy transforms at each angle; closed-world shape alone cannot qualify detached geometry. Old closed-mapping/source-posed receipts are retained only as limited historical checkpoints. No continuous/occupant/photographic acceptance or installed-head gate is implied.
++
++
++### Supported W01 driver-bench study and named seated authoring (T-2804, 2026-10-19)
++
++`renderers/web/transport/wagon-driver/wagon-w01.glb` and its JSON sidecar are original GPL-3.0-or-later procedural geometry produced by `tools/transport/generate_wagon.py` from `data/transport/studies/wagon-driver-bench.json`. The unoccupied variant is separate from the existing W01 and introduces no external image/model/texture derivation. Bench/hardware dimensions and construction are reconstructed engineering choices; license provenance does not establish period accuracy.
++
++Optional seated resident pose data in `data/humans/poses/w01/` is original reconstructed CC0-1.0 numerical authoring based on the already-cleared CC0 human inputs. Helper, viewer and authoring code remains GPL-3.0-or-later. Existing MakeHuman graphical-base, skin, hair, canonical-master and human-export provenance continues unchanged. Existing L418 records these residents' reconstructed appearance and actions. New seated canonical export hashes and garment/contact/photographic acceptance must be measured after the actual CI export; no new master hash or likeness is invented here.
+diff --git a/chicago/4d/changelog.d/T-2793.json b/chicago/4d/changelog.d/T-2793.json
+index 72cdea191..d02ef1245 100644
+--- a/chicago/4d/changelog.d/T-2793.json
++++ b/chicago/4d/changelog.d/T-2793.json
+@@ -2,7 +2,7 @@
+   "title": "First moving transport studies",
+   "kind": "feature",
+   "items": [
+-    "A development collection shows original wagon, open-carriage, horse and light-harness studies with rolling wheels and articulated motion.",
++    "A development collection shows original wagon, carriage, horse and light-harness studies with articulated motion, including a separate wagon with a supported driver bench.",
+     "Wagon spokes taper, carriage cushions have rounded edges, and the horse has a cleaner neck join and a grounded trot study.",
+     "The harness breast strap now curves outside the horse's chest, with shorter supports joining the saddle pad.",
+     "These are early reconstructions. Historical comparisons, photographic surfaces, fitted gear, town traffic and riding remain in progress."
+diff --git a/chicago/4d/docs/LIBERTIES.md b/chicago/4d/docs/LIBERTIES.md
+index af1b5e86c..bd19da983 100644
+--- a/chicago/4d/docs/LIBERTIES.md
++++ b/chicago/4d/docs/LIBERTIES.md
+@@ -29522,3 +29522,48 @@ The door exposes closed/open0/70 degree study endpoints. Zero actual triangle-su
+ 
+ 
+ **Metadata and articulation qualification:** The pre-door project scope quotation is preserved separately with its original branch and explicit non-period origin; the enabled branch now describes reconstructed rigid door/hinge geometry and endpoint transforms. Current model metadata hash is 93d4020036e5c685ce95010fe64b26c55a1561db4517405f0590f7a398253331 (860956 bytes). Corrected checks bind all 424 actual moving triangles to the unique active exported door and compose actual hierarchy transforms at each angle; closed-world shape alone cannot qualify detached geometry. Old closed-mapping/source-posed receipts are retained only as limited historical checkpoints. No continuous/occupant/photographic acceptance or installed-head gate is implied.
++
++
++## Per-subject liberties
++
++### L-k01-1637-south-flank-2781 — 1637 Prairie's south flank: its belt course laid at the photograph's height, its bay's columns plain, and its stack placed by crossing two pictures
++
++**Decision:** the south flank of Jesse Spalding's remodel of the Grosvenor house (T-2781, piece 2
++of T-2756) carries three things the c. 1870 Grosvenor photograph shows. A stone belt course along
++the wall, 2.3-2.5 m and 0.05 m proud, from the front's corner to the canted bay and on behind it to
++the rear range (K01's new `side_belts`). Engaged stone columns on the bay, 0.2 m across, at each
++front angle and on each cheek 0.3 m from the wall, from 3.03 to 6.15 m, each on a square base under
++a square capital (K01's new bay `columns`). And the tall panelled stack behind the south eave, on
++the south wall's cornice at u 6.5, its top at 15.85 m, in place of the stack T-2465 had stood over
++the wing.
++**What is read, not invented.** From the photograph (`glessner_blog_1637_grosvenor_asbuilt_photo`)
++through T-2755's camera: the belt's line and depth (y 712-726 px, a course on the wall with brick
++below it and a shadow under it), the columns' places (x 350-362 and 395-405 px), their foot and the
++capitals' band (y 690 and 505-515), their width (about 12 px), and the stack's place along the wall.
++The stack's place in plan is where the photograph's ray through it (x 295 px) crosses the
++engraving's (`glessner_blog_1637_spalding_remodel_engraving`, x 690 px): u 6.47, v 13.37, on the
++south wall's line. Its top is the engraving's, drawn after the remodel.
++**What is invented.** The belt's height: the camera was fitted with the belt's foot at the
++principal floor (2.3 m), so the photograph places it on the wall and does not measure how high it
++stands; built there, it stands 0.07 m over the wing's string course where the two meet at the front
++corner, a corner no picture shows after the remodel. The columns' form: round shafts on plain square
++bases under plain square capitals, their axes a quarter diameter out of the bay's face; the
++photograph's capitals are carved and its shafts may be fluted or banded, which its grain does not
++show. The east cheek's two columns stand by symmetry, outside the frame. The stack's 1.2 m breadth
++along the wall, read from both pictures' widths, and its sunk panels, the north stacks'.
++**What is left out, and open for T-2840:** the capitals' and consoles'
++carving, the frieze's ovals and the arches over the lights; the cheeks' lights, which K08 cannot yet
++cut in a 1.0 m cheek; the shutters at the window over the bay; and the front light's place, which
++stands 15-20 px left of the photograph's.
++**How to resolve:** a nearer photograph of the south flank, or the house's drawings.
++**Ticket:** T-2839 (piece 1 of T-2781, itself piece 2 of T-2756).
++**Recorded:** 2026-10-19 (T-2839).
++
++
++## T-2804: named resident seated-driver and supported W01 studies (2026-10-19)
++
++This is an additive seated-study declaration under existing L418. Existing reconstructed 1835 residents Otis Bardwell (`rc_bardwell_otis`), Joseph Dufresne (`rc_dufresne_joseph`) and Martin Flynn (`rc_flynn_martin`) retain their record identity, date and reconstruction basis. The static seated pose, age/body fit, hand targets and staged driving action are original engineering reconstructions, not portraits, recorded driving assignments or observed actions. No new anonymous person or biography is introduced. The optional canonical `sit_drive` authoring uses the existing portable export and HumanActor; actual exported garment/bench/shoe contact and palm/rein grip require inspection, and source-body pose calculations alone do not establish them.
++
++A separate W01 bench variant adds an original removable timber seat, retaining cleats, bearing plates, bolts, footboard and four floor supports. Its support-plane datum is (0,1.58,0.65)m; the footboard top is1.12m. These chosen dimensions and construction are reconstructed to support the selected pose, not attested 1835 joinery or load-tested hardware. Fasteners intentionally enter timber. The ordinary W01 wagon and hitch remain separate. Unoccupied geometry/support samples do not establish occupant collision clearance, strength, continuous movement, historical construction, photographic quality or usable boarding/riding.
++
++The visible bench study is a development reconstruction. No photograph, ownership, manufacturer or historical likeness is asserted; all earlier source rights restrictions remain.
+diff --git a/chicago/4d/docs/ROADMAP.md b/chicago/4d/docs/ROADMAP.md
+index 4193e022d..cc49b8036 100644
+--- a/chicago/4d/docs/ROADMAP.md
++++ b/chicago/4d/docs/ROADMAP.md
+@@ -5597,3 +5597,8 @@ An isolated roofed carriage specimen adds a repaired cabin aperture and reconstr
+ 
+ 
+ 2026-10-19 installed desktop qualification repair: only flat grass cardMat now uses the documented single transparent pass; controlled tint287/287, row ghost327/325 and X-RAY316/313 preserve exact full-frame pixels, coverage and all other draws, with exact restoration. All three HUD baseline/planted CSS-layout cases and both actual refusal controls passed; final state restored. Historical331 is not reproduced, generic ghost triangle overages remain, and photographic/genuine-touch acceptance is not implied. No330/10%/triangle ceiling changed. See docs/RESEARCH/period-transport-2026-10-18/desktop-qualification-repair-2026-10-19.md. Installed-source preflight and final exact-head CI are required; central recovery receipts record their outcome.
++
++
++### T-2804 progress: physical W01 driver support and named seated export path
++
++The separate supported-bench study and opt-in canonical sit_drive path advance existing reconstructed1835 resident drivers. Remaining: actual canonical/clothed output and contact inspection, real reins/hand grips, scene placement, driver control/boarding, photographic finishing and period construction review. These partial engineering results do not close the rider/driver or vehicle interaction tickets.
+diff --git a/chicago/4d/docs/STATUS.md b/chicago/4d/docs/STATUS.md
+index 5983789f9..57072510a 100644
+--- a/chicago/4d/docs/STATUS.md
++++ b/chicago/4d/docs/STATUS.md
+@@ -24121,3 +24121,10 @@ An isolated roofed carriage specimen adds a repaired cabin aperture and reconstr
+ ## T-2857 — Glessner's Prairie front read (2026-10-19)
+ 
+ Nothing in the scene changed. T-2851 was split into this reading and T-2858, which builds what it found. The Prairie openings were read camera-free, with a one-dimensional projective fit along each course, on Taylor 2135, HABS 16 and HABS 17. They fit the model's spacing to 1.5, 3.3 and 1.6 px rms. HABS sheet 6 was re-measured off its scale bar, and its front measures 73.98 ft against the printed 74'-0". Against it, first-floor A, B and the door, and the second-floor north group, are built 0.30-0.63 ft too far south. The sheet also draws the first-floor lights 4.3-4.45 ft wide where 3.9 ft is built. Taylor's camera has its corner controls on the downspouts, and through it the openings and the stacks register 15-22 px left together. That is the camera, not the building. The stack tops agree with that photograph within 2 px. The match records' generic front items are now specific, and all three views still read `differs`. See docs/RESEARCH/glessner-prairie-front-T-2857/.
++
++
++## T-2804 supported bench and opt-in named seated authoring (2026-10-19)
++
++A separate W01 driver-bench variant now has actual generated timber seat, rail bearings, cleats/fasteners and floor-supported footboard. Its regenerated GLB matches reviewed f415e6fb79c9df9372c5b2ec6cb77c9a305117de3fa8e9c704c87d5c09a6aeb0. Existing W01/hitch geometry is preserved. Geometry checks cover decoded support planes/material ownership and five steering samples; they do not prove occupied safety or historical construction.
++
++Optional canonical sit_drive authoring and named runtime inspection reference existing reconstructed1835 residents Otis Bardwell, Joseph Dufresne and Martin Flynn. Actual canonical seated/clothed export, garment/shoe/seat contact, rein grips and photographic quality remain unverified until the manual CI export and actual render inspection. No production scene population, mounted rider, boarding/riding or anonymous replacement is supplied. All full smoke and portable-human gates remain required before dev merge.
+diff --git a/chicago/4d/renderers/web/transport/index.html b/chicago/4d/renderers/web/transport/index.html
+index 0c424f964..c3edff9e3 100644
+--- a/chicago/4d/renderers/web/transport/index.html
++++ b/chicago/4d/renderers/web/transport/index.html
+@@ -16,6 +16,7 @@ main{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin:32px 0}art
+ <article><a href="carriage-c02/"><div class="drawing" aria-hidden="true">C02</div><section><div class="status">1904 development reconstruction</div><h2>Enclosed carriage and door</h2><p>A roofed cabin, movable door and steps. Hardware, dimensions and period details remain unverified; no boarding.</p><span class="open">Inspect the study →</span></section></a></article>
+ <article><a href="harness/"><div class="drawing" aria-hidden="true">G01</div><section><div class="status">Working gear study</div><h2>Light driving harness</h2><p>Modular breastcollar, breeching, girth, bridle and reins, using an 1891 component list. Animated tension is still under development.</p><span class="open">Inspect gear study →</span></section></a></article>
+ <article><a href="hitch/"><div class="drawing" aria-hidden="true">Hitch</div><section><div class="status">Coupled motion study</div><h2>Horse &amp; carriage</h2><p>Inspect distance-driven wheels and walking, a head-bound bridle and live rein/trace endpoints. Mechanical fit and forces remain unresolved.</p><span class="open">Inspect coupling →</span></section></a></article>
++<article><a href="wagon-driver/"><div class="drawing" aria-hidden="true">W01</div><section><div class="status">1835 engineering reconstruction</div><h2>Supported driver bench</h2><p>A removable bench on the wagon rails, with retaining hardware and a supported footboard. Occupied fit remains under review.</p><span class="open">Inspect the bench →</span></section></a></article>
+ </main>
+ <footer>Original procedural surfaces and reconstructed colors. These studies are not identified historical vehicles or animals. Horses, harness, riders and vehicles are not yet coupled into traffic or riding interactions. Existing scene placements are preserved.</footer>
+ </html>
+diff --git a/chicago/4d/tools/human_teamster_blend.py b/chicago/4d/tools/human_teamster_blend.py
+index 4a2fff750..0c9a60b90 100644
+--- a/chicago/4d/tools/human_teamster_blend.py
++++ b/chicago/4d/tools/human_teamster_blend.py
+@@ -38,6 +38,8 @@ from human_grounded_gait import (prepare_legs, pose_at_phase, linearize_action,
+ def parse_args():
+     p = argparse.ArgumentParser(description=__doc__)
+     p.add_argument('--body', type=Path)
++    p.add_argument('--sit-drive-study', type=Path, help='Explicit reconstructed1835 named-resident/W01 seated study profile')
++    p.add_argument('--sit-drive-vehicle', type=Path, help='Actual exported physical driver-bench wagon sidecar')
+     p.add_argument('--recipe', type=Path, default=ROOT/'data/humans/recipes/worker_1835.json')
+     p.add_argument('--output', required=True, type=Path)
+     p.add_argument('--liberty', help='Existing project LIBERTIES entry assigned by the integrator')
+@@ -46,6 +48,8 @@ def parse_args():
+     p.add_argument('--normal-probe-receipts',type=Path,help='Required /tmp directory for experimental normal diagnostics')
+     argv = sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else []
+     args=p.parse_args(argv)
++    if bool(args.sit_drive_study)!=bool(args.sit_drive_vehicle):
++        p.error("--sit-drive-study and --sit-drive-vehicle must be supplied together")
+     if args.experimental_normal_probes:
+         if args.normal_probe_receipts is None or not args.normal_probe_receipts.resolve().is_relative_to(Path('/tmp')):
+             p.error('--experimental-normal-probes requires --normal-probe-receipts under /tmp')
+@@ -520,6 +524,34 @@ def build(args):
+                 pose.keyframe_insert('location',frame=frame)
+         linearize_action(act)
+         act['loop']=True
++    if args.sit_drive_study:
++        from human_seated_study import load_study, desired_matrix, local_basis
++        if not args.sit_drive_vehicle:raise ValueError('--sit-drive-study requires --sit-drive-vehicle exported sidecar')
++        study_pose,study_metadata=load_study(args.sit_drive_study,variant,bodypath,scale,args.sit_drive_vehicle)
++        if set(study_pose)!=set(bones):raise ValueError('seated study joint set differs from canonical rig')
++        # Read actual Blender rest bases; do not reconstruct roll or treat global
++        # deformations as parent-local quaternions.
++        rests={n:[list(row) for row in rig.data.bones[n].matrix_local] for n in bones}
++        desired={n:desired_matrix(study_pose[n],rests[n]) for n in bones}
++        act=bpy.data.actions.new('sit_drive');act.use_fake_user=True
++        rig.animation_data.action=act
++        act['loop']=True
++        act['cycle_duration_s']=1.0
++        act['in_place']=True
++        act['motion_basis']='Original reconstructed static seated IK study; no driving forces or biological motion claim'
++        act['driver_study_json']=json.dumps(study_metadata,sort_keys=True)
++        for frame in (0,30):
++            for name,parent in contract['skeleton']['bones']:
++                pose=rig.pose.bones[name]
++                matrix=local_basis(rests[name],desired[name],rests[parent] if parent else None,desired[parent] if parent else None)
++                pose.rotation_mode='QUATERNION'
++                pose.matrix_basis=Matrix(matrix)
++                pose.scale=(1,1,1)
++                pose.keyframe_insert('rotation_quaternion',frame=frame)
++                pose.keyframe_insert('location',frame=frame)
++                # Rigid contract: no scale animation channels or stretched bones.
++        linearize_action(act)
++        scene['driver_study_json']=json.dumps(study_metadata,sort_keys=True)
+     rig.animation_data.action=None
+     for pose in rig.pose.bones:
+         pose.location=(0,0,0)
+diff --git a/chicago/4d/tools/transport/generate_wagon.py b/chicago/4d/tools/transport/generate_wagon.py
+index 4cb7e1bc6..d563d57fb 100644
+--- a/chicago/4d/tools/transport/generate_wagon.py
++++ b/chicago/4d/tools/transport/generate_wagon.py
+@@ -122,6 +122,39 @@ for parent,r,label in [(rear,RR,'rear'),(front,RF,'front')]:
+ tongue=node('vehicle_tongue',front,t=(0,0,.35));box('tongue_timber',tongue,(.055,.055,TL),(0,0,TL/2),1)
+ for z in [.10,.30,TL-.10]:box('tongue_strap_'+str(z),tongue,(.062,.063,.025),(0,0,z),4)
+ hitch=node('vehicle_hitch_team',tongue,t=(0,0,TL));node('vehicle_hitch_single',front,t=(0,0,.35));node('vehicle_seat_driver',body,t=(0,1.15,1.10));node('vehicle_seat_passenger_01',body,t=(0,1.15,-.45));node('vehicle_board_left',body,t=(.85,0,.5));node('vehicle_board_right',body,t=(-.85,0,.5));node('vehicle_camera_ride',body,t=(0,1.8,.2));node('vehicle_collision',root)
++# Opt-in reconstructed furniture; baseline sockets/geometry remain untouched.
++furniture=None
++if params.get('driver_furniture'):
++ f=params['driver_furniture']
++ if f.get('variant')!='removable_bench_study':raise ValueError('unknown driver furniture variant')
++ for key in ['seat_width_m','seat_depth_m','seat_thickness_m','footboard_width_m','footboard_depth_m','footboard_thickness_m','footboard_top_m']:
++  if not isinstance(f.get(key),(int,float)) or not math.isfinite(f[key]) or f[key]<=0:raise ValueError('invalid '+key)
++ for key in ['seat_z_m','footboard_z_m']:
++  if not isinstance(f.get(key),(int,float)) or not math.isfinite(f[key]):raise ValueError('invalid '+key)
++ sw,sd,st=f['seat_width_m'],f['seat_depth_m'],f['seat_thickness_m'];fw,fd,ft=f['footboard_width_m'],f['footboard_depth_m'],f['footboard_thickness_m']
++ sz,fz=f['seat_z_m'],f['footboard_z_m'];rail_top=BED+H+.03;seat_top=rail_top+st;fbtop=f['footboard_top_m'];bearing=.055
++ if not(sw>=W+.055 and fw<W-.035 and fd/2+abs(fz)<L/2-.0175 and abs(sz)+sd/2<L/2 and BED<fbtop-ft<rail_top):raise ValueError('furniture outside supported box envelope')
++ parts=[]
++ def part(name,size,center,material=1,role='timber'):
++  box(name,body,size,center,material);parts.append({'name':name,'role':role,'size_m':list(size),'center_m':list(center),'min_m':[c-s/2 for c,s in zip(center,size)],'max_m':[c+s/2 for c,s in zip(center,size)]})
++ part('driver_bench_plank',(sw,st,sd),(0,rail_top+st/2,sz))
++ for side in [-1,1]:
++  # Inboard cleat touches rail inner face and plank underside, restraining lateral travel.
++  part('driver_bench_cleat_'+str(side),(.045,.045,sd),(side*(W/2-.055/2-.045/2),rail_top-.045/2,sz))
++  # Two reconstructed through-bolts with upper/lower bearing plates per rail.
++  for z in [sz-sd*.30,sz+sd*.30]:
++   part('driver_bench_bolt_'+str(side)+'_'+str(z),(.012,st+.055,.012),(side*W/2,rail_top+(st-.055)/2,z),4,'fastener_intentional_intersection')
++   for y in [seat_top+.003,rail_top-.043]:part('driver_bench_plate_'+str(side)+'_'+str(z)+'_'+str(y),(.045,.006,.035),(side*W/2,y,z),4,'fastener_intentional_intersection')
++ part('driver_footboard',(fw,ft,fd),(0,fbtop-ft/2,fz))
++ for side in [-1,1]:
++  for z in [fz-fd*.23,fz+fd*.23]:
++   height=fbtop-ft-BED
++   part('driver_footboard_block_'+str(side)+'_'+str(z),(.07,height,.07),(side*(fw/2-.10),BED+height/2,z))
++ furniture={'variant':f['variant'],'grade':'reconstructed','historical_attestation':False,'note':'Original engineering study; no source-attested1835 bench dimensions or strength/occupant acceptance','parts':parts,'seat_surface_m':[0,seat_top,sz],'footboard_top_m':fbtop,'footboard_bounds_xz_m':[-fw/2,fw/2,fz-fd/2,fz+fd/2],'contacts':'Bench bottom rests on existing rail tops; blocks connect floor to board underside. Fasteners intentionally intersect timber; no strength simulation.'}
++ for n in nodes:
++  if n['name']=='vehicle_seat_driver':n['translation']=[0,seat_top,sz]
++ node('vehicle_driver_foot_left',body,t=(.18,fbtop,fz-.08));node('vehicle_driver_foot_right',body,t=(-.18,fbtop,fz-.08))
++
+ # Merge by material inside each articulation frame, retaining wheel/steer/tongue pivots.
+ def rotate(v,q):
+  x,y,z,w=q;vx,vy,vz=v;tx=2*(y*vz-z*vy);ty=2*(z*vx-x*vz);tz=2*(x*vy-y*vx)
+@@ -149,6 +182,11 @@ sidecar={'asset_id':'wagon_w01_prototype','status':'engineering prototype; not p
+ if refined:
+  sidecar['wheel_refinement']={'grade':'reconstructed','historical_match':False,'spoke_sections_m':{'hub':[.035,.032],'felloe':[.022,.022]},'spoke_radial_stations':'original .08m to radius-.07m unchanged','board_chamfer_m':.0012,'note':'Original octagonal taper and restrained edge/material response study; no source-attested joinery or photographic match'}
+ 
++if furniture:
++ sidecar['asset_id']='wagon_w01_driver_bench_study'
++ sidecar['driver_furniture']=furniture
++ sidecar['socket_policy']='Bench study driver seat and foot surface sockets reflect physical reconstructed furniture; remaining sockets retain proposed semantics'
++
+ # Discard surface placeholders left by material batching; retain sockets and pivots.
+ surface_nodes={entry[0] for entry in geometry}
+ keep=[i for i in range(len(nodes)) if i not in surface_nodes]

@@ -1,0 +1,27 @@
+{
+  "cause": "Root exported CHICAGO_TICKETS_DIR into the full gate; sandbox ticket tests inherited it and addressed the real ticket clone. This was an operator error, not a passing gate.",
+  "superseded_gate": "/tmp/resident-human-preflight-export-repair.log",
+  "commits_undone": [
+    "e9716fa30cc8beb94b0b90dc58ac70a949fecf8a",
+    "6f4a1e55903dd57c7c85c3c2fcafa3e170f4ba29",
+    "27633fa0fd806f93858634c481a2a173fe7c0372"
+  ],
+  "baseline": "f858c31f",
+  "repair": "Restore only QUEUE/T0001/T0002 exact pre-test bytes and remove synthetic T2826, retaining commit history. No force push. Keep unrelated earlier settle/evidence commits.",
+  "byte_checks": [
+    {
+      "path": "QUEUE.md",
+      "restored_sha256": "ed18f6d365135e2cedb2224a3037b2082ef6da627981588db9377f819f03bdf6"
+    },
+    {
+      "path": "T-0000-0249/T-0001-a-visitor-can-walk-across-every-bridge-end-to-en.md",
+      "restored_sha256": "b45dee55b8b182c4ead29f8cf19fc1e3d624668092900d44af003fcbfdf961a7"
+    },
+    {
+      "path": "T-0000-0249/T-0002-weathered-facades-unpainted-boards-no-two-buildi.md",
+      "restored_sha256": "fa1d92612959a2439089aa561791469a9f6e11477bd16be02dbd180aa7f2a5ce"
+    }
+  ],
+  "prevention": "Unset CHICAGO_TICKETS_DIR for preflight/check.sh. Set it only on explicitly intended root ticket mutation commands.",
+  "lock_scope": "Test claim/lap git remotes use their temporary ROOT repositories; the three real main commits and two dirty paths were fully audited."
+}

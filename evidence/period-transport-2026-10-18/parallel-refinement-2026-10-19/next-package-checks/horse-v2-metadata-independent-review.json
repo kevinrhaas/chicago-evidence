@@ -1,0 +1,46 @@
+{
+  "scope": "Read-only source review and lightweight JSON metadata inspection of frozen b880; no generator/helper execution, tests, Blender, browser, app writes or changes to active trial inputs",
+  "proposal": "/workspace/shared/horse-v2-metadata-cleanup-next",
+  "geometry_preservation": {
+    "source_proof": "clean_surface_manifest deep-copies the sidecar; reads coat indices and returns metadata only. Generator invokes it after GLB serialization/file.write_bytes(encoded). No later GLB write occurs.",
+    "preserves_GLb_bytes_nodes_meshes_skins_animations_by_construction": true,
+    "actual_regeneration_byte_hash_proof": "not performed in this read-only task",
+    "important_scope_correction": "Inspected b880 GLB has no top extras and no node extras containing shoulder_join_trial. The stale added_face_count/joint_policy/vertex_ranges fields reviewed are sidecar metadata; this proposal does not clean any GLB extras."
+  },
+  "truthful_improvements": [
+    "308 added faces is relabeled pre-local-subdivision construction count rather than final surface count.",
+    "Final bridge/body/whole changed counts derive from validated current triangle-ID lists.",
+    "Root-only body-boundary and stale numeric ring-weight claims are replaced by actual exported JOINTS_0/WEIGHTS_0 authority and shared-index semantics.",
+    "Removing vertex_ranges rather than aliasing it prevents legacy range-only selectors silently omitting new bridge faces.",
+    "Source shoulder_join.py111-120 maps original face IDs through subdivision face_descendants, providing authoritative final triangle lists rather than a guessed contiguous range."
+  ],
+  "integration_blockers_if_claiming_fully_fail_closed": [
+    {
+      "path": "proposed/surface_metadata.py:17-30",
+      "issue": "No check requires exactly expected unique fore_l/fore_r records. Empty records or duplicate labels can silently omit/overwrite joined regions.",
+      "bounded_fix": "Require unique expected labels and exact expected record set before constructing regions."
+    },
+    {
+      "path": "proposed/surface_metadata.py:27-30",
+      "issue": "Each record checks its own new subset of active IDs, but record new-ID union is not required to equal global bridges. Clearing record new+active together can omit a joined surface while existing assertions pass.",
+      "bounded_fix": "Require disjoint per-record bridge IDs and union equality with global bridges; independently require active region coverage from unchanged original upper source faces plus authoritative descendant/bridge IDs."
+    },
+    {
+      "path": "proposed/surface_metadata.py:27-30",
+      "issue": "Current subset check does not reject deletion of an ordinary upper-limb active face outside its bridge list. Existing malformed test only empties active while leaving bridge IDs populated.",
+      "bounded_fix": "Add specific negative tests deleting a nonbridge active upper face, emptying an entire record, duplicate-label overwrite, and record/global bridge mismatch."
+    },
+    {
+      "path": "proposed/surface_metadata.py",
+      "issue": "All validation uses assert, disabled by python -O. This matches prototype style but is not unconditional fail-closed behavior.",
+      "bounded_fix": "Use explicit exceptions for contract validation in an integrated wrapper, or explicitly enforce nonoptimized execution and document scope."
+    }
+  ],
+  "other_integration_conditions": [
+    "Migrate range-only measurement consumers atomically; do not suppress missing-field errors.",
+    "Retain frozen b880 GLB/old sidecar as witness; produce a separate cleaned sidecar with its own hash.",
+    "Verify actual GLB hash unchanged after any authorized regeneration; current source proof alone is not executed regeneration proof.",
+    "Metadata cleanup is not anatomical, motion, harness stand-off, collision or photographic acceptance."
+  ],
+  "conclusion": "Bounded truthful sidecar cleanup with strong geometry nonmutation source proof. Do not present existing table validation as fully fail-closed until coherence gaps above are addressed; do not describe this as GLB-extras cleanup."
+}

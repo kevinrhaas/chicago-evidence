@@ -1,0 +1,13 @@
+--- verify_668e_normal_dev_gates.py
++++ verify_668e_normal_dev_gates_v2.py
+@@ -30,7 +30,9 @@
+   for step in steps:
+    ss=[s for s in j.get('steps',[]) if s.get('name')==step];need(len(ss)==1,'missing/duplicate test step '+step);success(ss[0],step)
+   # All non-post steps must finish SUCCESS; upload's always() is not a test substitute.
+-  for s in j.get('steps',[]):success(s,name+'/'+s.get('name','?'))
++  for s in j.get('steps',[]):
++   if s.get('name','').startswith('Post ') and s.get('status')=='completed' and s.get('conclusion')=='skipped':continue
++   success(s,name+'/'+s.get('name','?'))
+ def source_ok(raw):
+  for path,b in raw.items():need(digest(b)==PINS[path],'frozen source pin mismatch '+path)
+  for path,job_names in [(SMOKE,{'smoke':SMOKE_STEPS}),(HUMAN,{'humans':HUMAN_STEPS,'teamster-studies':TEAM_STEPS})]:

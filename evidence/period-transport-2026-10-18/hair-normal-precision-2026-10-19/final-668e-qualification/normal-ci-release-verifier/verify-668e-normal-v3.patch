@@ -1,0 +1,40 @@
+--- verify_668e_normal_dev_gates_v2.py
++++ verify_668e_normal_dev_gates_v3.py
+@@ -10,6 +10,7 @@
+ ROOT=pathlib.Path('/workspace/chicago'); SHARED=pathlib.Path('/workspace/shared')
+ SMOKE='.github/workflows/chicago-4d-smoke.yml'; HUMAN='.github/workflows/chicago-4d-humans.yml'
+ PINS={'.github/workflows/chicago-4d-smoke.yml': 'b2d6ae3c355e3604a807053088367f3e3ecda4e2d2bc63ca6bc15150848e4fde', '.github/workflows/chicago-4d-humans.yml': '4812e73e20c1e7601eb61fa7df7eafa347816f808917cb201dbaeea570c02d1b', 'chicago/4d/tools/smoke_renderer.mjs': '2b435da932f77e6dddcc93ec61917c21588ee24731df6050b56230827b48356f', 'chicago/4d/tools/human_fixture.mjs': '48c1666963013db003dd78dd9435541ac2d8a68cbbfcebb0d5b38a14295f3473', 'chicago/4d/tools/human_actor.mjs': '50e03ed95eb0b6c81879d1584a5ca0ef03b41a261d2abc3628bd4a1cddb5dad0', 'chicago/4d/tools/human_teamster.mjs': '5eb6f2c7d6379145444062fc74a90aaf02d7ac08d234edcdc93772361cf5c81a', 'chicago/4d/tools/human_export.sh': '7958fa031316794db38bd1f3e181583767a642ca513473b03243acb39c171946', 'chicago/4d/renderers/web/js/flora.js': 'bb9582d094a502b1ea82b9a0cf2de3d1eebed02157b71b80bb55160617b989dd'}
++BLOB_IDS={'.github/workflows/chicago-4d-smoke.yml': '43fdc6205607ff38d4ae768c2df608099b81d1e1', '.github/workflows/chicago-4d-humans.yml': '7ace02ed784ca1b3c02e28ff20788cb4dea3716c', 'chicago/4d/tools/smoke_renderer.mjs': '1a388c6e79dec079b2e0fbcc12218a4228bf9d7d', 'chicago/4d/tools/human_fixture.mjs': '1d65b03e80f8ba00164bfe929049b7347d0cc752', 'chicago/4d/tools/human_actor.mjs': '845d1bd7c77d3749b59fd0cd9ea10c6e5f6b175b', 'chicago/4d/tools/human_teamster.mjs': 'e9b1440d8d91ee3f64d675a48456c1fb6579ae9e', 'chicago/4d/tools/human_export.sh': 'dfa830cac6d9651b496d1763f8198be3391f784d', 'chicago/4d/renderers/web/js/flora.js': '30ccb239bdc3c29fb805a702f8dec18df44ea960'}
+ HUMAN_STEPS=['Rebuild the fixture and require the committed bytes','Open every human GLB in the browser, at both viewports','Drive the browser actor with the fixture, at both viewports']
+ TEAM_STEPS=['Verify the original body preparation','Build three canonical masters and export through the portable path','Build same-new-master parented hierarchy controls (test artifacts only)','Audit declared resident animation time bounds before browser loading','Check actual resident hair material, embedded PNG and source/web LOD dimensions','Validate the actual new GLB containers','Validate hierarchy control warnings with exact node pointers','Measure all human exports and inspect the workwear studies']
+ SMOKE_STEPS=['Publish the mirror the smoke serves (site/4d/ is generated)','Run the smoke against the published mirror']
+@@ -61,9 +62,9 @@
+  need('const PARTS = 15' in smoke,'unexpected stage topology')
+ def main():
+  ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--verify',action='store_true');ap.add_argument('--out',required=True);ap.add_argument('--dispatch',default=str(SHARED/'transport-smoke-dispatch-c02-668e48180.json'));ap.add_argument('--canonical',default=str(SHARED/'human-probe-dispatch-668e48180.json'));ap.add_argument('--terminal-jobs',default=str(SHARED/'final-668e-metadata/terminal-jobs.json'));args=ap.parse_args()
+- if not args.verify:print(json.dumps({'execute':False,'sha':SHA,'source_pins':PINS,'network':'GET JSON only; total45second audit deadline; no retries/logs/artifacts','out':args.out},indent=2));return 0
++ if not args.verify:print(json.dumps({'execute':False,'sha':SHA,'source_pins':PINS,'source_blob_ids':BLOB_IDS,'network':'GET JSON only; total45second audit deadline; no retries/logs/artifacts','out':args.out},indent=2));return 0
+  out=pathlib.Path(args.out);need(out.is_absolute() and str(out).startswith('/workspace/shared/'),'outside shared output required');out.mkdir(exist_ok=False)
+- report={'sha':SHA,'standard_ci_gate_passed':False,'coverage_proof_passed':False,'strict_log_union':'UNPROVEN','artifacts':'UNINSPECTED','photographic_acceptance':'UNACCEPTED','errors':[],'scope':'Normal CI metadata gate only; no ready/merge action or stdout-equivalence claim'}
++ report={'sha':SHA,'source_blob_ids':BLOB_IDS,'standard_ci_gate_passed':False,'coverage_proof_passed':False,'strict_log_union':'UNPROVEN','artifacts':'UNINSPECTED','photographic_acceptance':'UNACCEPTED','errors':[],'scope':'Normal CI metadata gate only; no ready/merge action or stdout-equivalence claim'}
+  try:
+   need(subprocess.check_output(['git','-C',str(ROOT),'rev-parse','HEAD'],text=True).strip()==SHA,'local HEAD differs')
+   raw={p:committed(p) for p in PINS};source_ok(raw)
+@@ -80,12 +81,15 @@
+    need(result.returncode==0,'normal GitHub GET failed '+endpoint+' (no retry)')
+    data=json.loads(result.stdout);return data
+   queries={'smoke_runs':'actions/workflows/chicago-4d-smoke.yml/runs?head_sha='+SHA+'&event=workflow_dispatch&per_page=100','canonical_run':'actions/runs/'+str(cid),'canonical_jobs':'actions/runs/'+str(cid)+'/jobs?filter=latest&per_page=100','checks':'commits/'+SHA+'/check-runs?per_page=100','statuses':'commits/'+SHA+'/status?per_page=100','pr':'pulls/1041','dev_ref':'git/ref/heads/dev'}
+-  queries.update({'source_'+str(i):'contents/'+p+'?ref='+SHA for i,p in enumerate(PINS)})
++  queries.update({'source_'+str(i):'git/blobs/'+BLOB_IDS[p] for i,p in enumerate(PINS)})
+   with concurrent.futures.ThreadPoolExecutor(max_workers=8) as pool:
+    futures={pool.submit(get,e):k for k,e in queries.items()};results={}
+    for f in concurrent.futures.as_completed(futures):
+     key=futures[f];results[key]=f.result();(out/(key+'.json')).write_text(json.dumps(results[key],indent=2)+'\n')
+-  for i,p in enumerate(PINS):need(base64.b64decode(results['source_'+str(i)]['content'])==raw[p],'remote frozen source differs '+p)
++  for i,p in enumerate(PINS):
++   blob=results['source_'+str(i)];need(blob.get('sha')==BLOB_IDS[p] and blob.get('encoding')=='base64','remote code blob identity/encoding mismatch '+p)
++   data=base64.b64decode(blob['content']);need(digest(data)==PINS[p] and data==raw[p],'remote frozen source differs '+p)
++   need(subprocess.check_output(['git','-C',str(ROOT),'rev-parse',SHA+':'+p],text=True).strip()==BLOB_IDS[p],'local committed blob identity mismatch '+p)
+   runs=results['smoke_runs'];need(runs['total_count']==18 and len(runs['workflow_runs'])==18 and {r['id'] for r in runs['workflow_runs']}==ids,'remote dispatch run set differs: extras/missing')
+   for r in runs['workflow_runs']:
+    run_ok(r,SMOKE);record=saved.get(str(r['id']));need(record is not None,'missing terminal job evidence');need(record['attempt']==1 and record['head_sha']==SHA,'wrong saved job record');jobs_ok(record['jobs'],r['id'],{'smoke':SMOKE_STEPS})

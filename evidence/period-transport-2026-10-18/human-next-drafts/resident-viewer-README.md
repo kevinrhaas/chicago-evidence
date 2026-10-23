@@ -1,0 +1,17 @@
+# Resident study viewer draft — not yet an application page
+
+Proposed destination: `renderers/web/residents/index.html` and `viewer.js`, published as `walk/residents/`. The development entry should be added only after the three actual resident GLBs are built, exported and inspected. There is no placeholder-person substitution and no publication change in this draft.
+
+Models are the actual existing reconstructed reference IDs: `bardwell_otis_1835`, `dufresne_joseph_1835`, `flynn_martin_1835`. Compiled resident rows must resolve, and each loaded GLB's `person_reference_id`, scene and depiction grade must agree before a figure is shown. Existing record names are not promoted into attested historical identities or portraits. The page calls body/face/clothing choices liberties.
+
+Source assets resolve under `assets/humans/web/`; published assets resolve under `data/humans/web/`. Source compiled records and published compiled records both use `data/sidecars/1835/people.json`. The existing renderer GLTFLoader/Meshopt decoder is reused. No source asset fallback runs in published mode.
+
+No verified resident-card URL parameter/permalink was found. The existing People panel opens cards through its local `open(personId)` API in `people.js`; this separate page cannot invoke that panel directly. The draft therefore shows the actual compiled record's name, occupation, division, reconstruction grade and population-basis text, with asset/skin license links. It invents no card URL.
+
+Controls support resident selection, standing/walking cycle, full/face/hand/garment views, angle, pause and phase. Mobile uses a full-width canvas above controls, native labeled inputs, minimum44px buttons, visible focus, and keyboard arrows on the canvas. Close-ups use stable exposure with a neutral hemisphere/key/fill setup; actual photographic quality still requires exported-asset review. Mobile/desktop screenshots must inspect actual completed exports, especially eyelids/eye geometry, hands, cloth intersections, seams and foot contact.
+
+Asset switches abort pending HTTP fetches, reject stale parsed results, stop/uncache mixers, dispose unique geometries/materials/textures/skeleton textures and release the previous actor. Static body bounds are cached for camera framing to avoid a full vertex walk every animation frame. No model is silently cached across switches.
+
+Automation hook: `window.residentStudy` exposes `ready`, async `selectPerson(assetId)`, `setPose('idle'|'walk')`, `setView('full'|'face'|'hands'|'garment')`, `setAngle(degrees)`, `setPhase(0..1)`, `pause()`, `snapshot()` and `dispose()`. Snapshot includes actual referenced record/GLB provenance, resource counts, runtime paths, pose/phase and GL error. Gate automation should exercise all three identities at1280×800 and390×780, capture face/hand/garment and standing views, and repeat model switches after warmup to check resources stay bounded. This hook is a test interface; internal implementation details are absent from visitor controls.
+
+Current validation: module syntax passes; the draft correctly refuses missing resident assets and leaves controls disabled on mobile. No actual worker GLBs exist locally yet, so actor visuals, switches, memory stability and photographic quality have **not** passed. `mobile-unavailable.png` records only that expected unavailable state; it is not a human render acceptance image. Application files remain untouched.

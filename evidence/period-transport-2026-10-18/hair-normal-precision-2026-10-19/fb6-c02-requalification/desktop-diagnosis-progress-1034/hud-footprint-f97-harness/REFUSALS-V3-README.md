@@ -1,0 +1,9 @@
+# Refusal-only followup — prepared, DO NOT RUN until root review/release
+
+Module `hud-refusals-v3.mjs` SHA2561a1729977e99faff0fef7038c2fb5dcc789b827e5611f4c53b7981f39455e41e imports UNCHANGED measureHudFootprint from existingv3 (SHA9eebb6401ab37a8e7d5badcbdbf987394e7bc727fc3402ebee713a0b2daf433d). Source syntax check only; no browser/import execution.
+
+API `await runHudRefusals(page,{output:ABS_FRESH_DIRECTORY_ENDING_refusals-v3})`. Parent directory must exist; finaldirectory created nonrecursive, refuses overwrite. Use caller's existing published NORMAL/Home page only AFTER all pixel comparison receipts are durable. Module starts/closes no browser or server and captures no screenshots. Sameexistingcontext is resizedCSS390×844; no genuine touch/phoneGPUclaim.
+
+Every phase incrementally persists `hud-refusals.json`: actualreadydockbaseline; open→sameunchangedmeasure2s requiring visiblelevel>0/readyfalse/positiveboxes/footprint>10; dock→actualready; realWAAPIopacity1∞→sameunchangedmeasure2s requiring visibleunchangeddockbox+semantic/running>0/readyfalse/positiveboxes; cancel finally; actualdockreadyagain. All measurements explicitly require live unheldrenderer. No renderer override, UIhiding, CSSfreeze, or repeatedredock insidepredicate. Original app/level/viewport restoredfinally; native diagnostic animation canceled and actual readback failsclosed. Module refuses preheldrenderer/existingdiagnosticanimation without altering caller state. Renderervalue is untouched throughout.
+
+Standalonev3 positive receipt remains partialoverallfalse because400sdeadline interruptedoldopencontrol, despite3actualbaseline+plant+screenshot positives. This followup does not relabel itcomplete or redo positive/photographic/productionproof. Newrefusals receipt must stand alone, with revision/context scope. Any timeout/refusal failure preserved; no fabricatedpass.

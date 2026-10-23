@@ -1,0 +1,13 @@
+# Final unique-negative revision: bounded diagnostic release recommendation
+
+Read-only diff review of NEW `/workspace/shared/horse-ear-root-idle-checker-f64-unique-next` against binary64 predecessor216352ee. No actual capture, horse/checker/SAT execution, synthetic test rerun, browser or application edit by reviewer.
+
+Changed executable source is only baseline_negatives.py, plus its synthetic control file. Capture, checker, source ownership, edge/point certificates, GLB reader and official SAT/proper predicates are byte-identical to the binary64 predecessor. Documentation/hash/control receipts also change; preserved prior archives remain separate.
+
+The outstanding duplicate gap is closed: each expected strict source-owner signature records its scope and sorted actual triangle pair; all12 must occur exactly once. Missing signatures, repeated expected signatures, repeated actual pairs, raw-only substitutes or incomplete scopes yield complete=false, and unchanged main refuses before candidate scanning. New authored controls explicitly reject all12-plus-extra-duplicate and repeated signature under a different actual pair. Additional baseline findings remain separate failure evidence, not candidate exemptions. Historical expected signatures still derive from both exact SHA-pinned actual receipts and the explicit twelve-entry identity set.
+
+Binary64 post-world storage, explicit little-endian72bytes/triangle metadata/checker requirement remain intact. Actual shared-edge nonfoldover proof, proper-first owned-point dispatch, pinned semantic identity rather than broad point matching, candidate2960 against all11452 active triangles, and first candidate failure witness/stop remain unchanged. No new tolerance, classifier exception, cap change or acceptance status added.
+
+No remaining source blocker identified for ONE bounded future sequential CPU capture/check diagnostic after root releases it: NEW capture/result directories, external120second total deadline, no retry/repair, checker only after successful capture, retain logs and partial outputs on timeout/failure, stop on first input/ownership/negative-control/unexpectedSAT/proper failure BEFORE gear. A pass would mean only this actual idle0 geometry scope. It would not qualify other poses, gear, normal/render quality, anatomy, historic identity or photographic acceptance.
+
+Archive076989e72c1f094da0065a70dfe9c2126fc71f7d5f94a5fc568dccc5c15d3c00 is verified read-only; exact reviewed source hashes are in unique-negative-source-hashes.json. Author reports29 normal/-O synthetic controls and a binary64 canary; these were not independently rerun and are not actual horse results.

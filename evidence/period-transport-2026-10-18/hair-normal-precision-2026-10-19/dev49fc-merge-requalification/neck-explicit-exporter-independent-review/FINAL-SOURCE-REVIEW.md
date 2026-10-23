@@ -1,0 +1,11 @@
+# Final source-only review
+
+Reviewed 2026-10-19: /workspace/shared/horse-neck-explicit-exporter-final-source-next, supplied archive SHA 2ad578c86c2532cd98dfbc5efe44d8c248365329257fb5f85fd5ca390239fb67. Compared changed source against f485 reviewed predecessor. No imports, tests, horse functions, generation, export, capture, SAT, browser or application mutation performed.
+
+The actual reloaded primitive POSITION/NORMAL refs are now explicitly compared to the intended ordered append refs before document fields are removed. New synthetic controls reject swapped refs and old refs. The earlier intended array equality, storage prefix/metadata protection, sparse scopes and index preservation remain intact.
+
+Symbolic required guards now distinguish POSITION192..215, NORMAL168..215 and all JOINTS/WEIGHTS exact. persisted_trial records expected input pins, authority SHA and actual local Python source hashes before validation; callbacks save the current stage before input checking, parameter evaluation, encoding and readback. It still refuses a prior output directory, checkpoints UNVALIDATED bytes, persists failure, and rethrows without retry. Normalizing output normals is not a substitute for actual unit-normal and visual qualification. Ordinary directory/read/write failures cannot guarantee receipt persistence; no such general filesystem guarantee is inferred.
+
+No further input/source-authority or serialization blocker found in this bounded source diff. Ownership, adapter, sparse_rules and pinned data authorities are unchanged. The author reports 17 synthetic controls normal/-O; this review did not run them and does not extend their scope to actual horse feasibility.
+
+STOP/HANDOFF: execution remains unauthorized. Existing rest/idle checkers assume all retained old neck positions exact and are not adapted for this new edit. A separately reviewed sparse-authority/checker revision must cover changed-neck source faces against ALL active horse geometry while retaining all prior full-head/ears, strict proper/SAT, baseline-negative and first-failure rules. This source artifact alone permits neither a geometry trial nor a full-SAT claim. No release, production acceptance or mechanical/visual suitability conclusion.

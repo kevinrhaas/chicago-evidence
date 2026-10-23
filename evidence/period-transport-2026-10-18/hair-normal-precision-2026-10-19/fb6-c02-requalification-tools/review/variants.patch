@@ -1,0 +1,109 @@
+--- validate_transport_split_smoke.py
++++ validate_transport_split_smoke_c02.py
+@@ -25,6 +25,8 @@
+     'vendor: meshopt decoder loads and reports supported',
+     'vendor: meshopt import raises no page error',
+ ]
++BUSINESS_ASSERTION = "{label}: an authored firm's card opens with its own record, not a 404 (T-2832)"
++
+ STYLE_LIBRARY_ASSERTION = "{label}: 1900 and 2115 Prairie show the Second Empire card and 1834 the Italianate one, cues dotted and the plate credited; Compare lines open the other styles' cues in place, on them and on Glessner's (T-2642)"
+ 
+ ANSI = re.compile(r'\x1b\[[0-?]*[ -/]*[@-~]')
+@@ -128,6 +130,9 @@
+     for guard in expected_guards:
+         section_inventory.remove(guard)
+     require(len(section_inventory) == sections, 'section assertion inventory disagrees with counter')
++    business_name = BUSINESS_ASSERTION.replace('{label}', label)
++    require(section_inventory.count(business_name) == (1 if 13 in parts(stage) else 0),
++            'T-2832 business assertion missing/duplicated or executed in wrong stage')
+     style_name = STYLE_LIBRARY_ASSERTION.replace('{label}', label)
+     require(section_inventory.count(style_name) == (1 if 14 in parts(stage) else 0),
+             'T-2642 style-library assertion missing/duplicated or executed in wrong stage')
+@@ -169,6 +174,10 @@
+     guards = re.findall(r'if \(stageOn\((\d+)\)\) \{\s*inStageWork = true;', smoke)
+     require([int(x) for x in guards] == list(range(1, 16)), 'frozen stage work blocks no longer cover exactly 1..15')
+     require('if (inStageWork) stageWorkChecks += 1;' in smoke, 'section counter contract changed')
++    business_literal = BUSINESS_ASSERTION.replace('{label}', '${label}')
++    require(smoke.count(business_literal) == 1, 'frozen T-2832 business assertion absent/duplicated')
++    business_blocks = re.findall(r'if \(stageOn\((\d+)\)\)', smoke[:smoke.index(business_literal)])
++    require(business_blocks and business_blocks[-1] == '13', 'frozen T-2832 assertion moved out of stage 13')
+     style_literal = STYLE_LIBRARY_ASSERTION.replace('{label}', '${label}')
+     require(smoke.count(style_literal) == 1, 'frozen T-2642 style-library assertion absent/duplicated')
+     preceding_blocks = re.findall(r'if \(stageOn\((\d+)\)\)', smoke[:smoke.index(style_literal)])
+--- watch_transport_split_smoke.py
++++ watch_transport_split_smoke_c02.py
+@@ -9,7 +9,7 @@
+ import re
+ import time
+ 
+-spec=importlib.util.spec_from_file_location('v','/workspace/shared/validate_transport_split_smoke.py')
++spec=importlib.util.spec_from_file_location('v','/workspace/shared/validate_transport_split_smoke_c02.py')
+ v=importlib.util.module_from_spec(spec);spec.loader.exec_module(v)
+ 
+ def now():return datetime.now(timezone.utc).isoformat()
+--- dispatch_transport_smoke_matrix.py
++++ dispatch_transport_smoke_matrix_c02.py
+@@ -2,9 +2,6 @@
+ """Dispatch the existing smoke grid at one verified frozen branch head. One-shot."""
+ import datetime,json,pathlib,re,subprocess,sys,time
+ repo='kevinrhaas/chicago';branch='steward/period-transport-2793';workflow='chicago-4d-smoke.yml'
+-if len(sys.argv)!=2 or not re.fullmatch('[0-9a-f]{40}',sys.argv[1]):raise SystemExit('pass exact committed/pushed SHA')
+-sha=sys.argv[1];out=pathlib.Path('/workspace/shared')/('transport-smoke-dispatch-'+sha[:9]+'.json')
+-if out.exists():raise SystemExit('receipt exists; reconcile it before any further dispatch')
+ def api(endpoint,body=None):
+     cmd=['gh','api',endpoint]
+     if body is not None:cmd+=['--method','POST','--input','-']
+@@ -13,21 +10,38 @@
+ def now():return datetime.datetime.now(datetime.timezone.utc).isoformat()
+ def head():return api(f'repos/{repo}/git/ref/heads/{branch}')['object']['sha']
+ def runs():return api(f'repos/{repo}/actions/workflows/{workflow}/runs?event=workflow_dispatch&per_page=100')['workflow_runs']
+-if head()!=sha:raise SystemExit('remote branch head differs; do not dispatch')
+-before={r['id']for r in runs()}
+-receipt={'repository':repo,'branch':branch,'sha':sha,'workflow':workflow,'started_utc':now(),'before_run_ids':sorted(before),'dispatches':[],'discovered_runs':[],'coverage_status':'UNPROVEN: scheduled partial legs only'}
+-def save():out.write_text(json.dumps(receipt,indent=2)+'\n')
+-save()
+-for viewport in ['mobile','desktop']:
+-    for stage in ['1-2','3-4','5','6-7','8','9-12','13','14','15']:
++PRIORITY = [('desktop','13'),('desktop','14'),('desktop','9-12'),('mobile','13')]
++RANGES = ['1-2','3-4','5','6-7','8','9-12','13','14','15']
++def cells():
++    grid=[(v,s)for v in ['mobile','desktop']for s in RANGES]
++    ordered=PRIORITY+[c for c in grid if c not in PRIORITY]
++    if len(ordered)!=18 or len(set(ordered))!=18 or set(ordered)!=set(grid):raise ValueError('exact18uniquegridcellsrequired')
++    return ordered
++
++def main():
++    if len(sys.argv)==2 and sys.argv[1]=='--plan':
++        print(json.dumps({'priority_cells':cells(),'dispatch':False}));return
++    if len(sys.argv)!=2 or not re.fullmatch('[0-9a-f]{40}',sys.argv[1]):raise SystemExit('pass exact committed/pushed SHA')
++    global sha,out
++    sha=sys.argv[1];out=pathlib.Path('/workspace/shared')/('transport-smoke-dispatch-c02-'+sha[:9]+'.json')
++    if out.exists():raise SystemExit('receipt exists; reconcile it before any further dispatch')
++    if head()!=sha:raise SystemExit('remote branch head differs; do not dispatch')
++    before={r['id']for r in runs()}
++    receipt={'repository':repo,'branch':branch,'sha':sha,'workflow':workflow,'started_utc':now(),'before_run_ids':sorted(before),'dispatches':[],'discovered_runs':[],'coverage_status':'UNPROVEN: scheduled partial legs only'}
++    def save():out.write_text(json.dumps(receipt,indent=2)+'\n')
++    save()
++    for viewport,stage in cells():
++        if head()!=sha:raise SystemExit('remote branch head changed before POST; reconcile receipt, do not redispatch')
+         record={'viewport':viewport,'stage':stage,'requested_utc':now(),'post_succeeded':False};receipt['dispatches'].append(record);save()
+         api(f'repos/{repo}/actions/workflows/{workflow}/dispatches',{'ref':branch,'inputs':{'viewport':viewport,'stage':stage}})
+         record['post_succeeded']=True;save()
+-for attempt in range(4):
+-    new=[r for r in runs()if r['id']not in before and r['head_sha']==sha]
+-    receipt['discovered_runs']=[{k:r[k]for k in ['id','head_sha','run_attempt','status','conclusion','created_at','html_url']}for r in new];save()
+-    if len(new)==18:break
+-    if attempt<3:time.sleep(2)
+-receipt['finished_utc']=now();receipt['remote_head_after']=head();save()
+-if receipt['remote_head_after']!=sha or len(receipt['discovered_runs'])!=18:raise SystemExit('dispatch receipt saved; reconcile incomplete discovery without redispatching')
+-print(json.dumps({'receipt':str(out),'sha':sha,'run_ids':[r['id']for r in receipt['discovered_runs']],'coverage':'UNPROVEN until actual log/union validation'}))
++    for attempt in range(4):
++        new=[r for r in runs()if r['id']not in before and r['head_sha']==sha]
++        receipt['discovered_runs']=[{k:r[k]for k in ['id','head_sha','run_attempt','status','conclusion','created_at','html_url']}for r in new];save()
++        if len(new)==18:break
++        if attempt<3:time.sleep(2)
++    receipt['finished_utc']=now();receipt['remote_head_after']=head();save()
++    if receipt['remote_head_after']!=sha or len(receipt['discovered_runs'])!=18:raise SystemExit('dispatch receipt saved; reconcile incomplete discovery without redispatching')
++    print(json.dumps({'receipt':str(out),'sha':sha,'run_ids':[r['id']for r in receipt['discovered_runs']],'coverage':'UNPROVEN until actual log/union validation'}))
++
++if __name__=='__main__':main()

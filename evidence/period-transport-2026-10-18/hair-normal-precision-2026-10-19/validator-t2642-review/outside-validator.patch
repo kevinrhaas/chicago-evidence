@@ -1,0 +1,84 @@
+--- /workspace/shared/validator-t2642-review/validator.before.py
++++ /workspace/shared/validate_transport_split_smoke.py
+@@ -25,6 +25,8 @@
+     'vendor: meshopt decoder loads and reports supported',
+     'vendor: meshopt import raises no page error',
+ ]
++STYLE_LIBRARY_ASSERTION = "{label}: 1900 and 2115 Prairie show the Second Empire card and 1834 the Italianate one, cues dotted and the plate credited; Compare lines open the other styles' cues in place, on them and on Glessner's (T-2642)"
++
+ ANSI = re.compile(r'\x1b\[[0-?]*[ -/]*[@-~]')
+ 
+ 
+@@ -126,6 +128,9 @@
+     for guard in expected_guards:
+         section_inventory.remove(guard)
+     require(len(section_inventory) == sections, 'section assertion inventory disagrees with counter')
++    style_name = STYLE_LIBRARY_ASSERTION.replace('{label}', label)
++    require(section_inventory.count(style_name) == (1 if 14 in parts(stage) else 0),
++            'T-2642 style-library assertion missing/duplicated or executed in wrong stage')
+     require(lines.index('SMOKE PASS') > max(i for i, x in enumerate(lines) if re.fullmatch(r'\d+ passed, \d+ failed', x)), 'SMOKE PASS precedes summary')
+     times = [re.fullmatch(r'(\d+) m (\d+) s for stage ([\d-]+) at (mobile|desktop) — .*', x) for x in lines]
+     times = [x for x in times if x]
+@@ -164,6 +169,10 @@
+     guards = re.findall(r'if \(stageOn\((\d+)\)\) \{\s*inStageWork = true;', smoke)
+     require([int(x) for x in guards] == list(range(1, 16)), 'frozen stage work blocks no longer cover exactly 1..15')
+     require('if (inStageWork) stageWorkChecks += 1;' in smoke, 'section counter contract changed')
++    style_literal = STYLE_LIBRARY_ASSERTION.replace('{label}', '${label}')
++    require(smoke.count(style_literal) == 1, 'frozen T-2642 style-library assertion absent/duplicated')
++    preceding_blocks = re.findall(r'if \(stageOn\((\d+)\)\)', smoke[:smoke.index(style_literal)])
++    require(preceding_blocks and preceding_blocks[-1] == '14', 'frozen T-2642 assertion moved out of stage 14')
+     for name in GUARDS:
+         require(name.replace('{label}', '${label}') in smoke, f'reviewed guard absent from frozen source: {name}')
+     require('SMOKE_VIEWPORT: ${{ inputs.viewport }}' in sources[wanted[0]] and
+--- /workspace/shared/validator-t2642-review/tests.before.py
++++ /workspace/shared/test_transport_split_smoke_validator.py
+@@ -10,7 +10,7 @@
+ spec = importlib.util.spec_from_file_location('validator', '/workspace/shared/validate_transport_split_smoke.py')
+ v = importlib.util.module_from_spec(spec)
+ spec.loader.exec_module(v)
+-SHA = '1b3c73d22016596d07b133019df24422c2b54790'
++SHA = 'd7b944d86cb7c02d6c1af3f261ca7c8f005e4ebd'
+ 
+ def manifest():
+     return {'repository': 'kevinrhaas/chicago', 'sha': SHA,
+@@ -25,13 +25,39 @@
+              f'NOT THE FULL GATE — viewports filtered to "{view}"',
+              f'NOT THE FULL GATE — stages filtered to "{stage}" of 15', label + ':']
+     names = [x.replace('{label}', label) for x in v.GUARDS]
+-    names[9:9] = [label + ': section check ' + str(i) for i in range(3)]
++    sections = [label + ': section check ' + str(i) for i in range(3)]
++    if 14 in v.parts(stage): sections[0] = v.STYLE_LIBRARY_ASSERTION.replace('{label}', label)
++    names[9:9] = sections
+     lines += ['  pass  ' + n for n in names]
+     lines += ['16 passed, 0 failed', f'3 staged-section check(s) (stage {stage} of 15), 13 always-on check(s)',
+               f'2 m 01 s for stage {stage} at {view} — ceiling', 'SMOKE PASS']
+     return '\n'.join('smoke\tRun smoke\t2026-10-18T00:00:00.000Z ' + x for x in lines)
+ 
+ class StrictValidation(unittest.TestCase):
++    def test_t2642_both_viewports_missing_and_wrong_stage(self):
++        for view in v.LABELS:
++            name = v.STYLE_LIBRARY_ASSERTION.replace('{label}', v.LABELS[view])
++            self.assertIn(name, v.parse_log(log(view, '14'), view, '14')['section_assertions'])
++            missing = log(view, '14').replace(name, v.LABELS[view] + ': unrelated section')
++            with self.assertRaisesRegex(ValueError, 'T-2642'):
++                v.parse_log(missing, view, '14')
++            wrong = log(view, '8').replace(v.LABELS[view] + ': section check 0', name)
++            with self.assertRaisesRegex(ValueError, 'T-2642'):
++                v.parse_log(wrong, view, '8')
++
++    def test_t2642_representative_frozen_log_inventory_negative(self):
++        text = Path('/workspace/shared/transport-split-evidence-9a84aae03/39181006236-attempt-1.log').read_text()
++        # Historical captured log is only a parser fixture, never current-head proof.
++        with self.assertRaisesRegex(ValueError, 'T-2642'):
++            v.parse_log(text, 'desktop', '14')
++        lines = v.normalize(text)
++        old = next(x for x in lines if x.startswith('  pass  desktop 1280x800:') and '1904 scene' not in x and x.split('  pass  ',1)[1] not in [g.replace('{label}',v.LABELS['desktop'])for g in v.GUARDS])
++        adapted = text.replace(old, '  pass  '+v.STYLE_LIBRARY_ASSERTION.replace('{label}', v.LABELS['desktop']), 1)
++        v.parse_log(adapted, 'desktop', '14')
++        wrong = adapted.replace('stages filtered to "14" of 15','stages filtered to "8" of 15').replace('(stage 14 of 15)','(stage 8 of 15)').replace('for stage 14 at desktop','for stage 8 at desktop')
++        with self.assertRaisesRegex(ValueError, 'T-2642'):
++            v.parse_log(wrong, 'desktop', '8')
++
+     def test_valid_eighteen_cells_and_audit(self):
+         m = manifest(); v.manifest_check(m)
+         records = [{**r, 'parts': v.parts(r['stage']), 'status': 'completed', 'conclusion': 'success',

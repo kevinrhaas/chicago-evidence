@@ -1,0 +1,17 @@
+"""Actual prepared topology/bounds checks; does not certify closed eyelid fit."""
+import pathlib,json,math,sys
+P=pathlib.Path(__file__).parent;sys.path.insert(0,str(P));from human_eye_components import build_eye_components
+ROOT=pathlib.Path('/workspace/chicago/chicago/4d');reports=[]
+for age in [25,35]:
+ body=json.loads((ROOT/f'assets/authored/humans/makehuman_hm08/prepared_adult_{age}.json').read_text());bones={b['name']:b for b in body['skeleton']}
+ for lod in range(4):
+  data=build_eye_components(bones,lod);triangles=sum(len(m['triangles']) for m in data['meshes']);assert triangles==[1584,736,288,128][lod];deficit=0;edge_deficit=0;penetration=[]
+  sclera=next(m for m in data['meshes'] if m['name']=='eyes__sclera')
+  for f in sclera['triangles']:
+   v=[sclera['positions_m'][i] for i in f];e=data['eyes'][0 if sum(p[0] for p in v)>0 else 1];c=e['center_m'];r=e['radius_m'];mid=[sum(p[j] for p in v)/3 for j in range(3)];deficit=max(deficit,r-math.dist(mid,c))
+   for a,b in [(0,1),(1,2),(2,0)]:edge_deficit=max(edge_deficit,r-math.dist([(v[a][j]+v[b][j])/2 for j in range(3)],c))
+  for eye in data['eyes']:
+   c=eye['center_m'];r=eye['radius_m'];near=[p for m in body['meshes'] for p in m['positions_m'] if abs(p[0]-c[0])<.025 and abs(p[1]-c[1])<.025 and p[2]>c[2]];inside=[r-math.dist(p,c) for p in near if math.dist(p,c)<r]
+   penetration.append({'side':eye['side'],'source_front_orbital_vertices_in_25mm_xy_window':len(near),'source_vertices_inside_reconstructed_eye_sphere':len(inside),'max_radial_overlap_m':max(inside,default=0),'interpretation':'possible sclera/lid intersection; raw point diagnostic only, review actual mesh surfaces and blink before acceptance'})
+  reports.append({'age_parameter':age,'lod':lod,'whole_person_added_triangles':triangles,'vertices':sum(len(m['positions_m']) for m in data['meshes']),'material_draws':len(data['meshes']),'max_sclera_triangle_centroid_radial_deficit_m':deficit,'max_sclera_edge_midpoint_radial_deficit_m':edge_deficit,'bound_m':[[min(v[j] for m in data['meshes'] for v in m['positions_m']),max(v[j] for m in data['meshes'] for v in m['positions_m'])] for j in range(3)],'orbital_point_diagnostic':penetration})
+(P/'reduced-topology-validation.json').write_text(json.dumps(reports,indent=2)+'\n');print(json.dumps(reports[:1],indent=2))

@@ -1,0 +1,155 @@
+{
+  "scope": "Independent archive delta, all source/input pins and exact AST caller handler mock review only; no producer import or geometry execution",
+  "PASS": true,
+  "archive_sha256": "f09e985f678e84c949b2b7eb766ad7cf9178fcfb5c03ba5f51149691aa1b510f",
+  "run_once_sha256": "2f64b09087a976b2f210ea5df1f02eefda3f0428fa249a5cb3cbefa776a0d24e",
+  "inventory_counts": {
+    "local": 21,
+    "external": 127,
+    "inputs": 5
+  },
+  "delta": [
+    "run_once.py exception handler only executable change",
+    "SOURCE-STATUS.md",
+    "refreshed LOCAL-PINS.json",
+    "added cleanup control receipt"
+  ],
+  "independent_exact_handler_controls": [
+    {
+      "name": "normal",
+      "PASS": true,
+      "calls": [
+        [
+          "wait",
+          {
+            "timeout": 7
+          }
+        ]
+      ],
+      "raised": null
+    },
+    {
+      "name": "timeout",
+      "PASS": true,
+      "calls": [
+        [
+          "wait",
+          {
+            "timeout": 7
+          }
+        ],
+        [
+          "killpg",
+          999999991,
+          9
+        ],
+        [
+          "wait",
+          {}
+        ]
+      ],
+      "raised": null
+    },
+    {
+      "name": "interrupt",
+      "PASS": true,
+      "calls": [
+        [
+          "wait",
+          {
+            "timeout": 7
+          }
+        ],
+        [
+          "killpg",
+          999999991,
+          9
+        ],
+        [
+          "wait",
+          {}
+        ]
+      ],
+      "raised": "KeyboardInterrupt"
+    },
+    {
+      "name": "base",
+      "PASS": true,
+      "calls": [
+        [
+          "wait",
+          {
+            "timeout": 7
+          }
+        ],
+        [
+          "killpg",
+          999999991,
+          9
+        ],
+        [
+          "wait",
+          {}
+        ]
+      ],
+      "raised": "Stop"
+    },
+    {
+      "name": "ordinary",
+      "PASS": true,
+      "calls": [
+        [
+          "wait",
+          {
+            "timeout": 7
+          }
+        ],
+        [
+          "killpg",
+          999999991,
+          9
+        ],
+        [
+          "wait",
+          {}
+        ]
+      ],
+      "raised": "ValueError"
+    },
+    {
+      "name": "gone",
+      "PASS": true,
+      "calls": [
+        [
+          "wait",
+          {
+            "timeout": 7
+          }
+        ],
+        [
+          "killpg",
+          999999991,
+          9
+        ],
+        [
+          "wait",
+          {}
+        ]
+      ],
+      "raised": "KeyboardInterrupt"
+    }
+  ],
+  "safety": [
+    "Exclusive receipt prevents duplicate/concurrent invocation",
+    "Explicit root release token remains required",
+    "150 second total deadline and per-stage caps unchanged",
+    "Owned subprocess gets new session; BaseException during wait kills/reaps group; timeout becomes 124 and all other exceptions propagate to failure receipt",
+    "First nonzero stage stops; no browser/app writes; trial remains unexecuted"
+  ],
+  "blockers": [],
+  "limits": [
+    "Carries forward unchanged producer/scopes assessment from e789 review; source correctness does not prove actual XYZ embedding, contact, appearance or motion",
+    "No physical output or photographic acceptance"
+  ],
+  "trial_released": false
+}

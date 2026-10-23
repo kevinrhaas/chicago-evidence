@@ -1,0 +1,13 @@
+# Hair-first downstream source review
+
+No definite downstream first-skinned-mesh-as-BODY blocker found in current detailed resident inspection/contact/framing path. This is source review only; detailed runtime/appearance acceptance remains unobserved. No tests/browser/CI/APIpolling/appwrites.
+
+- `tools/human_teamster.html:5` surface() enumerates every skin; `:12–17` headSurface() chooses all skin/eyes/hair/etc with head/jaw/eye bone weights. `:68–74` view() fits selected actual visible/indexed mesh vertices, not firstskin. `:77` builds boneMap acrossallskins and loops every morphTargetDictionary; head-weighted morph amplitude includes actual eligible meshes. `:85` standing footwear selection traverses allskinned meshes by footwear material. Hair-first therefore does not divert body/foot/head selection to hair.
+- `tools/human_sole_contact.mjs:22–25` collects allskins; `:29–38` footwearVertices selects rendered materialgroups; `:42–50` loops allmeshes and assigns sides by namedfoot_l/ball_l/foot_r/ball_r weights. `mesh_index` stored perselectedpoint is original stablearray index, not hardcoded0. Hair is filtered out by footwearmaterial before sole extraction.
+- `tools/human_frame_compare.js:11–15` sortsallskins by unique meshname; `:16–22` load/surface/layout operate everymesh. Namedmorph sampling also loops eachcorrespondingmesh and target, preserving defaults. Hair-first raw/web ordering does not become bodycorrespondence; duplicate/missingnames explicitlyrefuse rather than quietlytakefirst.
+- `tools/human_hair_runtime.mjs:5–9` selects hair by material name and validates eachmatchingloadedmesh; first skin irrelevant.
+- Corrected `tools/human_fixture.html:107–122` collects names/sets weights/restoresdefaults acrossallskins and measures entirefigure surface, as intended.
+
+Two remainingfirst accesses are not bodymorph readers: `human_fixture.html:83–89,127–140` uses firstskin as representative contract skeleton for joints/bone transforms; figuredisplacement stilluses positions(allskins). `human_actor.html:154–159` uses firstcloneprimitive to inspect clonedbones, while checkingallprimitive roots formonebone set. That harness explicitly loads c4d_fixture, not residenthairGLBs. Shared/complete skeleton consistency is an existing structural invariant; a hairmesh on a different/subsetrig would need that guard/review, but no source evidence establishes such a currentartifact mismatch, so no newfailure inferred.
+
+No sourcepatch proposed. Receipt captures exactreviewedfile hashes andHEAD. This review does not claim actualnewresident renders, successfuldetailedinspection, hairappearance, solecontact or photographicquality.

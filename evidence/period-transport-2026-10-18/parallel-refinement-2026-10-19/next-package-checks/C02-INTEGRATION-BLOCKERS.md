@@ -1,0 +1,17 @@
+# Pending integration review, not installed acceptance
+
+Archive 7d746494 contains a concrete app-relative proposal but MUST NOT be installed as qualified without resolving independent-review findings. The original checker matches actual closed-scene geometry then source-rotates classifications; it can accept actual door geometry reparented under the fixed body. Author is implementing actual exported primitive ancestry and pivot-composed poses plus a closed-world-preserving reparenting negative. Preserve original proof with this scope limitation. Existing actual door-open browser images are observations, not validation of the weak checker.
+
+Root must actually measure/register the new flat gate isolation after future installation; do not invent an empty writes row. Enabled C02 metadata retains an original-source no-working-door limitation; scope original source versus reconstructed study honestly in a metadata-only follow-up, preserving immutable originals. Optional studio-only result remains mixed and not default accepted; clearcoat coefficients/color are original unmeasured engineering choices, no verified primary varnish passage. No app changes have been made.
+
+
+## Actual exported-door checker correction independently reviewed
+
+2026-10-19: Outside correction archive `c02-actual-door-checker-review/c02-actual-exported-door-proof.tar.gz` SHA256 `bdb78d8ecad581b43b561bb53686870fda9567134941250320e5b60f0a4fc39b` now drives collision from the actual decoded primitive ancestry and posed hierarchy. Baseline15angles passes; old checker accepts closed-world-preserving detached-door mutant, new checker rejects it. Five actual CLI negatives reject; equivalent matrix/nonuniform TRS positive controls pass all15angles. Independent source/composition review passes; see preserved review/canary receipts. This resolves the outside checker source blocker ONLY. Original integration archive is immutable and retains limited historical proof. Stale working-door metadata correction, root-measured installed flat-step isolation and installed-head full gates remain open. No application installation or future branch exists yet.
+
+
+## Refreshed minimal proposal, independent review complete
+
+The new immutable `c02-metadata-actual-door-integration.tar.gz` (SHA256 `41d5c12303acc91436df778e085441ce8fa0278af9ee4cd652e9a7a1da3102e7`) supersedes the old proposal for future installation. Its new enabled GLB is `93d4020036e5c685ce95010fe64b26c55a1561db4517405f0590f7a398253331`; only metadata changed from repaired ddda geometry. The old no-working-door quotation is retained as project source history, explicitly distinguished from the reconstructed rigid working-door branch. All non-extras glTF fields and BIN bytes are identical; deterministic builds, flag-off and all default-four outputs remain exact. Corrected actual door poses, semantic CLI negatives and Khronos passed outside the app. Independent review verified all archive hashes, manifests, preimages, both new gate hooks, current browser asset pins and byte-preserved document prefixes. No remaining source blocker was found.
+
+Root must still install on a new chosen head, actually MEASURE BOTH new flat-step isolation rows, run the new asset through desktop/mobile browsers, regenerate owning derived outputs, and pass full preflight before committing. No fake isolation rows. Optional paint/studio is excluded and must be explicitly rebased and requalified if chosen. Main PR1041/f97 remains frozen.

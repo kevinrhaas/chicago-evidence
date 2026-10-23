@@ -1,0 +1,18 @@
+Adds a visible transport-study gallery with an articulated W01 wagon, open C01 and enclosed C02 carriage, skinned horse, harness and coupling previews. The separate W01 driver-bench variant has a timber seat supported on both rails, retaining hardware and a floor-supported footboard. C02 includes a movable door with discrete collision checks. These remain reconstructed engineering studies with period and photographic acceptance open.
+
+Existing reconstructed1835 residents Otis Bardwell, Joseph Dufresne and Martin Flynn supply the named workwear references. The portable authoring/export path now offers an opt-in `sit_drive` study bound to the actual supported W01 bytes, preserving identity/date checks, the existing runtime, and ordinary idle/walk authoring. Canonical seated exports and actual clothed inspections run in the manual workflow; their fresh exact-revision qualification is pending; prior-revision results remain historical only. Source and published bench browser probes are included in that qualification.
+
+Validation at `aedc80126c6178376d3fb60f40297bec5c7c9ec7` (tree `ead21d9876d3983f9f02217835a100b09ac49ada`):
+
+- The merged source passed the complete local preflight: **1,017 steps**, including **377 deliberate refusal self-tests**, exit0 in the permitted execution profile. Post-commit changelog and ID checks passed; the app is clean and frozen.
+- The prior default-sandbox stdin IPC hang and failed/interrupted runs are retained as evidence. The unchanged exact-data canary passed in the permitted profile; no source assertion or application runtime was weakened to clear it.
+- Published bench desktop/mobile checks, eight views, actual GLB binding, steering/rolling/reset/touch controls and framing previously passed. Named-body pose and supported/baseline substitution/cleanup regressions remain part of the checked source.
+- Fresh exact-head remote qualification is pending. Ordinary PR checks and the automatically triggered full/unfiltered smoke are active. A new complete18-cell smoke matrix and canonical workwear+seated qualification are prepared but **not yet dispatched**. All mandatory steps and ordinary checks must pass before ready/merge.
+
+The actual dev28c53 geometry/UI changes are merged. Remote code/tree pins match this revision and GitHub currently reports it mergeable; final consistency and normal gate checks remain required. Incoming dev already sets the smoke workflow's job timeout to150minutes; no test assertions, draw/HUD budgets or acceptance thresholds were relaxed by this integration.
+
+Earlier09a qualification is preserved as historical evidence:16 selected workflows succeeded, one smoke workflow was canceled and two remained active at the recovery snapshot. Two parent-success jobs also exposed contradictory nonterminal test-step metadata. None of that substitutes for current-revision qualification, and the old conditional attempt2 plan was stopped. [Durable recovery checkpoint](https://github.com/kevinrhaas/chicago-tickets/commit/1cfd5cb0b107dc40722ef0e2f6c0ca806044a388).
+
+New horse neck, oral/gear, cushion and GPU traffic candidates remain outside the app; their separate progress does not qualify these installed studies. Photographic masters, complete tack/bit fit, actual occupied drivers/riders, main-scene traffic and boarding/riding remain open. No production promotion is included.
+
+Passed CI stdout union and artifact contents remain uninspected; no individual run/input pairing or photographic acceptance is inferred from workflow metadata. Durable source, measurements and handoff records are saved in chicago-tickets evidence/period-transport-2026-10-18/.

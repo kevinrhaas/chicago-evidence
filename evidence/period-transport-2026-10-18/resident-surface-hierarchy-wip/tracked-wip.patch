@@ -1,0 +1,577 @@
+diff --git a/.github/workflows/chicago-4d-humans.yml b/.github/workflows/chicago-4d-humans.yml
+index 850afc48d..6b7b62dbc 100644
+--- a/.github/workflows/chicago-4d-humans.yml
++++ b/.github/workflows/chicago-4d-humans.yml
+@@ -178,6 +178,27 @@ jobs:
+               --liberty L418 --output "$master" 2>&1 | tee "/tmp/teamster-studies/$variant-build.log"
+             bash tools/human_export.sh --master "$master" 2>&1 | tee "/tmp/teamster-studies/$variant-export.log"
+           done
++      - name: Build same-new-master parented hierarchy controls (test artifacts only)
++        working-directory: chicago/4d
++        env:
++          BLENDER_CACHE: /opt/blender-dl
++          HUMAN_EXPORT_EVIDENCE_DIR: /tmp/teamster-studies/hierarchy-controls/frame-evidence
++        run: |
++          set -euo pipefail
++          source generators/blender.pin
++          for variant in bardwell_otis_1835 dufresne_joseph_1835 flynn_martin_1835; do
++            control="/tmp/teamster-studies/hierarchy-controls/$variant"
++            mkdir -p "$control/raw"
++            "$BLENDER_CACHE/$BLENDER_DIR/blender" -b -noaudio --factory-startup --python-exit-code 1 \
++              --python tools/human_hierarchy_control.py -- --test-only-parented-control \
++              --source "assets/authored/humans/teamsters/$variant/canonical.blend" \
++              --output "$control/control.blend" --receipt "$control/control-receipt.json" \
++              2>&1 | tee "$control/clone.log"
++            "$BLENDER_CACHE/$BLENDER_DIR/blender" -b -noaudio "$control/control.blend" --python-exit-code 1 \
++              --python tools/human_export.py -- "$control/raw" 2>&1 | tee "$control/export.log"
++            python3 tools/human_skin_canonicalize.py "$control/raw/$variant.lod0.glb" \
++              "$control/$variant.lod0.glb" --diagnostics "$control/skin-diagnostics.json"
++          done
+       - name: Install Playwright
+         run: |
+           npm install -g playwright@1.56.1
+@@ -191,6 +212,15 @@ jobs:
+             assets/humans/web/{bardwell_otis_1835,dufresne_joseph_1835,flynn_martin_1835}.lod*.glb \
+             | tee /tmp/teamster-studies/declared-animation-times.jsonl
+ 
++      - name: Check actual resident hair material, embedded PNG and source/web LOD dimensions
++        working-directory: chicago/4d
++        run: |
++          set -euo pipefail
++          python3 tools/test_human_hair.py
++          node tools/test_human_hair_runtime.mjs
++          python3 tools/check_human_hair.py --assets assets/humans \
++            | tee /tmp/teamster-studies/hair-container-contract.jsonl
++
+       - name: Validate the actual new GLB containers
+         working-directory: chicago/4d
+         run: |
+@@ -218,6 +248,15 @@ jobs:
+             if (errors) process.exitCode = 1;
+           })().catch(error => { console.error(error); process.exitCode = 1; });
+           JS
++      - name: Validate hierarchy control warnings with exact node pointers
++        working-directory: chicago/4d
++        run: |
++          set -euo pipefail
++          NODE_PATH="$(npm root -g)" node tools/validate_hierarchy_controls.mjs \
++            /tmp/teamster-studies/hierarchy-controls/bardwell_otis_1835/bardwell_otis_1835.lod0.glb assets/humans/bardwell_otis_1835.lod0.glb \
++            /tmp/teamster-studies/hierarchy-controls/dufresne_joseph_1835/dufresne_joseph_1835.lod0.glb assets/humans/dufresne_joseph_1835.lod0.glb \
++            /tmp/teamster-studies/hierarchy-controls/flynn_martin_1835/flynn_martin_1835.lod0.glb assets/humans/flynn_martin_1835.lod0.glb \
++            | tee /tmp/teamster-studies/hierarchy-controls/validator-pointers.jsonl
+       - name: Measure all human exports and inspect the workwear studies
+         working-directory: chicago/4d
+         run: |
+@@ -227,6 +266,9 @@ jobs:
+           node tools/test_human_inspection.mjs
+           NODE_PATH="$(npm root -g)" node tools/human_teamster.mjs --published --sole-contact --output /tmp/teamster-studies/web \
+             --frame-samples 21 \
++            --frame-pair /tmp/teamster-studies/hierarchy-controls/bardwell_otis_1835/bardwell_otis_1835.lod0.glb assets/humans/bardwell_otis_1835.lod0.glb \
++            --frame-pair /tmp/teamster-studies/hierarchy-controls/dufresne_joseph_1835/dufresne_joseph_1835.lod0.glb assets/humans/dufresne_joseph_1835.lod0.glb \
++            --frame-pair /tmp/teamster-studies/hierarchy-controls/flynn_martin_1835/flynn_martin_1835.lod0.glb assets/humans/flynn_martin_1835.lod0.glb \
+             --frame-pair /tmp/teamster-studies/export-evidence/bardwell_otis_1835.lod0.raw.glb assets/humans/bardwell_otis_1835.lod0.glb \
+             --frame-pair /tmp/teamster-studies/export-evidence/dufresne_joseph_1835.lod0.raw.glb assets/humans/dufresne_joseph_1835.lod0.glb \
+             --frame-pair /tmp/teamster-studies/export-evidence/flynn_martin_1835.lod0.raw.glb assets/humans/flynn_martin_1835.lod0.glb 2>&1 | tee /tmp/teamster-studies/inspection.log
+diff --git a/chicago/4d/assets/LICENSES.md b/chicago/4d/assets/LICENSES.md
+index db6b4d935..c08031ec0 100644
+--- a/chicago/4d/assets/LICENSES.md
++++ b/chicago/4d/assets/LICENSES.md
+@@ -1228,3 +1228,29 @@ its original seven-equals Markdown heading conflicts with the repository's liter
+ marker scan. SOURCE.json records both original and stored hashes and sizes, and the
+ preparation tool verifies the decompressed original too. No notice wording or
+ conflict-check assertion is changed.
++
++
++### Hair component — `authored/humans/hair_short04/` (CC0-1.0)
++
++MakeHuman system **short04**, UUID `e09bfd91-f83f-4f9a-ba8c-4635cd1ae0d8`, officially listed author `makehuman_system`. Actual original OBJ, mhclo and mhmat headers EACH state:
++
++> This asset was explicitly released as CC0 in september 2020.
++> Copyright (C) 2020 Data Collection AB, https://www.datacollection.se
++> Copyright (C) 2020 Joel Palmius
++> Copyright (C) 2020 Jonas Hauquier
++
++Original archive: <https://files2.makehumancommunity.org/asset_packs/makehuman_system_assets/makehuman_system_assets_cc0.zip>, ETag `"10bbb7ea-6160e7c0d7996"`. The original material directly names `short04_diffuse.png`; that texture is part of the expressly CC0 asset. No separate PNG license exception found. The headers refer to the upstream CC0 legal text; this component does not falsely claim a separate legal-text file was extracted from the archive. Retain original notices verbatim. No MakeHuman AGPL program or shader code included in the asset.
++
++The periodic padded PNG is an original CC0 source derivative, explicitly labeled draft. README.md and SOURCE.json are original project-authored CC0 documentary provenance; original `.mhmat`/`.mhclo`/`.obj` notices retain their exact upstream wording. All exact component paths and SHA-256 hashes:
++
++| Path relative to assets/ | Kind | SHA-256 |
++|---|---|---|
++| authored/humans/hair_short04/README.md | CC0 original project documentary | `fb920ea8d0082d3080db8acf6ed0d98805335ee166e1e1957861a3c520ac7679` |
++| authored/humans/hair_short04/SOURCE.json | CC0 original project documentary | `68a02130cd50dd0d727f31f8f53702fe91bd9ecb9aa98309a7814191abf89e99` |
++| authored/humans/hair_short04/short04.mhclo | CC0 original graphical/source metadata | `d60640aa4c4ffce1aa269647ba436b6ee0bb21bb948f927b84e27a48d2107157` |
++| authored/humans/hair_short04/short04.mhmat | CC0 original graphical/source metadata | `7a3ac74db8478aa0afdb8a596c6fe3997d1a8a09d12211d70e8f1e9f0b7e0e97` |
++| authored/humans/hair_short04/short04.obj | CC0 original graphical/source metadata | `676964a133ee35ffcea1195382bf75542da7a298931e4001bc7b0d7b707225de` |
++| authored/humans/hair_short04/short04_diffuse.png | CC0 original graphical/source metadata | `0bef7fc0e403db5a40fabb2111ebfa6f7e8158e204c6e56b8da98e9ef527846e` |
++| authored/humans/hair_short04/short04_diffuse_periodic_pad_draft.png | CC0 derived periodic-padded texture | `194e53741c7c96e16d4aac8ba10a1bb87c9cb86e976bda82655ad10d38b58871` |
++
++This is a component entry additive to existing canonical-master and human master/web export entries for `bardwell_otis_1835`, `dufresne_joseph_1835` and `flynn_martin_1835`; their rebuilt byte hashes do not exist yet and must be measured after CI, never fabricated. The source component conveys no period hairstyle, resident likeness, ancestry or historically observed action. Fitting tools remain project GPL-3.0-or-later code; those tools are not CC0 graphical assets.
+diff --git a/chicago/4d/data/humans/recipes/worker_1835.json b/chicago/4d/data/humans/recipes/worker_1835.json
+index 6c5ff3bba..150cce362 100644
+--- a/chicago/4d/data/humans/recipes/worker_1835.json
++++ b/chicago/4d/data/humans/recipes/worker_1835.json
+@@ -68,7 +68,7 @@
+     ]
+   },
+   "material_limitations": "Hash-verified CC0 reusable generic skin atlas is packed as sRGB with WHITE base-color factor; it does not attest a resident complexion or photographic likeness. Skin roughness is reconstructed. Shirt uses original deterministic 256x256 procedural weave; other surfaces remain flat original PBR colors. Final skin UV/LOD/export fidelity and photographic quality remain unaccepted.",
+-  "validation_status": "Builder not yet executed in Blender. Canonical blend, exports, anatomical fit, morphs, skinning, UV density and all CI renders remain unverified.",
++  "validation_status": "Earlier recipe revisions passed canonical mechanical CI; this hair and body-normal revision requires a new pinned Blender build and source/web inspection. Anatomical and garment fit, individual appearance and photographic quality remain unaccepted.",
+   "proof_variants": [
+     {
+       "id": "bardwell_otis_1835",
+@@ -183,5 +183,18 @@
+     "roughness_basis": "Reconstructed engineering value, not measured from a period person or calibrated capture.",
+     "identity_basis": "Cleared reusable generic skin atlas; not a likeness, attested complexion, or source identifying any named/reconstructed resident.",
+     "uv_status": "Source atlas and UV registration viewed in source diagnostics; final Blender export/LOD render validation remains outstanding."
++  },
++  "hair_component": {
++    "directory": "assets/authored/humans/hair_short04",
++    "texture": "short04_diffuse_periodic_pad_draft.png",
++    "uv_transform": {
++      "source_height": 2048,
++      "top_rows": 8,
++      "bottom_rows": 1
++    },
++    "roughness": 0.65,
++    "alpha_cutoff": 0.4,
++    "appearance_basis": "Shared cleared CC0 short04 source fitted to existing Otis/Joseph/Martin bodies; hair/part/color are reconstructed choices, no period hairstyle attestation or individual likeness.",
++    "source_manifest_sha256": "68a02130cd50dd0d727f31f8f53702fe91bd9ecb9aa98309a7814191abf89e99"
+   }
+ }
+diff --git a/chicago/4d/data/liberties.json b/chicago/4d/data/liberties.json
+index 8a043ecd3..c70e189d3 100644
+--- a/chicago/4d/data/liberties.json
++++ b/chicago/4d/data/liberties.json
+@@ -41008,6 +41008,10 @@
+         {
+           "label": "Adult-body and skin update (2026-10-18)",
+           "text": "The neutral source body is not accepted as the finished male anatomy. Hash-verified CC0 hm08 male young/old shape deltas now change visible and helper vertices together before joint reconstruction and posing. Engineering ages 25 and 35 are chosen within the modeled bands, not read birth years. An equal blend of source software-category shapes is an authoring choice, not scientifically neutral ethnicity or inferred ancestry. MargaretToigo's CC0 original 2K bronze male skin atlas is a reusable component, not these residents' complexion or likeness; its actual source metadata, CRC and hashes are retained. Roughness, body proportions, garment patterns and all animation remain reconstructed and need canonical export/render review. No skin upscaling is called 4K detail."
++        },
++        {
++          "label": "Hair component update (2026-10-19)",
++          "text": "Existing reconstructed residents `rc_bardwell_otis`, `rc_dufresne_joseph` and `rc_flynn_martin` retain their current identity, age-band, occupation and presence basis. Their referenced studies may share the cleared CC0 MakeHuman short04 component, fitted to each selected adult25/35 prepared body. Hair shape, dark color, parting, hairline, density and grooming are reconstructed appearance choices, not attested1835hairstyles or individual likenesses. This introduces no new person or biography and implies no ethnicity. Source license clearance is not historical style acceptance. The adaptation retains signed geometric proxy coefficients; normalized existing body skinweights clamp one negative interpolation row (maximum mass0.0000127) and keep at most4joints. The original Vmaximum1.0031 is remapped with a clearly labeled periodic-padded derivative:8toprows+1bottomrow, Vnew=(2048V+1)/2057. Measured unminified bilinear equivalence does not establish mipmap/aniso/export equivalence. PBR roughness.65, alpha threshold.4 and double-sided rendering are reconstructed shader choices, not the original legacy litsphere appearance. Source topology retained at every LOD pending measured reductions. Actual pinned exporter source statically recognizes the proposed 1-(Alpha<.4) node pattern as glTF MASK/.4; actual canonical BPy creation, packed image decode, exported material/UV/skin integrity and close/mobile hair-edge, scalp/ear/collar and animated-contact review still require CI. No photographic quality, historical haircut acceptance or independently validated resident depiction is claimed by this addendum."
+         }
+       ]
+     },
+diff --git a/chicago/4d/docs/LIBERTIES.md b/chicago/4d/docs/LIBERTIES.md
+index 5da1bd987..7bc7f4745 100644
+--- a/chicago/4d/docs/LIBERTIES.md
++++ b/chicago/4d/docs/LIBERTIES.md
+@@ -29150,3 +29150,10 @@ scientifically neutral ethnicity or inferred ancestry. MargaretToigo's CC0 origi
+ or likeness; its actual source metadata, CRC and hashes are retained. Roughness,
+ body proportions, garment patterns and all animation remain reconstructed and
+ need canonical export/render review. No skin upscaling is called 4K detail.
++
++
++**Hair component update (2026-10-19):** Existing reconstructed residents `rc_bardwell_otis`, `rc_dufresne_joseph` and `rc_flynn_martin` retain their current identity, age-band, occupation and presence basis. Their referenced studies may share the cleared CC0 MakeHuman short04 component, fitted to each selected adult25/35 prepared body. Hair shape, dark color, parting, hairline, density and grooming are reconstructed appearance choices, not attested1835hairstyles or individual likenesses. This introduces no new person or biography and implies no ethnicity. Source license clearance is not historical style acceptance.
++
++The adaptation retains signed geometric proxy coefficients; normalized existing body skinweights clamp one negative interpolation row (maximum mass0.0000127) and keep at most4joints. The original Vmaximum1.0031 is remapped with a clearly labeled periodic-padded derivative:8toprows+1bottomrow, Vnew=(2048V+1)/2057. Measured unminified bilinear equivalence does not establish mipmap/aniso/export equivalence. PBR roughness.65, alpha threshold.4 and double-sided rendering are reconstructed shader choices, not the original legacy litsphere appearance. Source topology retained at every LOD pending measured reductions.
++
++Actual pinned exporter source statically recognizes the proposed 1-(Alpha<.4) node pattern as glTF MASK/.4; actual canonical BPy creation, packed image decode, exported material/UV/skin integrity and close/mobile hair-edge, scalp/ear/collar and animated-contact review still require CI. No photographic quality, historical haircut acceptance or independently validated resident depiction is claimed by this addendum.
+diff --git a/chicago/4d/docs/RESEARCH/resident-teamsters-2026-10-18/README.md b/chicago/4d/docs/RESEARCH/resident-teamsters-2026-10-18/README.md
+index 3e47ec9d4..e5e824ca2 100644
+--- a/chicago/4d/docs/RESEARCH/resident-teamsters-2026-10-18/README.md
++++ b/chicago/4d/docs/RESEARCH/resident-teamsters-2026-10-18/README.md
+@@ -191,3 +191,94 @@ Canonical run39177201156 at379e7d3d failed before the first sole-contact result:
+ Only independently verified authored rigid rigs now request the supported export_anim_slide_to_zero option. Legacy fixture kwargs are frozen byte-for-byte in an actual-call AST regression and omit the option. The loaded duration/contact guards stay strict; errors now include actual clip names/durations/track endpoints. A pre-browser CI audit records declared accessor bounds and motion extras for every resident source/web GLB, explicitly metadata evidence rather than decoded motion. The browser CPU sampler remains the motion/contact authority.
+ 
+ Sixteen frame/wiring tests, ten declared-time audit tests and twelve actual Three CPU sole-sampler regressions pass locally without Blender. New canonical exports and completed inspections must prove the fix; photographic appearance, clothing/hair refinement, driver/rider poses and scene placements remain open. Existing Otis Bardwell, Joseph Dufresne and Martin Flynn references and evidence grades are retained; no new anonymous identity is introduced.
++
++## Hair and body surface refinement
++
++Canonical run `39179622053` passed the earlier `45bb1933e` revision: all 24 source
++and 24 published-web mechanical inspections passed, including the authored walk
++duration and sampled sole-contact guards. Its photographic gate stayed open.
++The following changes require a separate canonical build and do not inherit that
++earlier success.
++
++The pinned MakeHuman `short04` hair carries original asset-specific CC0 notices
++and verified hashes. Its original OBJ, proxy, material and diffuse image remain
++unchanged. The proxy fits both existing prepared bodies using their actual source
++vertex IDs and skin weights. The shared hairstyle is reconstructed, with no claim
++that it depicts these residents' documented hair, ancestry or individual likeness.
++Each LOD currently retains 991 UV-split vertices and 1,050 triangles; this adds a
++draw and needs measured lower-LOD refinement.
++
++The original image is 2048 square. A labeled 2048 by 2057 derivative preserves
++every original pixel, repeats eight bottom rows above it and one top row below it,
++and uses `Vnew = (2048 * V + 1) / 2057`. This brings the source proxy's small repeat
++excursion inside the portable human UV contract. Six source tests verify the real
++fit, every decoded image row, provenance, nonmutation and invalid-input refusal.
++This establishes base-level source registration; resized web textures, mipmaps,
++anisotropic filtering and final scalp/ear/collar appearance need actual review.
++The authoring material uses a double-sided alpha mask at 0.4 and reconstructed
++roughness 0.65. Canonical export must verify those values in the actual GLBs.
++
++An actual controlled Three source preview also isolated a sharp neck triangle to
++independently accumulated normals at duplicate source UV vertices. Sharing
++oriented area-weighted rest normals by exact source ID removed that patch in the
++viewed preview while preserving positions, topology, UVs, weights and image bytes.
++The builder now supplies these custom normals to body meshes only. Five analytic
++and actual-body tests check unequal area weighting, winding, source-ID separation,
++unit seam normals, nonmutation and invalid geometry. Lower-LOD decimation,
++shape-key deformation, Blender normal export and final GLB shading still need
++canonical verification. This does not establish photographic skin or anatomy.
++
++Source previews still show crown faceting, hair-card gaps and a scalloped nape.
++These remain refinement work alongside clothing, eyes, individual faces and
++occupied transport poses. No new town person or seated/riding interaction is
++enabled by this revision.
++
++## Controlled hierarchy qualification
++
++The earlier canonical45 exports each reported seven
++`NODE_SKINNED_MESH_NON_ROOT` warnings. Their metadata and successful mechanical
++summary do not establish that those warnings are harmless. The next authoring
++revision keeps identity skinned meshes as scene roots, with their existing
++Armature modifiers still referencing the same rig. The legacy fixture path is
++unchanged.
++
++Pinned CI additionally clones each newly built canonical master into a temporary
++parented control. Before mutation it requires identity rig/mesh frames and parent
++inverses, unique mesh names, the same Armature target and no object-transform
++animation. It changes only mesh parents, preserves world matrices and mesh data,
++reopens the saved control to verify serialized provenance, and checks that the
++original master bytes remain unchanged. These controls stay under `/tmp` and are
++test artifacts, never production assets or substitutes for inaccessible old
++artifacts.
++
++Actual Khronos validation must report exact warning pointers, resolved node names
++and file hashes: only the expected child-skinned warning is allowed for controls,
++and no warnings or errors are allowed for production root meshes. A separate
++loaded CPU comparison matches uniquely named meshes with exact vertex/index,
++material and morph layouts before sampling rest, 21 phases per clip and named
++morphs at rest and a clip midpoint. The existing 0.1 mm displacement tolerance
++remains unchanged. This comparison uses source GLBs; it does not assert pointwise
++Meshopt parity. Existing source/web contact and framing checks continue.
++
++Five portable control/refusal tests and real Three mesh-reordering regressions
++pass. Parsed workflow review confirms the legacy job is unchanged and only the
++dependent resident job builds controls. Actual new Blender control creation,
++validator pointers and resident motion/morph comparisons remain pending CI.
++
++The next CI also checks all 24 expected source/web containers for a used, skinned
++hair primitive, embedded alpha PNG, MASK/0.4, double-sided rendering and the
++reconstructed roughness/metalness. Source images remain 2048 by 2057; the existing
++pinned resize pipeline produces web sizes 2039 by 2048, 1020 by 1024, 510 by 512
++and 255 by 256. The existing browser inspection additionally checks actual loaded
++hair geometry, normalized weights, unit normals, UV bounds and decoded texture
++dimensions after GLTFLoader/Meshopt. Four real embedded-image/container test
++methods and eleven synthetic decoded-object cases pass; actual resident outputs
++remain pending. The inspector serves its new runtime helper explicitly.
++
++LOD0 body authoring also reads back actual BPy custom corner normals before
++modifiers/export, requiring the expected count and finite vectors within an
++explicit 0.001 vector difference. Blender 4.5 stores custom normals as angular
++`short2` values; this tolerance is a conservative engineering choice, not exact
++float32 equality or a proven codec bound. Actual maximum/mean differences are
++logged per resident. This audit remains unexecuted until CI and does not prove
++emitted GLB, decimated or morphed normals preserve the intended shading.
+diff --git a/chicago/4d/docs/ROADMAP.md b/chicago/4d/docs/ROADMAP.md
+index d465f6519..3fae7c652 100644
+--- a/chicago/4d/docs/ROADMAP.md
++++ b/chicago/4d/docs/ROADMAP.md
+@@ -5547,3 +5547,6 @@ Transport integration validation (2026-10-18): the original full mobile smoke fa
+ 
+ 
+ Resident transport adults,2026-10-19: first grounded-walk inspection refused the actual exported duration. Authored-only zero-origin export and declared-time diagnostics are implemented; fixture kwargs and loaded1.2s/contact limits remain strict. Canonical rebuild/decoded inspection is required before any gait acceptance. Existing named residents remain the models; photographic clothing/hair, seated drivers, mounted riders and scene placement remain unfinished.
++
++
++Resident surface refinement: the earlier canonical45 build passed mechanical source/web inspection. The next authoring revision adds hash-verified CC0 short04 hair fitted to the same three named reconstructed residents, plus body normals shared across exact source UV seams. Six hair and five normal source tests pass; new Blender exports and actual material, shading and LOD inspection are required. Photographic acceptance, hair-card refinement, individual faces, period wardrobe, seated drivers and mounted riders remain open in T-1789/T-2804. See the resident teamster dossier for exact provenance and source-preview limitations.
+diff --git a/chicago/4d/docs/STATUS.md b/chicago/4d/docs/STATUS.md
+index 706810aee..4cc670d92 100644
+--- a/chicago/4d/docs/STATUS.md
++++ b/chicago/4d/docs/STATUS.md
+@@ -24027,3 +24027,9 @@ Canonical run39177201156 at379e7d3d failed before the first sole-contact result:
+ Only independently verified authored rigid rigs now request the supported export_anim_slide_to_zero option. Legacy fixture kwargs are frozen byte-for-byte in an actual-call AST regression and omit the option. The loaded duration/contact guards stay strict; errors now include actual clip names/durations/track endpoints. A pre-browser CI audit records declared accessor bounds and motion extras for every resident source/web GLB, explicitly metadata evidence rather than decoded motion. The browser CPU sampler remains the motion/contact authority.
+ 
+ Sixteen frame/wiring tests, ten declared-time audit tests and twelve actual Three CPU sole-sampler regressions pass locally without Blender. New canonical exports and completed inspections must prove the fix; photographic appearance, clothing/hair refinement, driver/rider poses and scene placements remain open. Existing Otis Bardwell, Joseph Dufresne and Martin Flynn references and evidence grades are retained; no new anonymous identity is introduced.
++
++
++Resident surface refinement: prior human canonical run39179622053 at45bb1933e passed all24 source and24 published-web mechanical inspections, including walk duration and sampled contact. Photographic acceptance remains OPEN. The new unbaked revision adds hash-verified CC0 short04 hair fitted to the existing Otis Bardwell, Joseph Dufresne and Martin Flynn studies, plus area-weighted custom body normals shared by exact source vertex IDs. Six real-source hair tests and five normal tests pass without Blender. A viewed controlled source preview removed the sharp neck triangle by changing only normals; crown faceting, hair-card gaps and nape appearance remain unfinished. Actual Blender custom-normal export, MASK/0.4/double-sided hair material, resized web textures, morph shading and all LOD appearances require new canonical verification. No occupied transport or new town person is enabled. See docs/RESEARCH/resident-teamsters-2026-10-18/README.md.
++
++
++Resident export qualification now includes temporary same-master parented controls for the authored root-mesh hierarchy, exact Khronos warning/node pointers, unchanged 0.1 mm loaded motion/morph comparison, actual source/web embedded hair image and material checks, and decoded hair geometry/skin checks. Five control tests, four embedded-container test methods and eleven synthetic decoded-runtime cases pass locally. LOD0 BPy custom-normal readback will report corner counts and maximum/mean differences under an explicit 0.001 vector tolerance accounting for short2 storage; actual execution remains pending CI. Neither hierarchy warning removal nor normal preservation in final GLBs is accepted before that run and actual visual review. Earlier fixture behavior is retained.
+diff --git a/chicago/4d/tools/check.sh b/chicago/4d/tools/check.sh
+index 8ccd790be..674a097df 100755
+--- a/chicago/4d/tools/check.sh
++++ b/chicago/4d/tools/check.sh
+@@ -262,6 +262,18 @@ step "loading cards: seeded bags, dwell, stop and humor cap (T-1275)" \
+ step "CC0 adult preparation preserves source UVs, metric frame and bounded rig weights (T-1789)" \
+   python3 tools/test_human_base_prepare.py
+ 
++step "Resident hair preserves verified source pixels, fitted UVs and existing skin bindings (T-1789)" \
++  python3 tools/test_human_hair_short04.py
++
++step "Resident body normals share exact source seams without welding geometry or UVs (T-1789)" \
++  python3 tools/test_human_source_normals.py
++
++step "Resident hair export rejects missing alpha, embedded images and skin bindings (T-1789)" \
++  python3 tools/test_human_hair.py
++
++step "Resident hair validates decoded runtime geometry, texture and skin attributes (T-1789)" \
++  node tools/test_human_hair_runtime.mjs
++
+ step "Authored humans preserve exact skin bindings when consolidating equivalent palettes" \
+   python3 tools/test_human_skin_canonicalize.py
+ 
+@@ -283,6 +295,9 @@ step "Loaded human sole contacts preserve named limb identity and require gait m
+ step "Authored human serialized animation bounds reject malformed metadata and nonzero origins" \
+   python3 tools/test_human_animation_times.py
+ 
++step "Hierarchy control refuses nonidentity frames and object animation before mutation" \
++  python3 tools/test_human_hierarchy_control.py
++
+ step "Portable human contract holds; every human GLB and instance is held to it (T-1786)" \
+   python3 tools/human_contract.py --check
+ selftest "…incompatible skeletons, missing slots and morphs, duplicate clips, non-metric scale, missing provenance and L1 refused by name" \
+diff --git a/chicago/4d/tools/human_export.py b/chicago/4d/tools/human_export.py
+index 0f6563cf6..78abba825 100644
+--- a/chicago/4d/tools/human_export.py
++++ b/chicago/4d/tools/human_export.py
+@@ -23,8 +23,9 @@ export is a command and never an interactive dialog with undocumented toggles
+                               applied after, by tools/human_export.sh
+   export_image_format AUTO    PNG/JPEG as authored. KTX2 is refused (§ 9)
+ 
+-The master must follow the layout tools/human_fixture_blend.py writes: one armature
+-object; collections `lod0`..`lod3` of mesh objects parented to it; `socket_*` empties
++The master carries one armature object and collections `lod0`..`lod3` of skinned
++meshes. The legacy fixture parents them to its rig; authored rigid studies keep
++identity meshes as roots with Armature modifiers targeting the rig. `socket_*` empties
+ on their bones beside the armature; one action per clip; and the scene custom
+ property `chicago4d_human`, whose `lod` this script rewrites per file.
+ """
+diff --git a/chicago/4d/tools/human_frame_compare.js b/chicago/4d/tools/human_frame_compare.js
+index a4dbee612..970d63675 100644
+--- a/chicago/4d/tools/human_frame_compare.js
++++ b/chicago/4d/tools/human_frame_compare.js
+@@ -8,9 +8,13 @@ export function maximumPointDisplacement(a,b){
+   if(!a.length||a.length!==b.length||a.length%3)throw Error('surface sample layout differs');
+   let max=0;for(let i=0;i<a.length;i+=3){const d=Math.hypot(a[i]-b[i],a[i+1]-b[i+1],a[i+2]-b[i+2]);if(!Number.isFinite(d))throw Error('nonfinite surface sample');max=Math.max(max,d);}return max;
+ }
++function sortUniqueMeshes(meshes){
++  const names=new Set();for(const m of meshes){if(typeof m.name!=='string'||!m.name||names.has(m.name))throw Error('missing or duplicate loaded skinned mesh name');names.add(m.name);}
++  return meshes.slice().sort((a,b)=>a.name<b.name?-1:a.name>b.name?1:0);
++}
+ function release(scene){const geometries=new Set(),materials=new Set(),textures=new Set();scene.traverse(o=>{if(o.isMesh){geometries.add(o.geometry);for(const m of[].concat(o.material)){materials.add(m);for(const value of Object.values(m))if(value?.isTexture)textures.add(value);}}});for(const g of geometries)g.dispose();for(const t of textures){t.image?.close?.();t.dispose();}for(const m of materials)m.dispose();}
+ async function load(url){
+-  const res=await fetch(url);if(!res.ok)throw Error(`frame pair fetch failed ${res.status}: ${url}`);const buffer=await res.arrayBuffer(),view=new DataView(buffer);if(view.getUint32(0,true)!==0x46546c67)throw Error('frame pair requires GLB');const header=JSON.parse(new TextDecoder().decode(new Uint8Array(buffer,20,view.getUint32(12,true))));const loader=new GLTFLoader();if(header.extensionsRequired?.includes('EXT_meshopt_compression'))loader.setMeshoptDecoder(await loadMeshoptDecoder());const asset=await loader.parseAsync(buffer,new URL('.',new URL(url,location.href)).href);const meshes=[];asset.scene.traverse(o=>{if(o.isSkinnedMesh)meshes.push(o);});if(!meshes.length)throw Error('frame pair has no loaded skin');return{...asset,meshes,bind:[]};
++  const res=await fetch(url);if(!res.ok)throw Error(`frame pair fetch failed ${res.status}: ${url}`);const buffer=await res.arrayBuffer(),view=new DataView(buffer);if(view.getUint32(0,true)!==0x46546c67)throw Error('frame pair requires GLB');const header=JSON.parse(new TextDecoder().decode(new Uint8Array(buffer,20,view.getUint32(12,true))));const loader=new GLTFLoader();if(header.extensionsRequired?.includes('EXT_meshopt_compression'))loader.setMeshoptDecoder(await loadMeshoptDecoder());const asset=await loader.parseAsync(buffer,new URL('.',new URL(url,location.href)).href);const meshes=[];asset.scene.traverse(o=>{if(o.isSkinnedMesh)meshes.push(o);});if(!meshes.length)throw Error('frame pair has no loaded skin');return{...asset,meshes:sortUniqueMeshes(meshes),bind:[]};
+ }
+ function bind(model){model.defaultMorphs=[];model.scene.traverse(o=>{model.bind.push([o,o.position.clone(),o.quaternion.clone(),o.scale.clone()]);if(o.morphTargetInfluences)model.defaultMorphs.push([o,o.morphTargetInfluences.slice()]);});model.mixer=new T.AnimationMixer(model.scene);}
+ function pose(model,name,phase){model.mixer.stopAllAction();for(const[o,p,q,s]of model.bind){o.position.copy(p);o.quaternion.copy(q);o.scale.copy(s);}for(const[o,weights]of model.defaultMorphs)o.morphTargetInfluences.splice(0,o.morphTargetInfluences.length,...weights);if(name!==null){const clip=model.animations.find(c=>c.name===name);if(!clip)throw Error('missing frame pair clip '+name);const action=model.mixer.clipAction(clip);action.setLoop(T.LoopOnce,1);action.clampWhenFinished=true;action.play();model.mixer.setTime(phase*clip.duration);}model.scene.updateMatrixWorld(true);for(const o of model.meshes)o.skeleton.update();}
+@@ -58,6 +62,6 @@ export async function compareFrameRepair(rawUrl,cleanedUrl,{samples=21,tolerance
+     pose(raw,null,0);pose(cleaned,null,0);const rawRest=surface(raw),cleanedRest=surface(cleaned),rawMetric=metricSpan(rawRest),cleanedMetric=metricSpan(cleanedRest);const rest=maximumPointDisplacement(rawRest,cleanedRest),clips=[];let maximum=rest;
+     for(const clip of clipFacts(raw)){const phases=[];for(let i=0;i<samples;i++){const phase=i/(samples-1);pose(raw,clip.name,phase);pose(cleaned,clip.name,phase);const delta=maximumPointDisplacement(surface(raw),surface(cleaned));maximum=Math.max(maximum,delta);phases.push({phase,maximum_vertex_delta_m:delta});}clips.push({name:clip.name,duration_s:clip.duration,phases,maximum_vertex_delta_m:Math.max(...phases.map(p=>p.maximum_vertex_delta_m))});}
+     const morph_samples=sampleNamedMorphs(raw,cleaned);maximum=Math.max(maximum,morph_samples.maximum_vertex_delta_m);
+-    return{scope:'actual decoded CPU-skinned world vertices, raw export versus frame-cleaned/source-skin-consolidated export only; not Meshopt parity, photographic quality or a continuous-time proof',raw_url:rawUrl,cleaned_url:cleanedUrl,mesh_count:raw.meshes.length,samples_per_clip:samples,default_rest_metric_bounds:{raw:rawMetric,cleaned:cleanedMetric},default_morph_weights:{raw:raw.defaultMorphs.map(([o,w])=>({mesh:o.name,weights:w})),cleaned:cleaned.defaultMorphs.map(([o,w])=>({mesh:o.name,weights:w}))},rest_maximum_vertex_delta_m:rest,maximum_vertex_delta_m:maximum,tolerance_m,clips,morph_samples,passed:maximum<=tolerance_m};
++    return{scope:'actual decoded CPU-skinned world vertices of explicitly supplied GLB pairs; not historical artifact identity, Meshopt parity, photographic quality or a continuous-time proof',raw_url:rawUrl,cleaned_url:cleanedUrl,mesh_count:raw.meshes.length,mesh_correspondence:{method:'unique loaded mesh names sorted by deterministic UTF16 order; layout must match exactly',names:raw.meshes.map(m=>m.name)},samples_per_clip:samples,default_rest_metric_bounds:{raw:rawMetric,cleaned:cleanedMetric},default_morph_weights:{raw:raw.defaultMorphs.map(([o,w])=>({mesh:o.name,weights:w})),cleaned:cleaned.defaultMorphs.map(([o,w])=>({mesh:o.name,weights:w}))},rest_maximum_vertex_delta_m:rest,maximum_vertex_delta_m:maximum,tolerance_m,clips,morph_samples,passed:maximum<=tolerance_m};
+   }finally{for(const m of [raw,cleaned])if(m){m.mixer?.stopAllAction();m.mixer?.uncacheRoot(m.scene);release(m.scene);}}
+ }
+diff --git a/chicago/4d/tools/human_teamster.html b/chicago/4d/tools/human_teamster.html
+index 4a97432d4..15c9ba189 100644
+--- a/chicago/4d/tools/human_teamster.html
++++ b/chicago/4d/tools/human_teamster.html
+@@ -1,4 +1,5 @@
+ <!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Resident export inspection</title><link rel="icon" href="data:,"><style>body{margin:0;background:#d8dcd5;overflow:hidden;font:13px system-ui}canvas{display:block}aside{position:absolute;top:8px;left:8px;background:#fffffff0;padding:10px;max-width:290px;border-radius:8px}h1{font-size:16px;margin:0}p{margin:5px 0;line-height:1.4}@media(max-width:500px){aside{font-size:11px;max-width:calc(100vw - 36px)}h1{font-size:14px}}</style><script type="importmap">{"imports":{"three":"/runtime/renderers/web/vendor/three-0.185.1/three.module.js","three/addons/":"/runtime/renderers/web/vendor/three-0.185.1/addons/"}}</script><aside><h1>Resident export inspection</h1><p id="resident-reference"></p><p id="label">Loading actual GLB…</p><p>Mechanical inspection only. Photographic skin, garment realism and period-source comparison remain open.</p></aside><script type="module">
++import {inspectHairRuntime} from './human_hair_runtime.mjs';
+ import * as T from 'three';import{GLTFLoader}from'three/addons/loaders/GLTFLoader.js';import{loadMeshoptDecoder}from'/runtime/renderers/web/js/scene-loader.js';
+ const contract=await fetch('/contract.json').then(r=>r.json()),renderer=new T.WebGLRenderer({antialias:true});renderer.setPixelRatio(1);renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;document.body.append(renderer.domElement);const scene=new T.Scene();scene.background=new T.Color('#d8dcd5');scene.add(new T.HemisphereLight(0xf0f5ff,0x77684b,2.2));const light=new T.DirectionalLight(0xffefdf,3);light.position.set(3,5,4);scene.add(light);const floor=new T.Mesh(new T.PlaneGeometry(30,30),new T.MeshStandardMaterial({color:0xb5bcad,roughness:1}));floor.rotation.x=-Math.PI/2;floor.position.y=-.002;scene.add(floor);scene.add(new T.GridHelper(8,16,0x8b9683,0xa8b09f));const camera=new T.PerspectiveCamera(32,innerWidth/innerHeight,.03,50);const loader=new GLTFLoader();let root,skin=[],mixer,clips=[],report,bindTransforms=[],bindMorphDefaults=[];
+ function update(){root.updateMatrixWorld(true);for(const o of skin)o.skeleton.update();}
+@@ -81,7 +82,7 @@ const materials=new Map();root.traverse(o=>{if(o.isMesh)for(const m of[].concat(
+   const imageIndex=declaredTextureIndex===null?null:header.textures?.[declaredTextureIndex]?.source??null;
+   const image=imageIndex===null?null:header.images?.[imageIndex]??null;
+   return{name:m.name,material_path:materialIndex===null?null:`materials[${materialIndex}]`,base_color_binding:{declared_texture_index:declaredTextureIndex,runtime_texture_index:mappedTextureIndex,image_index:imageIndex,image_name:image?.name??null,image_mime_type:image?.mimeType??null,image_uri:image?.uri??null,embedded_buffer_view:image?.bufferView??null,decoded_width:m.map?.image?.width||0,decoded_height:m.map?.image?.height||0,matched:declaredTextureIndex!==null&&mappedTextureIndex===declaredTextureIndex&&image!==null&&m.map?.image?.width>0&&m.map?.image?.height>0},color:m.color?.toArray(),textures:Object.fromEntries(['map','normalMap','roughnessMap','metalnessMap'].filter(k=>m[k]).map(k=>[k,{width:m[k].image?.width||0,height:m[k].image?.height||0}]))};});const missingSlots=['skin','eyes','garment_upper','garment_lower','footwear'].filter(slot=>!mats.some(m=>m.name===slot||m.name.startsWith(slot+'__')));const lod=Number(/\.lod([0-3])\.glb$/.exec(file)?.[1]);const requiredMorphs=lod<2?['eyeBlinkLeft','eyeBlinkRight','jawOpen']:[];
+-setClip('idle',0);const standing=bounds(surface()),feet={left:Infinity,right:Infinity};root.traverse(o=>{if(!o.isSkinnedMesh||![].concat(o.material).some(m=>m.name.startsWith('footwear')))return;const p=surface([o]);for(let i=0;i<p.length;i+=3){const side=p[i]>=0?'left':'right';feet[side]=Math.min(feet[side],p[i+1]);}});view();const glError=renderer.getContext().getError();const checks={whole_contract_skeleton:missing.length===0,single_skeleton:new Set(skin.map(o=>o.skeleton)).size===1,hand_head_sockets:['socket_hand_l','socket_hand_r','socket_head'].every(n=>root.getObjectByName(n)?.parent?.name===n.replace('socket_','')),skinning_moves:armMotion>.001,required_clips:['idle','walk'].every(n=>clipResults[n]?.temporal_surface_amplitude_m>.00001&&clipResults[n]?.temporal_bone_turn_rad>.0001),walk_speed:clipResults.walk?.speed_m_s>0,required_face_morphs:requiredMorphs.every(n=>facialMorphs[n]>.0001),material_slots:missingSlots.length===0,actual_skin_color_map_bound:mats.some(m=>m.name.split('__')[0]==='skin')&&mats.filter(m=>m.name.split('__')[0]==='skin').every(m=>m.base_color_binding.matched),textures_decoded:mats.every(m=>Object.values(m.textures).every(t=>t.width>0&&t.height>0)),metric_frame:frame.height>.9&&frame.height<2.3&&Math.abs(frame.min[1])<.01,standing_contacts:Object.values(feet).every(y=>Number.isFinite(y)&&Math.abs(y)<.02),no_gl_error:glError===0};report={file,lod,frame,standing_frame:standing,footwear_min_y_m:feet,grounding_scope:{clip:'idle',phase:0,method:'minimum actual footwear vertex Y partitioned by world X sign',tolerance_m:.02,does_not_prove:'walk stance, named limb identity, foot skate, slope contact or continuous-time penetration'},skinned_meshes:skin.length,bone_count:boneMap.size,missing_bones:missing,arm_surface_amplitude_m:armMotion,morph_surface_amplitudes_m:morphs,head_weighted_morph_amplitudes_m:facialMorphs,face_measurement_scope:'actual head/jaw/eye-weighted geometry; nonzero response, not anatomically correct blink/jaw proof',clips:clipResults,materials:mats,texture_gaps:mats.flatMap(m=>[['map','base_color'],['normalMap','normal']].filter(([key])=>!m.textures[key]).map(([,role])=>({material:m.name,role,status:'absent; artistic quality remains open'}))),missing_material_slots:missingSlots,triangles:skin.reduce((n,o)=>n+(o.geometry.index?.count||o.geometry.attributes.position.count)/3,0),gl_error:glError,checks,photographic_gate:{status:'open',flat_color_skin:!mats.some(m=>m.name.startsWith('skin')&&m.textures.map),reason:'Mechanical export evidence does not establish photographic skin, hair, cloth, likeness or period correctness'},provenance:header.scenes?.[0]?.extras?.chicago4d_human??null};const metadata=report.provenance;let reference=null;try{reference=JSON.parse(metadata?.person_reference_summary_json??'null');}catch{}const personId=typeof metadata?.person_reference_id==='string'?metadata.person_reference_id:null;const personName=typeof reference?.name==='string'?reference.name:null;report.resident_reference={id:personId,name:personName,scene:metadata?.person_reference_scene??null,grade:metadata?.person_reference_grade??null,scope:'Existing record reference; reconstructed depiction. No factual likeness or individual anatomical validation claimed.'};document.querySelector('#resident-reference').textContent=personId?`${personName??personId} · ${personId} · ${metadata.person_reference_scene??'scene unspecified'} · ${metadata.person_reference_grade??'grade unspecified'} reference. Reconstructed depiction; no factual likeness claimed.`:'No existing person reference metadata in this export. Reconstructed depiction; no factual likeness claimed.';document.querySelector('#label').textContent=file+' · idle';return report;}
++setClip('idle',0);const standing=bounds(surface()),feet={left:Infinity,right:Infinity};root.traverse(o=>{if(!o.isSkinnedMesh||![].concat(o.material).some(m=>m.name.startsWith('footwear')))return;const p=surface([o]);for(let i=0;i<p.length;i+=3){const side=p[i]>=0?'left':'right';feet[side]=Math.min(feet[side],p[i+1]);}});view();const glError=renderer.getContext().getError();const checks={whole_contract_skeleton:missing.length===0,single_skeleton:new Set(skin.map(o=>o.skeleton)).size===1,hand_head_sockets:['socket_hand_l','socket_hand_r','socket_head'].every(n=>root.getObjectByName(n)?.parent?.name===n.replace('socket_','')),skinning_moves:armMotion>.001,required_clips:['idle','walk'].every(n=>clipResults[n]?.temporal_surface_amplitude_m>.00001&&clipResults[n]?.temporal_bone_turn_rad>.0001),walk_speed:clipResults.walk?.speed_m_s>0,required_face_morphs:requiredMorphs.every(n=>facialMorphs[n]>.0001),material_slots:missingSlots.length===0,actual_skin_color_map_bound:mats.some(m=>m.name.split('__')[0]==='skin')&&mats.filter(m=>m.name.split('__')[0]==='skin').every(m=>m.base_color_binding.matched),textures_decoded:mats.every(m=>Object.values(m.textures).every(t=>t.width>0&&t.height>0)),metric_frame:frame.height>.9&&frame.height<2.3&&Math.abs(frame.min[1])<.01,standing_contacts:Object.values(feet).every(y=>Number.isFinite(y)&&Math.abs(y)<.02),no_gl_error:glError===0};report={file,lod,frame,standing_frame:standing,footwear_min_y_m:feet,grounding_scope:{clip:'idle',phase:0,method:'minimum actual footwear vertex Y partitioned by world X sign',tolerance_m:.02,does_not_prove:'walk stance, named limb identity, foot skate, slope contact or continuous-time penetration'},skinned_meshes:skin.length,bone_count:boneMap.size,missing_bones:missing,arm_surface_amplitude_m:armMotion,morph_surface_amplitudes_m:morphs,head_weighted_morph_amplitudes_m:facialMorphs,face_measurement_scope:'actual head/jaw/eye-weighted geometry; nonzero response, not anatomically correct blink/jaw proof',clips:clipResults,materials:mats,texture_gaps:mats.flatMap(m=>[['map','base_color'],['normalMap','normal']].filter(([key])=>!m.textures[key]).map(([,role])=>({material:m.name,role,status:'absent; artistic quality remains open'}))),missing_material_slots:missingSlots,triangles:skin.reduce((n,o)=>n+(o.geometry.index?.count||o.geometry.attributes.position.count)/3,0),gl_error:glError,checks,photographic_gate:{status:'open',flat_color_skin:!mats.some(m=>m.name.startsWith('skin')&&m.textures.map),reason:'Mechanical export evidence does not establish photographic skin, hair, cloth, likeness or period correctness'},provenance:header.scenes?.[0]?.extras?.chicago4d_human??null};const metadata=report.provenance;let reference=null;try{reference=JSON.parse(metadata?.person_reference_summary_json??'null');}catch{}const personId=typeof metadata?.person_reference_id==='string'?metadata.person_reference_id:null;const personName=typeof reference?.name==='string'?reference.name:null;report.resident_reference={id:personId,name:personName,scene:metadata?.person_reference_scene??null,grade:metadata?.person_reference_grade??null,scope:'Existing record reference; reconstructed depiction. No factual likeness or individual anatomical validation claimed.'};document.querySelector('#resident-reference').textContent=personId?`${personName??personId} · ${personId} · ${metadata.person_reference_scene??'scene unspecified'} · ${metadata.person_reference_grade??'grade unspecified'} reference. Reconstructed depiction; no factual likeness claimed.`:'No existing person reference metadata in this export. Reconstructed depiction; no factual likeness claimed.';document.querySelector('#label').textContent=file+' · idle';const hairSizes=[[2039,2048],[1020,1024],[510,512],[255,256]];const hairSize=file.includes('/web/')?hairSizes[lod]:[2048,2057];report.hair_contract=inspectHairRuntime(root,{width:hairSize[0],height:hairSize[1]});checks.hair_export_contract=report.hair_contract.passed;return report;}
+ const { compareFrameRepair } = await import('./human_frame_compare.js');
+ const { sampleSoleContact } = await import('./human_sole_contact.mjs');
+ async function measureSoleContact(file) {
+diff --git a/chicago/4d/tools/human_teamster.mjs b/chicago/4d/tools/human_teamster.mjs
+index 9f17865c7..8b1ded437 100644
+--- a/chicago/4d/tools/human_teamster.mjs
++++ b/chicago/4d/tools/human_teamster.mjs
+@@ -8,6 +8,6 @@ if(!Number.isInteger(frameSamples)||frameSamples<2||frameSamples>101)throw Error
+ if(ids.some(x=>!/^\w+$/.test(x))||lods.some(x=>!Number.isInteger(x)||x<0||x>3))throw Error('Invalid asset IDs or LODs');
+ const runtimePath=f=>published?f.replace(/^assets\/humans\//,'data/humans/').replace(/^renderers\/web\//,'walk/'):f;
+ const files=ids.flatMap(id=>lods.map(lod=>`assets/humans/${masters?'':'web/'}${id}.lod${lod}.glb`));for(const f of files)await stat(path.join(runtime,runtimePath(f)));await mkdir(output,{recursive:true});
+-const mime={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.json':'application/json','.glb':'model/gltf-binary','.wasm':'application/wasm','.png':'image/png','.jpg':'image/jpeg'};const server=createServer(async(req,res)=>{const url=new URL(req.url,'http://x');let root=runtime,relative=url.pathname.slice(1);if(['/tools/human_teamster.html','/tools/human_frame_compare.js','/tools/human_sole_contact.mjs'].includes(url.pathname)){root=ROOT;relative=url.pathname.slice(1);}else if(/^\/comparison\/\d+-(raw|cleaned)\.glb$/.test(url.pathname)){const match=url.pathname.match(/^\/comparison\/(\d+)-(raw|cleaned)\.glb$/),pair=framePairs[Number(match[1])];if(!pair){res.writeHead(404).end();return;}try{res.setHeader('Content-Type','model/gltf-binary');res.end(await readFile(pair[match[2]==='raw'?0:1]));}catch{res.writeHead(404).end();}return;}else if(url.pathname==='/contract.json'){root=ROOT;relative='data/humans/contract.json';}else if(url.pathname.startsWith('/runtime/'))relative=runtimePath(url.pathname.slice(9));else{res.writeHead(404).end();return;}const target=path.resolve(root,decodeURIComponent(relative));if(!target.startsWith(root+path.sep)){res.writeHead(403).end();return;}try{res.setHeader('Content-Type',mime[path.extname(target)]||'application/octet-stream');res.end(await readFile(target));}catch{res.writeHead(404).end();}});await new Promise(r=>server.listen(0,'127.0.0.1',r));const base=`http://127.0.0.1:${server.address().port}`;
++const mime={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.json':'application/json','.glb':'model/gltf-binary','.wasm':'application/wasm','.png':'image/png','.jpg':'image/jpeg'};const server=createServer(async(req,res)=>{const url=new URL(req.url,'http://x');let root=runtime,relative=url.pathname.slice(1);if(['/tools/human_teamster.html','/tools/human_frame_compare.js','/tools/human_sole_contact.mjs','/tools/human_hair_runtime.mjs'].includes(url.pathname)){root=ROOT;relative=url.pathname.slice(1);}else if(/^\/comparison\/\d+-(raw|cleaned)\.glb$/.test(url.pathname)){const match=url.pathname.match(/^\/comparison\/(\d+)-(raw|cleaned)\.glb$/),pair=framePairs[Number(match[1])];if(!pair){res.writeHead(404).end();return;}try{res.setHeader('Content-Type','model/gltf-binary');res.end(await readFile(pair[match[2]==='raw'?0:1]));}catch{res.writeHead(404).end();}return;}else if(url.pathname==='/contract.json'){root=ROOT;relative='data/humans/contract.json';}else if(url.pathname.startsWith('/runtime/'))relative=runtimePath(url.pathname.slice(9));else{res.writeHead(404).end();return;}const target=path.resolve(root,decodeURIComponent(relative));if(!target.startsWith(root+path.sep)){res.writeHead(403).end();return;}try{res.setHeader('Content-Type',mime[path.extname(target)]||'application/octet-stream');res.end(await readFile(target));}catch{res.writeHead(404).end();}});await new Promise(r=>server.listen(0,'127.0.0.1',r));const base=`http://127.0.0.1:${server.address().port}`;
+ let browser;const report={format:'generic_adult_browser_inspection_v1',runtime:published?'published':'source',asset_kind:masters?'masters':'web_derivatives',photographic_gate:'open; mechanical checks cannot establish photographic or period fidelity',runs:[],frame_repair_comparisons:[]};let failures=[];
+-try{let pw;try{pw=await import('playwright');}catch{const root=(process.env.NODE_PATH||execSync('npm root -g',{encoding:'utf8'})).trim().split(path.delimiter)[0];pw=await import(path.join(root,'playwright/index.js'));}const chromium=pw.chromium||pw.default.chromium;browser=await chromium.launch({executablePath:process.env.PW_EXECUTABLE||undefined,args:['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});for(const [label,viewport]of Object.entries({desktop:{width:1280,height:800},mobile:{width:390,height:780}})){const page=await browser.newPage({viewport});const errors=[],requests=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});page.on('requestfailed',r=>requests.push(`${r.url()}: ${r.failure()?.errorText}`));await page.goto(base+'/tools/human_teamster.html');await page.waitForFunction(()=>window.teamsterInspection?.ready);if(label==='desktop')for(let i=0;i<framePairs.length;i++){const result=await page.evaluate(({i,samples})=>teamsterInspection.compareFrameRepair(`/comparison/${i}-raw.glb`,`/comparison/${i}-cleaned.glb`,{samples}),{i,samples:frameSamples});result.inputs=await Promise.all(framePairs[i].map(async file=>({file,sha256:createHash('sha256').update(await readFile(file)).digest('hex')})));report.frame_repair_comparisons.push(result);if(!result.passed)failures.push(`raw-cleaned surface comparison ${i}: ${JSON.stringify(result)}`);}for(const file of files){const result=await page.evaluate(file=>teamsterInspection.inspect(file),file);result.served_path=runtimePath(file);result.viewport=viewport;result.viewport_name=label;result.sha256=createHash('sha256').update(await readFile(path.join(runtime,runtimePath(file)))).digest('hex');if(soleContact&&label==='desktop'){const contact=await page.evaluate(file=>teamsterInspection.measureSoleContact(file),file);contact.provenance={...contact.provenance,sha256:result.sha256,served_path:result.served_path,asset_kind:masters?'master':'web_derivative'};const receipt=path.basename(file,'.glb')+'-sole-contact.json';await writeFile(path.join(output,receipt),JSON.stringify(contact)+'\n');result.walk_sole_contact={receipt,metadata_comparisons:contact.metadata_comparisons,metrics:contact.metrics,passed:contact.passed,scope:contact.scope};if(!contact.passed)failures.push(`${file}: sampled loaded walk sole-contact failed ${JSON.stringify(contact.metrics)}`);}const captures=[],captureFraming=[];if(result.lod===0){await page.evaluate(()=>teamsterInspection.setClip('idle',0));for(const close of[false,true])for(const angle of['front','threequarter','profile']){const framing=await page.evaluate(({angle,close})=>teamsterInspection.view(angle,close),{angle,close});const name=path.basename(file,'.glb')+`-${label}-${close?'close':'standing'}-${angle}.png`;await page.screenshot({path:path.join(output,name)});captures.push(name);captureFraming.push({file:name,angle,close,...framing});if(!framing.passed)failures.push(`${file} ${label}: ${close?'head-detail':'whole-body'} framing ${angle} — ${JSON.stringify(framing)}`);}}result.screenshots=captures;result.capture_framing=captureFraming;for(const[check,ok]of Object.entries(result.checks))if(!ok)failures.push(`${file} ${label}: ${check}`);report.runs.push(result);}if(errors.length||requests.length)failures.push(`${label}: ${[...errors,...requests].join('; ')}`);report.runs.filter(r=>r.viewport_name===label).forEach(r=>{r.page_errors=[...errors];r.failed_requests=[...requests];});await page.close();}report.failures=failures;report.mechanical_passed=failures.length===0;await writeFile(path.join(output,'inspection.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify({assets:ids,lods,viewports:2,inspections:report.runs.length,mechanical_passed:report.mechanical_passed,photographic_gate:'open',failures,output},null,2));if(failures.length)process.exitCode=1;}catch(e){console.error(e);process.exitCode=1;}finally{await browser?.close();await new Promise(r=>server.close(r));}
++try{let pw;try{pw=await import('playwright');}catch{const root=(process.env.NODE_PATH||execSync('npm root -g',{encoding:'utf8'})).trim().split(path.delimiter)[0];pw=await import(path.join(root,'playwright/index.js'));}const chromium=pw.chromium||pw.default.chromium;browser=await chromium.launch({executablePath:process.env.PW_EXECUTABLE||undefined,args:['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});for(const [label,viewport]of Object.entries({desktop:{width:1280,height:800},mobile:{width:390,height:780}})){const page=await browser.newPage({viewport});const errors=[],requests=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});page.on('requestfailed',r=>requests.push(`${r.url()}: ${r.failure()?.errorText}`));await page.goto(base+'/tools/human_teamster.html');await page.waitForFunction(()=>window.teamsterInspection?.ready);if(label==='desktop')for(let i=0;i<framePairs.length;i++){const result=await page.evaluate(({i,samples})=>teamsterInspection.compareFrameRepair(`/comparison/${i}-raw.glb`,`/comparison/${i}-cleaned.glb`,{samples}),{i,samples:frameSamples});result.inputs=await Promise.all(framePairs[i].map(async file=>({file,sha256:createHash('sha256').update(await readFile(file)).digest('hex')})));report.frame_repair_comparisons.push(result);console.log(JSON.stringify({scope:'actual explicitly supplied GLB CPU surface comparison; not old-artifact or photographic proof',inputs:result.inputs,mesh_correspondence:result.mesh_correspondence,samples_per_clip:result.samples_per_clip,rest_maximum_vertex_delta_m:result.rest_maximum_vertex_delta_m,maximum_vertex_delta_m:result.maximum_vertex_delta_m,named_morph_maximum_vertex_delta_m:result.morph_samples.maximum_vertex_delta_m,tolerance_m:result.tolerance_m,passed:result.passed}));if(!result.passed)failures.push(`raw-cleaned surface comparison ${i}: ${JSON.stringify(result)}`);}for(const file of files){const result=await page.evaluate(file=>teamsterInspection.inspect(file),file);result.served_path=runtimePath(file);result.viewport=viewport;result.viewport_name=label;result.sha256=createHash('sha256').update(await readFile(path.join(runtime,runtimePath(file)))).digest('hex');if(soleContact&&label==='desktop'){const contact=await page.evaluate(file=>teamsterInspection.measureSoleContact(file),file);contact.provenance={...contact.provenance,sha256:result.sha256,served_path:result.served_path,asset_kind:masters?'master':'web_derivative'};const receipt=path.basename(file,'.glb')+'-sole-contact.json';await writeFile(path.join(output,receipt),JSON.stringify(contact)+'\n');result.walk_sole_contact={receipt,metadata_comparisons:contact.metadata_comparisons,metrics:contact.metrics,passed:contact.passed,scope:contact.scope};if(!contact.passed)failures.push(`${file}: sampled loaded walk sole-contact failed ${JSON.stringify(contact.metrics)}`);}const captures=[],captureFraming=[];if(result.lod===0){await page.evaluate(()=>teamsterInspection.setClip('idle',0));for(const close of[false,true])for(const angle of['front','threequarter','profile']){const framing=await page.evaluate(({angle,close})=>teamsterInspection.view(angle,close),{angle,close});const name=path.basename(file,'.glb')+`-${label}-${close?'close':'standing'}-${angle}.png`;await page.screenshot({path:path.join(output,name)});captures.push(name);captureFraming.push({file:name,angle,close,...framing});if(!framing.passed)failures.push(`${file} ${label}: ${close?'head-detail':'whole-body'} framing ${angle} — ${JSON.stringify(framing)}`);}}result.screenshots=captures;result.capture_framing=captureFraming;for(const[check,ok]of Object.entries(result.checks))if(!ok)failures.push(`${file} ${label}: ${check}`);report.runs.push(result);}if(errors.length||requests.length)failures.push(`${label}: ${[...errors,...requests].join('; ')}`);report.runs.filter(r=>r.viewport_name===label).forEach(r=>{r.page_errors=[...errors];r.failed_requests=[...requests];});await page.close();}report.failures=failures;report.mechanical_passed=failures.length===0;await writeFile(path.join(output,'inspection.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify({assets:ids,lods,viewports:2,inspections:report.runs.length,mechanical_passed:report.mechanical_passed,photographic_gate:'open',failures,output},null,2));if(failures.length)process.exitCode=1;}catch(e){console.error(e);process.exitCode=1;}finally{await browser?.close();await new Promise(r=>server.close(r));}
+diff --git a/chicago/4d/tools/human_teamster_blend.py b/chicago/4d/tools/human_teamster_blend.py
+index 5469bcefd..700a7e028 100644
+--- a/chicago/4d/tools/human_teamster_blend.py
++++ b/chicago/4d/tools/human_teamster_blend.py
+@@ -133,6 +133,8 @@ def build(args):
+     if body.get('target_blend',{}).get('phenotype',{}).get('chosen_age_years')!=variant['body_parameters']['engineering_age_years']:
+         raise ValueError('variant adult macro body does not match its reconstructed authoring-age parameter')
+     skinpath = verify_skin_texture(recipe)
++    from human_hair_short04 import fit as fit_short04
++    hair, hairpath, hair_report = fit_short04(body, recipe['hair_component'], ROOT)
+     colors = {**recipe['colors_linear_rgba'], **variant.get('color_overrides',{})}
+     colors['garment_upper__shirt_collar'] = colors['garment_upper__shirt_linen']
+     asset = args.variant
+@@ -210,8 +212,35 @@ def build(args):
+     tex=nodes.new('ShaderNodeTexImage');tex.name='Original reconstructed cloth weave';tex.image=weave
+     tex.interpolation='Linear'
+     links.new(tex.outputs['Color'],nodes['Principled BSDF'].inputs['Base Color'])
++    # Cleared CC0 short04 source, fitted to this resident's selected body. The
++    # padded derivative preserves source repeat samples at base-level bilinear only;
++    # mip/aniso and actual glTF alpha-mode behavior must be reviewed after export.
++    hair_config=recipe['hair_component']
++    hair_mat=bpy.data.materials.new('hair__makehuman_short04');hair_mat.use_nodes=True
++    hair_mat.use_backface_culling=False
++    if hasattr(hair_mat,'surface_render_method'):hair_mat.surface_render_method='DITHERED'
++    hair_nodes=hair_mat.node_tree.nodes;hair_links=hair_mat.node_tree.links
++    hair_bsdf=hair_nodes['Principled BSDF']
++    hair_bsdf.inputs['Base Color'].default_value=(1,1,1,1)
++    hair_bsdf.inputs['Roughness'].default_value=hair_config['roughness']
++    hair_image=bpy.data.images.load(str(hairpath.resolve()),check_existing=True)
++    if tuple(hair_image.size)!=(2048,2057):raise ValueError('unexpected padded hair atlas dimensions')
++    hair_image.colorspace_settings.name='sRGB';hair_image.pack()
++    hair_tex=hair_nodes.new('ShaderNodeTexImage');hair_tex.image=hair_image
++    hair_tex.extension='EXTEND';hair_tex.interpolation='Linear'
++    hair_links.new(hair_tex.outputs['Color'],hair_bsdf.inputs['Base Color'])
++    # Binary alpha threshold is explicit node geometry, not an opaque alpha label.
++    # CI must inspect exported material alphaMode/cutoff and actual hair edges.
++    clip=hair_nodes.new('ShaderNodeMath');clip.operation='LESS_THAN'
++    clip.inputs[1].default_value=hair_config['alpha_cutoff']
++    hair_links.new(hair_tex.outputs['Alpha'],clip.inputs[0])
++    inverse=hair_nodes.new('ShaderNodeMath');inverse.operation='SUBTRACT'
++    inverse.inputs[0].default_value=1
++    hair_links.new(clip.outputs[0],inverse.inputs[1])
++    hair_links.new(inverse.outputs[0],hair_bsdf.inputs['Alpha'])
++    materials['hair__makehuman_short04']=hair_mat
+     # Incoming source UVs are retained per loop, including source-seam duplicates.
+-    def object_mesh(name,points,faces,uvs,weights,material,col,ratio=1):
++    def object_mesh(name,points,faces,uvs,weights,material,col,ratio=1,source_vertex_indices=None):
+         mesh = bpy.data.meshes.new(name)
+         mesh.from_pydata([xyz(v) for v in points],[],faces)
+         mesh.update()
+@@ -220,6 +249,33 @@ def build(args):
+             polygon.use_smooth = True
+             for li in polygon.loop_indices:
+                 layer.data[li].uv = uvs[mesh.loops[li].vertex_index]
++        if source_vertex_indices is not None:
++            # Body UV duplicates share rest normals without welding positions/UVs.
++            # Decimation, morph and export behavior still require canonical checks.
++            from human_source_normals import source_shared_normals
++            source_normals=source_shared_normals(points,faces,source_vertex_indices)
++            converted=[tuple(xyz(n).normalized()) for n in source_normals]
++            mesh.normals_split_custom_set([converted[loop.vertex_index] for loop in mesh.loops])
++            if ratio == 1:
++                # Blender 4.5 encodes custom corner normals as short2. This 1e-3
++                # vector bound is conservative engineering acceptance, not exact
++                # float32 equivalence or a proven codec worst-case bound.
++                mesh.update()
++                actual=mesh.corner_normals
++                if not mesh.has_custom_normals or len(actual)!=len(mesh.loops):
++                    raise ValueError('LOD0 body custom normals missing or corner count changed')
++                deltas=[]
++                for index,loop in enumerate(mesh.loops):
++                    value=tuple(actual[index].vector)
++                    if not all(math.isfinite(x) for x in value):
++                        raise ValueError('LOD0 body custom normal readback is nonfinite')
++                    deltas.append(math.dist(value,converted[loop.vertex_index]))
++                if not deltas or max(deltas)>1e-3:
++                    raise ValueError('LOD0 body custom normal readback exceeds 1e-3 vector tolerance')
++                print(json.dumps({'body_normal_preexport_audit':{'asset_id':asset,
++                    'mesh':name,'corners':len(deltas),'max_vector_delta':max(deltas),
++                    'mean_vector_delta':math.fsum(deltas)/len(deltas),'tolerance':1e-3,
++                    'scope':'local LOD0 BPy readback before modifiers/export; not emitted GLB/morph/decimated normal acceptance'}}))
+         obj = bpy.data.objects.new(name,mesh)
+         col.objects.link(obj)
+         mesh.materials.append(materials[material])
+@@ -235,7 +291,7 @@ def build(args):
+             decimate = obj.modifiers.new('authored_lod_reduction','DECIMATE')
+             decimate.ratio = ratio
+             bpy.ops.object.modifier_apply(modifier=decimate.name)
+-        obj.parent = rig
++        # Authored identity mesh is a root; skin modifier references the rig.
+         mod = obj.modifiers.new('skin','ARMATURE')
+         mod.object = rig
+         return obj
+@@ -302,8 +358,10 @@ def build(args):
+         if not touched or amplitude<=.001:raise ValueError('jawOpen target must move actual jaw vertices >1 mm; inspect prepared jaw joint/LOD')
+     for lod,ratio in enumerate(recipe['lod_ratios']):
+         col=bpy.data.collections.new('lod'+str(lod));scene.collection.children.link(col)
++        # Preserve source hair topology pending measured lower-LOD adaptation.
++        object_mesh(f'{asset}_short04_hair_lod{lod}',hair['positions_m'],hair['triangles'],hair['uvs'],hair['weights'],'hair__makehuman_short04',col)
+         for mi,m in enumerate(body['meshes']):
+-            obj=object_mesh(f'{asset}_body_{mi}_lod{lod}',m['positions_m'],m['triangles'],m['uvs'],m['weights'],'skin',col,ratio)
++            obj=object_mesh(f'{asset}_body_{mi}_lod{lod}',m['positions_m'],m['triangles'],m['uvs'],m['weights'],'skin',col,ratio,source_vertex_indices=m['source_vertex_indices'])
+             if lod in contract['morphs']['required_lods']:morphs(obj)
+             for kind,mat,offset in [('shirt','garment_upper__shirt_linen',recipe['shirt_offset_m']),('waistcoat','garment_outer__waistcoat_wool',recipe['waistcoat_offset_m']),('trousers','garment_lower__highwaist_pantaloons',recipe['trouser_offset_m'])]:
+                 points,faces,uvs,weights=shell(m,kind,offset)
+@@ -421,6 +479,7 @@ def build(args):
+         pose.location=(0,0,0)
+         pose.rotation_mode='QUATERNION';pose.rotation_quaternion=(1,0,0,0)
+     scene['chicago4d_human']={'contract_version':contract['version'],'rigid_bone_frame_export':True,'kind':'body','asset_id':asset,'lod':0,'skeleton':contract['skeleton']['id'],'grade':'reconstructed','basis':recipe['basis']+' '+recipe['source_scope']+' Existing resident reference '+variant['person_reference_id']+' has reconstructed identity/presence/age/occupation. Age-bounded CC0 male macro body and cleared generic skin atlas are provisional authoring choices; height/complexion are not record facts, and no photographic likeness or individually validated anatomy is claimed.','sources':recipe['sources'],'liberty':liberty,'license':recipe['license'],'master':str(args.output),'authored_by':'Chicago4D original workwear authoring (T-1789)','recipe':'data/humans/recipes/worker_1835.json','person_reference_id':variant['person_reference_id'],'person_reference_scene':variant['person_reference_scene'],'person_reference_grade':variant['person_reference_grade'],'review_required':reference['review_required'],'touches_removal':reference['touches_removal'],'person_reference_summary_json':json.dumps(reference,sort_keys=True),'body_input':variant['body_input'],'body_target_blend_json':json.dumps(body.get('target_blend',{}),sort_keys=True),'body_parameters_json':json.dumps(variant['body_parameters'],sort_keys=True),'skin_source_json':json.dumps(recipe['skin_texture'],sort_keys=True),'body_source_json':json.dumps(body.get('source',body.get('provenance',{})),sort_keys=True)}
++    scene['chicago4d_human']['hair_source_json']=json.dumps(hair_report,sort_keys=True)
+     scene['authoring_status']='UNVERIFIED: fitting, anatomy, facial targets, UV density, grounded animation and all export/render gates remain open until Blender/CI runs'
+     scene.frame_set(1)
+     args.output.parent.mkdir(parents=True,exist_ok=True)
+diff --git a/chicago/4d/tools/step_isolation.json b/chicago/4d/tools/step_isolation.json
+index 723899cb4..272016112 100644
+--- a/chicago/4d/tools/step_isolation.json
++++ b/chicago/4d/tools/step_isolation.json
+@@ -5598,6 +5598,22 @@
+       "wrote": [],
+       "wrote_ignored": []
+     },
++    "tools/test_human_hair.py": {
++      "wrote": [],
++      "wrote_ignored": []
++    },
++    "tools/test_human_hair_runtime.mjs": {
++      "wrote": [],
++      "wrote_ignored": []
++    },
++    "tools/test_human_hair_short04.py": {
++      "wrote": [],
++      "wrote_ignored": []
++    },
++    "tools/test_human_hierarchy_control.py": {
++      "wrote": [],
++      "wrote_ignored": []
++    },
+     "tools/test_human_inspection.mjs": {
+       "wrote": [],
+       "wrote_ignored": []
+@@ -5610,6 +5626,10 @@
+       "wrote": [],
+       "wrote_ignored": []
+     },
++    "tools/test_human_source_normals.py": {
++      "wrote": [],
++      "wrote_ignored": []
++    },
+     "tools/test_jaunt_mechanics.mjs": {
+       "wrote": [],
+       "wrote_ignored": []
+diff --git a/chicago/4d/tools/test_human_inspection.mjs b/chicago/4d/tools/test_human_inspection.mjs
+index e162965d7..89a61b5e3 100644
+--- a/chicago/4d/tools/test_human_inspection.mjs
++++ b/chicago/4d/tools/test_human_inspection.mjs
+@@ -58,3 +58,19 @@ const multi=ctx.sampleNamedMorphs(multiRaw,multiClean);assert.equal(multi.maximu
+ assert.deepEqual(multiRaw.meshes[0].morphTargetInfluences,[.4,.35]);assert.deepEqual(multiClean.meshes[0].morphTargetInfluences,[.4,.35]);
+ 
+ console.log('PASS: actual vendored Three.js CPU skin/morph regression: defaults, sampled surface difference, terminal clamp/reset, empty surface, metric scale and duplicate clips; plus dormant named-morph delta detection at rest/walk midpoint and default restoration; no resident/WebGL acceptance');
++
++
++// Hierarchy traversal changes cannot change vertex correspondence. Real Three
++// CPU-skinned/morphed meshes are reordered by unique names, never array position.
++const orderA=model(.4),orderB=model(.4),extraA=model(.2),extraB=model(.2);
++for(const [m,name]of [[orderA,'body'],[orderB,'body'],[extraA,'hair'],[extraB,'hair']]){m.meshes[0].name=name;for(const clip of m.animations)for(const track of clip.tracks)track.name=track.name.replace('adult.',name+'.');}
++orderA.scene.add(extraA.scene);orderB.scene.add(extraB.scene);
++orderA.meshes.push(extraA.meshes[0]);orderB.meshes.unshift(extraB.meshes[0]);
++assert.notDeepEqual(orderA.meshes.map(m=>m.name),orderB.meshes.map(m=>m.name));
++orderA.meshes=ctx.sortUniqueMeshes(orderA.meshes);orderB.meshes=ctx.sortUniqueMeshes(orderB.meshes);
++ctx.bind(orderA);ctx.bind(orderB);ctx.pose(orderA,null,0);ctx.pose(orderB,null,0);
++assert.equal(ctx.maximumPointDisplacement(ctx.surface(orderA),ctx.surface(orderB)),0);
++assert.equal(JSON.stringify(ctx.layout(orderA)),JSON.stringify(ctx.layout(orderB)));
++assert.equal(ctx.sampleNamedMorphs(orderA,orderB).maximum_vertex_delta_m,0);
++assert.throws(()=>ctx.sortUniqueMeshes([orderA.meshes[0],orderA.meshes[0]]),/duplicate/);
++const missingName=model();missingName.meshes[0].name='';assert.throws(()=>ctx.sortUniqueMeshes(missingName.meshes),/missing/);

@@ -1,0 +1,35 @@
+{
+  "kind": "Source-only ghost budget failure diagnosis; no browser or measurement executed",
+  "failed_head": "f97ee94970385d35f469c449c6b111b0d8488057",
+  "actual_log": "/workspace/shared/transport-split-f97ee9497/39220627063-attempt-1.log",
+  "assertion": "T2648 a grade row Look ghosts live inside drawbudget",
+  "actual_failure": {
+    "draw_calls": 331,
+    "budget": 330,
+    "pixel_mean": 7.54,
+    "pixel_worst": 34,
+    "mode": "ghost",
+    "opacity": 0.4,
+    "summary": "Ghost \u00b7 40%"
+  },
+  "only_failed_clause": "rowLookStats.calls <= rowLookStats.budget; recordedstate/pixelclauses pass",
+  "current_rendering_sources_equal_f97": {
+    "chicago/4d/renderers/web/js/confidence.js": true,
+    "chicago/4d/renderers/web/js/main.js": true
+  },
+  "verified_source_facts": [
+    "rowLookStats executesa.step() immediatelybeforestats; nothistoricalstatsfrompreviouscapture.",
+    "stats.drawCalls isrenderer.info.render.calls; confidence.render sumsopaque+ghost throughautoReset=false insecondpass.",
+    "Ghostpass explicitlydisables shadowautoUpdate+needsUpdate andremovesscenebackground; wholeframeopaque draw maystillcontainshadowwork.",
+    "Furniture alreadydithersinopaquepass toavoidextra ghostdraws; mixedgradebatchedstructures canlegitimately requirebothpasses.",
+    "No perlayer/object/pass breakdown logged;331alonecannotidentifyredundantdraworfeaturecost."
+  ],
+  "assessment": "Real one-call budget exceedance established. Underlying object/pass cause is NOT established from existing log/source. No defensible production source correction or budget increase identified without targeted drawtrace.",
+  "minimal_next_measurement": "Afterrootgate, reproduceexactT2648state+camera withsamepublishedruntime; outsideapp traceoneforcedframe via renderBufferDirect, tag maincamera vs shadow andcamera layer mask, recordconfidence.ghostStats andobjectancestor/material. Compare tint/reconstructed-onlyghost/XRAY atsamecamera, measurecold+settledframes; preserveeveryresult. Do notchange330orstateassertions.",
+  "correction_options_conditioned_on_trace": [
+    "Ifoneopaque+ghostdrawhasnorenderedghostgrade,correctconfidenceplan/rangesormaterialgroupeligibilitywithsmallrealgeometryregression; do notdiscardvisiblecontent.",
+    "Ifadditionaldrawisnecessaryactualcontent,firstoptimizecompatiblebatching; consciousfeaturepricingrequiresallstand/tiermeasuredworstcaseseparateownerapproval,notsingle331red."
+  ],
+  "proposal": "/workspace/shared/f97-ghost-budget-diagnosis/targeted-draw-trace.js",
+  "limits": "Noappwrites/BPy/browser/APIpoll/network. CurrentC02sourceunderfullgateunchanged. HUDfailurehandledviewer_survey."
+}

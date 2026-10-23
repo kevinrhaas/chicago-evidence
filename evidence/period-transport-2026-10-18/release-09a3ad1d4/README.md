@@ -1,0 +1,21 @@
+
+**CURRENT RELEASE HANDOFF - 2026-10-19 14:11 UTC.**
+
+MAIN CLEAN/PUSHED/FROZEN at09a3ad1d4af7c87c5026de1077497d8a04a5a562, tree5e0bfad5fd30b322596efd469ab4dcc3f962c63d. Actualdevgeometryfe414 merged; actualcurrentdev ee199 is3filechangelogfold-only andservermergeabletruepre-dispatch. FullpreflightPASS1016steps/377refusalselftests, changelog+IDPASS. Savedactualexit0/alltranscriptsPASS; toolwrapperreported1anomalyretained. Testedstagedtreeunchanged, committedordinarymerge TicketT2793; postcommitchangelog/ID/publishPASS104.26MB; worktreeclean/pushdone. Supportedbench actualpublisheddesktop/mobile8viewsPASS; namedv2installed10bodytests+actualsupported/baselinehash/cleanupguardPASS. ActualcanonicalclothedseatedresultPENDINGCI. Do NOTeditappduringqualification.
+
+ALL19fresh09a workflows DISPATCHEDONCE. Canonicalrun39266264143, receipt /workspace/shared/human-seated-dispatch-09a3ad1d4.json BOTH build_teamsters:true,build_seated_driver_study:true. 18smokes IDs/inputgrid in /workspace/shared/transport-smoke-dispatch-c02-09a3ad1d4.json; don'tinferindividualinput/runpairing. NOredispatch.
+
+PRIMARY CI/MERGE LANE NOWDELEGATED to environment_validation. SOLEnewobserverACTIVE74152, log /workspace/shared/final-09a3-metadata-observer.log, out /workspace/shared/final-09a3-metadata;60spolls/5400sbound. RootmustNOTduplicateAPIpoller. Old64220observer39480STOPPEDbyroot130;18success1pendinghistorical. Exactownedremainingrun39253604720cancelPOSTaccepted afteridentityverification; old64220notallgreen/coverageunproven. Cancelreceipt+oldmetadata savedhere.
+
+Rootreviewed finalverifier /workspace/shared/verify_normal_dev_gates_v5_tree_5e0bfad5.py SHAbb034e49d8851c80cfe64acc577509e9002816addd1938fb824cf598a087040e anddispatcher b3b7d62...,25CODE/sourceJSONpins+remote/localexacttree/sourcecontracts,5offline meaningfulnegativesPASS. CanonicaldispatchalreadyDONE. AfterALL19actualworkflows/mandatoryjobsSUCCESS+observerterminal0, envagent runs v5 --verify --sha09aFULL --dispatch NEW09aSMOKEreceipt --canonical NEW09aSEATEDreceipt --terminal-jobs /workspace/shared/final-09a3-metadata/terminal-jobs.json --out FRESH /workspace/shared/final-09a3-normal-dev-gates viaSYSTEMpython3/escalation. AllnormalCIchecks/exactsource/newseatedsteps+benchsource/published mandatory; freshactualdev+PRclean/mergeable consistency. StrictstdoutunionremainsUNPROVEN/artifactsUNINSPECTED/photoUNACCEPTED. No deniedlogs/artifacts/relay.
+
+Envagent authorized byroot/user tofinishordinarydevmergeAUTONOMOUSLY iff allconditionsPASS: updatePRbodyactualgreen+limits, normalready1041, freshhead/dev/checkaudit, NORMALexact09aSHAconditionalSQUASHPUTmerge intoDEVonly, verifyactualmergedstate/devSHA. No admin/bypass/directdevpush/prodpromotion. Anydirtydev/failedtest/APIerror stopsandreportsactualevidence; no sourcechanges/retry/redispatchwithoutdiagnosis. Rootsolecentralwriter; envsavesoutsideproof+messagesroot. PR1041DRAFT/open; title/bodyupdatedviaRESTbecauseghpr editGraphQLclassicProjectsfieldfailed. Preparedbodyfilehere accuratelyPENDING.
+
+Outside workcontinuesparallel: smooth e680passedlocalREST/Khronos butactualidleFAILEDheadsource30/newneckcross, archive425d...saved. Neck-onlyrepairsrepeatedlyhitoldrearHEADbands; rootauthorizedconcretehybridhead/neckseamproposal retiring48lowerrearheadfaces, preservingupperear/poll andalloldattrs/rig but explicitlyretiringbrokenlowerportalactiveconnectivity. Agentpreparing24-to28rimproof; allnewgeometryoutside.
+
+Gearfe76 ONEactualf64idle remainsGLOBALFAIL44bitproperonly; other35parts0onlyidle0, newhindstrips0repaired, fullrest/projectionandactualwitnessarchivebf97...saved. No63pose/positiveclearance/visualacceptance. ClosedmouthneedsREALoralaperture/cavity; sourceproposal /workspace/shared/horse-oral-interface-source-proposal, no fakeexemption.
+
+TrafficGPU actual18zero-diffcomparisons/onebatch/timingPASSoutside; actualW01singlehitchrefused, cartgauge95mmside mismatch, properpair+harnessLightbudgetfails; newroute/shaftsourceunbuilt. Materials9afoutsideonly; sourceclearedproceduralgrain/meanmatch/edgecontinuity, no photoscan/photoacceptance; oldA/BmobileframingFAILpreserved, correctedstrictsamegeometrycamera sourceonlyawaitslane.
+
+Allphotographic/completegear/occupiedrider-driver/ridingticketsremainopen. Currentproofs+receipts in release-09a3ad1d4; earlierarchives/checkpoints preserved.
+
