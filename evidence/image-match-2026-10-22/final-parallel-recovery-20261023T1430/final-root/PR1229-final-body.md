@@ -1,0 +1,29 @@
+Hogan’s store follows the pictured door/window arrangement, small gable light and ridge chimney in Edgar S. Cameron’s first-post-office drawing. Footprint, position, bearing and phase dates are unchanged. Dimensions remain reconstructed; the card credits Cameron and the Chicago Historical Society.
+
+**T-2377 stays open: the comparison still differs.** Perspective, door/gable treatment, stack detail, materials and context need further work. This is a visible progress increment, with no accepted image match or original-ticket closure. [Source, camera and actual comparisons](https://github.com/kevinrhaas/chicago/tree/08f0330eb72129a76690d4379f9cad93c01fba96/chicago/4d/docs/RESEARCH/hogan-picture-match-T-2377) retain original-publication limits.
+
+Latest pushed head: `08f0330eb72129a76690d4379f9cad93c01fba96`, tree `67463f99aded127538fe748117afa5c46c46ad83`, integrating actual dev `ef48077f0bb5784f91730aed78a7ddcd1875e76c`. Incoming Wheeler geometry, masters/web assets, recipes and all other incoming assets are preserved. Hogan’s source, record, master and web asset are exact to the prior increment. Raw liberty history preserves incoming bytes plus the original Hogan suffix. Native regeneration settled; no test, workflow, timeout, rights safeguard or page-error assertion was weakened.
+
+**Wrap freshness stop:** dev advanced after the successful local gate to `793804312ca93f7a6d30449f09baa8f7b97b5ace` through substantial Glessner PR1236/T3046 geometry, generator, asset and data changes. This pushed08f checkpoint stays intact. Its fresh jobs are exact08f evidence only; a later target integrating793 needs native re-derivation and its own applicable validation. No late rebase or merge was attempted during the owner-requested wrap.
+
+Validation:
+
+- Exact final candidate strict local preflight **PASS, 1053 steps**, required readers/base enabled; changelog and ID checks pass. Frozen candidate tree equals the committed tree. Postcommit changelog/ID checks pass.
+- Independent read-only integrity review passed for the staged candidate. It is not a browser or image-match verdict.
+- Fresh current-head required CI and all fifteen published smoke parts at mobile390×780 and desktop1280×800: **see the actual pending/result snapshot below**. A dispatch is not a pass. All current jobs and applicable CI must be reviewed before merge.
+- Historical tested5eae/target39 completed ten-smoke/1053 proof remains [archived with its exact-head limits](https://github.com/kevinrhaas/chicago-evidence/blob/3575ef6/evidence/image-match-2026-10-22/final-parallel-recovery-20261023T1430/RECOVERY.md). Real Wheeler geometry changed the inputs, so those historical results do not qualify this latest target.
+
+| Viewport | Parts | Exact08f workflow |
+|---|---|---|
+| desktop | 13 | [39974270072](https://github.com/kevinrhaas/chicago/actions/runs/39974270072) — dispatched; results pending |
+| mobile | 13 | [39974293252](https://github.com/kevinrhaas/chicago/actions/runs/39974293252) — dispatched; results pending |
+| mobile | 1-4 | [39974316078](https://github.com/kevinrhaas/chicago/actions/runs/39974316078) — dispatched; results pending |
+| desktop | 1-4 | [39974338425](https://github.com/kevinrhaas/chicago/actions/runs/39974338425) — dispatched; results pending |
+| mobile | 5-8 | [39974362552](https://github.com/kevinrhaas/chicago/actions/runs/39974362552) — dispatched; results pending |
+| desktop | 5-8 | [39974383688](https://github.com/kevinrhaas/chicago/actions/runs/39974383688) — dispatched; results pending |
+| mobile | 9-12 | [39974407310](https://github.com/kevinrhaas/chicago/actions/runs/39974407310) — dispatched; results pending |
+| desktop | 9-12 | [39974429625](https://github.com/kevinrhaas/chicago/actions/runs/39974429625) — dispatched; results pending |
+| mobile | 14-15 | [39974456897](https://github.com/kevinrhaas/chicago/actions/runs/39974456897) — dispatched; results pending |
+| desktop | 14-15 | [39974482997](https://github.com/kevinrhaas/chicago/actions/runs/39974482997) — dispatched; results pending |
+
+The owner requested session wrap and durable GitHub checkpoints. This PR is labelled `resume`; the final handoff records the live lap and its finite expiry, required CI, exact smoke dispatch IDs/statuses and next steps. No merge is claimed while validation remains pending. Dependent draft PR1239 resumes after this increment lands. Merge target is `dev`; original picture work remains open.
