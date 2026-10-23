@@ -1,0 +1,21 @@
+--- V2/tools/transport/brougham/check_near.py
++++ V3/tools/transport/brougham/check_near.py
+@@ -2,7 +2,7 @@
+ """V18 exact NEAR delivery gate with independent additive MID gate. Existing decoded algorithms; no terrain/image/wholeLOD acceptance."""
+ from pathlib import Path
+ import argparse,hashlib,json,math,struct
+-EXPECTED_CONTRACT='39368780e5c3379e60097078dce71edebc3460e2cd7e6e8755bbfa24fe03fcc6'
++EXPECTED_CONTRACT='0601f79860e09d615a197431ce680333ffba6a422ad7793e003665ab4af993bf'
+ 
+ def read(path):
+     b=path.read_bytes();assert struct.unpack_from('<III',b)==(0x46546c67,2,len(b)), 'Invalid GLB envelope'
+@@ -114,6 +114,9 @@
+     assert extra['source_id']=='studebaker_1893_illustrated_souvenir' and extra['source_reference']['scan_leaf']=='0095' and extra['source_reference']['sha256']==c['reference_sha256']
+     assert all(extra[k] is False for k in ['door_interaction_enabled','boarding_enabled','traffic_enabled','occupants'])
+     side=json.loads((directory/'brougham.json').read_text());assert side['source_master_sha256']==c['raw_sha256'] and side['parameters_sha256']==c['source_files']['parameters.json']
++    assert sha(here/'mid-contract.json')==c['mid_contract_sha256'], 'Exact current mid-contract binding'
++    from check_mid import check_mid_provenance
++    check_mid_provenance(side,c,json.loads((here/'mid-contract.json').read_text()))
+     assert side['grade']=='reconstructed' and side['license']=='GPL-3.0-or-later' and side['scene_eligibility']==c['scene_eligibility'] and extra['scene_year']==1904
+     assert len(side['lods'])==2 and [r['detail'] for r in side['lods']]==['near','mid'] and side['lods'][0]['indexed_sha256']==c['near_sha256'] and side['lod_runtime_selection_enabled'] is True
+     world=world_nodes(j);assert len(side['anchors'])==13

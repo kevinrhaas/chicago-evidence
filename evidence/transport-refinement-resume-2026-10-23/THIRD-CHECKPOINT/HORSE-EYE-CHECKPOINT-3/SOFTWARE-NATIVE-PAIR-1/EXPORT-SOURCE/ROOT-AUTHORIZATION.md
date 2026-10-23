@@ -1,0 +1,1 @@
+Root explicitly authorized actual CPU-only real GLTFLoader/SkeletonUtils production clone+dimension-only image shim export and software texture diagnostic. No browser/Docker, no app/ticket/ref writes, no source image edits or performance/photographic acceptance. Each command bounded120s with maththreads1.

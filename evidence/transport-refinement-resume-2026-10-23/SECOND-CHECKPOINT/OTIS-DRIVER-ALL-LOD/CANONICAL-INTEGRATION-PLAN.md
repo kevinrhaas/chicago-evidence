@@ -1,0 +1,22 @@
+# Supported canonical follow-through for Bardwell/W01 seated fit
+
+Root owns app/tickets/refs; these are outside-app proposals, never installed here. Current contact/cost proof is an engineering derivative, **not canonical Blender regeneration**. No person is added, relocated or assigned an attested driving event. Existing rc_bardwell_otis is reconstructed1835; Kinzie/Glessner do not substitute for him.
+
+1. Review CANONICAL-CONTACT-FLOOR.patch and exact preimage/proposed hashes in CANONICAL-CONTACT-FLOOR-BINDINGS.json. Four source files: existing Bardwell pose, seated bindings, existing human_teamster_blend.py, new pure human_seated_contact_lod.py. Existing original source-loader and policy negative controls pass. Only explicit Bardwell/W01 seated authoring opts in; default/no-profile and Dufresne/Flynn ratios remain unchanged.
+2. On the existing **pinned canonical Blender worker**, build via the existing owner. Do not install Blender on this constrained runner:
+
+```sh
+blender -b --factory-startup --python-exit-code 1 --python tools/human_teamster_blend.py -- --recipe data/humans/recipes/worker_1835.json --variant bardwell_otis_1835 --sit-drive-study data/humans/poses/w01/resident-driver-bindings.json --sit-drive-vehicle renderers/web/transport/wagon-driver/wagon-w01.json --liberty L418 --output /tmp/bardwell-w01-contact-floor.blend
+bash tools/human_export.sh --master /tmp/bardwell-w01-contact-floor.blend --output-dir /tmp/bardwell-w01-contact-floor-exports
+```
+
+These commands have **not** run here. Use actual selected-worker pinned binary/path; they name the supported existing authoring/export sequence, not permission to dispatch a workflow or replace tools. Existing .blend authority, source-rest orientation conversion, rigid-frame proof, four LODs, texture caps and Meshopt web path remain the owners. Source ratio floor0.6 reuses already-qualified LOD1 trouser envelope at LOD2/3 instead of changing feet or weakening contact.
+
+3. Bind the new emitted source/web hashes; independently reload actual exported sit_drive clips and measure all clothing triangles over decoded bench/board, full fixed sole sets and complete shoe vertices at0/.25/.5/.75/1. Source regenerated geometry must prove contact again; an engineering prototype pass cannot be transferred to a new hash. Keep CHECKPOINT-1 pose-only far failures red. Verify default idle/walk rig/scale, existing source and compressed web/near-mid-far contract, material/texture identity and Khronos with actual output.
+4. Actual neutral-light front/profile/quarter desktop+mobile inspection through existing HumanActor seated preview; then actual intended scene placement and unchanged measured world/GPU budgets. Existing tools/human_seated_driver.html is the reusable observer, not a new actor engine. The measured parkedW01 and preview-supportedW01 have **exactly the same decoded physical bench and footboard triangles** (ACTUAL-W01-SUPPORT-SURFACE-EQUIVALENCE.json), despite distinct whole-vehicle model hashes.
+5. Measure and price the retained envelope: engineering LOD2 adds869tri (12,509→13,378); LOD3 adds1,303tri (6,098→7,401);9draws/materials and original texture pixels retained. App/world budget increase is not authorized or presumed. Prototype farweb sizes697,816B/387,272B include orphaned original far geometry and raw appended retained cloth; actual supported rebuilt+Meshopt exports may be smaller and must be measured.
+6. Do not enable a town driver merely because static clothed-seat fit passes. Real palm/finger/rein sockets, vehicle attachment, transitions, natural seated motion, matched horse/gear, clip-to-route synchronization, turn/slope envelopes and occupied world behavior remain unfinished. No harness, route, horse mounting or boarding capability was added here.
+
+## Root visual intake without app mutation
+
+The bounded engineering models are available at engineered-contact-floor/humans/{web/}bardwell_otis_1835.lod0..3.glb. NearLOD0/1 are the same CHECKPOINT-1 derivatives; farLOD2/3 are CHECKPOINT-2 retained-trouser variants. Existing preview createsHumanAssets under assets/ and fetches assets/humans/web/bardwell_otis_1835.lod0.glb; an owner-bounded request route can supply this exact outside-app derivative for an explicitly labeled engineering preview. Retain source/response hash pins, original viewports/camera fit and cleanup. Do not call that a new canonical Blender bake or final world/photo acceptance. No browser was launched by this lane.

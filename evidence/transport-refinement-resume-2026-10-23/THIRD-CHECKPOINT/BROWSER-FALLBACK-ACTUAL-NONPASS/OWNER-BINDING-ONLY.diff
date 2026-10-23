@@ -1,0 +1,21 @@
+--- default-failed/run_once.py
++++ resource-fallback/run_once.py
+@@ -10,11 +10,18 @@
+ p=argparse.ArgumentParser(description=__doc__);p.add_argument('--release',type=Path,required=True);args=p.parse_args()
+ release=json.loads(args.release.read_text());inputs=json.loads((HERE/'INPUTS.json').read_text());prepared=json.loads((HERE/'PREPARED-CALLER.json').read_text())
+ need(release.get('authorization_owner')=='root' and release.get('release_preview') is True and release.get('current_root_exclusive_browser_slot') is True,'Current root exclusive source8 browser release required')
++need(release.get('current_root_resource_variant_release')is True and release.get('execution_authorized')is True,'ROOT-reviewed resource-variant release required; template is not execution authorization')
+ need(release.get('inputs_manifest_sha256')==sha(HERE/'INPUTS.json') and release.get('prepared_manifest_sha256')==sha(HERE/'PREPARED-CALLER.json'),'Root release must bind both exact manifests')
+ for row in inputs['files']+prepared['caller_files']:
+  file=(HERE/row['path']).resolve();need(file.is_relative_to(HERE) and file.is_file() and file.stat().st_size==row['bytes'] and sha(file)==row['sha256'],'Prepared byte mismatch: '+row['path'])
+ for row in inputs['runtime_binaries']:
+  file=Path(row['absolute_path']);need(file.stat().st_size==row['bytes'] and sha(file)==row['sha256'],'Pinned runtime binary drift')
++for row in inputs['resource_fallback_inputs']:
++ file=Path(row['absolute_path']);need(file.is_absolute() and file.is_file() and file.stat().st_size==row['bytes'] and sha(file)==row['sha256'],'Pinned original failure/private INI/runtime drift: '+str(file))
++fallback=release.get('launcher_resource_fallback',{})
++need(fallback.get('kind')=='renderer1-raster1-swift1' and fallback.get('default_launch_failure_receipt')==inputs['default_launch_failure_receipt'] and fallback.get('swiftshader_ini')==inputs['private_swiftshader_ini'],'Exact current resource-variant binding required')
++failed=json.loads(Path(fallback['default_launch_failure_receipt']).read_text())
++need(failed.get('pass')is False and failed.get('rows')==[] and 'pthread_create'in str(failed.get('error')),'Original before-page thread-exhaustion failure required')
+ need(not(HERE/'RUN-INTENT.json').exists() and not(HERE/'actual').exists(),'One intent/output exists; do not blindly replay')
+ with(HERE/'RUN-INTENT.json').open('x') as f:json.dump({'started_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'release':release,'absolute_owner_budget_seconds':175,'browser_budget_seconds':165},f,indent=2)
+ files={row['path'][len('fixture/'):]:row for row in inputs['files'] if row['path'].startswith('fixture/')}

@@ -1,0 +1,5 @@
+Current root-released V17/V18 matched source8 comparison. Original source8 camera, light, crop, projection, DOM, disposal predicates and165s/175s limits unchanged. Only allowed model/version path/hash/bytes/triangle repins plus current root-exclusive-browser execution binding. All prior held/failed source packets preserved. Native generation passed separately; no app/yard/photo PASS inferred.
+
+Root authorization:
+
+> V18 actual native generation result received. You now have exclusive browser slot for ONE actual original-source8 V17/V18 matched capture using actual new pins/count only, original cameras/lighting/crop/165s execution175s whole unchanged, owned cleanup. No targeted app/yard/photo acceptance inferred. Before execution compile/review your copied owner and assert expected exact pins, no old failed conditions relabelled; preserve all actual result/failure receipts. You may issue scoped current ROOT release based on this message. Send actual PNG paths as soon as finished, then browser slot must be closed/released. Root will personally inspect images and decide integration.

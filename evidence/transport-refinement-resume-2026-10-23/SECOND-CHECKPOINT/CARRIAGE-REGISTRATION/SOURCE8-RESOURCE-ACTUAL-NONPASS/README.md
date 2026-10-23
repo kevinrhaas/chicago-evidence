@@ -1,0 +1,11 @@
+# Source-only source8 V17/V18 scheduling fallback; NOT EXECUTED
+
+The original source8 attempt failed before a page/request/capture due Chromium pthread_create EAGAIN. That actual failure and its clean owned cleanup remain preserved. This new unit adds official renderer-process-limit1/num-raster-threads1 scheduling plus the existing horse-style ANGLE SwiftShader backend, with a private pinned /tmp SwiftShader.ini requesting [Processor] ThreadCount=1. The runtime INI has NOT been created. ROOT must review the exact diff/pins before creating the private file and issuing a separate true release. The false template is not authorization.
+
+Original camera, light, crop, viewport/DPR, source/model pins, depth projection, full bounds/pole visibility, all render and disposal assertions, 165s browser and175s whole-owner deadlines remain byte-exact. No single-process, in-process GPU, site-isolation changes, CPU affinity, system or process tuning. Worker/backend scheduling differs; no FPS/performance equivalence is claimed. Requested INI configuration is not proof the GPU process consumed it; actual descendant cwd/thread observations are receipt-only and cannot relax product assertions.
+
+CAPTURE-LAUNCH-ONLY.diff and OWNER-BINDING-ONLY.diff are exact inverse-proven patches against the preserved failed source. All fixture and Playwright runtime files are copied byte-exact. source-extension.js and every rendering/camera asset are unchanged. No browser launch, server, app/ticket/ref mutation or process intervention ran during preparation.
+
+Root-only next steps after source review: create the private /tmp directory0700 and exact SwiftShader.ini0600 from SwiftShader.ini.PROPOSAL; pin-check it; copy ROOT-RELEASE-TEMPLATE.json to ROOT-RELEASE.json and set only reviewed release/execution/exclusive-slot fields true; execute one owner through the approved own-subreeper wrapper. No automatic retries. Preserve any failure and release the exclusive browser slot after cleanup. Existing owner and outer subreaper lifecycle are retained.
+
+Official source snapshots and their upstream URLs are recorded in SOURCE-ONLY-PROOF.json/source-proof. Chromium core args are supported flags, not invented worker switches.

@@ -1,0 +1,1 @@
+First actual renderer attempt failed before any PNG because source color factor[1,1,1]/metalness0 produced int arrays for in-place float texture multiplication. V2 explicitly allocates only these arrays as float; new source/output paths preserve the failed source, receipt and original budget/guards. No image/model/light/camera/UV/pixel changes.

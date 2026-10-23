@@ -1,0 +1,15 @@
+CPU_TEXTURED_DIAGNOSTIC_FAIL 0.28780355799244717
+Traceback (most recent call last):
+  File "/workspace/shared/T2800-EYE-REFINEMENT-RESUME-20261023-2245/SOFTWARE-NATIVE-PAIR-1/render_textured_pair.py", line 80, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/workspace/shared/T2800-EYE-REFINEMENT-RESUME-20261023-2245/SOFTWARE-NATIVE-PAIR-1/render_textured_pair.py", line 75, in main
+    im,mask,s=render(models[version],cam,bg);name=version+'-'+row['name']+'-software-textured.png';Image.fromarray(im).save(out/name);images[version]=im;masks[version]=mask;stats[version]=s;report['renders'].append({'version':version,'view':row['name'],'file':name,'sha256':SHA((out/name).read_bytes()),'native_projection_matrix':row['projection'],'native_view_matrix':row['view'],'max_independent_projection_error_px':cam['max_independent_projection_error_px'],**{k:v for k,v in s.items()if k!='eye_visible_mask'}});print(version,row['name'],s['visible_eye_pixels'],'visible eye pixels',flush=True)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/T2800-EYE-REFINEMENT-RESUME-20261023-2245/SOFTWARE-NATIVE-PAIR-1/render_textured_pair.py", line 65, in render
+    world=lam@verts[i];texUV=lam@uv[i];values=shade(normal,world,mat,cam['position'],texUV);color[y0:y1+1,x0:x1+1][keep]=values;oldz[keep]=pixelz[keep];winner[y0:y1+1,x0:x1+1][keep]=mi[i];fragments+=int(keep.sum())
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/T2800-EYE-REFINEMENT-RESUME-20261023-2245/SOFTWARE-NATIVE-PAIR-1/render_textured_pair.py", line 29, in shade
+    if maps['map']is not None:SAMPLES['map']+=len(n);base*=sample(maps['map'],UV,True)
+                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._UFuncOutputCastingError: Cannot cast ufunc 'multiply' output from dtype('float64') to dtype('int64') with casting rule 'same_kind'

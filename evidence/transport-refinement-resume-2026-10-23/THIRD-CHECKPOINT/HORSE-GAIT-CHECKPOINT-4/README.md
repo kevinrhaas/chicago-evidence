@@ -1,0 +1,5 @@
+# First measured basis spectrum, conservative encoder budget
+
+Read saved V25 poses, no new gait/corrective solve or portable asset. PCA rank63+mean1 required by conservative uniform point and shader-normal precision budgets. Float32 reconstruction passes original65 key physical screen at64targets; geometry error13.2nm and normal error1.82e−7. It is uncompressed, so no64target asset is approved/exported. Signed weights need actual GLTFLoader/Mixer proof. Raw initial syntax and NumPy2 batched-vector harness failures are preserved; both occurred before any spectrum evaluation, with source repairs recorded. Successful analysis took1.37s.
+
+Important: encoder budgets (46.52um world position with75%reserve;1e−4 shader-normal error) are conservative choices, NOT added product acceptance rules. A high rank here does not prove lower ranks fail the existing physical tests or look bad. The next analysis will use spatial differential edge/triangle error margins rather than a uniform point-error overbound. Actual portable keys/midpoints, GPU, negative weights and visual naturalness remain unqualified.

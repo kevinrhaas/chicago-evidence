@@ -1,0 +1,1 @@
+Additional actual observer readback after frozen CHECKPOINT-2: all8 retained-envelope engineering exports also have positive hidden-body bench gaps4.356–8.147mm, and no hidden-body/shirt/waistcoat top crossings within the bench footprint. This corroborates the bounded static cloth/shoe proof, not whole-assembly visual or driver qualification. CHECKPOINT-2 remains unchanged.

@@ -1,0 +1,4 @@
+import fs from'node:fs';import path from'node:path';import{fileURLToPath,pathToFileURL}from'node:url';import{createHash}from'node:crypto';
+const HERE=path.dirname(fileURLToPath(import.meta.url));const b=JSON.parse(fs.readFileSync(path.join(HERE,'INPUT-PINS.json'),'utf8'));const vendor=pathToFileURL(b.vendor+'/').href;
+export async function resolve(s,c,next){if(s==='three')return{url:vendor+'three.module.js',shortCircuit:true};if(s.startsWith('three/addons/'))return{url:vendor+'addons/'+s.slice(13),shortCircuit:true};return next(s,c);}
+export async function load(url,c,next){if(url.startsWith('file:')){const p=fileURLToPath(url),pin=b.inputs[p];if(!pin)throw Error('Unpinned module '+p);const raw=fs.readFileSync(p);if(createHash('sha256').update(raw).digest('hex')!==pin.sha256)throw Error('Module drift '+p);}return next(url,c);}
