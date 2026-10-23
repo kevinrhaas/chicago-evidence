@@ -1,0 +1,7 @@
+# Covered proposal durability checkpoint — 2026-10-21 22:18 UTC
+
+T2980 minimal proposal and independent source/data/static-GLB compatibility review are preserved here. This is a bounded partial PASS, not installed or merged app work. The actual renderer/provider fixture is now assigned to env_validation outside the tracked app. Two near native GLBs preserve the old individual identities, seeded finish families/scalars, exact coordinates/bearings and retained yokes. Compressed near/mid/far outputs, actual main/published images/cards/shadows/clearance/mobile budgets and normal integration gates remain open.
+
+Parked PR1174 remains draft at2aebef95, 17/18 selected smoke cells plus all3 normal workflows green at the latest observer reading. Desktop13 is running; no rerun, cancellation or extra dispatch was made. Sole current GET observer PID524900/session57494, recovered3; original deadline23:47UTC. The previous owner515879 was killed by exec transport loss and verified absent before continuation. Retry audit is bounded GET-only and does not reinterpret job failures. This saved CI snapshot is NONTERMINAL.
+
+App checkout is clean parked2aebef95. Final human V4 remains in exact stash a1c4b3fa4405dc45935b7aa392753edbc1a727bc and the previous final-candidates checkpoint portable patch. Do not apply both stash and patch. Wait parked merge, reconcile onto newDEV, regenerate derived products, run full preflight before human source commit/push and one canonical both-true export dispatch. No human world placement or photographic acceptance is claimed.

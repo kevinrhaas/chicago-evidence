@@ -1,0 +1,11 @@
+# Human source pushed and canonical dispatched — 2026-10-21 22:34 UTC
+
+Human source commit2f75ef23dbb316ebe4cf53e65ce3af8b04f140d3 is PUSHED on steward/1835-workwear-repair-20261021 in DEVdraftPR1175. Full local preflight1038/0PASS (380 intentional refusal selftests), exactcommit changelog/ID checksPASS; ownhumancommit authoring-only trailerPASS. Nine human files549insertions/113deletions. Source patch is backed up here and real GitHub branch. No figure or photographic qualification claimed. The exact stash remains a historical recovery backup; DO NOT reapply over committed source.
+
+ONE canonical human dispatch39687040336 was accepted at22:30:53UTC on exact2f75, with BOTHbuild_teamsters/build_seated_driver_study true. horse_reference owns GET-only observation and qualification. Receipt included. POST allowance consumed; no blindredispatch/rerun/cancel. DO NOT move or push this humanbranch until canonicalrunTERMINAL. Source/workflow/V4 hashes were reverified remotely. ParentT1789 staysopen and is not setreview/done by this partialPR.
+
+PR1175 is stacked on parked2aeb; once parked lands and canonicalterminates, reconcileDEVancestry withoutchangingreviewedhumaninputs, regenerate/re-gate. Current app checkout is now steward/covered-period-wagons-20261021 basedon2aeb, with24 reviewedcoveredproposal filesinstalledUNCOMMITTED. Source regeneration7products/two variants and6placements/8identityrefusalsPASS. Firstlibertycompiler refused3requiredfieldformat problems; preservedfailedloghere. RootaddedDecision/Recorded fields to the NEWuncommittedliberty and correctedcompile675/sourceuse398PASS; supportedpublish isRUNNINGsession51524, thenmirrorcheck and actualmain inspectionrequired. Allcoveredmodels/rootsource remain frozenreviewbytesexceptnewlibertyformat/derivedreports.
+
+ParkedPR1174 remainsdraft17/18selectedsmokes+all3normalgreen; onlydesktop13running. wagon_visual nowexplicitlyowns finalfreshrequiredcheck/ordinarysquashDEVmergewhenstrict18+3PASS. Noadmin/bypass, noadditionalPOST, noappcheckoutwrites. SoleobserverPID524900/recovered3. Rootcontinuescoveredworkinparallel.
+
+Two actual1835 Mountpaintings and readabletailoringbrief are in2e7194dfcapsulehere: fullertrousers/sleeves, cuffs, actualwaistcoatclosure/buttons, separatecollar/neckcloth. AnalogyforreconstructedAmericanworkwear, notChicagoidentity/originaloutfitattestation.

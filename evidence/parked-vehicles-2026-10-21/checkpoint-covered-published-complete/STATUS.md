@@ -1,0 +1,5 @@
+# Covered published inspection complete; source inspection ACTIVE
+
+Two published pages passed with10normalPNGs: desktopFull4matched old/new images and mobileBalanced6including canopy close crops. All4actual runtime+clearance sets passed, actualglobalpick/popup identity+limitations, hidden reconstructedpick, Light/far restore and disposal. All images under unchanged driver/triangle budgets and GL0; no blocking browser errors returned. This is not whole22-image/main/source completion. Source-desktop nowactive under sameownerPID575091/session61393; do not change app/index/mirror until CLOSED.
+
+Independent seven-image partial visual review is saved alongside: smoother covers and blue/oxide versus oak/darkoak difference visibly preserved. Close surfaces remain below photographic quality; regular cloth/faceted shading, wood/iron finish and mechanical detail need work. No wholefleet/occupied/riding or compressedLOD acceptance. Originaluncommittedpatcha7bdcd57 remainsalreadyapplied, notsecondpatch. No coveredappcommit/fullpreflight/PRyet. ParentparkedPR1174 terminaldesktop13budgetFAIL remainsblocking; budgets/testsunchanged.

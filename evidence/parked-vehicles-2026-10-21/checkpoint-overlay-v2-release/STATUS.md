@@ -1,0 +1,5 @@
+# Corrected overlay V2 released once; actual diagnosis RUNNING
+
+Root found an unsigned Layers31 classification bug during pre-release source review: V1 compared unsigned camera.mask to signed1<<31, so ghost would be mislabeled. V1 NEVER RAN and remains unchanged/historical. V2 actual pinnedThreeLayers positive/negative controls pass; only classifier and version token changed. Manifest2b65a3b2, support426828fa; original full verification source/index/804runtimepins/6prebuiltbuffersPASS. Compact capsule omits immutable mirror/runtime bytes and is not standalone runnable.
+
+CoveredmainV2 actually PASSED/CLOSED23:47, receipt98c783ba,22normalPNGs/8runtime+clearance sets/4disposals. Root independently verified PID575091 absent and no activebrowser. Root released exactly ONE passive new2aeb/parentfdb comparison23:48:49, execsession30325, supervisorPID584760/caller584762, output /workspace/shared/parked-2979-paired-overlay-ACTUAL-v2. Source/app/index/mirror still protected/unchanged until CLOSED. Single600s bound, max240sboot/arm, sixraw samples, no activecoalescer/sourcefix/CI changes. RemotePR1174 still failed; no rerun or merge.

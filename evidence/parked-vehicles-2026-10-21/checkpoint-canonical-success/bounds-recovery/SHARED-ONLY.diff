@@ -1,0 +1,23 @@
+--- v1/browser-control.cjs
++++ recovered/browser-control.cjs
+@@ -133,7 +133,7 @@
+         for(let k=0;k<array.length;k+=3){const v=new T.Vector3(array[k],array[k+1],array[k+2]).applyMatrix4(matrix),ground=a.terrain.surfaceHeight(v.x,-v.z);need(Number.isFinite(ground),'Nonfinite actual terrain under source vertex');summary.vertices++;summary.minGroundClearance_m=Math.min(summary.minGroundClearance_m,v.y-ground);sourceBox.expandByPoint(v);result.projectedPoints.push([v.x,-v.z]);}
+       }
+     }
+-    const actualBox=new T.Box3().setFromObject(i.group);need(sourceBox.min.distanceTo(actualBox.min)<.0001&&sourceBox.max.distanceTo(actualBox.max)<.0001,'Source partitions do not match actual parked merged world bounds');
++    const actualBox=new T.Box3().setFromObject(i.group,true);need(sourceBox.min.distanceTo(actualBox.min)<.0001&&sourceBox.max.distanceTo(actualBox.max)<.0001,'Source partitions do not match actual parked merged world bounds');
+     need(result.parts.body?.minGroundClearance_m>=-.00001&&result.parts.yoke?.minGroundClearance_m>=-.00001,'Actual body/yoke vertex penetrates sampled terrain');
+     const enclosure=await(await fetch(new URL('enclosures/'+cfg.enclosure+'.json',a.dataBase))).json(),ring=enclosure.ground.interior_local_enu_m;
+     const cross=(a,b,c)=>(b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0]);
+--- v1/capture.cjs
++++ recovered/capture.cjs
+@@ -57,7 +57,8 @@
+    pr.view=await page.evaluate(id=>window.__coveredInspection.view(id,'front-quarter'),target.originalId);persist();
+    const old=await shot(target,'front-quarter','legacy'),fresh=await shot(target,'front-quarter','refined');
+    for(const key of['camera','projection','lighting'])if(JSON.stringify(old.state[key])!==JSON.stringify(fresh.state[key]))throw Error('Matched reference changed '+key);
+-   pr.phase=target.label+'-controls';const controls=await page.evaluate(async id=>({id,runtime:await window.__coveredInspection.controls(id),clearance:await window.__coveredInspection.clearance(id)}),target.originalId);pr.controls.push(controls);persist();
++   pr.phase=target.label+'-controls';const controls={id:target.originalId,runtime:await page.evaluate(id=>window.__coveredInspection.controls(id),target.originalId)};pr.controls.push(controls);persist();
++   pr.phase=target.label+'-clearance';controls.clearance=await page.evaluate(id=>window.__coveredInspection.clearance(id),target.originalId);persist();
+    for(const angle of job.extraAngles||[]){pr.view=await page.evaluate(({id,angle})=>window.__coveredInspection.view(id,angle),{id:target.originalId,angle});persist();await shot(target,angle,'refined');}
+   }
+   pr.phase='end-of-page-disposal';pr.disposal=await page.evaluate(()=>window.__coveredInspection.disposeCheck());persist();

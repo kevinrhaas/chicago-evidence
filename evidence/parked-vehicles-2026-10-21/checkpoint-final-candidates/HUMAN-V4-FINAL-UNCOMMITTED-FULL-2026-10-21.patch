@@ -1,0 +1,815 @@
+diff --git a/chicago/4d/data/humans/recipes/worker_1835.json b/chicago/4d/data/humans/recipes/worker_1835.json
+index 150cce362..d0370d18f 100644
+--- a/chicago/4d/data/humans/recipes/worker_1835.json
++++ b/chicago/4d/data/humans/recipes/worker_1835.json
+@@ -67,8 +67,8 @@
+       1.0
+     ]
+   },
+-  "material_limitations": "Hash-verified CC0 reusable generic skin atlas is packed as sRGB with WHITE base-color factor; it does not attest a resident complexion or photographic likeness. Skin roughness is reconstructed. Shirt uses original deterministic 256x256 procedural weave; other surfaces remain flat original PBR colors. Final skin UV/LOD/export fidelity and photographic quality remain unaccepted.",
+-  "validation_status": "Earlier recipe revisions passed canonical mechanical CI; this hair and body-normal revision requires a new pinned Blender build and source/web inspection. Anatomical and garment fit, individual appearance and photographic quality remain unaccepted.",
++  "material_limitations": "Generic cleared CC0 body skin atlas remains; original procedural opaque brown iris atlas now supplies reconstructed sclera/iris/pupil components. Cloth and shoes still use original coarse PBR colors/procedural linen micro-pattern without measured period fabric, captured leather, seams or photographic material qualification. Skin/eyes/hair/clothing are provisional reconstructions, not a named photographic likeness.",
++  "validation_status": "Proposed source-owned seam/vest/footwear/eye repair; fresh canonical/export/sole/render validation required. Not scene eligible solely by source controls.",
+   "proof_variants": [
+     {
+       "id": "bardwell_otis_1835",
+@@ -161,10 +161,10 @@
+       256,
+       256
+     ],
+-    "construction": "original deterministic alternating warp/weft ridge pattern",
++    "construction": "original one-texel alternating thread study, one percent albedo contrast, no baked light",
+     "embedded": true,
+     "historical_status": "reconstructed; no sampled or attested period textile",
+-    "metric_uv_density": "unverified until Blender/export review"
++    "metric_uv_density": "Body source UVs retained; no measured historic textile density asserted."
+   },
+   "recipe_family": "worker_1835",
+   "identity_policy": "Each required variant references an existing reconstructed person in the 1835 people layer. Names, ages, occupations and presence remain reconstructed record attributes. Shared anonymous CC0 anatomy and original clothing are provisional depiction studies, not photographic likenesses or three independently validated anatomies.",
+@@ -196,5 +196,39 @@
+     "alpha_cutoff": 0.4,
+     "appearance_basis": "Shared cleared CC0 short04 source fitted to existing Otis/Joseph/Martin bodies; hair/part/color are reconstructed choices, no period hairstyle attestation or individual likeness.",
+     "source_manifest_sha256": "68a02130cd50dd0d727f31f8f53702fe91bd9ecb9aa98309a7814191abf89e99"
++  },
++  "workwear_coverage": {
++    "garment_seams": "Full-body source-shared offset normals; welded geometry and source per-corner UVs",
++    "vest_front": "Source-triangle clipped V, replacing centroid-stepped whole-face exclusion",
++    "trouser_ease": "Retain7mm source-shared normal ease; no globalX translation that cancels inner-leg clearance",
++    "shirt_neckline": "Triangles clipped to existing collar-baseY; UVs/weights interpolated, boundary shares geometry; no headweight whole-face staircut",
++    "new_collar_seam_weights": "Only newly clipped shirt seam transfers head/jaw influence to existing neck_01; original body and below-cut shirt weights unchanged; actual transferred mass is reported",
++    "shoe_clearance_m": 0.004,
++    "shoe_construction": "Fixed-normal support-plane loft containing complete adjacent source foot slabs; no body visibility mask",
++    "skin_influence_interpolation": "New vest cuts retain four largest interpolated weights; discard <=0.025, report actual mass; body skin unchanged",
++    "status": "Source construction only; actual exported fit/deformation/sole/photo acceptance pending"
++  },
++  "eye_components": {
++    "radius_m": 0.012,
++    "iris_radius_m": 0.0055,
++    "pupil_radius_m": 0.0022,
++    "corneal_bulge_m": 0,
++    "cornea_enabled": false,
++    "source_basis": "Actual helper centers/axes; original opaque sclera/iris/pupil, reconstructed dimensions and brown color, not resident facts",
++    "status": "No actual BPy/export/blink fit/photographic acceptance"
++  },
++  "workwear_tailoring": {
++    "status": "Original bounded reconstruction; source construction only, canonical fit/animation/period/photographic acceptance open",
++    "period_basis": "Existing chicago_american_1835 text attests garment terms only, not a collar pattern or measured outfit; original standing-collar detail remains a conjectural reconstruction, not a named personal wardrobe",
++    "collar_construction": "Standing linen collar with lower front profile, attached by one actual shared shirt boundary before LOD decimation; no separate ellipse, new draw/material, source body mutation or hidden skin",
++    "collar_front_height_m": 0.012,
++    "collar_return_thickness_m": 0.0012,
++    "collar_return_depth_m": 0.002,
++    "dimensions_basis": "Original engineering choices;23mm side/back height inherited,12mm front avoids following the source lower jaw;6mm radial source-section ease inherited from shirt offset, not complete cloth/body collision proof",
++    "waistcoat_boundaries": "Same intended hem/top/side bounds and original V; replace whole-face centroid ownership by continuous source-triangle cuts at hem/top/side/arm-influence boundaries; retains source corner UV interpolation and four-weight refusal",
++    "waistcoat_limit": "This repairs jagged boundaries; source shoulder silhouette, tailoring, lapels/buttons/seams, period pattern and material quality remain open",
++    "shirt_x_ease_arm_radius_fraction": 0.5,
++    "shirt_x_ease_basis": "Reconstructed continuous source-arm ease field: original7mm X shift times clamp((upperarm_axisY-sourcepointY)/(0.5*actual dominant upperarm radialextent),0,1). Full6mm source normal ease, original source body/rig/weights/UV and original13mm maximum displacement envelope retained. The measured shoulder face/ray collision motivates this bounded construction, not a period measurement or body mask.",
++    "shirt_coverage_limit": "Actual first idle shoulder rays and original source-face support regressions controlled; remaining preexisting negative face projections, complete triangle/animation/LOD/period/photographic fit remain open."
+   }
+ }
+diff --git a/chicago/4d/data/liberties.json b/chicago/4d/data/liberties.json
+index f763c8261..4de7b6ee8 100644
+--- a/chicago/4d/data/liberties.json
++++ b/chicago/4d/data/liberties.json
+@@ -3,7 +3,7 @@
+   "source": "docs/LIBERTIES.md",
+   "standard": "A visitor should be able to tell you which parts we made up.",
+   "note": "The confidence model covers attributes. These are the decisions that live above any single attribute: scope, omission, simplification, and the choices a visitor would otherwise have to reverse-engineer.",
+-  "count": 673,
++  "count": 674,
+   "names": [
+     {
+       "id": "agency_striker_log_house",
+@@ -48672,6 +48672,40 @@
+         "T-2978"
+       ]
+     },
++    {
++      "id": "L-workwear-coverage-1789",
++      "title": "Source-owned work clothes, closed shoes and reconstructed eyes",
++      "section": "per_subject",
++      "subjects": [],
++      "covers": [],
++      "recorded": "2026-10-21",
++      "revised": null,
++      "fields": [
++        {
++          "label": "Decision",
++          "text": "The original 1835 worker authoring uses full-body source-shared normal ease, source-triangle garment boundaries, a collar joined to the shirt before reduction, a closed shoe loft and original opaque sclera/iris/pupil surfaces. These are reconstructed construction choices, not recorded garments or individual likenesses. Existing “Resident workwear studies on a licensed human base”/source and resident identity limits remain."
++        },
++        {
++          "label": "What is invented",
++          "text": "Seven millimetres of trouser normal ease; the shirt collar-base plane; assigning only new neckline head/jaw influence to the existing neck bone; a collar 12 mm high in front and 23 mm at the side/back; a continuous shoulder ease field measured from the source upper-arm axis/radial extent within the previous 13 mm displacement envelope; four-millimetre horizontal shoe support margin; eye dimensions, brown procedural iris and restrained procedural textile. Source UVs/weights are interpolated at garment cuts. Body geometry, skin and rig are unchanged; no skin visibility mask is used."
++        },
++        {
++          "label": "Evidence and limits",
++          "text": "Independent source controls and actual runtime source-swap previews show a closed trouser seam, joined collar, straighter waistcoat hem, enclosed toes, improved eyes and repair of two observed shoulder skin holes. The former collar separation is removed at the shared source boundary. These are not canonical export, sole, photographic or town-placement acceptance. Forty inherited negative face projections remain in the defined idle sample; comprehensive garment fit, independent head/jaw movement, actual reduced-LOD fit and period tailoring remain open. Original raw-normal and two-millimetre exported sole guards remain required."
++        },
++        {
++          "label": "Sources",
++          "text": "The Chicago American. Vol. I, No. 1 (June 8, 1835) through Vol. I, No. 12… supplies text terminology only with the recipe's date caveat; it does not attest garment pattern, dimensions or eye color. The anonymous cleared source body/skin and existing reconstructed residents retain their current license/provenance records. New helper geometry and procedural iris are original CC0 work."
++        },
++        {
++          "label": "Recorded",
++          "text": "2026-10-21."
++        }
++      ],
++      "work_refs": [
++        "T-1789"
++      ]
++    },
+     {
+       "id": "L46",
+       "title": "The fort stands on a bank the model has no cut or fill for",
+diff --git a/chicago/4d/docs/LIBERTIES.md b/chicago/4d/docs/LIBERTIES.md
+index dbe2df741..4cf99da32 100644
+--- a/chicago/4d/docs/LIBERTIES.md
++++ b/chicago/4d/docs/LIBERTIES.md
+@@ -30835,3 +30835,13 @@ setback or in the court before 1946, when the court was paved for parking.
+ **Ticket:** T-2976.
+ **Review:** `docs/RESEARCH/glessner-passage-floor-T-2976/`.
+ **Recorded:** 2026-10-21 (T-2976).
++
++
++### L-workwear-coverage-1789 — Source-owned work clothes, closed shoes and reconstructed eyes
++
++**Decision:** The original 1835 worker authoring uses full-body source-shared normal ease, source-triangle garment boundaries, a collar joined to the shirt before reduction, a closed shoe loft and original opaque sclera/iris/pupil surfaces. These are reconstructed construction choices, not recorded garments or individual likenesses. Existing L418/source and resident identity limits remain.
++**What is invented:** Seven millimetres of trouser normal ease; the shirt collar-base plane; assigning only new neckline head/jaw influence to the existing neck bone; a collar 12 mm high in front and 23 mm at the side/back; a continuous shoulder ease field measured from the source upper-arm axis/radial extent within the previous 13 mm displacement envelope; four-millimetre horizontal shoe support margin; eye dimensions, brown procedural iris and restrained procedural textile. Source UVs/weights are interpolated at garment cuts. Body geometry, skin and rig are unchanged; no skin visibility mask is used.
++**Evidence and limits:** Independent source controls and actual runtime source-swap previews show a closed trouser seam, joined collar, straighter waistcoat hem, enclosed toes, improved eyes and repair of two observed shoulder skin holes. The former collar separation is removed at the shared source boundary. These are not canonical export, sole, photographic or town-placement acceptance. Forty inherited negative face projections remain in the defined idle sample; comprehensive garment fit, independent head/jaw movement, actual reduced-LOD fit and period tailoring remain open. Original raw-normal and two-millimetre exported sole guards remain required.
++**Sources:** `chicago_american_1835` supplies text terminology only with the recipe's date caveat; it does not attest garment pattern, dimensions or eye color. The anonymous cleared source body/skin and existing reconstructed residents retain their current license/provenance records. New helper geometry and procedural iris are original CC0 work.
++**Ticket:** T-1789.
++**Recorded:** 2026-10-21.
+diff --git a/chicago/4d/docs/ROADMAP.md b/chicago/4d/docs/ROADMAP.md
+index fffeffcfe..619a14887 100644
+--- a/chicago/4d/docs/ROADMAP.md
++++ b/chicago/4d/docs/ROADMAP.md
+@@ -5611,3 +5611,8 @@ Added opt-in canonical source composition for inferred John Kinzie the elder on1
+ Source arrays, exact source-index shoe/body derivations, provenance, required shared rig/LODs/morphs/sockets/actions and the optional existing-export output directory passed independent source-only review. The opt-in workflow can self-test when its own file is pushed and otherwise takes explicit dispatch; it reuses pinned fixture verification and unchanged actual master/container/normal/animation/source/published sole checks. New canonical masters, portable exports, fit, age-appropriate skin, anatomical and clothing detail, source/published render review and photographic acceptance have NOT passed. No Blender was run on this improve runner. Existing1835 authoring/default export behavior remains.
+ 
+ Actual CI39314363829 passed fixture verification, era identity/source checks and exact body reproduction, then failed during canonical authoring/export. The exception is not yet known. The next revision emits the actual caught authoring traceback as a bounded CI annotation and a fresh failure receipt, then rethrows the original exception; the custom-normal threshold and all export gates remain unchanged. This diagnostic revision also includes the validated transport/dev merge25b92c950. A successful canonical build and actual source/published visual inspection are still required.
++
++
++## T-1789 — bounded 1835 workwear repair checkpoint (2026-10-21)
++
++Source-owned seams/normal ease, a joined source-fitted collar, clean waistcoat boundaries, closed support-plane shoes and original opaque eyes improve existing reconstructed resident authoring. A smooth source-arm-landmark ease field repairs two actually observed shoulder holes within the former displacement envelope. Independent source/finite-pose checks and sixteen actual source-swap images establish this bounded improvement. Canonical source/web export, exported sole/seated checks and actual new-model inspection remain next; then deliver one reviewed existing reconstructed resident through the portable-human scene path. Forty inherited idle negative face projections, comprehensive garment/LOD fit, fine period tailoring and photographic acceptance remain open. Glessner/Kinzie do not inherit this 1835 outfit. No new town figure, horse, occupied vehicle or riding claim is supplied by the source checkpoint.
+diff --git a/chicago/4d/docs/STATUS.md b/chicago/4d/docs/STATUS.md
+index c4495a46a..f6a0aa36c 100644
+--- a/chicago/4d/docs/STATUS.md
++++ b/chicago/4d/docs/STATUS.md
+@@ -24415,3 +24415,12 @@ Source arrays, exact source-index shoe/body derivations, provenance, required sh
+ Actual CI39314363829 passed fixture verification, era identity/source checks and exact body reproduction, then failed during canonical authoring/export. The exception is not yet known. The next revision emits the actual caught authoring traceback as a bounded CI annotation and a fresh failure receipt, then rethrows the original exception; the custom-normal threshold and all export gates remain unchanged. This diagnostic revision also includes the validated transport/dev merge25b92c950. A successful canonical build and actual source/published visual inspection are still required.
+ 
+ **2026-10-20 — the canonical build passes.** Era-studies run 39414040843 (both eras, L419) built both masters, exported all sixteen LOD containers (zero Khronos validator errors), passed the hair contract, and passed the source and published browser inspections, sole contact included (16 inspections each, `mechanical_passed: true`). Three changes got it there, none moving a tolerance: the era builder runs the teamsters' packed-normal adapter before the unchanged RAW1e-3 readback (Kinzie read 0.0019 through the plain setter); the hair check reads the era ids instead of the teamsters'; and footwear is never decimated, as the teamster builder never does it, while sole contact reads a shoe's side from its whole leg and still requires the soles themselves to be foot-bound. The figures are not placed in the town; photographic, likeness, period-wardrobe and fit acceptance remain open.
++
++
++## T-1789 — 1835 workwear and eye authoring repair (2026-10-21)
++
++The source-owned garment shell retains shared source UVs and normal ease; trousers no longer receive a global X shift that cancels inner-leg clearance. Shirt/waistcoat boundaries use clipped source triangles. The collar now shares the actual shirt boundary before existing LOD reduction, and the waistcoat hem is planar. A smooth source-arm-landmark ease field repairs two observed shoulder skin holes without changing shirt topology, UVs or weights. A support-plane shoe loft encloses the source foot sections; original opaque sclera/iris/pupil replace the dark eye proxy. Body geometry, skin, existing resident identity, rig, raw 0.001 normal guard and exported 0.002 m sole tolerance are unchanged. L-workwear-coverage-1789 records reconstructed choices.
++
++Independent source controls reproduced 131 previous trouser vertices below 1 mm clearance and verify at least 7 mm after the repair. Collar shared geometry/weights/UVs, clipped waistcoat boundaries and unchanged core guards pass finite independent review. The final bounded runtime source-swap preview on the previous actual Bardwell rig produced sixteen images with zero page/console/request/GL errors; root inspected the closed shoulder patches, joined neckline and straighter hem. This is source construction evidence, not a new canonical exported asset. Forty inherited idle negative face projections, comprehensive garment/LOD fit, independent head/jaw movement, period tailoring, photographic quality and actual canonical seated/sole inspection remain open. No new figure is placed in any town scene. One fresh canonical CI with both resident and seated-driver inputs is still required.
++
++The first full preflight on the earlier source checkpoint failed two of 1,037 checks: a derived source-use report was stale after the new liberty, and two old generated parked JSON files remained after switching branches. The report was regenerated and those exact generated leftovers were preserved/removed; targeted source-use and mirror checks pass. A fresh full preflight on this final source is required before commit; the earlier failed run is not a pass.
+diff --git a/chicago/4d/docs/measurements/source_use_coverage.md b/chicago/4d/docs/measurements/source_use_coverage.md
+index c48cb4d3a..43a8b1da6 100644
+--- a/chicago/4d/docs/measurements/source_use_coverage.md
++++ b/chicago/4d/docs/measurements/source_use_coverage.md
+@@ -10,7 +10,7 @@ Generated by `tools/compile_source_use.py`; no timestamps.
+ | flora | 11 | 11 | 0 |
+ | households | 2086 | 1457 | 0 |
+ | jaunt claims | 33 | 33 | 0 |
+-| liberties (structured citations) | 673 | 0 | 0 |
++| liberties (structured citations) | 674 | 0 | 0 |
+ | loading facts | 50 | 50 | 0 |
+ | people | 3878 | 1655 | 0 |
+ | railway | 1 | 1 | 0 |
+diff --git a/chicago/4d/tools/human_eye_components.py b/chicago/4d/tools/human_eye_components.py
+new file mode 100644
+index 000000000..456e16b5c
+--- /dev/null
++++ b/chicago/4d/tools/human_eye_components.py
+@@ -0,0 +1,88 @@
++# SPDX-License-Identifier: CC0-1.0
++"""Original portable eye geometry study: stdlib only, no MakeHuman code copied.
++
++Input positions are the actual prepared body eye helper coordinates in metre/Y-up/
+++Z-forward frame. Radius/color/cornea parameters are reconstructed authoring choices.
++Output fits the canonical builder object_mesh API; no Blender dependency here.
++"""
++import math
++
++LOD_SAMPLING = {0:(24,12,4),1:(16,8,3),2:(12,5,0),3:(8,3,0)}
++TRIANGLE_CEILINGS = {0:2000,1:1000,2:400,3:200}
++MATERIALS = {
++ 'eyes__sclera':{'base_color':[.82,.79,.72,1],'roughness':.38},
++ 'eyes__iris':{'base_color':[1,1,1,1],'roughness':.42,'original_iris_image':True},
++ 'eyes__pupil':{'base_color':[.002,.0015,.001,1],'roughness':.25},
++ 'eyes__cornea':{'base_color':[1,1,1,.05],'roughness':.045,'alpha_mode':'BLEND'},
++}
++
++def _add(a,b):return [x+y for x,y in zip(a,b)]
++def _mul(a,w):return [x*w for x in a]
++def _cross(a,b):return [a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]]
++def _norm(a):
++ length=math.sqrt(sum(x*x for x in a))
++ if length<1e-10:raise ValueError('eye helper head/tail axis is degenerate')
++ return _mul(a,1/length)
++
++def build_eye_components(bones,lod,config=None):
++ config=config or {};N,L,C=LOD_SAMPLING[lod];C=0;R=config.get('radius_m',.012);IR=config.get('iris_radius_m',.0055);PR=config.get('pupil_radius_m',.0022);bulge=config.get('corneal_bulge_m',.0021)
++ if not(0<PR<IR<R and 0<=bulge<R):raise ValueError('invalid reconstructed eye dimensions')
++ names=list(MATERIALS) if C else [n for n in MATERIALS if n!='eyes__cornea']
++ meshes={n:{'name':n,'material':n,'positions_m':[],'triangles':[],'uvs':[],'weights':[]} for n in names};eyes=[]
++ for side,cell in [('l',0),('r',1)]:
++  center=bones['eye_'+side]['head_m'];fwd=_norm([b-a for a,b in zip(center,bones['eye_'+side]['tail_m'])]);right=_norm(_cross([0,1,0],fwd));up=_norm(_cross(fwd,right));eyes.append({'side':side,'center_m':center,'forward':fwd,'radius_m':R,'iris_radius_m':IR,'pupil_radius_m':PR})
++  def vertex(material,x,y,z,uv):
++   m=meshes[material];i=len(m['positions_m']);m['positions_m'].append(_add(center,_add(_mul(right,x),_add(_mul(up,y),_mul(fwd,z)))));m['uvs'].append(uv);m['weights'].append({'eye_'+side:1.});return i
++  def ring(material,r,z,v,radial=False):
++   result=[]
++   for k in range(N+1):
++    angle=2*math.pi*k/N;x=r*math.cos(angle);y=r*math.sin(angle)
++    uv=[(cell+.5+.45*x/IR)/2,.5+.45*y/IR] if radial else [(cell+.05+.9*k/N)/2,.05+.9*v]
++    result.append(vertex(material,x,y,z,uv))
++   return result
++  def bridge(material,a,b):
++   for k in range(N):meshes[material]['triangles'].extend([[a[k],a[k+1],b[k+1]],[a[k],b[k+1],b[k]]])
++  angle0=math.asin(IR/R);previous=None
++  for j in range(L):
++   angle=angle0+(math.pi-angle0)*j/L
++   current=ring('eyes__sclera',R*math.sin(angle),R*math.cos(angle),j/L)
++   if previous is not None:bridge('eyes__sclera',previous,current)
++   previous=current
++  pole=vertex('eyes__sclera',0,0,-R,[(cell+.5)/2,.95])
++  for k in range(N):meshes['eyes__sclera']['triangles'].append([previous[k],previous[k+1],pole])
++  plane=math.sqrt(R*R-IR*IR)
++  inner=ring('eyes__iris',PR,plane-.00008,0,True);outer=ring('eyes__iris',IR,plane-.00008,1,True);bridge('eyes__iris',inner,outer)
++  border=ring('eyes__pupil',PR,plane-.00004,1,True);center_index=vertex('eyes__pupil',0,0,plane-.00004,[(cell+.5)/2,.5])
++  for k in range(N):meshes['eyes__pupil']['triangles'].append([center_index,border[k],border[k+1]])
++  if C:
++   middle=vertex('eyes__cornea',0,0,plane+bulge,[(cell+.5)/2,.05]);previous=None
++   for j in range(1,C+1):
++    r=IR*j/C;current=ring('eyes__cornea',r,plane+bulge*(1-(r/IR)**2),j/C)
++    if previous is None:
++     for k in range(N):meshes['eyes__cornea']['triangles'].append([middle,current[k],current[k+1]])
++    else:bridge('eyes__cornea',previous,current)
++    previous=current
++ # Fix analytic outward winding, then verify all triangles have actual area.
++ for material,m in meshes.items():
++  for i,(a,b,c) in enumerate(m['triangles']):
++   p,q,r=[m['positions_m'][v] for v in (a,b,c)];normal=_cross([q[j]-p[j] for j in range(3)],[r[j]-p[j] for j in range(3)])
++   if math.sqrt(sum(x*x for x in normal))<1e-15:raise ValueError('degenerate eye triangle')
++   eye=eyes[0 if p[0]+q[0]+r[0]>0 else 1];expected=eye['forward'] if material!='eyes__sclera' else [(p[j]+q[j]+r[j])/3-eye['center_m'][j] for j in range(3)]
++   if sum(normal[j]*expected[j] for j in range(3))<0:m['triangles'][i]=[a,c,b]
++  if not all(math.isfinite(v) for p in m['positions_m'] for v in p):raise ValueError('nonfinite eye coordinate')
++  if not all(0<=v<=1 for uv in m['uvs'] for v in uv):raise ValueError('eye UV outside 0–1')
++ triangles=sum(len(m['triangles']) for m in meshes.values())
++ if triangles>TRIANGLE_CEILINGS[lod]:raise ValueError('original eye component triangle budget exceeded')
++ return {'license':'CC0-1.0','lod':lod,'eyes':eyes,'meshes':list(meshes.values()),'triangles':triangles,'triangle_ceiling':TRIANGLE_CEILINGS[lod],'status':'original reconstructed eye components; clinical anatomy/fit/PBR not accepted'}
++
++def iris_pixels(width=512,height=256):
++ """Original fibers/limbal shading without photographic input or baked highlights."""
++ if width!=2*height:raise ValueError('eye atlas uses two square regions')
++ pixels=[]
++ for yy in range(height):
++  for xx in range(width):
++   x=((xx%height)/(height-1)-.5)/.45;y=(yy/(height-1)-.5)/.45;r=math.hypot(x,y);a=math.atan2(y,x)
++   fibers=.50+.20*math.sin(61*a+18*r)+.12*math.sin(103*a-11*r)+.08*math.sin(157*a+41*r)
++   limbus=max(.13,1-.8*math.exp(-((r-.98)/.055)**2));radial=.65+.35*math.sin(min(1,r)*math.pi)
++   pixels.extend([c*(.65+.65*fibers)*limbus*radial for c in [.24,.14,.065]]+[1.])
++ return pixels
+diff --git a/chicago/4d/tools/human_teamster_blend.py b/chicago/4d/tools/human_teamster_blend.py
+index 0c9a60b90..4358d50ca 100644
+--- a/chicago/4d/tools/human_teamster_blend.py
++++ b/chicago/4d/tools/human_teamster_blend.py
+@@ -33,6 +33,8 @@ sys.path.insert(0, str(ROOT/'tools'))
+ from human_grounded_gait import (prepare_legs, pose_at_phase, linearize_action,
+                                  SPEED_M_S, CYCLE_DURATION_S, CYCLE_FRAMES,
+                                  STANCE_FRACTION)
++from human_workwear_fit import garment_shell, fitted_shoes, standing_collar_extension
++from human_eye_components import build_eye_components, iris_pixels, MATERIALS as EYE_MATERIALS
+ 
+ 
+ def parse_args():
+@@ -148,7 +150,8 @@ def build(args):
+     from human_hair_short04 import fit as fit_short04
+     hair, hairpath, hair_report = fit_short04(body, recipe['hair_component'], ROOT)
+     colors = {**recipe['colors_linear_rgba'], **variant.get('color_overrides',{})}
+-    colors['garment_upper__shirt_collar'] = colors['garment_upper__shirt_linen']
++    colors.pop('eyes',None)
++    colors.update({name:spec['base_color'] for name,spec in EYE_MATERIALS.items() if name!='eyes__cornea'})
+     asset = args.variant
+     scale = float(recipe.get('height_scale',1))
+     if scale <= 0:
+@@ -191,7 +194,15 @@ def build(args):
+         bsdf.inputs['Roughness'].default_value = .75 if name.startswith('skin') else .88
+         if name.startswith('eyes'):
+             bsdf.inputs['Roughness'].default_value = .18
++        if name in EYE_MATERIALS:bsdf.inputs['Roughness'].default_value=EYE_MATERIALS[name]['roughness']
+         materials[name] = material
++    # Original opaque sclera/iris/pupil; no transparent shell/new extension.
++    # Dimensions and brown color are reconstruction, not resident facts.
++    iris=bpy.data.images.new('original_reconstructed_iris',width=512,height=256,alpha=False)
++    iris.colorspace_settings.name='sRGB';iris.pixels=iris_pixels();iris.file_format='PNG';iris.pack()
++    iris_nodes=materials['eyes__iris'].node_tree.nodes
++    iris_tex=iris_nodes.new('ShaderNodeTexImage');iris_tex.image=iris
++    materials['eyes__iris'].node_tree.links.new(iris_tex.outputs['Color'],iris_nodes['Principled BSDF'].inputs['Base Color'])
+     # Reviewed source atlas: preserve sRGB and do not tint with the old flat skin.
+     skin_image=bpy.data.images.load(str(skinpath.resolve()),check_existing=True)
+     skin_image.colorspace_settings.name='sRGB'
+@@ -210,11 +221,9 @@ def build(args):
+     base=colors['garment_upper__shirt_linen'];pixels=[]
+     for yy in range(256):
+         for xx in range(256):
+-            warp=(xx%8)/7;weft=(yy%8)/7
+-            over=((xx//8)+(yy//8))%2==0
+-            ridge=math.sin(math.pi*(warp if over else weft))
+-            # Bounded microvariation, no baked directional highlight or dirt.
+-            shade=.88+.12*ridge
++            # The old eight-texel ridges read as giant blocks on body UVs.
++            # This original one-texel alternation has only one percent contrast.
++            shade=.99+.01*((xx+yy)%2)
+             pixels.extend([base[0]*shade,base[1]*shade,base[2]*shade,1.])
+     weave.pixels=pixels
+     weave.file_format='PNG'
+@@ -252,7 +261,7 @@ def build(args):
+     hair_links.new(inverse.outputs[0],hair_bsdf.inputs['Alpha'])
+     materials['hair__makehuman_short04']=hair_mat
+     # Incoming source UVs are retained per loop, including source-seam duplicates.
+-    def object_mesh(name,points,faces,uvs,weights,material,col,ratio=1,source_vertex_indices=None):
++    def object_mesh(name,points,faces,uvs,weights,material,col,ratio=1,source_vertex_indices=None,corner_uvs=None):
+         mesh = bpy.data.meshes.new(name)
+         mesh.from_pydata([xyz(v) for v in points],[],faces)
+         mesh.update()
+@@ -260,7 +269,7 @@ def build(args):
+         for polygon in mesh.polygons:
+             polygon.use_smooth = True
+             for li in polygon.loop_indices:
+-                layer.data[li].uv = uvs[mesh.loops[li].vertex_index]
++                layer.data[li].uv = corner_uvs[polygon.index][list(polygon.loop_indices).index(li)] if corner_uvs is not None else uvs[mesh.loops[li].vertex_index]
+         if source_vertex_indices is not None:
+             # Body UV duplicates share rest normals without welding positions/UVs.
+             # Decimation, morph and export behavior still require canonical checks.
+@@ -350,42 +359,8 @@ def build(args):
+     shoulder_y = bones['upperarm_l']['head_m'][1]
+     wrist_x = abs(bones['hand_l']['head_m'][0])
+     neck_y = bones['neck_01']['head_m'][1]
+-    def region(m, face, kind):
+-        p=[sum(m['positions_m'][i][axis] for i in face)/3 for axis in range(3)]
+-        w={}
+-        for i in face:
+-            for b,v in m['weights'][i].items():w[b]=w.get(b,0)+v/3
+-        armweight=sum(v for b,v in w.items() if b.startswith(('clavicle','upperarm','lowerarm')))
+-        legweight=sum(v for b,v in w.items() if b.startswith(('thigh','calf','pelvis')))
+-        footweight=sum(v for b,v in w.items() if b.startswith(('foot','ball')))
+-        if kind=='shirt':return (hem<=p[1]<=neck_y+.035 and abs(p[0])<.23) or (armweight>.35 and abs(p[0])<wrist_x-.012)
+-        if kind=='waistcoat':
+-            torso=waist-.04<=p[1]<=shoulder_y+.025 and armweight<.35 and abs(p[0])<.235
+-            # Original open V: progressively wider toward the collar. Not a traced cut.
+-            opening=max(.012,.105*(p[1]-waist)/max(.01,shoulder_y-waist))
+-            return torso and not(p[2]>0 and abs(p[0])<opening)
+-        if kind=='trousers':return p[1]<=waist and legweight>.25 and footweight<.35
+-        if kind=='shoes':return footweight>.30 and p[1]<.17
+-        return False
+     def shell(m,kind,offset):
+-        faces=[f for f in m['triangles'] if region(m,f,kind)]
+-        indices=sorted({i for f in faces for i in f})
+-        remap={v:i for i,v in enumerate(indices)}
+-        normals={i:Vector((0,0,0)) for i in indices}
+-        for a,b,c in faces:
+-            v=[Vector(m['positions_m'][i]) for i in (a,b,c)]
+-            n=(v[1]-v[0]).cross(v[2]-v[0])
+-            for i in (a,b,c):normals[i]+=n
+-        points=[]
+-        for i in indices:
+-            v=Vector(m['positions_m'][i]);n=normals[i].normalized() if normals[i].length else Vector((0,0,0))
+-            v+=n*(offset/scale)
+-            # Add original garment ease rather than just recoloring skin.
+-            if kind in ('shirt','waistcoat','trousers'):
+-                v.x += math.copysign(.007/scale,v.x) if abs(v.x)>.02 else 0
+-            if kind=='shoes':v.y=max(0,v.y)
+-            points.append(list(v))
+-        return points,[[remap[i] for i in f] for f in faces],[m['uvs'][i] for i in indices],[m['weights'][i] for i in indices]
++        return garment_shell(m,kind,offset,recipe,bones,height,scale)
+     def morphs(obj):
+         # Actual geometric targets on the source-derived head, not empty name tokens.
+         obj.shape_key_add(name='Basis')
+@@ -414,70 +389,20 @@ def build(args):
+             obj=object_mesh(f'{asset}_body_{mi}_lod{lod}',m['positions_m'],m['triangles'],m['uvs'],m['weights'],'skin',col,ratio,source_vertex_indices=m['source_vertex_indices'])
+             if lod in contract['morphs']['required_lods']:morphs(obj)
+             for kind,mat,offset in [('shirt','garment_upper__shirt_linen',recipe['shirt_offset_m']),('waistcoat','garment_outer__waistcoat_wool',recipe['waistcoat_offset_m']),('trousers','garment_lower__highwaist_pantaloons',recipe['trouser_offset_m'])]:
+-                points,faces,uvs,weights=shell(m,kind,offset)
+-                if not faces:raise ValueError(f'{kind}: no faces selected from body; input proportions need review')
+-                object_mesh(f'{asset}_{kind}_{mi}_lod{lod}',points,faces,uvs,weights,mat,col,ratio)
+-        # Originally authored closed shoes: copying a toe-separated nude foot
+-        # shell would leave five visible toes and would not model footwear.
+-        sp=[];sf=[];su=[];sw=[];N=20 if lod<2 else 8
+-        for side,cell in [('l',0),('r',1)]:
+-            candidate=[p for m in body['meshes'] for p,w in zip(m['positions_m'],m['weights']) if sum(v for b,v in w.items() if b in ('foot_'+side,'ball_'+side))>.35 and p[1]<.16]
+-            if not candidate:raise ValueError('missing source foot bounds for closed shoe')
+-            xmin,xmax=min(p[0] for p in candidate),max(p[0] for p in candidate)
+-            zmin,zmax=min(p[2] for p in candidate),max(p[2] for p in candidate)
+-            cx=(xmin+xmax)/2;cz=(zmin+zmax)/2
+-            rx=(xmax-xmin)/2+recipe['shoe_offset_m']/scale
+-            rz=(zmax-zmin)/2+recipe['shoe_offset_m']/scale
+-            base=len(sp)
+-            # Sole, leather upper and ankle opening: all dimensions reconstructed.
+-            rings=[(0,1,1,cz),(.016/scale,1,1,cz),(.050/scale,.97,.98,cz),(.090/scale,.83,.68,cz-rz*.22),(.13/scale,.70,.33,cz-rz*.43)]
+-            for j,(y,fx,fz,zc) in enumerate(rings):
+-                for k in range(N+1):
+-                    t=2*math.pi*k/N;z=zc+rz*fz*math.sin(t)
+-                    sp.append([cx+rx*fx*math.cos(t),y,z]);su.append([(cell+.05+.9*k/N)/2,.05+.9*j/4])
+-                    blend=max(0,min(1,(z-bones['ball_'+side]['head_m'][2]+.04)/.08))
+-                    sw.append({'foot_'+side:1-blend,'ball_'+side:blend})
+-            for j in range(4):
+-                for k in range(N):
+-                    a=base+j*(N+1)+k;b=a+1;c=b+N+1;dd=a+N+1
+-                    sf.extend([(a,c,b),(a,dd,c)])
+-            # A separate sole UV island occupies the unused bottom atlas margin.
+-            center=len(sp);sp.append([cx,0,cz]);su.append([cell*.5+.25,.025]);sw.append({'foot_'+side:1.})
+-            sole=len(sp)
+-            for k in range(N):
+-                t=2*math.pi*k/N
+-                sp.append(sp[base+k]);su.append([cell*.5+.25+.20*math.cos(t),.025+.020*math.sin(t)]);sw.append(sw[base+k])
+-            for k in range(N):sf.append((center,sole+k,sole+(k+1)%N))
+-        object_mesh(f'{asset}_closed_shoes_lod{lod}',sp,sf,su,sw,'footwear__closed_leather_shoes',col)
+-        # Original standing collar, separate material UV island set; a reconstructed
+-        # construction detail rather than a painted modern shirt neckline.
+-        cp=[];cf=[];cu=[];cw=[];N=16 if lod<2 else 8
+-        neck=Vector(bones['neck_01']['head_m']);ch=recipe['collar_height_m']/scale
+-        rings=[(.052,.048,0),(.050,.046,ch),(.047,.043,ch),(.049,.045,0),(.052,.048,0)]
+-        for j,(rx,rz,dy) in enumerate(rings):
+-            for k in range(N+1):
+-                t=2*math.pi*k/N
+-                cp.append([neck.x+rx*math.cos(t),neck.y+dy,neck.z+rz*math.sin(t)])
+-                cu.append([.05+.9*k/N,.05+.9*j/4]);cw.append({'neck_01':1.})
+-        for j in range(4):
+-            for k in range(N):
+-                a=j*(N+1)+k;b=a+1;c=b+N+1;d=a+N+1
+-                cf.extend([(a,b,c),(a,c,d)])
+-        object_mesh(f'{asset}_standing_collar_lod{lod}',cp,cf,cu,cw,'garment_upper__shirt_collar',col)
+-        # Independent originally-authored corneas; no extracted photographic eye map.
+-        pts=[];faces=[];uv=[];weights=[]
+-        for side,cell in [('l',0),('r',1)]:
+-            center=Vector(bones['eye_'+side]['head_m']);base=len(pts);N=12 if lod<2 else 6
+-            for j in range(7):
+-                theta=math.pi*j/6
+-                for k in range(N):
+-                    phi=2*math.pi*k/N
+-                    p=center+Vector((.010*math.sin(theta)*math.cos(phi),.010*math.cos(theta),.010*math.sin(theta)*math.sin(phi)))
+-                    pts.append(list(p));uv.append([(cell+.05+.9*k/N)/2,.05+.9*j/6]);weights.append({'eye_'+side:1.})
+-            for j in range(6):
+-                for k in range(N):
+-                    a=base+j*N+k;b=base+j*N+(k+1)%N;c=b+N;d=a+N;faces.extend([(a,c,b),(a,d,c)])
+-        object_mesh(f'{asset}_eyes_lod{lod}',pts,faces,uv,weights,'eyes',col)
++                garment=shell(m,kind,offset)
++                if kind=='shirt':garment=standing_collar_extension(garment,m,bones,recipe,scale)
++                object_mesh(f'{asset}_{kind}_{mi}_lod{lod}',garment['positions_m'],garment['triangles'],garment['uvs'],garment['weights'],mat,col,ratio,corner_uvs=garment['corner_uvs'])
++                if lod==0:print(json.dumps({'source_workwear_coverage':garment['receipt']}),flush=True)
++        # Actual source foot sections bound this reconstructed closed shoe.
++        # No body skin is hidden. All sole points survive at every LOD; the
++        # existing loaded stance/foot/sole contact gates remain unchanged.
++        shoes=fitted_shoes(body,bones,lod,scale,recipe['workwear_coverage']['shoe_clearance_m'])
++        object_mesh(f'{asset}_closed_shoes_lod{lod}',shoes['positions_m'],shoes['triangles'],shoes['uvs'],shoes['weights'],'footwear__closed_leather_shoes',col)
++        if lod==0:print(json.dumps({'source_shoe_enclosure':shoes['receipt']}),flush=True)
++        # Standing collar is welded into the linen shirt before LOD reduction.
++        eye_data=build_eye_components(bones,lod,recipe['eye_components'])
++        for component in eye_data['meshes']:
++            object_mesh(f"{asset}_{component['name']}_lod{lod}",component['positions_m'],component['triangles'],component['uvs'],component['weights'],component['material'],col)
+     for name,bone in contract['sockets']['required']:
+         obj=bpy.data.objects.new(name,None);rigcol.objects.link(obj)
+         obj.empty_display_size=.035;obj.parent=rig;obj.parent_type='BONE';obj.parent_bone=bone
+diff --git a/chicago/4d/tools/human_workwear_fit.py b/chicago/4d/tools/human_workwear_fit.py
+new file mode 100644
+index 000000000..058cf7c9a
+--- /dev/null
++++ b/chicago/4d/tools/human_workwear_fit.py
+@@ -0,0 +1,331 @@
++# SPDX-License-Identifier: GPL-3.0-or-later
++"""Original reconstructed workwear geometry, evaluated without Blender.
++
++Generated graphical arrays are CC0-1.0, as are their cleared body inputs. The
++clothes are not an attested outfit or a photographic human. This helper keeps
++the body/rig unchanged, shares offsets across source UV seams, cuts the vest V
++on actual triangles, and constructs a shoe around actual source foot sections.
++"""
++from __future__ import annotations
++import math,collections,copy
++from human_source_normals import source_shared_normals
++
++
++def _unit(v):
++    d=math.hypot(*v)
++    if not math.isfinite(d) or d<=1e-20:raise ValueError('zero or nonfinite normal')
++    return [x/d for x in v]
++
++
++def _mix(a,b,t):return [math.fsum((x*(1-t),y*t)) for x,y in zip(a,b)]
++
++
++def _clip(poly,field):
++    """Retain field>=0 and interpolate source barycentrics, UVs and weights."""
++    if not poly:return []
++    out=[]
++    for a,b in zip(poly,poly[1:]+poly[:1]):
++        da,db=field(a),field(b)
++        if da>=0:out.append(a)
++        if (da<0<db) or (db<0<da):
++            # A consistent endpoint order also makes a shared source edge's
++            # cut identical when its neighboring face traverses it backwards.
++            if tuple(sorted(a['basis'].items()))>tuple(sorted(b['basis'].items())):a,b,da,db=b,a,db,da
++            t=da/(da-db)
++            basis={i:math.fsum((a['basis'].get(i,0)*(1-t),b['basis'].get(i,0)*t)) for i in sorted(set(a['basis'])|set(b['basis']))}
++            out.append({'p':_mix(a['p'],b['p'],t),'uv':_mix(a['uv'],b['uv'],t),
++                        'n':_mix(a['n'],b['n'],t),'basis':basis,
++                        'w':{i:math.fsum((a['w'].get(i,0)*(1-t),b['w'].get(i,0)*t)) for i in sorted(set(a['w'])|set(b['w']))}})
++    clean=[]
++    for v in out:
++        if not clean or math.dist(v['p'],clean[-1]['p'])>1e-14:clean.append(v)
++    if len(clean)>1 and math.dist(clean[0]['p'],clean[-1]['p'])<=1e-14:clean.pop()
++    return clean
++
++
++def garment_shell(m,kind,offset,recipe,bones,height,scale=1.):
++    """A source-derived shell with coincident UV seams and clipped vest edges.
++
++    Original source UVs and exact weights survive on original vertices. New vest
++    cut vertices interpolate them on their source triangle. At most four skin
++    influences are emitted; actual discarded mass must stay below 2.5 percent.
++    This is a disclosed garment interpolation choice, not a change to body skin.
++    """
++    if kind not in ('shirt','waistcoat','trousers') or not 0<scale or not 0<offset<.05:
++        raise ValueError('invalid garment kind/scale/ease')
++    ps=m['positions_m'];fs=m['triangles'];sids=m['source_vertex_indices']
++    ns=source_shared_normals(ps,fs,sids)
++    waist=recipe['waist_height_fraction']*height/scale
++    hem=recipe['shirt_hem_fraction']*height/scale
++    shoulder=bones['upperarm_l']['head_m'][1]
++    wrist=abs(bones['hand_l']['head_m'][0]);neck=bones['neck_01']['head_m'][1]
++    slope=.105/max(.01,shoulder-waist)
++    shirt_ease=None
++    if kind=='shirt':
++        # Derive a continuous torso-to-sleeve ease field from the cleared arm
++        # frame and actual dominant upperarm surface extent. It reduces the
++        # inherited X shift above the arm axis, where actual posed shoulder
++        # faces otherwise intersect, and retains it on the lower arm surface.
++        arm_axis_y=math.fsum(bones['upperarm_'+side]['head_m'][1] for side in ('l','r'))/2
++        radial=max(abs(p[1]-arm_axis_y) for p,w in zip(ps,m['weights']) if max(w.get('upperarm_l',0.),w.get('upperarm_r',0.))>.5)
++        fraction=recipe['workwear_tailoring']['shirt_x_ease_arm_radius_fraction']
++        if not 0<fraction<=1 or radial<=0:raise ValueError('invalid source-arm shirt ease field')
++        shirt_ease={'axis_y_m':arm_axis_y,'actual_arm_radial_extent_m':radial,'transition_width_m':fraction*radial,'radius_fraction':fraction}
++    result={'positions_m':[],'triangles':[],'uvs':[],'weights':[],'source_basis':[],'corner_uvs':[],'source_triangle_indices':[]}
++    cache={};selected=[];maximum_drop=0.;maximum_neck_transfer=0.;discarded_zero=0
++    for fi,face in enumerate(fs):
++        p=[math.fsum(ps[i][a] for i in face)/3 for a in range(3)]
++        w={}
++        for i in face:
++            for b,v in m['weights'][i].items():w[b]=w.get(b,0)+v/3
++        arm=sum(v for b,v in w.items() if b.startswith(('clavicle','upperarm','lowerarm')))
++        leg=sum(v for b,v in w.items() if b.startswith(('thigh','calf','pelvis')))
++        foot=sum(v for b,v in w.items() if b.startswith(('foot','ball')))
++        keep=((hem<=p[1]<=neck+.035 and abs(p[0])<.23) or (arm>.35 and abs(p[0])<wrist-.012)) if kind=='shirt' else (
++             waist-.04<=p[1]<=shoulder+.025 and arm<.35 and abs(p[0])<.235) if kind=='waistcoat' else (
++             p[1]<=waist and leg>.25 and foot<.35)
++        if kind=='waistcoat':
++            # Candidate next trim: retain every face crossing the torso slab;
++            # continuous source fields, never centroid ownership, cut its edges.
++            keep=(max(ps[i][1] for i in face)>=waist-.04 and min(ps[i][1] for i in face)<=shoulder+.025)
++        if not keep:continue
++        selected.append(fi)
++        poly=[{'p':ps[i],'uv':m['uvs'][i],'w':m['weights'][i],'n':ns[i],'basis':{sids[i]:1.}} for i in face]
++        # End the shirt on the actual existing collar's base plane. This
++        # clips triangles and interpolates UVs/weights, instead of selecting
++        # jagged whole faces by head weight. Neck/skin anatomy stays exact.
++        polys=[_clip(poly,lambda v:neck-v['p'][1])] if kind=='shirt' else [poly]
++        if kind=='waistcoat':
++            # Clip source corners/UVs/weights exactly on the declared lower/top
++            # planes, side envelope and continuous arm-influence contour.
++            poly=_clip(poly,lambda v:v['p'][1]-(waist-.04))
++            poly=_clip(poly,lambda v:shoulder+.025-v['p'][1])
++            poly=_clip(poly,lambda v:.235-v['p'][0])
++            poly=_clip(poly,lambda v:.235+v['p'][0])
++            poly=_clip(poly,lambda v:.35-math.fsum(w for b,w in v['w'].items() if b.startswith(('clavicle','upperarm','lowerarm'))))
++            # A union of three disjoint source regions. Their shared z=0
++            # boundary is a seam, and the two front boundaries are straight Vs.
++            back=_clip(poly,lambda v:-v['p'][2])
++            front=_clip(poly,lambda v:v['p'][2])
++            left=_clip(_clip(front,lambda v:v['p'][0]-.012),lambda v:v['p'][0]-slope*(v['p'][1]-waist))
++            right=_clip(_clip(front,lambda v:-v['p'][0]-.012),lambda v:-v['p'][0]-slope*(v['p'][1]-waist))
++            polys=[back,left,right]
++        for polygon in polys:
++            ids=[]
++            for vertex in polygon:
++                n=_unit(vertex['n']);p=[vertex['p'][a]+n[a]*offset/scale for a in range(3)]
++                # A global outwardX shift cancels normal ease on the INNER
++                # leg. Trousers keep their full positive normal offset only.
++                if kind!='trousers' and abs(p[0])>.02:
++                    ease=1. if kind!='shirt' else max(0.,min(1.,(shirt_ease['axis_y_m']-vertex['p'][1])/shirt_ease['transition_width_m']))
++                    p[0]+=ease*math.copysign(.007/scale,p[0])
++                if kind=='shirt':
++                    # Cut-edge normals can have a small vertical component.
++                    # The garment seam itself stays on its declared collar
++                    # plane instead of sagging into a near-planar stair edge.
++                    p[1]=neck if abs(vertex['p'][1]-neck)<=1e-12 else min(p[1],neck)
++                if kind=='waistcoat':
++                    lo,hi=waist-.04,shoulder+.025
++                    p[1]=lo if abs(vertex['p'][1]-lo)<=1e-12 else (hi if abs(vertex['p'][1]-hi)<=1e-12 else max(lo,min(hi,p[1])))
++                mapping=dict(vertex['w'])
++                if kind=='shirt' and abs(vertex['p'][1]-neck)<=1e-12:
++                    # The newly cut collar seam belongs to the neck garment,
++                    # not the moving jaw/face. Rebind only this new seam, never
++                    # the body or existing shirt vertices below the cut.
++                    transfer=math.fsum(mapping.pop(k,0.) for k in ('head','jaw'))
++                    mapping['neck_01']=mapping.get('neck_01',0.)+transfer
++                    maximum_neck_transfer=max(maximum_neck_transfer,transfer)
++                weights=sorted(((k,v) for k,v in mapping.items() if v>1e-12),key=lambda kv:(-kv[1],kv[0]))
++                dropped=math.fsum(v for k,v in weights[4:]);maximum_drop=max(maximum_drop,dropped)
++                if dropped>.025:raise ValueError('garment cut exceeds 2.5 percent discarded skin mass: '+repr((fi,dropped,weights)))
++                weights=weights[:4];total=math.fsum(v for k,v in weights)
++                if total<=0:raise ValueError('empty garment skin weights')
++                weights={k:v/total for k,v in weights}
++                basis={k:v for k,v in vertex['basis'].items() if v>1e-12}
++                # Geometry is shared across an original body's UV seam. UVs
++                # live on corners, so the decimator cannot pull two coincident
++                # seam vertices apart and reopen the garment at a lower LOD.
++                key=(tuple(p),tuple(sorted(weights.items())))
++                if key not in cache:
++                    cache[key]=len(result['positions_m']);result['positions_m'].append(p)
++                    result['uvs'].append(list(vertex['uv']));result['weights'].append(weights);result['source_basis'].append(basis)
++                ids.append(cache[key])
++            for k in range(1,len(ids)-1):
++                tri=[ids[0],ids[k],ids[k+1]]
++                a,b,c=[result['positions_m'][i] for i in tri]
++                u=[b[i]-a[i] for i in range(3)];v=[c[i]-a[i] for i in range(3)]
++                cross=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]]
++                if len(set(tri))<3 or math.hypot(*cross)<=1e-18:discarded_zero+=1;continue
++                result['triangles'].append(tri)
++                result['source_triangle_indices'].append(fi)
++                result['corner_uvs'].append([polygon[j]['uv'] for j in (0,k,k+1)])
++    if not result['triangles']:raise ValueError('empty garment shell')
++    result['receipt']={'kind':kind,'source_selected_faces':selected,'source_uv_seams':'Full-body source-shared normals, not isolated UV chart normals',
++        'neckline_clip_y_m':neck if kind=='shirt' else None,
++        'maximum_new_collar_seam_head_jaw_mass_rebound_to_neck':maximum_neck_transfer,
++        'additional_global_x_ease_m':0. if kind=='trousers' else .007,'shirt_continuous_x_ease_field':shirt_ease,
++        'body_mutated':False,'maximum_discarded_cut_weight':maximum_drop,'degenerate_cut_fans_discarded':discarded_zero,
++        'fit_accepted':False,'scope':'Original source construction; actual deformation and rendered clothing still need review'}
++    return result
++
++
++def _slab_points(triangles,lo,hi):
++    result=[]
++    for tri in triangles:
++        poly=[{'p':p,'uv':[],'n':[],'w':{},'basis':{i:1.}} for i,p in enumerate(tri)]
++        poly=_clip(_clip(poly,lambda v:v['p'][1]-lo),lambda v:hi-v['p'][1])
++        result.extend(v['p'] for v in poly)
++    return result
++
++
++def fitted_shoes(body,bones,lod,scale=1.,clearance_m=.004):
++    """Closed soles and support-plane lofts enclosing the actual source feet.
++
++    Each ring's support polygon contains both adjacent complete body slabs.
++    The fixed-normal support values interpolate linearly between rings, so every
++    clipped source triangle is inside the actual planar loft at rest. An open
++    ankle at145mm is deliberate; trousers overlap it. No body is hidden.
++    """
++    if lod not in range(4) or scale<=0 or not .002<=clearance_m<=.01:raise ValueError('invalid shoe parameters')
++    N=[32,24,16,12][lod]
++    levels=[v/scale for v in (0,.016,.035,.060,.085,.115,.145)]
++    clearance=clearance_m/scale
++    planes=[(math.cos(2*math.pi*k/N),math.sin(2*math.pi*k/N)) for k in range(N)]
++    out={'positions_m':[],'triangles':[],'uvs':[],'weights':[]};reports=[]
++    for side,cell in [('l',0),('r',1)]:
++        sign=1 if side=='l' else -1
++        triangles=[]
++        for mesh in body['meshes']:
++            for face in mesh['triangles']:
++                ps=[mesh['positions_m'][i] for i in face]
++                if min(p[1] for p in ps)>levels[-1] or max(p[1] for p in ps)<0:continue
++                if math.fsum(p[0] for p in ps)*sign<=0:continue
++                # Preserve exact named-limb ownership instead of assuming the
++                # sign of a stray source vertex establishes a foot identity.
++                chain={j+'_'+side for j in ('thigh','calf','foot','ball')}
++                if min(math.fsum(v for k,v in mesh['weights'][i].items() if k in chain) for i in face)<.9:
++                    raise ValueError('body triangle in shoe band has ambiguous leg ownership')
++                triangles.append(ps)
++        if not triangles:raise ValueError('no source foot triangles')
++        supports=[]
++        for i,y in enumerate(levels):
++            points=_slab_points(triangles,levels[max(0,i-1)],levels[min(len(levels)-1,i+1)])
++            if len(points)<3:raise ValueError('empty source foot section')
++            supports.append([max(nx*p[0]+nz*p[2] for p in points)+clearance for nx,nz in planes])
++        minimum=math.inf;sample_count=0
++        for i,(lo,hi) in enumerate(zip(levels,levels[1:])):
++            for p in _slab_points(triangles,lo,hi):
++                t=(p[1]-lo)/(hi-lo)
++                for k,(nx,nz) in enumerate(planes):
++                    margin=(1-t)*supports[i][k]+t*supports[i+1][k]-nx*p[0]-nz*p[2]
++                    minimum=min(minimum,margin);sample_count+=1
++        if minimum<clearance-1e-12:raise ValueError('source foot escapes support-plane loft')
++        base=len(out['positions_m']);det=math.sin(2*math.pi/N)
++        for j,y in enumerate(levels):
++            for k,(nx,nz) in enumerate(planes):
++                next_k=(k+1)%N;mx,mz=planes[next_k];h,q=supports[j][k],supports[j][next_k]
++                x=(h*mz-nz*q)/det;z=(nx*q-h*mx)/det
++                out['positions_m'].append([x,y,z]);out['uvs'].append([(cell+.05+.9*k/N)/2,.05+.9*j/(len(levels)-1)])
++                blend=max(0.,min(1.,(z-bones['ball_'+side]['head_m'][2]+.04/scale)/(.08/scale)))
++                out['weights'].append({'foot_'+side:1-blend,'ball_'+side:blend})
++        for j in range(len(levels)-1):
++            for k in range(N):
++                a=base+j*N+k;b=base+j*N+(k+1)%N;c=b+N;d=a+N
++                out['triangles'].extend([[a,c,b],[a,d,c]])
++        center=len(out['positions_m']);p=[math.fsum(out['positions_m'][base+k][a] for k in range(N))/N for a in range(3)]
++        out['positions_m'].append(p);out['uvs'].append([(cell+.5)/2,.025]);out['weights'].append({'foot_'+side:1.})
++        for k in range(N):out['triangles'].append([center,base+k,base+(k+1)%N])
++        reports.append({'side':side,'source_triangles_in_band':len(triangles),'support_inequality_checks':sample_count,
++            'minimum_source_support_clearance_m':minimum*scale,'ankle_height_m':levels[-1]*scale,'plane_count':N,
++            'body_hidden':False,'proof_scope':'Exact source triangle slab vertices satisfy every linear loft support plane; source Float64 only, actual exported/readback deformation and contact remain untested'})
++    out['receipt']={'sides':reports,'clearance_m':clearance_m,'ring_heights_m':[v*scale for v in levels],
++        'parameters_status':'Reconstructed footwear last/ease, not an attested shoe or material measurement',
++        'export_or_walk_contact_accepted':False}
++    return out
++
++
++def standing_collar_extension(shirt,body_mesh,bones,recipe,scale=1.):
++    neck=bones['neck_01']['head_m'];base_y=neck[1]
++    edge_faces=collections.defaultdict(list)
++    for face in shirt['triangles']:
++        for a,b in zip(face,face[1:]+face[:1]):edge_faces[tuple(sorted((a,b)))].append((a,b))
++    edges=[e for e,faces in edge_faces.items() if len(faces)==1 and all(abs(shirt['positions_m'][i][1]-base_y)<=1e-12 for i in e)]
++    graph=collections.defaultdict(set)
++    for a,b in edges:graph[a].add(b);graph[b].add(a)
++    if not graph or any(len(v)!=2 for v in graph.values()):raise ValueError('collar requires a closed degree-two shirt boundary')
++    start=min(graph);ids=[start];previous=None;current=start
++    while True:
++        nxt=min(graph[current]-({previous} if previous is not None else set()))
++        if nxt==start:break
++        if nxt in ids:raise ValueError('collar boundary repeats before closure')
++        ids.append(nxt);previous,current=current,nxt
++    if len(ids)!=len(graph):raise ValueError('collar boundary has multiple cycles')
++    N=len(ids);result=copy.deepcopy(shirt);shirt_vertices=len(shirt['positions_m']);shirt_faces=len(shirt['triangles'])
++    # Fixed source angular rays retain the existing welded loop's parameterization.
++    angles=[math.atan2(shirt['positions_m'][i][2]-neck[2],shirt['positions_m'][i][0]-neck[0]) for i in ids]
++    parameters=recipe['workwear_tailoring']
++    max_height=recipe['collar_height_m']/scale;front_height=parameters['collar_front_height_m']/scale;front_dip=max_height-front_height;ease=recipe['shirt_offset_m']/scale
++    if not 0<front_height<=max_height<.04/scale:raise ValueError('invalid reconstructed collar heights')
++    thickness=parameters['collar_return_thickness_m']/scale;return_depth=parameters['collar_return_depth_m']/scale
++    if not 0<thickness<ease or not 0<return_depth<front_height:raise ValueError('invalid reconstructed collar return')
++    heights=[max_height-front_dip*max(0.,math.sin(t))**2 for t in angles]
++    candidates=[]
++    for fi,face in enumerate(body_mesh['triangles']):
++        points=[body_mesh['positions_m'][i] for i in face]
++        if min(p[1] for p in points)>base_y+max_height or max(p[1] for p in points)<base_y:continue
++        if min(p[0] for p in points)>.15/scale or max(p[0] for p in points)<-.15/scale:continue
++        candidates.append((fi,face))
++    def cross(a,b):return a[0]*b[1]-a[1]*b[0]
++    def support(y,theta):
++        d=(math.cos(theta),math.sin(theta));hits=[]
++        for fi,face in candidates:
++            points=[]
++            for ia,ib in zip(face,face[1:]+face[:1]):
++                a,b=body_mesh['positions_m'][ia],body_mesh['positions_m'][ib]
++                if not ((a[1]<y<b[1]) or (b[1]<y<a[1])):continue
++                t=(y-a[1])/(b[1]-a[1]);p=[a[k]+t*(b[k]-a[k]) for k in range(3)]
++                points.append((p,{body_mesh['source_vertex_indices'][ia]:1-t,body_mesh['source_vertex_indices'][ib]:t}))
++            if len(points)!=2:continue
++            (a,wa),(b,wb)=points;A=(a[0]-neck[0],a[2]-neck[2]);E=(b[0]-a[0],b[2]-a[2]);den=cross(d,E)
++            if abs(den)<1e-15:continue
++            radius=cross(A,E)/den;u=cross(A,d)/den
++            if radius<=0 or not -1e-10<=u<=1+1e-10:continue
++            u=max(0.,min(1.,u));basis={sid:(1-u)*wa.get(sid,0)+u*wb.get(sid,0) for sid in set(wa)|set(wb)}
++            hits.append((radius,fi,basis))
++        hits.sort();unique=[]
++        for hit in hits:
++            if not unique or abs(hit[0]-unique[-1][0])>1e-8:unique.append(hit)
++        if len(unique)!=1:raise ValueError('neck source ray must cross one boundary: '+repr((y,theta,len(unique))))
++        radius,fi,basis=unique[0]
++        return [neck[0]+(radius+ease)*d[0],y,neck[2]+(radius+ease)*d[1]],fi,basis
++    distances=[math.dist(shirt['positions_m'][a],shirt['positions_m'][b]) for a,b in zip(ids,ids[1:]+ids[:1])]
++    perimeter=math.fsum(distances);us=[math.fsum(distances[:k])/perimeter for k in range(N)]
++    rings=[ids];support_records=[]
++    for f in (.25,.5,.75,1.):
++        ring=[]
++        for k,(theta,height) in enumerate(zip(angles,heights)):
++            p,fi,basis=support(base_y+f*height,theta)
++            weights={j:(1-f)*v for j,v in shirt['weights'][ids[k]].items()};weights['neck_01']=weights.get('neck_01',0)+f
++            weights={j:v for j,v in weights.items() if v>1e-12}
++            if len(weights)>4 or abs(math.fsum(weights.values())-1)>1e-12:raise ValueError('collar portable weight overflow')
++            ring.append(len(result['positions_m']));result['positions_m'].append(p);result['weights'].append(weights);result['uvs'].append([us[k],f]);result['source_basis'].append(basis)
++            support_records.append({'vertex':ring[-1],'source_triangle':fi,'source_basis':basis,'ray_radial_ease_m':ease*scale,'height_fraction':f})
++        rings.append(ring)
++    # Original authored narrow turn-under at upper edge, with no body masking.
++    ring=[]
++    for k,theta in enumerate(angles):
++        q=list(result['positions_m'][rings[-1][k]]);q[0]-=thickness*math.cos(theta);q[2]-=thickness*math.sin(theta);q[1]-=return_depth
++        ring.append(len(result['positions_m']));result['positions_m'].append(q);result['weights'].append(dict(result['weights'][rings[-1][k]]));result['uvs'].append([us[k],.94]);result['source_basis'].append(dict(result['source_basis'][rings[-1][k]]))
++    rings.append(ring)
++    # Base edge direction is opposite the existing shirt face, then remains
++    # consistent on all successive bands. The shared IDs cannot unzip under LOD.
++    flip=edge_faces[tuple(sorted(ids[:2]))][0]==tuple(ids[:2])
++    for row,(lower,upper) in enumerate(zip(rings,rings[1:])):
++        for k in range(N):
++            n=(k+1)%N;a,b,c,d=lower[k],lower[n],upper[n],upper[k];u0,u1=us[k],(us[n] if n else 1.);v0=row/5;v1=(row+1)/5
++            faces=[([a,b,c],[[u0,v0],[u1,v0],[u1,v1]]),([a,c,d],[[u0,v0],[u1,v1],[u0,v1]])]
++            for face,uv in faces:
++                if flip:face.reverse();uv.reverse()
++                result['triangles'].append(face);result['corner_uvs'].append(uv);result['source_triangle_indices'].append(None)
++    result['collar_extension']={'original_shirt_vertex_count':shirt_vertices,'original_shirt_face_count':shirt_faces,'shared_base_vertex_ids':ids,'ring_vertex_ids':rings,'source_support':support_records,'same_linen_material':True,'ring0_positions_weights_unchanged':True,'front_height_m':front_height*scale,'side_back_height_m':max_height*scale,'radial_ease_m':ease*scale,'lip_thickness_m':thickness*scale,'lip_return_m':return_depth*scale,'construction':'Reconstructed standing collar with lower front profile to avoid source chin; no new period attestation','uv':'Original shirt corners unchanged; new collar has authored per-corner circumference/height island and explicit U0/1 seam','lod':'Unified shirt/collar topology before existing decimation; same linen material, no extra draw/material','accepted':False}
++    return result

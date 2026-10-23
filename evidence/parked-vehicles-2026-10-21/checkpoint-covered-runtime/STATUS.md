@@ -1,0 +1,7 @@
+# Actual covered runtime and human preflight — 2026-10-21 22:23 UTC
+
+T2980 isolated actual production-module fixture passed26 checks on both viewports, nine material batches/17,292tri per wagon, zero GL/page/request/HTTP failures, actual terrain/tongue and tested fallback controls. No screenshots were captured in this fixture and no console listener was installed; prior model images remain in the original capsule. No actual main-world/popups/production shadows/complete clearance or canonical town budget qualification yet.
+
+Human source V4 is restored onto reviewed parked2aeb on steward/1835-workwear-repair-20261021. Exact saved stash remains intact. Root carried only the human append suffixes onto parked documentation, preserving all parked and historical bytes, and regenerated675liberties plus the398source report. Nine staged files are549insertions/113deletions. Full mandatory preflight is currentlyRUNNING in session50457, log /workspace/shared/human-workwear-v4-FULL-PREFLIGHT-2026-10-21.log; no PASS or appcommit yet. Source pins are retained here. Canonical helper refresh is prepared only, dispatcher pinNone and NOT dispatched; root must supply final pushedSHA/release after source validation.
+
+Parked PR1174 stilldraft17/18 selectedsmokes +all3normalgreen; desktop13 running. Sole observerPID524900/session57494, recovered3; no new dispatch or rerun. One actual in-progress job-log GET at90min returned404, so no current runtime phase could be read and no stall was inferred.

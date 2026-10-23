@@ -1,0 +1,30 @@
+--- a/chicago/4d/renderers/web/js/buildings.js
++++ b/chicago/4d/renderers/web/js/buildings.js
+@@ -466,10 +466,10 @@
+   /** T-2600: the building cells being cut on the job pool, awaited after the loop. */
+   const partitions = [];
+   let totalTris = 0;
+-  /** T-2927: whether this build cuts meshes into cells (below), and so joins the
+-   *  drawn cells of one mesh back into one draw; and how many draws that saved. */
+-  const cutsCells = !!spatialCells || preserveMaterials;
+-  const coalesce = { on: cutsCells && COALESCE_ON, joined: 0 };
++  /** T-2927: touching drawn ranges with identical owner, transform and colour
++   *  can share a submission, including unpartitioned source pieces. The joiner
++   *  preserves culling and blended order; record how many draws it saves. */
++  const coalesce = { on: COALESCE_ON, joined: 0 };
+ 
+   let completed = 0;
+   onProgress(0, registry.size);
+@@ -762,9 +762,9 @@
+     // T-2529: at `light`, a piece whose shadow cannot reach the view is left
+     // out of the sun's pass (shadow-casters.js); the colour pass is untouched.
+     if (shadowCasters) castOnlyTowardView(batch, shadowCasters);
+-    // T-2927: where meshes are cut into cells, the drawn cells of one mesh that
+-    // touch are drawn as one (batch-coalesce.js): aloft, every cell is in view.
+-    if (cutsCells) coalesceRuns(batch, coalesce);
++    // T-2927: join only touching drawn ranges with identical instance data.
++    // The same guarded join applies to cells and unpartitioned source pieces.
++    coalesceRuns(batch, coalesce);
+     batch.userData.batchIndex = [];
+     // Each instance's dequantize scale, for a reader that needs the structure's
+     // frame back off the batch (tools/drawn_placement_census.mjs).
