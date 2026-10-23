@@ -1,3 +1,13 @@
+# Horse PR1244 — green DEV merge, 2026-10-23
+
+Ordinary squash merged [PR1244](https://github.com/kevinrhaas/chicago/pull/1244) to DEV as `fa115d72534e234fe5ac7b94fd2f1a3eb38065c8`, exact tree `43665a4b692d5283defba96f236aed14b3c02623` and single reviewed DEV parent `eb1a0d11a96767a715a136ee43d94097ddf5b9cd`. Actual final source f225b8ae passed all three fresh normal workflows: gate40004752292 (1055 steps/382 self-tests), moving/phone40004752222, report40004742266. Three strict actual source/checkout/tree/parent proofs are in ACTUAL-STRICT-NORMAL-THREE-TERMINAL; ordinary API merge/current-check and final tree/parent receipts in ACTUAL-GREEN-DEV-MERGE. No admin/bypass/manual workflow dispatch.
+
+The owner approved normal GitHub CI validation for the reviewed integration after actual local G11 process-exhaustion failure; that NONPASS remains unchanged. Original mobile browser launch failed before any app frame due thread exhaustion, with owned cleanup; no photographic/world PASS inferred. One planted standing horse is a partial increment. T2800/T2803 remain unfinished for photographic anatomy/eyes/hair/coat, near/mid/far, full gait, tack/teams/drivers/riding.
+
+Old draft1212 closed as redesigned replacement superseded, not byte containment; actual receipts in ACTUAL-SUPERSEDED-1212-CLOSURE. Canonical tickets/handover are pushed to chicago-tickets. Normal automatic preview deployment40008193719 is running; actual public asset delivery is PENDING at this checkpoint. No production promotion.
+
+## Earlier checkpoint notes
+
 # PR1244 approved delivery checkpoint
 
 Owner explicitly answered "Yes merge to dev when green" to the one-time local pre-commit exception for the reviewed integration. Original horse eb1cafe passed1054checks/382selftests. Interrupted combined G11 staysNONPASS. Approvedintegration79e215 pushed/published; ordinary GitHubUpdatebranch produced92ee021 on newDEVeb1a. Canonicalowners fixed ONLYtwo generatedmetadata lines aftertextmerge, pushedf225b8ae541173e2dde6e576bb20c103f4c87106/tree43665a4b692d5283defba96f236aed14b3c02623, parent92ee. Actual plantedcontract/changelog/IDs/whitespace/publisher/mirror/site pass; appclean. No combined localfullPASS fabricated.
