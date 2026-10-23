@@ -1,0 +1,31 @@
+--- V2/fit_b479_HELD.mjs
++++ V3/fit_b479_HELD.mjs
+@@ -27,7 +27,18 @@
+  const doc=validatePlantedStandingHeader(ab,spec),view=new DataView(ab),bin=28+view.getUint32(12,true);
+  assert.equal(view.getUint32(bin-4,true),0x004e4942);
+  const dims={SCALAR:1,VEC2:2,VEC3:3,VEC4:4,MAT4:16},types={5123:Uint16Array,5125:Uint32Array,5126:Float32Array};
+- const accessor=id=>{const a=doc.accessors[id],v=doc.bufferViews[a.bufferView],C=types[a.componentType];assert(C&&dims[a.type]&&!a.normalized&&!a.sparse&&!v.byteStride);return new C(ab,bin+(v.byteOffset??0)+(a.byteOffset??0),a.count*dims[a.type]);};
++ const denseType=(a,v)=>{const C=types[a.componentType];assert(C&&dims[a.type]&&!a.normalized&&!a.sparse,'Expected plain supported accessor');assert(v.byteStride===undefined||v.byteStride===dims[a.type]*C.BYTES_PER_ELEMENT,'Interleaved or mismatched accessor stride');return C;};
++ const positionDescriptor=doc.accessors[0],positionView=doc.bufferViews[positionDescriptor.bufferView];
++ assert.equal(denseType(positionDescriptor,{...positionView,byteStride:undefined}),Float32Array);
++ assert.equal(denseType(positionDescriptor,{...positionView,byteStride:12}),Float32Array);
++ assert.throws(()=>denseType(positionDescriptor,{...positionView,byteStride:16}),/Interleaved or mismatched/);
++ assert.throws(()=>denseType({...positionDescriptor,normalized:true},positionView),/plain supported/);
++ assert.throws(()=>denseType({...positionDescriptor,sparse:{count:1}},positionView),/plain supported/);
++ const uvDescriptor=doc.accessors[10],uvView=doc.bufferViews[uvDescriptor.bufferView];
++ assert.equal(denseType(uvDescriptor,{...uvView,byteStride:8}),Float32Array);
++ assert.throws(()=>denseType(uvDescriptor,{...uvView,byteStride:12}),/Interleaved or mismatched/);
++ report.packed_stride_decoder_controls={implicit_packed_accepted:true,explicit_position12_and_uv8_accepted:true,position16_and_uv12_rejected:true,normalized_and_sparse_rejected:true};
++ const accessor=id=>{const a=doc.accessors[id],v=doc.bufferViews[a.bufferView],C=denseType(a,v);return new C(ab,bin+(v.byteOffset??0)+(a.byteOffset??0),a.count*dims[a.type]);};
+  const ref=json(binding.paths.reference),receipt=json(binding.paths.export_receipt);
+  assert.equal(receipt.output_sha256,binding.asset_sha256);assert.equal(receipt.readback_reference_sha256,sha(read(binding.paths.reference)));
+  // Correct raw-geometry proof: compare byte-identical semantic streams to
+@@ -36,7 +47,7 @@
+  assert.equal(sha(original),receipt.source_rig_sha256);assert.equal(receipt.source_rig_sha256,'03a1f747189ee2457f0fc3dc9720b1d3d288e36c32b7171b5a9976afb7e63c36');
+  const origAB=original.buffer.slice(original.byteOffset,original.byteOffset+original.byteLength),ov=new DataView(origAB),origDoc=JSON.parse(new TextDecoder().decode(new Uint8Array(origAB,20,ov.getUint32(12,true)))),origBin=28+ov.getUint32(12,true);
+  assert.equal(ov.getUint32(origBin-4,true),0x004e4942);
+- const originalAccessor=id=>{const a=origDoc.accessors[id],v=origDoc.bufferViews[a.bufferView],C=types[a.componentType];assert(C&&dims[a.type]&&!a.normalized&&!a.sparse&&!v.byteStride);return new C(origAB,origBin+(v.byteOffset??0)+(a.byteOffset??0),a.count*dims[a.type]);};
++ const originalAccessor=id=>{const a=origDoc.accessors[id],v=origDoc.bufferViews[a.bufferView],C=denseType(a,v);return new C(origAB,origBin+(v.byteOffset??0)+(a.byteOffset??0),a.count*dims[a.type]);};
+  let rawSemanticPairs=0;
+  const sameRaw=(candidateId,originalId)=>{
+   const a=doc.accessors[candidateId],b=origDoc.accessors[originalId];

@@ -1,0 +1,312 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://chicago4d/schemas/scene.schema.json",
+  "title": "4D Chicago Scene",
+  "description": "A scene names a date and a terrain epoch. Everything else in the dataset resolves against it. Adding a year is a new scene file, not a restructure.",
+  "type": "object",
+  "required": [
+    "id",
+    "title",
+    "target_date",
+    "terrain_epoch",
+    "layers"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9_]+$"
+    },
+    "title": {
+      "type": "string"
+    },
+    "target_date": {
+      "type": "string",
+      "format": "date",
+      "description": "The single date this scene depicts. Enforced against every structure phase."
+    },
+    "terrain_epoch": {
+      "type": "string",
+      "description": "Must resolve in data/terrain/epochs.json, and its interval must cover target_date."
+    },
+    "terrain_apron": {
+      "type": "string",
+      "pattern": "^[a-z0-9_]+/[a-z0-9_]+\\.json$",
+      "description": "T-2502. Optional: an apron field beside the terrain box, as <epoch>/<file>.json under data/terrain/epochs/ - a second heightfield the renderer samples outside the box before its fallback, drawn in place of the box's carried apron over the field's cut_local_enu_m. 1812's carries the ground down the South Branch to Lee's Place."
+    },
+    "lighting": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "A specific, documented moment \u2014 not a vibe. Sun azimuth and elevation are computed from this plus the datum lat/lon.",
+      "properties": {
+        "local_time": {
+          "type": "string",
+          "pattern": "^[0-2][0-9]:[0-5][0-9]$"
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "spawn": {
+      "type": "object",
+      "required": [
+        "local_e",
+        "local_n"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "local_e": {
+          "type": "number"
+        },
+        "local_n": {
+          "type": "number"
+        },
+        "yaw_deg": {
+          "type": "number"
+        }
+      }
+    },
+    "anchors": {
+      "type": "array",
+      "description": "Named viewpoints. The smoke harness reads the same anchors the walkthrough uses, so screenshots and gameplay can never diverge.",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "local_e",
+          "local_n"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9_]+$"
+          },
+          "label": {
+            "type": "string"
+          },
+          "local_e": {
+            "type": "number"
+          },
+          "local_n": {
+            "type": "number"
+          },
+          "yaw_deg": {
+            "type": "number"
+          },
+          "altitude_m": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 900,
+            "description": "Metres above local ground. Present = this is an AERIAL viewpoint: arriving at it puts the visitor in free-fly at this height rather than on foot. Absent = a standing viewpoint, which is the historical default and stays so."
+          },
+          "pitch_deg": {
+            "type": "number",
+            "minimum": -85,
+            "maximum": 85,
+            "description": "Look angle, negative is downward. Only meaningful alongside altitude_m \u2014 a standing viewpoint looks at the horizon."
+          }
+        }
+      }
+    },
+    "layers": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "terrain",
+          "structures",
+          "flora",
+          "fauna",
+          "water",
+          "streets",
+          "enclosures",
+          "signage",
+          "yard_goods",
+          "parked_transport",
+          "frontage",
+          "wharves",
+          "boats",
+          "wells",
+          "residents",
+          "businesses",
+          "exclusions",
+          "street_grid",
+          "street_trees",
+          "context",
+          "railway",
+          "humans",
+          "standing_horses"
+        ]
+      },
+      "minItems": 1,
+      "description": "What the renderer mounts for this scene (T-1739), and nothing it does not list. `terrain` and `water` are the epoch's own ground and water. `structures` is the structure records that resolve at target_date. The rest are the town's derived and authored layers, every one of them written for 1 July 1835 in a directory that carries no date: `flora` (the sward, the timber and the ground's substrate colours), `fauna`, `streets`, `enclosures` (with the ground inside them), `signage`, `yard_goods`, `frontage`, `wharves`, `boats`, `wells`, `residents` (the people directory), `businesses` (the firms register) and `exclusions` (the research record of buildings left out, and the watch list); tools/compile_scene.py compiles the people directory and the exclusions record only for a scene that lists them. The drawer follows the same list (T-1740): `residents` offers the People section and the City, Population and Order book topics, `businesses` the Firms section, `fauna` the wildlife topic, `flora` the plants topic and `exclusions` the not-here and open-questions topics, and a scene that does not list one offers none of what it carries. `street_grid` is a dated layer, data/street_grid/<scene>.json (T-0474, the 1904 Prairie Avenue carriageways, block faces, alleys and parcels). `context` is the faded context city (T-2477): data/context/<scene>.json, generated by tools/build_context_1904.py, simple stand-ins read off the Sanborn sheets and projected past them on every part of the map not yet built. `street_trees` is data/street_trees/<scene>.json (T-2473, the parkway elms planted on that grid's parkway bands). `railway` is a dated layer, data/railway/<scene>.json (T-2478, the 1904 Illinois Central tracks along the lake, their ballast, ties and verges). `humans` is the human figures (T-1788): data/humans/instances/<scene>/index.json and the instance records it names, each bound to a person in that scene's people directory and drawn only as data/humans/contract.json \u00a7 l1 allows \u2014 while L1 is in force, nobody. A scene of another date lists only what is true of it. `standing_horses` is a scene-scoped reconstructed development animal layer from data/transport/parked/standing-horses.json; one licensed canonical26 planted-standing clip, no walking, hitching or riding qualification."
+    },
+    "released": {
+      "type": "boolean",
+      "default": false,
+      "description": "Cannot be true while any included structure carries review_required."
+    },
+    "note": {
+      "type": "string"
+    },
+    "cards": {
+      "type": "array",
+      "description": "Interpretive cards the welcome panel opens for this scene (T-0472): what an event is called, what the evidence for it is and whose it is, where the accounts disagree, and what the scene deliberately does not show. The card's `text` is this project's own prose; every `quotes` entry is a source's words, verbatim, with the locator it was read at, and its source_id must resolve in data/sources. A card that quotes carries a confidence (documented needs a quote; inferred and conjectural need a confidence_note). A card with no quote is `kind: project` - a statement of what this reconstruction does, which claims nothing about the past. `review_required` here blocks the scene from release exactly as it does on a structure, and the card must say why in its own `review_note` (tools/validate.py, the AGENTS.md standing constraint).",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "title",
+          "text"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9_]+$"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "evidence",
+              "terminology",
+              "conflict",
+              "project"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 900
+          },
+          "quotes": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": [
+                "source_id",
+                "locator",
+                "cite",
+                "text"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "source_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "locator": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "cite": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120,
+                  "description": "The attribution the visitor reads under the quote: whose words, and where printed. The locator is for the next reader of the data; this is for the person on the card."
+                },
+                "text": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 400
+                }
+              }
+            }
+          },
+          "confidence": {
+            "type": "string",
+            "enum": [
+              "documented",
+              "inferred",
+              "conjectural"
+            ]
+          },
+          "confidence_note": {
+            "type": "string",
+            "minLength": 1
+          },
+          "review_required": {
+            "type": "boolean",
+            "default": false
+          },
+          "review_note": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "static_support_regions": {
+      "type": "array",
+      "maxItems": 1,
+      "description": "Optional small scene-authored static support rectangle for an explicitly drawn standing-horse layer. yards.js snapshots only the actual yard base triangles overlapping this region BEFORE normal coarse upload release; the original town CPU geometry still releases. Current renderer independently caps one region,4square metres,32triangles and4096typed-array bytes, with owned disposal; a missing/oversized support cache refuses the horse. Not a collision surface or historical surveying claim.",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "record_id",
+          "bounds_enu_m",
+          "basis",
+          "maximum_region_count",
+          "maximum_region_area_m2",
+          "maximum_retained_triangles",
+          "maximum_retained_typed_array_bytes",
+          "lifetime"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9_]+$"
+          },
+          "record_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9_]+$"
+          },
+          "bounds_enu_m": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 2,
+              "items": {
+                "type": "number"
+              }
+            }
+          },
+          "basis": {
+            "type": "string",
+            "minLength": 1
+          },
+          "maximum_region_count": {
+            "const": 1
+          },
+          "maximum_region_area_m2": {
+            "const": 4
+          },
+          "maximum_retained_triangles": {
+            "const": 32
+          },
+          "maximum_retained_typed_array_bytes": {
+            "const": 4096
+          },
+          "lifetime": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}

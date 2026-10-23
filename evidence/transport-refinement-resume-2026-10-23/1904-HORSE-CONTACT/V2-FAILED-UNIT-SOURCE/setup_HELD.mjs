@@ -1,0 +1,22 @@
+// All setup is HELD with the runner; no remote fetch or renderer.
+import fs from 'node:fs';
+import path from 'node:path';
+import {fileURLToPath,pathToFileURL} from 'node:url';
+import {createHash} from 'node:crypto';
+import {register} from 'node:module';
+import assert from 'node:assert/strict';
+export const HERE=path.dirname(fileURLToPath(import.meta.url));
+export const binding=JSON.parse(fs.readFileSync(path.resolve(process.argv[2]),'utf8'));
+assert.equal(binding.released,true);assert.equal(binding.authorization,'ONE_ROOT_B479_1904_SINGLE_SITE_CPU_FIT_CONTACT129');
+export const APP=binding.app_root;
+export const OUT=path.join(HERE,'ACTUAL');assert(fs.existsSync(OUT));
+const sha=b=>createHash('sha256').update(b).digest('hex');
+export const reads=new Map();
+export const read=p=>{assert(binding.inputs[p],`Unpinned read ${p}`);const bytes=fs.readFileSync(p);assert.equal(sha(bytes),binding.inputs[p].sha256,`Input drift ${p}`);reads.set(p,bytes);return bytes;};
+for(const[p,pin]of Object.entries(binding.inputs))assert.equal(sha(fs.readFileSync(p)),pin.sha256,`Preimport drift ${p}`);
+register(new URL('./resolve_HELD.mjs',import.meta.url),import.meta.url);
+globalThis.window={location:pathToFileURL(APP+'/renderers/web/index.html')};
+const context=new Proxy({}, {get:(_,key)=>key==='createImageData'||key==='getImageData'?((w,h)=>({data:new Uint8ClampedArray(w*h*4),width:w,height:h})):key==='measureText'?(()=>({width:0})):()=>{}});
+globalThis.ImageData=class{constructor(data,width,height){Object.assign(this,{data,width,height});}};
+globalThis.document={createElement:()=>({width:0,height:0,getContext:()=>context})};
+globalThis.fetch=async(input)=>{const u=new URL(String(input));assert.equal(u.protocol,'file:','Network forbidden');const p=fileURLToPath(u);assert(binding.inputs[p],`Unpinned fetch ${p}`);return new Response(read(p),{status:200});};

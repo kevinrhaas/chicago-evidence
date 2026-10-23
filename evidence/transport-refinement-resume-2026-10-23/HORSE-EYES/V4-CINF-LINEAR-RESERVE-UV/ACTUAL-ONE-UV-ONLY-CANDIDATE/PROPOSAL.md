@@ -1,0 +1,5 @@
+V4 finite source candidate.
+
+V1/V2 failed the fixed4/256UV interpolation guard; V3 C-infinity field passed it but failed10 UV orientation checks near80–100degree far-front triangles because the radius saturated too strongly. All actual failures remain; no V1–V3 GLB exists. V4 changes only the analytic radius construction by blending35% linear geodesic radius with65% smooth saturation. Saturation scales are solved directly to retain reconstructed near-center slopes0.5/1.0, approximately2:1 horizontal pupil. This is a fixed finite design, not a parameter sweep, biological measurement or photographic claim.
+
+Each radius derivative now has a positive lower bound0.35*0.42/front_alpha, improving far-front triangle conditioning without moving the existing100degree seam or changing interpolation/fold/crack guards. Both axes still meet0.42UV at front rim. Their Jacobian remains positive. All original source geometry/rig/clip/images/material/bodyhairUV/indices remain protected. Same existing exposed lower-globe gaze seed. No texture edit, new vertices, camera/framing/lighting change or app write. Source-only success is not browser/photographic acceptance.
