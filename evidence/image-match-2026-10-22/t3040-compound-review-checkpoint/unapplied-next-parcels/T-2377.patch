@@ -1,0 +1,100 @@
+diff --git a/chicago/4d/data/sources/cameron_c1900_first_post_office.json b/chicago/4d/data/sources/cameron_c1900_first_post_office.json
+new file mode 100644
+--- /dev/null
++++ b/chicago/4d/data/sources/cameron_c1900_first_post_office.json
+@@ -0,0 +1,29 @@
++{
++  "id": "cameron_c1900_first_post_office",
++  "type": "illustration",
++  "citation": "Edgar S. Cameron. Chicago's First Postoffice in 1833. Halftone reproduction after an oil painting, credited on the reproduced sheet to the Chicago Historical Society.",
++  "author": "Edgar S. Cameron (painter); halftone publisher not established",
++  "date": "undated on the reproduction; catalogued circa 1900 in the project image inventory",
++  "describes_date": "1833",
++  "repository": "Chicago Historical Society, via Wikimedia Commons; local surrogate in chicago/reference/images/chicago/",
++  "url": "https://commons.wikimedia.org/wiki/File:Chicago%27s_first_post_office,_1833.jpg",
++  "locator": "Local surrogate chicago/reference/images/chicago/chicago_first_post_office_1833.jpg, 2062 by 1507 pixels; caption below the picture names the post office, 1833, Cameron and the Chicago Historical Society.",
++  "tier": 5,
++  "rights_status": "public_domain",
++  "rights_note": "chicago/reference/images/IMAGE_SOURCES.md lists this halftone as public domain by pre-1930 publication. This describes the existing local surrogate, not the separately advertised Alamy licensed copy. The original painting's holding and the reproduction's publication have not been independently established here.",
++  "asset_use": "cross_check",
++  "verified": true,
++  "access_notes": "The committed local picture and its printed caption were opened and read. The Commons landing page returned HTTP 403 during this review; circa 1900 and the public-domain attribution are the committed image inventory's metadata, not a successful fresh remote catalogue check.",
++  "note": "A retrospective painting of a scene labelled 1833, not a photograph or an eyewitness record. The building at left has a gable roof over horizontal log courses, a single visible sash and an off-centre doorway in the long elevation, a small framed opening in the visible gable, and one chimney rising through the roof. The caption places it near the east end of the later Lake Street bridge. This picture informs an inferred elevation for Hogan's store; it supplies neither a surveyed location nor a dimension and cannot establish the building's survival or use on 1 July 1835.",
++  "what_it_supplies": [
++    "the pictured log cabin's visible opening arrangement and gable roof",
++    "one framed opening in the visible gable and one visible chimney",
++    "a depiction explicitly labelled Chicago's First Postoffice in 1833"
++  ],
++  "what_it_does_not_supply": [
++    "coordinates, dimensions or an independent scale",
++    "the hidden elevations, exact sash pattern or material colours",
++    "the building's state, continued existence or use on 1 July 1835",
++    "a creation or publication date printed on the reproduced sheet"
++  ]
++}
+diff --git a/chicago/4d/data/structures/hogan_store.json b/chicago/4d/data/structures/hogan_store.json
+--- a/chicago/4d/data/structures/hogan_store.json
++++ b/chicago/4d/data/structures/hogan_store.json
+@@ -108,10 +108,61 @@
+           "confidence": "inferred",
+           "note": "No pitch is attested. 35 degrees is the archetype's mid-range for a low single-storey log building roofed in riven shakes. Inferred from construction practice, not measured."
+         },
++        "front_set_out": {
++          "value": [
++            ["door", 4.6],
++            ["window", 10.2]
++          ],
++          "confidence": "inferred",
++          "sources": ["cameron_c1900_first_post_office"],
++          "note": "Initial set-out from Cameron's retrospective picture: one sash between the visible gable corner and an off-centre doorway in the long elevation. Metres run from the local minimum-u end of the attested 13.716 m frontage. The opening order follows the picture; these positions are a provisional interpretation on the existing footprint, not surveyed dimensions or a completed camera match. The hidden elevation retains the archetype's reconstructed treatment."
++        },
++        "window_w_m": {
++          "value": 0.55,
++          "confidence": "inferred",
++          "sources": ["cameron_c1900_first_post_office"],
++          "note": "Initial sash width estimated relative to the pictured doorway, whose 0.85 m width is reconstructed. The retrospective picture supplies proportions, not a metric scale; refine through its camera comparison."
++        },
++        "window_h_m": {
++          "value": 0.95,
++          "confidence": "inferred",
++          "sources": ["cameron_c1900_first_post_office"],
++          "note": "The visible sash is approximately half the doorway's height in Cameron's retrospective picture. 0.95 m follows the reconstructed 1.95 m doorway and remains a provisional proportion, not a measured historic dimension."
++        },
++        "door_w_m": {
++          "value": 0.85,
++          "confidence": "reconstructed",
++          "note": "Initial single-leaf doorway width used to scale the pictured opening proportions. The picture contains no independent scale; 0.85 m is a period-sized reconstruction, not an attested width."
++        },
++        "door_h_m": {
++          "value": 1.95,
++          "confidence": "reconstructed",
++          "note": "Initial doorway height used to scale the pictured sash. The picture contains no independent scale; 1.95 m retains the archetype's approximately human-height opening rather than asserting a historic measurement."
++        },
++        "end_openings": {
++          "value": [
++            {
++              "end": "+x",
++              "kind": "light",
++              "at": 0.5,
++              "z": 3.35
++            }
++          ],
++          "confidence": "inferred",
++          "sources": ["cameron_c1900_first_post_office"],
++          "note": "Cameron's visible gable has one small framed opening above its log wall, approximately centred. It is assigned to the local +x gable for the reference-view comparison; this is a model-frame choice, not a compass bearing supplied by the picture. The generator's 0.7 by 0.8 m light and its initial 3.35 m centre height are reconstructed within the existing roof. This uses a framed light rather than loft:true, which builds a closed boarded hatch."
++        },
++        "chimney_ridge_at": {
++          "value": [0.6],
++          "confidence": "inferred",
++          "sources": ["cameron_c1900_first_post_office"],
++          "note": "The one visible chimney rises through the roof rather than standing against an exterior gable. Its initial station is 0.6 of the ridge from the local minimum-u end, estimated from the retrospective drawing and awaiting rendered comparison. Neither an exact station nor the stack's dimensions are attested."
++        },
+         "chimneys": {
+           "value": 1,
+           "confidence": "inferred",
+-          "note": "Not attested, and nothing describes a stack on this building at all. One is the minimum for a store kept through Chicago winters with a clerk sorting mail in half of it, and the normal number for a single-pen log building. The COUNT is the inference; where the stack stands, how big it is and what it is made of are the archetype's, which is the standing admission in docs/LIBERTIES.md L26."
++          "sources": ["cameron_c1900_first_post_office"],
++          "note": "One stack is visible above the roof in Cameron's retrospective picture of the post office in 1833. This supports an inferred visible count, not a scene-date attestation or a finding about hidden stacks. chimney_ridge_at states its provisional position; the stack's section and construction remain the archetype's reconstructed treatment recorded under docs/LIBERTIES.md L26."
+         }
+       },
+       "change_note": "The log store standing at the west end of the Lake Street block when the United States established a post office at Chicago on 31 March 1831, and for three years the building that held it: partitioned into a post office on one side and the store of Brewster, Hogan & Co. on the other, with John Bates Jr. sorting the mail from 1833. The post office moved out to Franklin and South Water about July 1834; that is a change of USE and does not open a new phase, and it is why this building is not the post office on the scene date."

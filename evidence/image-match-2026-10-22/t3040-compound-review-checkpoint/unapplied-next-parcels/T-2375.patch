@@ -1,0 +1,170 @@
+--- a/chicago/4d/generators/archetypes/bridge_timber_params.py
++++ b/chicago/4d/generators/archetypes/bridge_timber_params.py
+@@ -124,6 +124,10 @@
+ # decade and which a later phase of the same archetype could carry.
+ DECK_KINDS = ("puncheon", "plank")
+ 
++# The existing open pole rail remains the default. The horizontal-board
++# parapet is an opt-in reading of the public-domain Andreas drawbridge plate.
++RAILING_KINDS = ("pole", "board")
++
+ # WHAT HOISTED THE DRAW. `None` is the state this archetype built from 2026-08-11 to
+ # 2026-08-21: gallows frames standing over a closed opening with nothing hung from
+ # them, because the two TEXTS this project holds (Andreas, and the chicagology page
+@@ -194,7 +198,7 @@
+ CONSUMED = frozenset({
+     "width_m", "clearance_m", "pier_count", "pier_kind", "deck_kind",
+     "stringer_count", "stringer_d_m", "plank_t_m", "abutments", "construction",
+-    "railing", "deck_height_m",
++    "railing", "railing_kind", "deck_height_m",
+     # The draw, added 2026-08-11. All three reach vertices: the opening clears the
+     # supports out of itself and stations the frames, the count sets how many frames
+     # there are, and the height is the silhouette.
+@@ -252,6 +256,10 @@
+     # railing is built at whatever confidence the record gives it and nothing else
+     # inherits from it.
+     railing: bool = False
++
++    # T-2375: the Andreas 1884 plate shows horizontal-board parapets, not
++    # the open pole rail above. Its boards' dimensions remain reconstructed.
++    railing_kind: str = "pole"
+ 
+     # THE MOVING PART, added 2026-08-11 for the Dearborn Street drawbridge.
+     #
+@@ -402,6 +410,11 @@
+             raise ParamError(f"pier_kind '{self.pier_kind}' not in {PIER_KINDS}")
+         if self.deck_kind not in DECK_KINDS:
+             raise ParamError(f"deck_kind '{self.deck_kind}' not in {DECK_KINDS}")
++        if self.railing_kind not in RAILING_KINDS:
++            raise ParamError(
++                f"railing_kind '{self.railing_kind}' not in {RAILING_KINDS}")
++        if self.railing_kind != "pole" and not self.railing:
++            raise ParamError("railing_kind without railing: no parapet to build")
+         if self.pier_count is not None and not 0 <= self.pier_count <= 24:
+             raise ParamError(f"pier_count {self.pier_count} outside 0-24. Zero is a "
+                              f"legitimate value — a short crossing lands abutment to "
+@@ -506,6 +519,7 @@
+         abutments=bool(val("abutments", True)),
+         construction=str(val("construction", "log")),
+         railing=bool(val("railing", False)),
++        railing_kind=str(val("railing_kind", "pole")),
+         deck_height_m=(None if val("deck_height_m") is None
+                        else float(val("deck_height_m"))),
+         draw_span_m=(None if val("draw_span_m") is None
+--- a/chicago/4d/generators/archetypes/bridge_timber.py
++++ b/chicago/4d/generators/archetypes/bridge_timber.py
+@@ -573,9 +573,11 @@
+ 
+ def _railing(b: MeshBuilder, p: BridgeTimberParams, deck_z: float,
+              conf: float) -> None:
+-    """A pole rail on posts. OFF by default — see the module docstring for the
+-    argument, which is the substantive part of this function. The Dearborn Street
+-    drawbridge turns it on; the two branch bridges do not."""
++    """Posts with the record's pole rail or horizontal-board parapet.
++
++    OFF by default. T-2375's Andreas plate shows the Dearborn parapet filled
++    with horizontal boards. The pole path keeps its previous geometry.
++    """
+     h, r = 0.95, 0.06
+     step = max(p.span_m / max(round(p.span_m / 2.2), 1), 1.0)
+     n = int(p.span_m / step)
+@@ -585,5 +587,50 @@
+             x = min(i * step, p.span_m)
+             b.add_box(x - 0.06, yy - 0.06, deck_z, x + 0.06, yy + 0.06, deck_z + h,
+                       conf, M_LOG, skip=("bottom",))
+-        log_prism(b, (-0.10, yy, deck_z + h - r), (p.span_m + 0.10, yy, deck_z + h - r),
+-                  r, conf, M_LOG)
++        if p.railing_kind == "board":
++            _board_parapet(b, p, yy, sgn, deck_z, h, step, n,
++                           p.worst_conf("railing", "railing_kind"))
++        else:
++            log_prism(b, (-0.10, yy, deck_z + h - r),
++                      (p.span_m + 0.10, yy, deck_z + h - r),
++                      r, conf, M_LOG)
++
++
++def _board_parapet(b: MeshBuilder, p: BridgeTimberParams, yy: float,
++                   sgn: int, deck_z: float, h: float, step: float,
++                   n: int, conf: float) -> None:
++    """T-2375: the plate's boarded side, with reconstructed scantlings.
++
++    Five courses, 40 mm thick, rise from a 40 mm deck gap to the underside
++    of a 60 mm cap; 10 mm separates courses. At the existing 0.95 m height
++    this makes each board 162 mm high. The cap is 200 mm wide.
++
++    Boards are jointed at post bays and at the draw's ends and leaf joint:
++    the cap and infill do not become continuous timbers across a moving leaf.
++    This does not model hinges, raised leaves or the plate's deck camber.
++    """
++    cuts = {min(i * step, p.span_m) for i in range(n + 1)}
++    cuts.update((0.0, p.span_m))
++    if p.draw_span_m:
++        mid = p.span_m / 2.0
++        cuts.update((mid - p.draw_span_m / 2.0,
++                     mid + p.draw_span_m / 2.0))
++        if p.draw_leaves == 2:
++            cuts.add(mid)
++    cuts = sorted(cuts)
++    courses, gap, thickness = 5, 0.01, 0.04
++    bottom, cap_t = 0.04, 0.06
++    board_h = (h - cap_t - bottom - (courses - 1) * gap) / courses
++    # Boards sit against the outside of the existing 120 mm square posts.
++    board_y = yy + sgn * (0.06 + thickness / 2.0)
++    for a, c in zip(cuts, cuts[1:]):
++        if c - a <= 0.01:
++            continue
++        x0, x1 = a + 0.005, c - 0.005
++        for course in range(courses):
++            z0 = deck_z + bottom + course * (board_h + gap)
++            b.add_box(x0, board_y - thickness / 2.0, z0,
++                      x1, board_y + thickness / 2.0, z0 + board_h,
++                      conf, M_DECK)
++        b.add_box(x0, yy - 0.10, deck_z + h - cap_t,
++                  x1, yy + 0.10, deck_z + h, conf, M_DECK)
+--- a/chicago/4d/data/structures/dearborn_street_drawbridge.json
++++ b/chicago/4d/data/structures/dearborn_street_drawbridge.json
+@@ -150,6 +150,14 @@
+           "confidence": "inferred",
+           "note": "THE FRAMES ARE AN A, NOT TWO BARE POSTS. Built from 2026-08-11 to 2026-08-21 as a plain portal — two uprights under a lapped head — because no text describes the bracing and the generator refused to invent it. Both engravings in the 2026-08-18 owner brief (README images 2 and 3) draw raking timber in the frames; the brief's own words are 'twin timber A-frames/gallows posts above the deck'. A tier-5 pictorial view may drive form as `inferred`, and the thing being inferred here is weak enough to carry it: that a frame tall enough to hold a sixty-foot draw suspended for forty-eight hours was braced is nearly carpentry rather than evidence, and the plate is what says it was braced VISIBLY, above the deck, where it reads. WHAT IS BUILT AND WHAT IS INVENTED IN IT: two knee braces per frame rising from the posts to the underside of the head, and one shore per post raking down the span away from the opening to the bearing line. The members' sections, angles, count and footing are the archetype's own — a plate shows a braced frame and not a schedule of scantlings — and are recorded in docs/LIBERTIES.md L163. The frames' HEIGHT is untouched and remains the most visible unknown on this record; see form.gallows_height_m."
+         },
++        "railing_kind": {
++          "value": "board",
++          "confidence": "inferred",
++          "sources": [
++            "andreas_1884_dearborn_drawbridge_plate"
++          ],
++          "note": "HORIZONTAL-BOARD PARAPETS, NOT AN OPEN POLE RAIL. The public-domain plate published in Andreas 1884, p. 631, draws broad side parapets with horizontal board joints along the approaches and draw. The actual plate is held at chicago/reference/images/chicago/chicago_dearborn_drawbridge_1834.png and was read for T-2375. This is a retrospective illustration of the bridge, not a contemporary specification, so the form is inferred rather than attested and supplies no coordinate, footprint dimension or surveyed height. The existing 0.95 m parapet height and approximately 2.2 m post spacing are retained; five courses, their 162 mm exposed height, 40 mm thickness, 10 mm gaps, 40 mm clearance above the deck and a 200 by 60 mm top cap are reconstructed scantlings. Panels and cap are jointed at post bays, draw ends and the two leaves' meeting line. The old pole-section description in railing.note records the superseded generator detail; the presence of a railing and its dimensional uncertainty are unchanged. See docs/LIBERTIES.md L-dearborn-board-parapet-2375. This refinement does not resolve the drawing's raised central profile or its camera and does not establish an image match."
++        },
+         "railing": {
+           "value": true,
+           "confidence": "inferred",
+--- a/chicago/4d/docs/LIBERTIES.md
++++ b/chicago/4d/docs/LIBERTIES.md
+@@ -31338,3 +31338,27 @@
+ **Ticket:** T-3000 (piece 3 of T-2540).
+ **Review:** `data/reference_views/kimball_house_1801_prairie/taylor_c1895_northwest.match.json`.
+ **Recorded:** 2026-10-22 (T-3000).
++
++### L-dearborn-board-parapet-2375 — Dearborn's boarded parapets
++
++**Covers:** `dearborn_street_drawbridge` form `railing_kind`.
++**Decision:** Replace the open pole rail with horizontal-board parapets, read from
++the public-domain Andreas 1884 plate, p. 631
++(`andreas_1884_dearborn_drawbridge_plate`;
++`chicago/reference/images/chicago/chicago_dearborn_drawbridge_1834.png`).
++The plate shows the broad boarded sides and horizontal joints. It is retrospective,
++so this is inferred form for the 1835 bridge, not a contemporary specification.
++**What is invented:** retain the existing 0.95 m height and approximately 2.2 m
++post spacing; use five boards, each 162 mm high and 40 mm thick, with 10 mm gaps,
++starting 40 mm above the deck, under a 200 mm wide, 60 mm thick cap. These sections,
++course count, joints and neutral weathered-deck material are reconstructed.
++Boards and cap are jointed at post bays, draw ends and the two leaves' meeting line;
++neither becomes a continuous timber across a moving leaf.
++**What remains unresolved:** the pictures' raised central deck profile, approach
++geometry, camera calibration and the remaining image comparison. The flat closed
++deck is retained; this change does not claim the bridge matches its pictures.
++**How to resolve:** the trustees' specification, premium drawing or repair accounts
++could replace the reconstructed sections; a completed camera solve and rendered
++comparison must resolve the visible differences before the ticket closes.
++**Ticket:** T-2375.
++**Recorded:** 2026-10-22.

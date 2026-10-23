@@ -1,0 +1,230 @@
+diff --git a/chicago/4d/generators/archetypes/fort_structure_params.py b/chicago/4d/generators/archetypes/fort_structure_params.py
+--- a/chicago/4d/generators/archetypes/fort_structure_params.py
++++ b/chicago/4d/generators/archetypes/fort_structure_params.py
+@@ -46,6 +46,7 @@
+ 
+ from __future__ import annotations
+ 
++import math
+ from dataclasses import dataclass, field
+ 
+ # Confidence values as they are written into the _CONFIDENCE glTF attribute.
+@@ -66,7 +67,8 @@
+ CONSUMED = frozenset({
+     "kind", "stories", "wall_height_m", "roof_type", "roof_pitch_deg",
+     "construction", "paint", "chimneys", "gallery", "loopholes", "sun_dial",
+-    "upper_overhang_m", "lantern",
++    "upper_overhang_m", "lantern", "cupola", "cupola_width_m",
++    "cupola_height_m", "cupola_roof_pitch_deg",
+ })
+ 
+ # Where this archetype touches the ground: the whole footprint outline, at the
+@@ -124,6 +126,14 @@
+ 
+     # a lighthouse lantern on a tower
+     lantern: bool = False
++
++    # Opt-in roof dressing. T-2388 reads the second-fort blockhouse in
++    # Kurz & Allison panel 5; this does not enable cupolas on the first fort.
++    # height_m is the drum head above the main roof apex, not its hidden base.
++    cupola: bool = False
++    cupola_width_m: float = 1.8
++    cupola_height_m: float = 1.2
++    cupola_roof_pitch_deg: float = 35.0
+ 
+     # per-attribute confidence, keyed by the attribute name in the record
+     confidence: dict = field(default_factory=dict)
+@@ -203,6 +213,27 @@
+                              f"states a count, not whether there was one")
+         if not 0 <= self.chimneys <= 6:
+             raise ParamError(f"chimneys {self.chimneys} outside 0..6")
++
++        if not isinstance(self.cupola, bool):
++            raise ParamError("cupola must be a boolean")
++        if self.cupola:
++            if self.kind != "blockhouse" or self.roof_type != "pyramid":
++                raise ParamError("a cupola currently requires a pyramid-roofed blockhouse")
++            dimensions = (
++                ("cupola_width_m", self.cupola_width_m),
++                ("cupola_height_m", self.cupola_height_m),
++                ("cupola_roof_pitch_deg", self.cupola_roof_pitch_deg),
++            )
++            for name, value in dimensions:
++                if (isinstance(value, bool) or not isinstance(value, (int, float))
++                        or not math.isfinite(value)):
++                    raise ParamError(f"{name} must be a finite number")
++            if not 0.2 <= self.cupola_width_m <= min(self.width_m, self.depth_m) / 2:
++                raise ParamError("cupola_width_m must fit within half the building's short side")
++            if not 0.3 <= self.cupola_height_m <= 3.0:
++                raise ParamError("cupola_height_m outside 0.3-3 m above the roof apex")
++            if not 8.0 <= self.cupola_roof_pitch_deg <= 60.0:
++                raise ParamError("cupola_roof_pitch_deg outside 8-60 degrees")
+ 
+         if self.kind == "parade":
+             if self.roof_type != "none":
+@@ -316,6 +347,10 @@
+         upper_overhang_m=float(val("upper_overhang_m", 0.45)),
+         sun_dial=bool(val("sun_dial", False)),
+         lantern=bool(val("lantern", False)),
++        cupola=val("cupola", False),
++        cupola_width_m=float(val("cupola_width_m", 1.8)),
++        cupola_height_m=float(val("cupola_height_m", 1.2)),
++        cupola_roof_pitch_deg=float(val("cupola_roof_pitch_deg", 35.0)),
+         confidence=confidences,
+     )
+     p.validate()
+diff --git a/chicago/4d/generators/archetypes/fort_structure.py b/chicago/4d/generators/archetypes/fort_structure.py
+--- a/chicago/4d/generators/archetypes/fort_structure.py
++++ b/chicago/4d/generators/archetypes/fort_structure.py
+@@ -311,8 +311,46 @@
+         _loopholes(b, p, lower_z, over, p.conf("loopholes", "reconstructed"))
+     if p.gallery:
+         _gallery(b, p, p.conf("gallery", "reconstructed"))
++    if p.cupola:
++        _cupola(b, p, ridge)
+     if p.chimneys:
+         _chimneys(b, p, ridge, p.conf("chimneys", "reconstructed"), M_CHIMNEY)
++
++
++def _cupola(b: MeshBuilder, p: FortStructureParams, ridge_z: float) -> None:
++    """An opt-in timber drum and pyramidal cap, not a lighthouse lantern.
++
++    T-2388: occurrence follows the second-fort blockhouse in Kurz & Allison
++    panel 5. The dimensions, central mounting, three vent bands per face and
++    cap overhang are reconstructed; L-second-fort-cupola-2388 owns them.
++    The drum's skirt intersects the main roof instead of floating over its
++    sloping corners. Existing structures with cupola=False emit no new faces.
++    """
++    conf = p.worst_conf("cupola", "cupola_width_m", "cupola_height_m",
++                        "cupola_roof_pitch_deg", "roof_pitch_deg")
++    width = p.cupola_width_m
++    half = width / 2.0
++    cx, cy = p.width_m / 2.0, p.depth_m / 2.0
++    x0, x1, y0, y1 = cx - half, cx + half, cy - half, cy + half
++    # The 0.05 m buried margin closes the roof/drum junction at every edge.
++    base = ridge_z - half * math.tan(math.radians(p.roof_pitch_deg)) - 0.05
++    head = ridge_z + p.cupola_height_m
++    b.add_box(x0, y0, base, x1, y1, head, conf, M_WALL,
++              skip=("bottom", "top"))
++    # The print cannot resolve a vent pattern. These bands represent a
++    # ventilated wooden drum; they are not counted historical openings.
++    inset = width * 0.16
++    for i in range(3):
++        z0 = ridge_z + p.cupola_height_m * (0.18 + 0.24 * i)
++        z1 = z0 + p.cupola_height_m * 0.10
++        for plane, outward in ((y0 - 0.012, -1), (y1 + 0.012, 1)):
++            _panel(b, "y", plane, x0 + inset, x1 - inset,
++                   z0, z1, outward, conf, M_DARK)
++        for plane, outward in ((x0 - 0.012, -1), (x1 + 0.012, 1)):
++            _panel(b, "x", plane, y0 + inset, y1 - inset,
++                   z0, z1, outward, conf, M_DARK)
++    _hip_roof(b, x0, y0, x1, y1, head, p.cupola_roof_pitch_deg,
++              conf, pyramid=True, overhang=0.12)
+ 
+ 
+ #: How far a pitched roof reaches past the wall at its eaves and its rakes. The
+diff --git a/chicago/4d/data/structures/fort_dearborn_blockhouse.json b/chicago/4d/data/structures/fort_dearborn_blockhouse.json
+--- a/chicago/4d/data/structures/fort_dearborn_blockhouse.json
++++ b/chicago/4d/data/structures/fort_dearborn_blockhouse.json
+@@ -96,7 +96,7 @@
+         "roof_type": {
+           "value": "pyramid",
+           "confidence": "reconstructed",
+-          "note": "Unattested. A four-sided pitched cap over a near-square plan is the surviving type. Andreas's own 1808 index for the first fort notes 'the Cupolas are not yet built on the Block Houses as laid down', which attests a cupola on that fort's blockhouses and nothing about this one; no cupola is built here."
++          "note": "A four-sided pitched cap follows the silhouette of the right-hand corner blockhouse in Kurz & Allison panel 5. The 1893 retrospective vignette is tier-5 evidence of appearance, not a measurement or a coordinate; the main roof's dimensions remain reconstructed. Whistler's 1808 statement that cupolas were not yet built concerns the FIRST fort and neither attests nor excludes a cupola on this second-fort building."
+         },
+         "roof_pitch_deg": {
+           "value": 30.0,
+@@ -104,9 +104,32 @@
+           "note": "Unattested. A shallower pitch than the ranges because a pyramid over a wide plan gets tall fast."
+         },
+         "chimneys": {
+-          "value": 1,
++          "value": 0,
+           "confidence": "reconstructed",
+-          "note": "Unattested. A blockhouse manned in a Chicago winter is heated; the count, the position and everything else about the stack is ours."
++          "note": "No separate stack is distinguishable on the right-hand blockhouse in Kurz & Allison panel 5. The former reconstructed single stack occupied the centre now taken by the pictured cupola. Zero separate stacks is the silhouette choice for this build, not proof that the historical building lacked a chimney, stove or heating; concealed arrangements remain unresolved."
++        },
++        "cupola": {
++          "value": true,
++          "confidence": "inferred",
++          "sources": [
++            "kurz_allison_1893"
++          ],
++          "note": "Panel 5, the second fort as rebuilt in 1835, depicts a small capped drum above the pyramid roof of its right-hand corner blockhouse. Read directly from the public-domain crop data/sources/assets/prefire_views_kevin_2026_08/p3_1.png. Carrying this retrospective appearance into the 1835 building is inferred, not a contemporary construction record. It says nothing about either first-fort blockhouse or whether an 1808 proposal was subsequently built."
++        },
++        "cupola_width_m": {
++          "value": 1.8,
++          "confidence": "reconstructed",
++          "note": "A square drum 1.8 m wide is a starting reconstruction bounded by the small drum relative to the blockhouse roof in Kurz & Allison panel 5. The print supplies a proportion, not metres; the whole-compound camera is not yet accepted. Central mounting and the three vent bands on each face are reconstructed, L-second-fort-cupola-2388."
++        },
++        "cupola_height_m": {
++          "value": 1.2,
++          "confidence": "reconstructed",
++          "note": "The drum head stands 1.2 m above the main pyramid's apex; its skirt extends into the main roof. This is a starting silhouette proportion, not a measured historic height. The cap adds about 0.63 m above the drum head. L-second-fort-cupola-2388."
++        },
++        "cupola_roof_pitch_deg": {
++          "value": 35.0,
++          "confidence": "reconstructed",
++          "note": "A 35-degree four-sided cap with 0.12 m eaves reconstructs the small pointed cap in panel 5. The print does not establish pitch, roof covering, eave projection, framing or vent details. L-second-fort-cupola-2388."
+         }
+       }
+     }
+@@ -119,7 +142,7 @@
+     ],
+     "note": "The fort's one blockhouse, at the south-west angle, flanking the south and west curtains. It outlived the fort as a landmark: Wentworth records that when the reservation was sold in 1839 'the land whereon the block-house stood ... was not parted with'."
+   },
+-  "research_note": "THE MOST INVENTED BUILDING IN THE COMPLEX, and the one a visitor will look at hardest. Its corner is documented three times over and its outline is on the only plan; its height, its jetty, its loopholes, its roof and its stack are all ours, because nothing reached describes this blockhouse at all beyond the words 'block-house' and 'southwest'. The footprint note explains why the measured size is bigger than the type and why it was not quietly reduced.",
++  "research_note": "The second fort's blockhouse remains heavily reconstructed. Its south-west corner is documented three times over and its outline is on the 1830 plan; its height, jetty, loopholes and most dimensions remain ours. T-2388 reads the right-hand corner blockhouse in Kurz & Allison's retrospective panel 5: its pyramid roof carries a small capped drum, now built as an inferred cupola with reconstructed dimensions and vent details. No separate stack is distinguishable there, so the former reconstructed centre chimney is omitted rather than passed through the cupola. This does not establish historical absence. The footprint and surveyed placement are unchanged. The group camera remains provisional and the image gate is not satisfied.",
+   "review_required": false,
+   "land_owner": {
+     "value": "The ground was entered by John Baptist Baubian, 28 May 1835",
+diff --git a/chicago/4d/docs/LIBERTIES.md b/chicago/4d/docs/LIBERTIES.md
+--- a/chicago/4d/docs/LIBERTIES.md
++++ b/chicago/4d/docs/LIBERTIES.md
+@@ -31338,3 +31338,45 @@
+ **Ticket:** T-3000 (piece 3 of T-2540).
+ **Review:** `data/reference_views/kimball_house_1801_prairie/taylor_c1895_northwest.match.json`.
+ **Recorded:** 2026-10-22 (T-3000).
++
++
++### L-second-fort-cupola-2388 — A capped drum on the second fort's blockhouse
++
++**Covers:** `fort_dearborn_blockhouse.log_1816.form.cupola`, its dimensions,
++and the separate chimney count.
++
++**Decision:** Build the small capped drum shown above the right-hand corner
++blockhouse in Kurz & Allison panel 5 (`kurz_allison_1893`; public-domain crop
++`data/sources/assets/prefire_views_kevin_2026_08/p3_1.png`). Its occurrence in
++the 1835 reconstruction is inferred from an 1893 retrospective illustration.
++The source is evidence of appearance, never a coordinate or a metric survey.
++
++**What is invented:** the drum is 1.8 m square, centred on the main pyramid;
++its head stands 1.2 m above that roof's apex, under a 35-degree pyramidal cap
++with 0.12 m eaves. Its skirt intersects the main roof. Three dark vent bands
++on each face represent a ventilated wooden drum; the print does not resolve
++their count or construction. The timber finish and roof covering follow the
++existing archetype palette. These dimensions are starting proportions for
++comparison, not a camera-derived measurement or a completed match.
++
++**The chimney choice:** the earlier reconstructed single chimney stood at
++the same centre. No separate stack is distinguishable on this blockhouse
++in panel 5, so it is omitted rather than moved to an unsupported location.
++This does not prove historical absence or settle a concealed heating arrangement.
++
++**Date boundary:** this is the second fort, rebuilt in 1816 and represented
++at the 1835 scene date. Whistler's statement that first-fort cupolas were not
++yet built in 1808 concerns a different fort at an earlier date; it neither
++prohibits a later inferred presence nor establishes this second-fort cupola.
++
++**What is kept:** the 1830-plan footprint, south-west placement, bearing,
++main wall height, jetty and loopholes. No surveyed coordinate is moved to
++make the retrospective composition fit.
++
++**How to resolve:** refine the group camera, rebake, compare the new silhouette
++against panel 5 and the other dated views, and adjust reconstructed dimensions
++where the pictures support it. T-2388 remains open; no `matches` verdict follows
++from adding this feature.
++
++**Ticket:** T-2388.
++**Recorded:** 2026-10-22.
