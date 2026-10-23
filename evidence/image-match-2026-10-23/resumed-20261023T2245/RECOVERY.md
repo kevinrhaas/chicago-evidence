@@ -1,0 +1,29 @@
+# Resumed picture-work recovery — 23 October 2026, 22:45 UTC
+
+This is a new resumed-work checkpoint. Prior frozen evidence remains unchanged at [final27-archive checkpoint6d4df2f](https://github.com/kevinrhaas/chicago-evidence/blob/6d4df2f307067a664beb00f336138110d3ce5ed2/evidence/image-match-2026-10-22/final-parallel-recovery-20261023T1430/RECOVERY.md). The user renewed permission to continue after the cloud pause.
+
+**No original T-2372 through T-2388 is certified as an image match by this checkpoint.** Actual comparisons and prepared/unrun work are labelled separately. Prototype exports are not canonical adoption.
+
+## Current work and PR anchors
+
+Read-only metadata snapshot: `2026-10-23T22:53:04.562255+00:00`; raw summary is [PR-SNAPSHOT.json](PR-SNAPSHOT.json).
+
+- [PR1229](https://github.com/kevinrhaas/chicago/pull/1229): merged=true, head `5e38a1a8d268dcf859be253198b9b6d2ae5b89ba`. This is Hogan's visible first increment; original T-2377 still requires image matching. Do not reconstruct that landed increment from old scratch files.
+- [PR1239](https://github.com/kevinrhaas/chicago/pull/1239): state `open`, draft=true, head `a2192528415d04f3b83424447a0b08a766d73825`. The root identified a live automation owner and is respecting its lock. This metadata is not a claim that its latest gate/browser coverage passed.
+- School T-2372: resumed actual one-export/one-capture trial darkens the doorway with the existing blind-recess control. Master `de08343a76201c4e7199066b12c285efc28c855b0a84fbcf318796aadba3f8a2`, 496 triangles. Actual source/before/after inspected; verdict **differs**. Frontage, gable cladding, roof, logs/chinks, openings, stack/context and provisional camera remain unresolved. Canonical integration remains separate. The root's resumed recount finds82 current log-family masters including new Ouilmette1812; the older frozen81-family baseline is historical and must not omit the new master.
+- Tremont T-2385: three actual native/GPU roof-only factors0.5/0.25/0.125 completed and were directly reviewed. All remain **differs**;0.25 is a preferred bounded next candidate, **unadopted**. Exact18 files plus author manifest are archived; shared328 native inputs remain in the prior frozen packet. The flag still differs and no historical pigment is asserted.
+- Wolf Point resumed work and the next school-gable/Tremont producer proposals are ongoing. Only expressly closed packets in the inventory qualify as archived output; no unlisted proposal is called an actual render or adoption.
+
+## Exact archives
+
+Every archive has an internal `ARCHIVE-MANIFEST.json`, an external manifest and a receipt. All selected source hashes are checked, source bytes are re-read during archive writing, and every tar member/hash/size is verified on full readback. Runtime symlinks, node_modules, private indexes, live tmp/logs and bytecode caches are excluded. Original author manifests remain verbatim even when the exact archival subset is smaller; explicit exclusion ledgers explain the difference.
+
+- [SCHOOL-one-ACTUAL-blind-door-DIFFERS](archives/SCHOOL-one-ACTUAL-blind-door-DIFFERS.tar.gz) — 281 selected files, archiveSHA256 `c5a877d333142be6c491e8365727a9c8da3004835cfc82f3455593ba65d9e1ad`, PASS; every archived payload hash/size and member list verified. School T2372: one actual official export + one actual capture completed on resumed session. Masterde08343a; source/camera guarded, doorway improves but full image differs. All314 author-owned files verified;279 noncache payloads archived plus originalmanifest and explicit35cache exclusion ledger. No canonical adoption or acceptance.
+- [TREMONT-three-ACTUAL-roof-GPU-trials-DIFFERS](archives/TREMONT-three-ACTUAL-roof-GPU-trials-DIFFERS.tar.gz) — 19 selected files, archiveSHA256 `d6d33b91e8ca1e909d6516abd6e8be3c9f5f67f4fe9c5f423f6845c7f9ba0c2a`, PASS; every archived payload hash/size and member list verified. Tremont T2385: three actual roof-only linearRGB factors0.5/0.25/0.125 completed with fixed source master/camera/native flag/wind/time/grade/light/exposure and actual GPU/readback guards. All images reviewed DIFFERS; factor0.25 preferred as bounded next candidate UNADOPTED. Exact18 closed files plus originalmanifest; shared328 native inputs remain in prior frozen archive. No canonical edit, historical pigment claim or image-match acceptance.
+- [PR1239-resumed-readonly-integrity-NO-APPROVAL](archives/PR1239-resumed-readonly-integrity-NO-APPROVAL.tar.gz) — 12 selected files, archiveSHA256 `af2e1e2b3a9f7db34c64ac7b77a4ef9e4945db14cdcf62b31a221987546116d9`, PASS; every archived payload hash/size and member list verified. Closed read-only PR1239 audit of a219:87 guarded originalframe/source/lodging paths unchanged, original rights174 entries preserved, Photosfixture acquisition fix leaves assertions unchanged. Documented source-index budget extension measured separately. LatestCI and liveowner pending at author snapshot; not merge/browser/image acceptance.
+
+## Resume
+
+Extract only a needed bounded archive and verify its manifest. The school archive preserves the actual runner output, source/camera/master guards and the reviewed-differs/original-unreviewed records separately. Its original314-file author manifest is retained, while35 generated Python cache files are omitted by explicit [selection ledger](SCHOOL-SELECTION.json). All314 original hashes were verified;279 noncache payloads plus author manifest and selection ledger were archived.
+
+Further canonical work belongs on code PRs into dev, with native shared-family rebuilds, full check/preflight and applicable published mobile/desktop verification. Do not promote a research camera or comparison to `matches` through archival storage. Bulk evidence stays in this private repository; chicago-tickets holds small text pointers only.
