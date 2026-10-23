@@ -4,7 +4,7 @@ Ordinary squash merged [PR1244](https://github.com/kevinrhaas/chicago/pull/1244)
 
 The owner approved normal GitHub CI validation for the reviewed integration after actual local G11 process-exhaustion failure; that NONPASS remains unchanged. Original mobile browser launch failed before any app frame due thread exhaustion, with owned cleanup; no photographic/world PASS inferred. One planted standing horse is a partial increment. T2800/T2803 remain unfinished for photographic anatomy/eyes/hair/coat, near/mid/far, full gait, tack/teams/drivers/riding.
 
-Old draft1212 closed as redesigned replacement superseded, not byte containment; actual receipts in ACTUAL-SUPERSEDED-1212-CLOSURE. Canonical tickets/handover are pushed to chicago-tickets. Normal automatic preview deployment40008193719 is running; actual public asset delivery is PENDING at this checkpoint. No production promotion.
+Old draft1212 closed as redesigned replacement superseded, not byte containment; actual receipts in ACTUAL-SUPERSEDED-1212-CLOSURE. Canonical tickets/handover are pushed to chicago-tickets. Normal automatic preview deployment40008193719 completed successfully. Actual public build fa115d72 contains the merged horse; nine selected public model/data/runtime assets exactly match the reviewed published source bytes. Full proof is in ACTUAL-PUBLIC-PREVIEW-DELIVERY/TERMINAL.json. This is HTTP delivery only; the original browser launch failure and photographic/gait limitations remain. No production promotion.
 
 ## Earlier checkpoint notes
 

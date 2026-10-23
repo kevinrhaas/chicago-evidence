@@ -1,0 +1,1 @@
+Actual public preview proof passed. The downloaded GLB response body is omitted from this evidence copy to avoid a duplicate model; its HTTP headers, measured size/SHA256, reviewed expected SHA256 and exact match receipt are retained. Other selected public response bodies are retained. No photographic/world/interaction PASS is inferred.
