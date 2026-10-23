@@ -1,0 +1,9 @@
+Adds one selectable reconstructed horse to the 1835 Western Hotel wagon yard. It gently shifts its weight while its hooves remain planted. Its card separates the modern licensed model credit from the reconstructed historical animal, location and appearance.
+
+The portable derivative has a reconstructed 26-joint rig and one 12-second standing clip, canonical metre units, nonmetallic organic materials and a bounded copy of the actual drawn yard support. Nearby Full/Balanced loading, host pause, reduced motion, selection and owned-resource disposal use the existing app path.
+
+The visible horse increment also needs bounded ticket-mirror fixture copies and reliable serial validation fixtures. Default CPU-policy probes now have explicit four-core and one-core inputs. The lock-race fixture executes the real sibling CLI in its rebuild process and independently proves the live marker before its original race assertions. The stale-lock fixture independently verifies its own marker, checks aged-marker creation and retains full process/refusal details. The merger fixture emits fixed API states directly in Bash and records dry-run exit status and output.
+
+Validation on source `eb1cafe12b796ff3b63aecc74a9fa4ba946ca609`: complete preflight passed 1054 steps (382 self-tests); actual committed-HEAD changelog, ID, whitespace, publisher, mirror and site checks passed. The standard-loader/Mixer check passed 65 keys and 64 midpoints against the planted-contact and deformation limits. Focused fixture checks passed; deliberately broken default and missing-lock controls remained red. Earlier whole-run nonpasses are preserved separately.
+
+Published desktop/mobile yard checks are pending, so this PR opens as a draft. Photographic anatomy, coat/hair/eyes, composed head/tail motion, walking, complete harness, teams, drivers and riding remain open under T-2800 and T-2803. Authored assets carry CC BY 4.0 source attribution and adaptation records.

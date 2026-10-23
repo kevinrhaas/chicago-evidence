@@ -1,0 +1,5 @@
+# Horse PR1244 checkpoint
+
+Actual G10 wholePASS1054/382 on tree3ce3cf74571fd82bdd6dc098dc1e0cc03a4b1c1d. Commit eb1cafe12b796ff3b63aecc74a9fa4ba946ca609 pushed and postcommitpublisher/mirror/sitePASS. PR1244 created via REST after GraphQL500. NewDEV ea22b3c3055d0c6d40f213273138103fbc98cee3 causes6provenance conflicts. All resolved with authoredunion and canonical compile_liberties(703)/compile_source_use(414), updatedGlessnerpackage refreshed and publisherPASS. Combined stagedtree5e7406c5d29f8a2be26e77cf098127dad5a6049d; uncommitted merge,162stagedincomingpaths,43paths versusDEV. Combined fullgatePENDING, no newCI/merge claim.
+
+Recover: checkout pushed horsebranch at eb1cafe, merge --no-commit exactEA22, overlay these6resolvedfiles and gitadd. All otherincoming162pathbytes come from EA22. Preserve protectedhorse b479/runtime and all DEV updates. Approot /workspace/chicago-waistcoat; soleROOT writer. Prior sourcefreezes eb1cafe are historical afterintegration; no browserran. This bulky archive followsnewT3071 chicago-evidence rule.
