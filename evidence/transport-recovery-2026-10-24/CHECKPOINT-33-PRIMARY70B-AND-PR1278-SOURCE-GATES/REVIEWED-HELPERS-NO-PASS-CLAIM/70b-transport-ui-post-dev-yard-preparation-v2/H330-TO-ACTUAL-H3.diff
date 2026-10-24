@@ -1,0 +1,52 @@
+--- frozen-H330-v3.mjs
++++ exact-H3-v2.mjs
+@@ -1,4 +1,5 @@
+ #!/usr/bin/env node
++// Exact H3/base70b source preparation. UNRUN; full24/merge/deployment/HTTP receipts and image review still required.
+ // UNEXECUTED v2 preparation; final closed-browser error and actual mesh-visibility guards. Explicit future D/M/H and actual v2 selected-byte proof are mandatory.
+ // Uses normal hit-tested controls; reads existing telemetry only. No API camera/navigation setters.
+ import fs from 'node:fs';
+@@ -12,10 +13,11 @@
+ const ROOT='/workspace/chicago';
+ const DEV='https://chicago.polecat.live/4d/dev/';
+ const ENTRY=DEV+'1835/';
+-const TESTED_H='330eadaa68df9ec9b8e09601a1b88c8d5ca52915';
+-const TESTED_TREE='757e30973d8e8b13d167e86fe95aeb5f58c6a41d';
+-const TESTED_APP='77cd7218e00cf750ad1cb423fc05ddb0376ba560';
+-const BINDING_SHA='99f36cd41d5678e70e20caee2e3c063a5735f97c339f41594ded92c6a69344ac';
++const UNBOUND_PREPARATION=false; // Actual H3/source binding exists; all future execution prerequisites still apply.
++const TESTED_H='1b70cdbd85b18c124870d6274d2ffffd4ca5979b';
++const TESTED_TREE='9fa9511eabff9a0e42da32410edf09a8e3608889';
++const TESTED_APP='da9f71f6749ebf52e09ad51f673a9e4debbf4478';
++const BINDING_SHA='949516de77917485ac808dafb9f39129ce3c8234eb0ecf215ff4f7d2625aaf25';
+ const HTTP_PASS='PASS: public DEV D and twelve selected representations verified; folded notes/UI yard remain separately unverified';
+ const HORSE_REL='walk/transport/standing-horse/horse-sevket-v16-planted-standing-eye-uv-v1.glb';
+ const HORSE_SHA='d4544c2845256858dfa614235bcb37cb964ab63095a53a2436225182cefbb914';
+@@ -36,6 +38,7 @@
+ };
+ const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
+ const need=(v,m)=>{if(!v)throw Error(m);};
++need(!UNBOUND_PREPARATION,'UNBOUND preparation: actual H3/source binding required before execution');
+ const canon=v=>JSON.stringify(v&&typeof v==='object'?Array.isArray(v)?v.map(x=>JSON.parse(canon(x))):Object.fromEntries(Object.keys(v).sort().map(k=>[k,JSON.parse(canon(v[k]))])):v);
+ const git=(...args)=>execFileSync('git',args,{cwd:ROOT,env:{...process.env,GIT_OPTIONAL_LOCKS:'0'},stdio:['ignore','pipe','pipe']});
+ const gitText=(...args)=>git(...args).toString().trim();
+@@ -55,6 +58,7 @@
+ const bindingBytes=fs.readFileSync(path.join(HERE,'PREPARATION-BINDING.json'));
+ need(sha(bindingBytes)===BINDING_SHA,'Prepared source binding changed');
+ const binding=JSON.parse(bindingBytes);
++need(binding.tested_source_head===H&&binding.tested_tree===TESTED_TREE&&binding.tested_app===TESTED_APP&&binding.accepted_base==='70bcc4366a455a15f1e54e3edfce50c046c0ddce'&&Array.isArray(binding.source_contract_files)&&binding.source_contract_files.length===17&&new Set(binding.source_contract_files.map(r=>r.path)).size===17,'Exact actual H3/70b metadata and seventeen distinct source-contract rows are required');
+ for(const head of [H,M,D])need(gitText('rev-parse',head+'^{commit}')===head,'Root must supply actual local commit objects before execution');
+ need(gitText('rev-parse',H+'^{tree}')===TESTED_TREE&&gitText('rev-parse',H+':chicago/4d')===TESTED_APP,'Tested H changed');
+ const sourceContracts=[];
+@@ -66,9 +70,9 @@
+ const originalReceipt=fs.readFileSync(receiptFile);
+ need(sha(originalReceipt)===receiptSHA,'Actual selected-byte proof changed');
+ const proof=JSON.parse(originalReceipt);
+-need(proof.result===HTTP_PASS&&!proof.error,'A complete actual v2 selected-byte PASS is required');
++need(proof.result===HTTP_PASS&&!proof.error,'A complete actual selected-byte PASS is required');
+ need(proof.tested_source_head===H&&proof.merge_head===M&&proof.deployed_head===D,'HTTP proof H/M/D pins differ');
+-need(proof.tested_tree===TESTED_TREE&&proof.tested_app===TESTED_APP&&proof.initial_M_app_exactly_H===true&&proof.initial_M_entire_tree_exactly_H===true&&proof.M_sole_parent_B===true&&proof.accepted_base==='6ab39e9a32a8270b96d9ab252cfddc5962a871a3','Actual squash source identity proof missing');
++need(proof.tested_tree===TESTED_TREE&&proof.tested_app===TESTED_APP&&proof.initial_M_app_exactly_H===true&&proof.initial_M_entire_tree_exactly_H===true&&proof.M_sole_parent_B===true&&proof.accepted_base==='70bcc4366a455a15f1e54e3edfce50c046c0ddce','Actual squash source identity proof missing');
+ need(/^[0-9a-f]{64}$/.test(proof.source_complete_proof_sha256||'')&&/^[0-9a-f]{64}$/.test(proof.normal_merge_receipt_sha256||''),'Missing complete-matrix or normal-merge provenance');
+ need(Array.isArray(proof.http_checks)&&proof.http_checks.length===14,'Require twelve asset responses and both build responses');
+ const receiptBodies=new Map(),receiptBuilds=[];

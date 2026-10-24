@@ -1,0 +1,66 @@
+--- /workspace/.cloud-setup/logs/transport-recovery/6ab-transport-ui-matrix-preparation-v5/dev6ab_transport_ui_matrix_common.py	2026-10-24 21:29:05.970654242 +0000
++++ /workspace/.cloud-setup/logs/transport-recovery/70b-transport-ui-matrix-preparation-v1/dev70b_transport_ui_matrix_common.py	2026-10-24 22:05:24.513104486 +0000
+@@ -5,14 +5,15 @@
+ from pathlib import Path
+ ROOT=Path('/workspace/chicago'); APP=ROOT/'chicago/4d'; SITE=ROOT/'site/4d'
+ LOG=Path('/workspace/.cloud-setup/logs/transport-recovery')
+-BASE='6ab39e9a32a8270b96d9ab252cfddc5962a871a3'
+-TREE='757e30973d8e8b13d167e86fe95aeb5f58c6a41d'; APP_TREE='77cd7218e00cf750ad1cb423fc05ddb0376ba560'
++BASE='70bcc4366a455a15f1e54e3edfce50c046c0ddce'
++TREE='9fa9511eabff9a0e42da32410edf09a8e3608889'; APP_TREE='da9f71f6749ebf52e09ad51f673a9e4debbf4478'
+ SUPERVISOR=Path('/workspace/.cloud-setup/transport-supervise.py')
+ SUPERVISOR_SHA='a312967552479c5a85f4de3ffb398ee2dd6007190e6fff9666689792c6b2452c'
+-SOURCE_BINDING=LOG/'6ab-transport-ui-preflight-source-binding.json'
+-EXPECTED_PREFLIGHT_PREFIX=LOG/'6ab-transport-ui-refreshed-base-preflight-before-commit'
++SOURCE_BINDING=LOG/'70b-transport-ui-preflight-source-binding.json'
++EXPECTED_PREFLIGHT_PREFIX=LOG/'70b-transport-ui-full-preflight-before-commit'
++EXPECTED_PREFLIGHT_COMMAND=['env','BASE='+BASE,'bash','tools/preflight.sh']
+ SMOKE_SHA='4586e7101000910cde7743048b72b72b3b04f7896417f5fe1a97af14e1e941bd'
+-FOCUSED_HELPER_SHA='7207204b7c95a72a28a82023878252ba920fc6f53bd534c3a9d939cfc40f2d66'
++FOCUSED_HELPER_SHA='6468cda54428199b8c5b6b627b326a35215d993062183040a6a779e692ffcf06'
+ LEGS=[('mobile',s) for s in ['1-2','3-4','5-6','7-8','9-10','11-12','13','14','15']]+[('desktop',str(n)) for n in range(1,16)]
+ def need(condition,message):
+  if not condition: raise RuntimeError(message)
+@@ -47,7 +48,7 @@
+ def source_snapshot(head,published_digest=None):
+  need(re.fullmatch('[0-9a-f]{40}',head) is not None,'Use complete expected commit SHA')
+  need(git('rev-parse','HEAD')==head,'HEAD moved')
+- need(subprocess.run(['git','merge-base','--is-ancestor',BASE,head],cwd=ROOT,env={**os.environ,'GIT_OPTIONAL_LOCKS':'0'},capture_output=True).returncode==0,'Expected head does not contain the pinned accepted6ab intake')
++ need(subprocess.run(['git','merge-base','--is-ancestor',BASE,head],cwd=ROOT,env={**os.environ,'GIT_OPTIONAL_LOCKS':'0'},capture_output=True).returncode==0,'Expected head does not contain the pinned accepted70b intake')
+  need(git('rev-parse','HEAD^{tree}')==TREE,'Candidate tree changed')
+  need(git('rev-parse','HEAD:chicago/4d')==APP_TREE,'App subtree changed')
+  need(git('diff','--name-only','HEAD')=='' and git('diff','--name-only')=='' and git('diff','--cached','--name-only')=='','Tracked index/worktree is dirty')
+@@ -69,11 +70,13 @@
+ 
+ def prerequisites(config):
+  need('CHICAGO_TICKETS_DIR' not in os.environ,'Unset CHICAGO_TICKETS_DIR')
+- need(Path(config['preflight_prefix']).resolve()==EXPECTED_PREFLIGHT_PREFIX,'Use the actual new6ab full-preflight prefix')
++ need(Path(config['preflight_prefix']).resolve()==EXPECTED_PREFLIGHT_PREFIX,'Use the actual new70b full-preflight prefix')
+  for key in ['publish_prefix','focused_prefix','focused_output']:
+-  target=Path(config[key]).resolve();need(target.parent==LOG and target.name.startswith('6ab-transport-ui-'),'Use fresh actual6ab prerequisite prefixes/output, never oldC4 receipts')
++  target=Path(config[key]).resolve();need(target.parent==LOG and target.name.startswith('70b-transport-ui-'),'Use fresh actual70b prerequisite prefixes/output, never oldC4 receipts')
+  need(digest(SUPERVISOR)==SUPERVISOR_SHA,'Reviewed supervisor changed before launch')
+  results={'preflight':receipt(config['preflight_prefix'],'preflight.sh'),'publish':receipt(config['publish_prefix'],'publish.sh')}
++ binding=read(SOURCE_BINDING);actual_preflight=read(str(EXPECTED_PREFLIGHT_PREFIX)+'.result.json')
++ need(binding.get('preflight_prefix')==str(EXPECTED_PREFLIGHT_PREFIX) and binding.get('expected_preflight_command')==EXPECTED_PREFLIGHT_COMMAND and actual_preflight.get('command')==EXPECTED_PREFLIGHT_COMMAND,'The actual70b preflight must explicitly pin BASE in the exact root-bound command')
+  # Focused layout proof covers all rows, unlike canonical matrix's Settings-only layout audit.
+  focus=read(Path(config['focused_output'])/'FOCUSED-CURRENT-NOTES-RESULT.json')
+  need(focus['expected_head']==config['head'] and focus['staged_tree']==TREE,'Focused proof belongs to another source')
+@@ -111,7 +114,7 @@
+    names=[Path(x).name for x in argv[:5]];exe=names[0]
+    browser=exe in ['chromium','chromium-browser','chrome','chrome-headless-shell','headless_shell']
+    smoke='smoke_renderer.mjs' in names
+-   driver=any(x in ['de91-integrated-smoke.py','de91-integrated-smoke-continuation.py','resume-transport-smoke.py','resume-transport-smoke-after-restart.py','transport-smoke-batch.sh','latest-dev-transport-smoke-batch.sh','resume-transport-smoke-deferred-images.py','abb1_transport_ui_matrix_driver.py','dev6ab_transport_ui_matrix_driver.py'] for x in names)
++   driver=any(x in ['de91-integrated-smoke.py','de91-integrated-smoke-continuation.py','resume-transport-smoke.py','resume-transport-smoke-after-restart.py','transport-smoke-batch.sh','latest-dev-transport-smoke-batch.sh','resume-transport-smoke-deferred-images.py','abb1_transport_ui_matrix_driver.py','dev6ab_transport_ui_matrix_driver.py','dev70b_transport_ui_matrix_driver.py'] for x in names)
+    focus=any('focused' in x and ('wrapping' in x or 'current-notes' in x) and x.endswith('.mjs') for x in names)
+    if browser or smoke or driver or focus:found.append({'pid':int(p.name),'executable':exe,'category':'browser' if browser else 'smoke' if smoke else 'continuation' if driver else 'focused helper'})
+   except (OSError,ValueError,IndexError):pass
+@@ -157,7 +160,7 @@
+  need(mh==prereq['focused']['published_manifest_digest'],'Final matrix digest differs from the completed focused proof')
+  rows=[];coverage={v:Counter() for v in ['mobile','desktop']}
+  for saved,(viewport,stage) in zip(state['completed'],LEGS):
+-  prefix=run_dir/f'6ab-transport-ui-matrix-{viewport}-{stage}';need(saved['prefix']==str(prefix),'Leg evidence points outside this fresh run')
++  prefix=run_dir/f'70b-transport-ui-matrix-{viewport}-{stage}';need(saved['prefix']==str(prefix),'Leg evidence points outside this fresh run')
+   proof=validate_leg(prefix,viewport,stage);need(proof==saved['proof'],'Leg receipt/transcript changed')
+   for suffix in ['.binding.before.json','.binding.after.json']:
+    bd=read(str(prefix)+suffix);need(bd['head']==head and bd['tree']==TREE and bd['app_subtree']==APP_TREE and bd.get('accepted_base')==BASE and bd['published_manifest_digest']==mh,'Per-leg source/mirror binding mismatch')
