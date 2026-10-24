@@ -1,0 +1,11 @@
+from pathlib import Path
+import hashlib,importlib.util,json
+WORK=Path(__file__).resolve().parent
+spec=importlib.util.spec_from_file_location('archive_exact',WORK/'archive_exact.py');mod=importlib.util.module_from_spec(spec);spec.loader.exec_module(mod)
+packets=[('/workspace/T3081-PR1260-native-supplement','CLOSED-MANIFEST.json','4d27bfca38f9456b0e47811258e5db4ce6f958efd35f89189b6a60822e711f74',5,2402411,'T3081-PR1260-ACTUAL-native-WOLF-two-freefly-views-NO-MATCH','Exact5 closed actual supplement files plus manifest. Nodeexit0,bothPNGviews directly reviewed by producer;normal freefly centre-picks Wolf and actualHTTP webSHA340b5339 binding. PhysicalL/body and separatefront/side openings identifiable, naturalreeds/flagstaff remain. Exactposes/matrices,zero rawerrors/sourceclean; no hiding,vegetation/data/asset/referencecamera edits. NOphoto_match/image acceptance. Outside stdout copied into packet;separate duplicate.log excluded. All processes closed;futurefivephoto work unrun/notselected.'),('/tmp/T3081-native-supplement-20261024','MANIFEST.json','57e1f1ba08305a5a0a54672c6af42df3e0b511db2fb3b9a5866974007164d323',3,11579,'T3081-WOLF-native-supplement-PREPARED-helper','Exact3 closed supplemental preparation files plus manifest,retained distinctly as prepared timepoint. External nativefreefly helper bound to original Wolf occlusion limitation, no canonical edits/referencecameras/visibilitychanges or photo_match. Subsequent actual two-view output belongs to separate closed4d27 packet, not inferred from prep.')]
+for directory,filename,expected,count,total,name,note in packets:
+ root=Path(directory);manifest=root/filename;assert hashlib.sha256(manifest.read_bytes()).hexdigest()==expected
+ author=json.loads(manifest.read_text());rows=author if isinstance(author,list) else author['files'];assert len(rows)==count and sum(r['bytes'] for r in rows)==total
+ for row in rows:
+  p=root/row['path'];assert p.resolve().is_relative_to(root) and p.is_file() and not p.is_symlink();assert not any(part in ['__pycache__','node_modules','.git'] for part in p.parts) and p.suffix!='.pyc';data=p.read_bytes();assert len(data)==row['bytes'] and hashlib.sha256(data).hexdigest()==row['sha256']
+ mod.archive(name,mod.author_manifest(root,manifest),note)
