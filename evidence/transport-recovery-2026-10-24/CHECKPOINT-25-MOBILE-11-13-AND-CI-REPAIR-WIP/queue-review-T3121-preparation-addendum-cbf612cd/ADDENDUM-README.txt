@@ -1,0 +1,11 @@
+T3121 accepted-DEV-base addendum (original packet immutable)
+
+Original WIP packet and its de91bindings remain byte-exact unchanged. PRE-FF snapshots protect the workflow. Initial explicit fetch observed normal changelog fold33a99a after requested Hogan cbf612; agent stopped before FF and parent authorized pinned33a99a. Executed ordinary git merge --ff-only33a99a successfully, without reset/stash/force. The single workflowWIP's sha256 remains f0f6c6f5cf942af4e49609b7854bdd1472bd98e06159e687ed76893138e7a73c.
+
+Updated base33a99a557bd53aa637cc7173589d610f8a15f14b is real accepted DEV. App and reference tracked content equal that pinned base; sole uncommitted source change is .github/workflows/chicago-4d-smoke.yml. No staged changes/appcommit/sourcepush/PRmutation/dispatch/fullgate/owner/render/publish. Main transport head/index/publishedbuild remains unchanged.
+
+New static parsedYAML proof passes seven branch/path/tag cases. Only semantic change remains on.push.branches=[dev]; alljobs/runner/timeout/steps/env/dispatch are equal. DEV workflow edits still self-test. NonDEV branches AND main AND tags no longer run automatic measurements. GitHub does not evaluate path filters for tag pushes, so previously even a tag without a workflowfilediff could trigger this measurement; the new branch filter excludes it. This narrowed automatic tag measurement is disclosed, consistent with ticket's dev-only option. Explicit dispatch and nightly baked published smoke/default bothviewports/all15/assertions remain unchanged. No known active releasegate is claimed removed.
+
+Smoke mapping caveat: actual explicit smoke_budget --for .github/workflows/chicago-4d-smoke.yml is unmapped and prints parts1–15/bothviewport commands. --for-diff filters .githubpaths out in source and its empty result is NOT an explicit NOPART recipe or waiver. No gate waiver/oldproof transfer is claimed. Fullpreflight beforecommit/PR and normal published/CI requirements remain pending, scheduled byparent onceprimarybrowser pauses. FullT3121acceptance still requires ordinary independentlyqualified1277/1278merges, withoutblind/admin bypass.
+
+Independent anchor audit found no semantic defect and verified old-base appsubtree equality; this addendum rebinds unchangedworkflowWIP to accepted33. No independent new renderer result is claimed.

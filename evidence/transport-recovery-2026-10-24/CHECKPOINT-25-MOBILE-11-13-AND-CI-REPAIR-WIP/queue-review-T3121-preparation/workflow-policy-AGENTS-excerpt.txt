@@ -1,0 +1,49 @@
+  `tier: dev`. Production is untouched.
+- **Production moves ONLY when the owner dispatches `chicago-4d-promote-to-prod.yml`.**
+  No schedule, no agent. `walk/` changes reach `main` by that dispatch and no other route.
+  The hotfix exception stands: a production emergency PRs straight into `main`, and the
+  next promotion's back-merge folds it into `dev`.
+- **Scope is `chicago/4d/` and its published mirror `site/4d/`.** Since 2026-09-23
+  this project has its own repository (kevinrhaas/chicago); the rest of it —
+  `chicago/reference/`, the Atlas datasets and viewers, the landing page at `site/` —
+  is the 4D project's source material and front door, touched only when a ticket asks.
+  The workflow files are outside a run's scope: changing one needs an interactive,
+  owner-visible PR.
+- **Before you re-run a stage to find out whose red it is, ASK THE RECORD**: `node
+  tools/dev-smoke-state.mjs ask --viewport desktop --stage 8` answers "was dev already red
+  here, and when did it last pass" from `tools/dev-smoke-state.json` without running
+  anything, and says whether the reading was taken on your exact tree. Four runs re-derived
+  the same two reds by hand on 2026-08-27 for want of it (T-0215, T-0216). File the smoke
+  you ran anyway: `node tools/dev-smoke-state.mjs record <log>`.
+- **Before you spend the run's budget on the smoke, ASK WHAT IT COSTS AND WHAT YOU
+  NEED**: `node tools/smoke_budget.mjs --for-diff` names the parts that cover your own
+  diff and prints the commands, each packed under the 600 s foreground ceiling, with the
+  measured margin — read out of the same record above, never asserted. With no arguments
+  it prints what the whole gate costs on this machine, against the 90-minute whole-body
+  cap; `--legs` prices the nightly gate's eight parallel legs against the 30-minute
+  PER-LEG cap, which is a different bound and the one three tickets correctly reason
+  against (T-0450). `docs/SMOKE-BUDGET.md` is the page (T-0235). And redirect
+  a smoke to a FILE, never a pipe: node block-buffers stdout to a pipe, so a piped log
+  stays at zero bytes until the process exits, and a run once killed a green smoke one
+  minute from its finish for want of a byte to look at.
+- **`./tools/preflight.sh` BEFORE you open the PR.** `check.sh` is not the whole gate:
+  two of CI's questions are asked only on the pull_request event, where a base ref
+  exists, so a run cannot rehearse them and finds out after the PR is open — when its
+  turn has ended and nobody comes back. PR #1049 sat red for 2 h 19 m on a one-line
+  commit trailer, with the right sentence written in its PR body where the gate does
+  not look. Preflight asks all three in one command: `check.sh`, then
+  `check-changelog-entry.mjs` against the merge base, then
+  `resolve_id_collisions.mjs --check` (a sibling slice may have taken a ticket id
+  this branch minted while you were working). It writes nothing and names the repair
+  for each red. `BASE=origin/main ./tools/preflight.sh` for the hotfix path.
+- **Both gates, in the foreground, before merging**: `tools/check.sh` (`pip install
+  jsonschema pyproj openpyxl pypdf numpy scipy Pillow` — the last three are what let
+  thirteen steps RE-READ their rasters instead of standing on a banked copy; without
+  them the gate warns and degrades, and CI, which sets `C4D_GATE_REQUIRE_READERS=1`,
+  goes red. `tools/check_gate_readers.py` holds the list, T-1083) and `node tools/smoke_renderer.mjs` (Playwright, 390×780 AND 1280×800, zero
+  page errors). Mobile is a release gate. **Never weaken an assertion to pass.** The
+  `--published` run is the one that matters: the source tree loads uncompressed masters and
+  the site loads compressed derivatives, and bugs have shipped in the gap twice.
+- **You no longer publish in the same commit — `site/4d/` is not committed at
+  all (T-0938).** The mirror is a build product with one writer, `tools/publish.sh`,
+  and it is untracked and .gitignored. `tools/check.sh` runs publish.sh first and then
