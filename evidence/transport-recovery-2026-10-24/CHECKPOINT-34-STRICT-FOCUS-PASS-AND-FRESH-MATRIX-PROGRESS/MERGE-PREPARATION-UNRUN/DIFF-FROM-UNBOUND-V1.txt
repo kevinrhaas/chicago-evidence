@@ -1,0 +1,68 @@
+--- /workspace/.cloud-setup/logs/transport-recovery/70b-transport-ui-merge-preparation-v1/merge-pr1279-H3-after-full24-UNBOUND-v1.py
++++ /workspace/.cloud-setup/logs/transport-recovery/70b-transport-ui-merge-preparation-v2/merge-pr1279-H3-after-full24-CI-bound-v2.py
+@@ -18,14 +18,16 @@
+  'dev70b_transport_ui_matrix_verify.py':'19bdcbb2ab3bc53501221456ee16d47120b7791dd148f0084d6bb050c13c1a4f'}
+ HTTP=LOG/'70b-transport-ui-post-dev-http-preparation-v2/verify-post-dev-selected-bytes-h3-v2.py'
+ HTTP_SHA='030ecc16be875793014427186eb007af50cea7f4af8de268b8924e1c5bd2e93b'
+-PIPELINE=Path('/workspace/.cloud-setup/70b-browser-pipeline.py')
+-PIPELINE_SHA='397ac9a3064830eededb946bb4bde91b394ef46bd8ae0778513d3ac8e6b7d279'
+-PIPELINE_PREFIX=LOG/'70b-transport-ui-browser-pipeline'
+-PIPELINE_STATE=LOG/'70b-browser-pipeline-state.json'
++PIPELINE=Path('/workspace/.cloud-setup/70b-browser-pipeline-attempt2.py')
++PIPELINE_SHA='456069bcd238a51eea5e521eef3fa325543d046f1ddc258c617f4ac31b16d633'
++PIPELINE_PREFIX=LOG/'70b-transport-ui-browser-pipeline-attempt2'
++PIPELINE_STATE=LOG/'70b-browser-pipeline-attempt2-state.json'
+ DRIVER_PREFIX=LOG/'70b-transport-ui-matrix-run1-driver'
+ VERIFIER_PREFIX=LOG/'70b-transport-ui-independent-final-24-verifier'
+ INDEPENDENT_PROOF=LOG/'70b-transport-ui-independent-final-24.json'
+-CI_BINDING_SHA='UNBOUND_FINAL_ACTUAL_H3_CI_SAFEPROOF_REQUIRED'
++FOCUS_PREFIX=LOG/'70b-transport-ui-focused-wrapping-attempt2'
++FOCUS_OUTPUT=LOG/'70b-transport-ui-focused-wrapping-attempt2-output'
++CI_BINDING_SHA='e5cd244d57231ba52ac973ea52e80bf8ef833912395508992e6bbf1e8b4ade74'
+ SOURCE_BINDING_SHA='a22695bd181321df8427de336ebd4595500c1b017a0bc630f9f07c57f2432def'
+ PREFLIGHT_RESULT_SHA='bf469e30542eb904bb182ce45e664817679bbcb7f870354144b85648c2763dcf'
+ PREFLIGHT_CLEANUP_SHA='5f8df5c64844fbe7044d4726e54c27411a6145ced3c08dd0a5514638b7d2bf91'
+@@ -56,7 +58,7 @@
+ def semantic_proof(p):
+  d=json.loads(json.dumps(p));d.pop('verified_unix',None);d['final_source'].pop('checked_unix',None);return d
+ def main():
+- need(re.fullmatch('[0-9a-f]{64}',CI_BINDING_SHA),'UNBOUND: final actual successful H3 gate/moving CI safeproof has not been supplied or reviewed; no execution is eligible')
++ need(re.fullmatch('[0-9a-f]{64}',CI_BINDING_SHA),'Final actual successful H3 CI binding is missing or malformed; no execution eligible')
+  q=argparse.ArgumentParser(description=__doc__)
+  q.add_argument('--execute-after-full-matrix',action='store_true')
+  for name in ['out','independent-proof','independent-proof-sha256','verifier-prefix','driver-prefix','owned-lease-sha','lease-owner','lease-acquisition-log','lease-acquisition-sha256','ci-binding','ci-binding-sha256','accepted-source-binding','accepted-source-binding-sha256','evidence-url']:
+@@ -82,20 +84,30 @@
+  independent=bound(a.independent_proof,a.independent_proof_sha256)
+  need(semantic_proof(actual)==semantic_proof(independent),'Independent complete proof differs from current re-read')
+  internal=read(MATRIX/'FINAL-24-LEG-VERIFICATION.json');need(semantic_proof(internal)==semantic_proof(independent),'Driver final proof differs from independent verification')
+- state=read(MATRIX/'MATRIX-STATE.json');need(state.get('zero_inherited_results') is True and state.get('status')=='PASS: fresh all15parts/bothviewports, final verification complete' and state.get('verification_sha256')==sha((MATRIX/'FINAL-24-LEG-VERIFICATION.json').read_bytes()),'Driver did not finish its exact fresh24 final state')
++ state=read(MATRIX/'MATRIX-STATE.json');need(state.get('config',{}).get('focused_prefix')==str(FOCUS_PREFIX) and state.get('config',{}).get('focused_output')==str(FOCUS_OUTPUT),'Matrix must bind successful attempt2 focused receipts; failed attempt1 cannot qualify');need(state.get('zero_inherited_results') is True and state.get('status')=='PASS: fresh all15parts/bothviewports, final verification complete' and state.get('verification_sha256')==sha((MATRIX/'FINAL-24-LEG-VERIFICATION.json').read_bytes()),'Driver did not finish its exact fresh24 final state')
+  driver_receipts=receipt(a.driver_prefix,'dev70b_transport_ui_matrix_driver.py',[('--head',H),('--out',MATRIX)])
+  verifier_receipts=receipt(a.verifier_prefix,'dev70b_transport_ui_matrix_verify.py',[('--head',H),('--run-dir',MATRIX),('--receipt',a.independent_proof)])
+  need(a.ci_binding_sha256==CI_BINDING_SHA and a.accepted_source_binding_sha256==SOURCE_BINDING_SHA,'Use the exact independently audited actual H3 CI/source artifacts')
+  ci=bound(a.ci_binding,a.ci_binding_sha256)
+- need((ci.get('PR'),ci.get('actual_H'),ci.get('actual_hosted_checkout_Q'),ci.get('tested_base_B'),ci.get('H_Q_whole_tree'))==(1279,H,TESTED_Q,B,TREE),'Actual fresh H3 CI checkout/base/whole-tree binding differs')
+- need(ci.get('jobs') and all(j.get('conclusion')=='success' and j.get('raw_log_download_rc')==0 and re.fullmatch('[0-9a-f]{64}',j.get('raw_sha256','')) for j in ci['jobs']),'Actual final CI proof lacks successful jobs/raw log hashes')
+- need({j['run'] for j in ci['jobs']}==CI_RUNS,'Unexpected actual H3 gate/moving CI runs')
++ need(ci.get('schema')=='chicago-pr1279-h3-ordinary-ci-safe-proof-v1' and ci.get('repository')=='kevinrhaas/chicago','Wrong actual final CI safeproof schema/repository')
++ need((ci.get('PR'),ci.get('H'),ci.get('tested_Q'),ci.get('tested_base'),ci.get('tree'),ci.get('APP'))==(1279,H,TESTED_Q,B,TREE,APP_TREE),'Actual H3 CI source/base/Q/tree/APP binding differs')
++ ci_objects=ci.get('native_git_objects',{});need(set(ci_objects)=={H,TESTED_Q},'Final safeproof lacks exact native H3/Q objects')
++ need(all(ci_objects[c].get('tree')==TREE and ci_objects[c].get('APP')==APP_TREE for c in [H,TESTED_Q]) and set(ci_objects[TESTED_Q].get('parents',[]))=={B,H} and B in ci_objects[H].get('parents',[]),'Safe native object source trees/accepted parents differ')
++ ci_runs=ci.get('runs',[]);need(len(ci_runs)==2 and {r.get('run_id') for r in ci_runs}==CI_RUNS and {r.get('kind') for r in ci_runs}=={'gate','moving'},'Actual gate/moving run identity differs')
++ need(all(r.get('head_sha')==H and r.get('event')=='pull_request' and r.get('conclusion')=='success' and r.get('all_actual_steps_success') is True and r.get('actual_stdout_available') is True and r.get('actual_stdout_checkout_Q')==TESTED_Q and r.get('official_job_log_requests')==1 for r in ci_runs),'Actual successful native jobs/stdout source proof is incomplete')
++ need({(r['kind'],r['run_id'],r.get('job_id')) for r in ci_runs}=={('gate',40138225825,121004216204),('moving',40138225852,121004216043)},'Actual final H3 run/job pair differs')
++ gate_stdout=ci.get('gate_stdout',{});moving_stdout=ci.get('moving_stdout',{})
++ need(gate_stdout.get('bytes')==1853833 and gate_stdout.get('raw_sha256')=='5dd71f09e93845442da2a141a01da983257aa10844bdcd1d922183caa7e32707' and gate_stdout.get('actual_CHECK_PASS_steps')==1066 and gate_stdout.get('actual_self_tests')==384,'Actual gate stdout/count proof differs')
++ need(moving_stdout.get('bytes')==84791 and moving_stdout.get('raw_sha256')=='2b598fcee2191f68e9160195abfa9c068bd85078975e7115666126059aa486cd' and moving_stdout.get('actual_every_moving_frame_inside_ceiling') is True and moving_stdout.get('actual_upload_release_checks')==32,'Actual moving stdout/budget/upload proof differs')
++ for stdout in [gate_stdout,moving_stdout]:
++  lines=stdout.get('actual_checkout_lines',[]);need(any(TESTED_Q in line for line in lines) and any(('Merge '+H+' into '+B) in line for line in lines),'Actual native stdout does not bind tested Q/H3/accepted70b')
+  accepted=bound(a.accepted_source_binding,a.accepted_source_binding_sha256)
+  need(accepted.get('head')==H and accepted.get('tree')==TREE and accepted.get('app_subtree')==APP_TREE and accepted.get('incoming_dev')==B and accepted.get('expected_preflight_command')==EXPECTED_PREFLIGHT_COMMAND,'Actual committed H3 proper-base source binding differs')
+  need(accepted.get('preflight_prefix')==str(LOG/'70b-transport-ui-full-preflight-before-commit') and accepted.get('preflight_result')==0 and accepted.get('cleanup_complete') is True and accepted.get('remaining_owned_children')==0,'Actual committed proper-base full gate/cleanup not successful')
+  actual_gate=Path(accepted['preflight_prefix']+'.result.json');actual_gate_cleanup=Path(accepted['preflight_prefix']+'.cleanup.json');need(sha(actual_gate.read_bytes())==PREFLIGHT_RESULT_SHA and sha(actual_gate_cleanup.read_bytes())==PREFLIGHT_CLEANUP_SHA,'Actual explicit-base preflight receipts changed')
+  gate=read(actual_gate);gate_cleanup=read(actual_gate_cleanup);need(gate.get('command')==EXPECTED_PREFLIGHT_COMMAND and gate.get('cwd')==str(APP) and gate.get('returncode')==0 and gate.get('timed_out') is False and gate_cleanup.get('cleanup_complete') is True and gate_cleanup.get('remaining_owned_children')==[],'Actual proper-base preflight/cleanup is not successful')
+  for c in [H,B,TESTED_Q,a.owned_lease_sha]:need(git('rev-parse',c+'^{commit}')==c,'Root must separately materialize the reviewed commit/lease object: '+c)
++ need(ci_objects[H].get('parents')==accepted.get('parents'),'Actual CI native H3 parent proof differs from committed source binding')
+  need(git('show','-s','--format=%P',H).split()==accepted.get('parents') and subprocess.run(['git','merge-base','--is-ancestor',B,H],cwd=ROOT,env=env,capture_output=True).returncode==0,'Actual H3 does not contain accepted base70b/source binding parents')
+  need(git('rev-parse',TESTED_Q+'^{tree}')==TREE and set(git('show','-s','--format=%P',TESTED_Q).split())=={B,H},'Actual tested hosted Q is not the exact H3 whole-tree/accepted-base merge')
+  candidate=git('merge-tree','--write-tree',B,H).splitlines()[0] # object only; no index/worktree merge
