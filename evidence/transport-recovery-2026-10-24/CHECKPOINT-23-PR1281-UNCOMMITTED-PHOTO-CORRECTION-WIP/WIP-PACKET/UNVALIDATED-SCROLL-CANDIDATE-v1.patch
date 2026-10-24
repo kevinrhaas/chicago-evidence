@@ -1,0 +1,91 @@
+diff --git a/chicago/4d/data/structures/wheeler_house_1812_prairie.json b/chicago/4d/data/structures/wheeler_house_1812_prairie.json
+index 0ca045acd..128f7f2bf 100644
+--- a/chicago/4d/data/structures/wheeler_house_1812_prairie.json
++++ b/chicago/4d/data/structures/wheeler_house_1812_prairie.json
+@@ -331,7 +331,7 @@
+                     0.32,
+                     0.52
+                   ],
+-                  "scroll_m": 0.07,
++                "scroll_m": 0.11,
+                   "boss_m": 0.06
+                 },
+                 "roundel": {
+diff --git a/chicago/4d/generators/archetypes/k08_bays.py b/chicago/4d/generators/archetypes/k08_bays.py
+index c976b6fa8..518dc4c57 100644
+--- a/chicago/4d/generators/archetypes/k08_bays.py
++++ b/chicago/4d/generators/archetypes/k08_bays.py
+@@ -1902,22 +1902,29 @@ class Bay:
+             return
+         r, rb = pnl["scroll_m"], pnl["boss_m"]
+         for sg in (-1, 1):
+-            # an iron scroll hung from the rail over the sweep, its middle 0.45 of the sweep
+-            # in from the panel's end, clear of the slope under its inner side
++            # The Levy scroll stands before the sloping panel, not wholly above it.
++            # Its exact stand-off is reconstructed: keep the iron's back 10 mm clear
++            # of the stone, and return its tail to the rail above the panel's shoulder.
+             sx = c + sg * (hw - 0.45 * sw)
+             cy = y_rail - r - bm
+             under = e + (sh - e) * min(1.0, 0.45 + r / sw)
+-            if cy - r - bm / 2 < under + 0.01:
+-                raise ValueError(f"{self.v['id']}: a {r} m balcony scroll does not stand between the panel and the rail")
+-            self._scroll(flat, sx, cy, r, -sg, y_rail + 0.004, bm / 2, z)
++            w, gap = bm / 2, 0.01
++            scroll_z = z + t + w / 2 + gap
++            if cy - r - w / 2 < under + gap and -scroll_z + w / 2 > d0 - gap + 1e-9:
++                raise ValueError(f"{self.v['id']}: a {r} m balcony scroll intersects its stone panel")
++            if cy + r - w / 2 < sh + gap:
++                raise ValueError(f"{self.v['id']}: a balcony scroll's returning tail crosses its panel shoulder")
++            self._scroll(flat, sx, cy, r, -sg, y_rail + 0.004, w, scroll_z, tail_z=z)
+             # the carved scroll on the panel's face beside the pedestal
+             self._loop(flat, "carving", c + sg * (pw / 2 + rb + 0.03), (y0 + sh) / 2 + 0.03, rb, rb * 0.45, 12,
+                        -z - t - 0.025, -z - t + 0.004, back=False)
+ 
+-    def _scroll(self, flat, cs, cy, r, hand, y_top, w, z):
+-        """T-3092: an iron C-scroll in the rail's plane: a square bar `w` wound inward from the
++    def _scroll(self, flat, cs, cy, r, hand, y_top, w, z, tail_z=None):
++        """T-3092: an iron C-scroll: a square bar `w` wound inward from the
+         top of a circle of radius `r` about (cs, cy) through a turn and a quarter to 0.45 of it,
+-        `hand` the way it winds, and a tail from its start straight up into the rail. Its turns
++        `hand` the way it winds, and a tail from its start up into the rail. `tail_z` can
++        return the tail from the scroll's proud plane to the rail without a floating gap.
++        Its turns
+         stand further apart than the bar is wide, so the strip never folds over itself."""
+         n = 30
+         pts = []
+@@ -1927,7 +1934,9 @@ class Bay:
+             rr = r * (1 - 0.55 * f)
+             pts.append((cs + rr * math.cos(a), cy + rr * math.sin(a)))
+         pts.insert(0, (cs, y_top))
+-        d0, d1 = -z - w / 2, -z + w / 2
++        depths = [z if tail_z is None else tail_z, *([z] * (len(pts) - 1))]
++        def at(p, i, side):
++            return flat.P(p[0], p[1], -depths[i] + side * w / 2)
+         nrm = []
+         for j, p in enumerate(pts):
+             q0, q1 = pts[max(0, j - 1)], pts[min(len(pts) - 1, j + 1)]
+@@ -1941,17 +1950,18 @@ class Bay:
+             area = sum(a[0] * b[1] - b[0] * a[1] for a, b in zip(quad, quad[1:] + quad[:1]))
+             if area < 0:
+                 quad = quad[::-1]
+-            flat.plane("iron", quad, d0)
+-            flat.plane("iron", quad[::-1], d1, (0.0, 0.0, -1.0))
++            inds = [j, j + 1, j + 1, j]
++            flat.face("iron", [at(p, i, -1) for p, i in zip(quad, inds)], (0.0, 0.0, 1.0))
++            flat.face("iron", [at(p, i, 1) for p, i in zip(quad[::-1], inds[::-1])], (0.0, 0.0, -1.0))
+             for side, sgn in ((L_, 1.0), (R_, -1.0)):
+                 a, b = side[j], side[j + 1]
+                 h = (nrm[j][0] * sgn, nrm[j][1] * sgn, 0.0)
+-                flat.face("iron", [flat.P(a[0], a[1], d0), flat.P(b[0], b[1], d0),
+-                                   flat.P(b[0], b[1], d1), flat.P(a[0], a[1], d1)], h)
++                flat.face("iron", [at(a, j, -1), at(b, j + 1, -1),
++                                   at(b, j + 1, 1), at(a, j, 1)], h)
+         a, b = L_[-1], R_[-1]
+         tx, ty = pts[-1][0] - pts[-2][0], pts[-1][1] - pts[-2][1]
+-        flat.face("iron", [flat.P(a[0], a[1], d0), flat.P(b[0], b[1], d0),
+-                           flat.P(b[0], b[1], d1), flat.P(a[0], a[1], d1)], (tx, ty, 0.0))
++        flat.face("iron", [at(a, -1, -1), at(b, -1, -1),
++                           at(b, -1, 1), at(a, -1, 1)], (tx, ty, 0.0))
+ 
+     def _pilasters(self, flat, run, i, levels, y_wall0, band_h):
+         """T-2931: carved pilasters at a run's ends (1801's bow and its south pavilion, from the
