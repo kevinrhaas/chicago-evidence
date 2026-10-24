@@ -1,0 +1,13 @@
+# Mobile stages1–8 passed; PR1279 held for unfinished browser coverage and CI installation failure
+
+AppHEAD3290195d/treebac89999 remains unchanged. Mobile1–4passed (checkpoint7),5–6passed41assertions/28stagedchecks/488.271s,7–8passed47assertions/34stagedchecks/404.567s. Allactualcommandsreturn0, SMOKEPASS, zero pageerrors and cleanupcomplete/zeroownedchildrenremaining. Fullcoverage remains pending;9–10running atcapture.
+
+Actual draftPR1279 uses head3290195d, DEVbasec96846f15 and testmergeQ01977d6603e8e8fc1a5c895d7eacb013e01bed36, whose verifiedparentsare[B,H] andtree7bcae13c6fa0b4e0e7e7cd85c53db26691b3d3ec. All55child-specificfiles are byteidenticalH/Q;4shared appends includeincomingDEV. Fullpinnedpreflight1,063/383PASS is checkpoint6.
+
+NormalPRgate40085901834/attempt1 stillIN_PROGRESS atlastcheck. Moving40085901811/attempt1FAILED atInstallPlaywright3seconds; publishingandbothrenderstepsSKIPPED. This is not a moving-frame renderer failure or pass. Sourcepushreport40069749728SUCCESS; contentbuild40069749684SUCCESS,warrantedSUCCESS,downstreambakejobsSKIPPED.
+
+Two historicalInstallPlaywright failurescarryUbuntu26migrationnotice; recentSUCCESSrunssamepin/workflowinstallsucceed. InstalledPlaywright1.56.1 hasnoUbuntu26mapping. This supports a compatibilityhypothesis butactualfailingOS/stderrnotconfirmed. NoCIworkflowpatch/retry/dispatch/adminmergewasmade.
+
+OfficialjoblogAPIauthorization302succeeds, thenproxyCONNECTtoobservedproductionresultssa14/15.blob.core.windows.net is403before destinationHTTP. Noalternateproxy/pathused. Draftrevision9addsonlythesetwohosts besideapi.github.com/chicago.polecat.live, retainingpackage_managerspreset; savednotapplied. PublicCIexportredactssignedredirectURLs; PRIVATErawerrorsremainlocalandareexcluded.
+
+OnlyT3083/T3086/T3087inreviewunderactualPR1279. PRremainsdraft. NoDEVmerge/publicdelivery/productionpromotionclaim; broadphoto/native/interactionremainderstayopen.
