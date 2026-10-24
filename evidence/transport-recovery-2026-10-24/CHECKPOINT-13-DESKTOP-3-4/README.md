@@ -1,0 +1,5 @@
+# Desktop stages3–4 functional passes
+
+SourceH3290195d/treebac89999 remains unchanged; draftPR1279. Desktop3passed107assertions/94stagedchecks,293.559s;desktop4passed41assertions/28stagedchecks,614.825s. Actualcommands0,SMOKEPASS,zero pageerrors,cleanupcomplete. Desktop4 exceeds600s foregroundbudget by14.825s; recordfunctionalpassandtimingoverrunseparately. The full observed overrun list is included. Desktop1–4 andmobile1–13/15nowfunctionalPASS;desktop5running.
+
+Mobile14isstill an actualfailed page-errorassertion fromfour proxyblockedCDNphotos. Desktop14isdeferred/unrunfor sameaccessprerequisite;both14legsremainrequired. No fullbrowsergatePASS. ActualmainCIgate/report/warranted screenPASS;moving-framesfailedInstallPlaywrightbeforemeasurementandoriginalstderrstillblockedbyAzureloghostproxy. Exactnetworkhostadditions/startupinstructionsaresavedindraft12notapplied. NoCIrerun/workflowpatch/adminmerge/DEVdeliveryclaim.
