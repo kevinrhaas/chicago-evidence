@@ -1,0 +1,10 @@
+from pathlib import Path
+import hashlib,importlib.util,json
+W=Path(__file__).resolve().parent;sp=importlib.util.spec_from_file_location('archive_exact',W/'archive_exact.py');m=importlib.util.module_from_spec(sp);sp.loader.exec_module(m)
+r=Path('/tmp/T3118-root-full18-prepared/closed-prepared-GET-only-no-binding');p=r/'MANIFEST.json';assert hashlib.sha256(p.read_bytes()).hexdigest()=='478eae0d7ff2f3c10eb780a9c70a03f2ea9d7f2b417b16fae01171cc34feadcc';rows=json.loads(p.read_text())['files'];assert len(rows)==4 and sum(x['bytes'] for x in rows)==14209
+for x in rows:
+ q=r/x['path'];assert q.resolve().is_relative_to(r) and q.is_file() and not q.is_symlink();b=q.read_bytes();assert len(b)==x['bytes'] and hashlib.sha256(b).hexdigest()==x['sha256']
+m.archive('T3118-FULL18-GETONLY-OBSERVER-PREPARATION-UNBOUND-UNRUN',m.author_manifest(r,p),'Exact4 closed files+manifest PREPARED_GET_ONLY_NO_BINDING. GenericexplicitPR/head/root18acceptedbindings,ninenativegroups×bothviewports,rawcheckout/env/run+jobSUCCESS/footer/counts/zeroerrors,ALLchecks/drift;300sAPIpoll/45sheartbeat. NO PR/headbinding/APIinvocation/watcher/source/native/test/browser/dispatch/claim/lease/mergeatprep. Rootaloneownsdispatch/futureBOUND_DISPATCH;no credentialinspection. CapturedpeerreviewseparatenotnativeCIapproval.')
+p=W/'write_index.py';s=p.read_text();needle='- Further producer/integration work is ongoing.';assert s.count(needle)==1
+addition='- The four-file HoganT3118full18observer preparation plus originalmanifest is **GET-only, UNBOUND and UNRUN**. It requires explicitPR/head/rootaccepted18bindings for nine nativegroups in eachviewport, checks rawcheckout/env/run/jobSUCCESS/footer/counts/zeroerrors and retains ALLchecks/drift, with300sAPIpoll/45sheartbeat. NoPR/head is bound and noAPI/watcher/native/test/browser/dispatch/claim/lease/merge occurs in this preparation; root owns any futuredispatch and binding. This preserves a recovery helper without CI/PASS/sourceapproval.\n'
+s=s.replace(needle,addition+needle);p.write_text(s)
