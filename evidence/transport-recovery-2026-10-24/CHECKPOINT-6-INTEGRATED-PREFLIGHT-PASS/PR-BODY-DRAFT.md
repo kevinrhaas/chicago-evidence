@@ -1,0 +1,15 @@
+Restore the saved transport refinement group onto current dev: round the catalogue Brougham lamps, repair only the planted horse eye UV mapping, and add a safe Western Hotel yard viewpoint without moving the horse.
+
+- T-3083: V18 near33,374/mid11,706 triangles; protected non-lamp geometry, materials, nodes, contacts, near proxy and runtime policies unchanged. V17 production/qualification history retained.
+- T-3086: separately versioned d4544c28 derivative reproduces from canonicalb479 with only ocularUV10/bounds and explicit derivative notice changed. Geometry, rig, weights, animation, materials and six embedded image payloads remain protected; original assets/receipts remain historical.
+- T-3087: camera-only point at E-124/N-292/yaw221.19, with all19points dry and outside roofs; prior18points and actor placement unchanged.
+
+The58-file frozen source was hash-verified before three-way recovery. Incoming Glessner data/bakes/liberty additions and ROADMAP legacy bytes remain intact. Preserve the historical V17liberty decision and append the currentV18amendment. Shared licence/liberty/status/roadmap metadata records the group once.
+
+Independent installed checks passed: near/mid boundary contracts and78LOD assertions, UV boundary with five rejected controls, exact derivative regeneration, standing lifecycle contract, and19-anchor gate/self-tests. Root inspected original catalogue and both lamp/horse comparison pairs. These are bounded form/UV/navigation improvements; native PBR/world/photographic completion, walking, tack, teams, occupants and riding remain open under the existing remaining tickets. Do not close parentsT2794/T2800.
+
+The three ticket commits are 4a14cdf92 (T-3083), d718a1711 (T-3086), and 8c45c899f (T-3087). Newer DEV29ea317f was integrated by ordinary merge3290195d, preserving those commits. Current tree is bac89999d2afd653e632c52d15b2f50336688deb; exactly59paths differ from reviewed DEV. Both parents' gate/isolation rows and all incoming liberty/Glessner data survive.
+
+Fresh validation on committed3290195d: canonical derived owner tail passed59steps in214.547s, one unchanged lap; complete preflight passed1,063steps including383negative self-tests in665.888s. Exact committed-head changelog and ticket-ID questions passed in that preflight. Source hashes stayed unchanged; corrected supervisor cleanup reaped721ownedchildren with zero remaining. Full logs and source manifests are checkpointed in chicago-evidence/evidence/transport-recovery-2026-10-24/.
+
+Published browser smoke across all15stages/bothviewports is running and remains pending. Actual normal PR gate/moving-frames and steward push report results remain unreadable; integration push also triggers the content-build warranted screen, whose real result must be collected. GitHub API and public DEVpreview access are blocked by the current runtime policy; saved domain additions await application. No CI success, DEVmerge, native photographic acceptance or public delivery is claimed. Update this paragraph with final browser/CI evidence before opening the PR.
