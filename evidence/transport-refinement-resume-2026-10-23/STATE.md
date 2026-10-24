@@ -52,3 +52,26 @@ its request, before that integration. Its original STATE header timestamp
 transcription correction is documented without changing frozen runtime evidence.
 Current scoped splits/claims are being performed through the normal ticket CLI;
 read actual canonical tickets for their current IDs, not this historical snapshot.
+
+
+## Final combined source freeze — 2026-10-24T00:22:16.981183+00:00
+
+The canonical derived-owner tail PASSED in425.001s:59steps,2laps,
+and the final lap moved nothing. Installed eye boundary/5destructive controls
+and existing actual integration contract pass. FINAL-SOURCE-BEFORE-GATE contains
+all58changed/new app files (24,030,831bytes) against DEVe5ed3ff, on branch
+steward/t3083-t3086-t3087-transport-refinement-20261024. Source manifestSHA
+25c19177164a60379346ed1572b93f627444061c49bcbd220cb23d27a7fddd4a.
+Full preflight is the next required step; no new app commit/PR/merge is claimed.
+
+Shipping claims T3083/T3086/T3087 were pushed as one group. The normal CLI split
+the original T2794/T2800 at their queue positions, retaining every remaining
+requirement in T3084/T3085/T3088/T3089. Only shipping children may enter review
+on this increment. Root's prototype claims T2803/T2804 will be released with
+exact recovery pointers before final delivery if not continuing their criteria.
+
+FIFTH-CHECKPOINT saves gait source encoder memoryFAIL, LoopOnceFAIL and separate
+actual vendoredThree CPU LoopRepeat265PASS. The latter is not a visual/browser,
+ordinary-walk, stop-transition or end-to-end bounded-producer qualification.
+It also saves the eye installer, exact applied preimages and final source review.
+The old root draft there is historical; current canonical handover is being synced.

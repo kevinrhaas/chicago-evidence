@@ -1,0 +1,31 @@
+# Fifth people and transport recovery transfer
+
+This transfer copies settled frozen evidence outside Git for root's next evidence checkpoint. The assembler performs only Python standard-library copying and SHA256 verification under its owned subreaper wrapper. It does not read or copy the live app, run the installer, alter tickets or refs, stage/commit/push, or run Node, a numerical check, browser, container or heavy process. Every original included source is checked before/after copying and rechecked across the complete copy. Frozen files and historical failures remain unchanged.
+
+## Integration status at root's assembly request
+
+Root reports evidence already published through **3ae9f38**. Claims for **T3083, T3086 and T3087** have been pushed, while the full remaining parent scope is preserved by **T3084, T3085, T3088 and T3089**. Claim publication does not mean an app change is committed or merged. The current app refinements are locally installed; the canonical-owner rederive/final gate is **running/pending**, with **no new app commit or PR yet** at this checkpoint. Historical merged standing-horse work is separate. This is recovery evidence, not a green final gate, DEV merge, live deployment or photographic completion. Root alone owns integration, final verification, tickets, Git and publication.
+
+## Gait checkpoints preserve distinct outcomes
+
+- **CHECKPOINT-7 / V30 original resource FAIL:** the exact original encoder exceeded its unchanged 512MiB RSS guard at 597,954,560 bytes, after about 8.14 seconds. It emitted a held 5,545,416-byte diagnostic GLB before the assertion. Its native 257-pose checker was not launched. No end-to-end bounded upstream source/SVD generation pass is claimed.
+- **CHECKPOINT-8 / V31 LoopOnce FAIL:** extraction of the pinned V30 basis boundary and byte-identical fresh serialization were followed by actual GLTFLoader, SkeletonUtils clone and native AnimationMixer readback across 257 poses, 11,556 vertices and 14,986 triangles. The original physical guards pass, but clamped LoopOnce endpoint drift fails the unchanged strict 1nm/1e-9 loop guards: about 11.11nm joint-position and 12.33nm surface drift. The actual failure remains included. This split boundary does not fix the earlier upstream memory failure.
+- **CHECKPOINT-9 / V32 real native LoopRepeat265 PASS:** actual GLTFLoader, SkeletonUtils clone and AnimationMixer LoopRepeat readback covers 257 keys/midpoints plus eight matched wrap samples. The unchanged contact, domain, physical and strict loop guards pass; loop joint/surface/normal errors are zero. Matched before/after-cycle residual is at most 2.7894e-16m. The held derivative, original guards and failure receipts remain unchanged. Runtime was about 11.314 seconds and max RSS 366,268,416 bytes under the 512MiB bound. This proves the bounded actual readback unit, not bounded upstream generation.
+
+The 0.24m stride / 1.6s / 0.15m/s study is constrained creeping motion. No natural-gait, stop/clamp, standing-to-walking transition, visual, browser/GPU, world/traffic, performance acceptance or riding claim is made. The inherited lateral-sequence label was incorrect for the actual HL -> FR -> HR -> FL offset order and is not silently repaired in frozen source. The original V30 resource FAIL and V31 LoopOnce FAIL are not replaced by V32's limited success. The gait GLB is a held study and is not installed by this transfer.
+
+## Eye intake and source review
+
+**SAFE-EYE-INTAKE-INSTALLER-V1** retains the exact seven preparation files identified by INSTALLER-MANIFEST.json, that manifest, and the ROOT-APPLY-1 receipt, review manifest and original preimages. Seven preparation SHA pins are explicitly checked by this assembler. The original installer and commands are recovery source only; they are not executed. No live app is copied while root's canonical-owner unit is running.
+
+**INDEPENDENT-EYE-FINAL-FREEZE-REVIEW** includes the final APPROVED_SOURCE_FOR_FINAL_FREEZE review, installed-23 source audit, earlier review and reconstructed pre-edit check.sh witness. This is read/hash source approval with its original limited scope: protected original commands, assertions and caps remain; the named stale V17 check label and already-reviewed boundary-check invocation are the scoped changes. It does not constitute a runtime, final-gate, native-browser, world or photographic pass. STATUS/ROADMAP prose differences are intentional scoped child/improvement updates; original b479 assets and historical receipts remain separate.
+
+**ROOT-HANDOVER-AND-CHILD-DEFINITIONS** preserves root's transport handover, carriage and horse child-definition scripts, horse child IDs, and progress-document script. These record the remaining ticket scope and narrow installed improvements. They are copied source, not newly executed ticket mutations or workflow dispatches. Ordinary/fallback Chromium failures before a frame and Docker OCI process-start failure remain nonpasses; no healthy-host native review is invented.
+
+## Integrity, omissions and publication
+
+The outer SHA256 manifest covers every payload file, including frozen inner manifests; it excludes only itself. SOURCE-COPY-INVENTORY.json binds original paths and copied bytes. Exact large duplicates are hardlinked only within this destination. The same 5,545,416-byte held gait GLB (SHA256 8fc20cf20549d9588c56202d93315dc9f718531fc7a285de2208ce4e36ba9a7b) remains at all three frozen checkpoint paths, and Git naturally stores it once.
+
+The 146,992,320-byte V32 raw native geometry and the earlier 142,554,816-byte V31 raw geometry are intentionally excluded. DEDUPLICATION-AND-OMISSIONS.json retains their hashes, original workspace parents and included compact proof pointers. Those recorded pins are verified against included frozen proof JSON; the omitted raw files are not opened or rehashed during this transfer. Compact actual readback JSON, exact source scripts, guard outputs, receipts and held GLBs remain available. No node_modules or runtime dependencies are copied.
+
+The evidence clone uses sparse checkout; root's eventual chosen evidence staging requires **git add --sparse**. This is guidance only, not a performed Git operation. Root must bind the final canonical-owner result before making an app commit/PR claim.
