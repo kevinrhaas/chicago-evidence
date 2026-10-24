@@ -1,0 +1,59 @@
+diff --git a/chicago/4d/changelog.d/T-3125.json b/chicago/4d/changelog.d/T-3125.json
+new file mode 100644
+index 000000000..5001f4c10
+--- /dev/null
++++ b/chicago/4d/changelog.d/T-3125.json
+@@ -0,0 +1,7 @@
++{
++  "title": "Release notes wrap inside the Navigator",
++  "kind": "fix",
++  "items": [
++    "Long links and release notes wrap within What's new at normal and enlarged text sizes, keeping the complete text readable inside the Navigator."
++  ]
++}
+diff --git a/chicago/4d/docs/ROADMAP.md b/chicago/4d/docs/ROADMAP.md
+index b14060b3a..824fd9db6 100644
+--- a/chicago/4d/docs/ROADMAP.md
++++ b/chicago/4d/docs/ROADMAP.md
+@@ -5863,3 +5863,8 @@ The scoped prerequisite renders four Kinzie poplars through the existing green c
+ 
+ 
+ T-3106 retains its medium parent and provenance history. Its two independent no-bake demonstrations are T-3119 (the declared garden plants and physical clearance) and T-3120 (the Light/Full woodland sweep within unchanged caps), grouped with T-3105. This ticket mapping changes no model, planting, renderer, camera, source grade or original picture acceptance.
++
++
++### T-3125 — keep complete release notes inside the Navigator
++
++The retained before-change mobile diagnostic records a 349.859 px grid track inside a 292 px host, with text visibly clipped. The scoped news-grid rule allows complete text to wrap within the panel without hiding it or reducing fonts. Delivery checks cover real published mobile/desktop news flows and all-row bounds at 100% and 140%, normal preflight and ordinary exact-head CI. Preserve the failed diagnostic and distinguish focused notes results from a fresh whole-part13/full-renderer pass.
+diff --git a/chicago/4d/docs/STATUS.md b/chicago/4d/docs/STATUS.md
+index 547142e0b..a3e3b15dd 100644
+--- a/chicago/4d/docs/STATUS.md
++++ b/chicago/4d/docs/STATUS.md
+@@ -24875,3 +24875,10 @@ The declared plantings render without refusal. Uniform 1812 Light and Full accep
+ 
+ 
+ T-3106 retains its medium parent and provenance history. Its two independent no-bake demonstrations are T-3119 (the declared garden plants and physical clearance) and T-3120 (the Light/Full woodland sweep within unchanged caps), grouped with T-3105. This ticket mapping changes no model, planting, renderer, camera, source grade or original picture acceptance.
++
++
++## T-3125 — complete release notes inside the Navigator (2026-10-24)
++
++The retained before-change published view at 390 x 780 shows inherited clipping: a 292 px host contains a 349.859 px news-grid track, and entry boxes extend to x 424.859 beyond the screen's x 381 edge. All 2,250 rows rendered without page or HTTP errors. The screenshot and actual bounds distinguish this layout defect from the earlier diagnostic helper's stricter readiness timeout.
++
++The change constrains only the three existing news grids to a zero-minimum flexible column and permits intact text, including long links, to wrap. Typography, content, unread logic, navigation and every pre-existing CSS rule remain intact; no clipping mask or smaller font is introduced. Delivery evidence must cover real published 390 x 780 and 1280 x 800 views, every row at 100% and 140% text size, the six news-flow assertions, current content and the About route, together with preflight and ordinary exact-head CI. Focused notes evidence is recorded separately from a whole-part13/full-renderer pass.
+diff --git a/chicago/4d/renderers/web/css/walk.css b/chicago/4d/renderers/web/css/walk.css
+index d6589d735..e1a7db8b6 100644
+--- a/chicago/4d/renderers/web/css/walk.css
++++ b/chicago/4d/renderers/web/css/walk.css
+@@ -1899,6 +1899,13 @@ kbd {
+ 
+ /* ---- What's new -------------------------------------------------------- */
+ 
++/* T-3125: a long URL in one release must not set every row's minimum width.
++   Keep each nested grid inside the panel and wrap intact text when needed. */
++.wn-list, .wn-entry, .wn-items {
++  min-width: 0;
++  grid-template-columns: minmax(0, 1fr);
++  overflow-wrap: anywhere;
++}
+ 
+ .wn-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 16px; }
+ .wn-entry { display: grid; gap: 5px; }
