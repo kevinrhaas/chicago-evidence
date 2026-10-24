@@ -1,0 +1,5 @@
+Source review approved for a future normal source PR and existing humans dispatch; no canonical geometry acceptance.
+
+Exact four proposed source paths are recorded in REVIEW.json with verified current preimages and proposed hashes. Builder changes are confined to build(); default/no-profile bypasses the new hook, other resident bindings remain exact, and only explicit Bardwell/W01 trousers atLOD2/3 select the existingLOD1 ratio0.6. Original export, rig, rigid-scale and numerical contracts remain unchanged.
+
+The source regenerates same-ratio trousers rather than copying the measuredLOD1 GLB. Rebuilt output must demonstrate source/weights equivalence and re-prove all8 canonical/web static clothing/bench/board/shoe checks on actual new hashes. Existing build_seated_driver_study workflow input supplies the opt-in without workflow edits, but ordinary fixture/observer results are not automatic all-tier clothing/contact proof. Normal source PR checks, retained regression coverage and subsequent native/scene/GPU/photo qualification still apply. No build/dispatch was executed.

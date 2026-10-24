@@ -7,7 +7,7 @@ Frozen sources/proofs: horseV4 UV-only derivative passes unchanged source/physic
 CarriageV18rounderlamps actualnativeproducer/negativecontrols/KhronosPASS; originalsource8Chromium launchFAIL before anypage/capture duepthreadEAGAIN, ownedcleanupclosed. Registration and separately reviewed boundedresourcefallback inprogress, actual native/source8 failure checkpoint included. No photographic, fullgait, driver,1904activation or broadticketcompletion claimed. Noqueue reorder, productionpromotion or workflowedits. Rootsoleapp/canonicalwriter; agents only ownsourcefolders. PriorcanonicalHANDOVER retains merged/public1244receipts.
 
 
-## Local checkpoint update, 2026-10-23 23:42 UTC
+## Local checkpoint update, 2026-10-23 23:33 UTC
 
 SECOND-CHECKPOINT and THIRD-CHECKPOINT are local until a successful GitHub push
 is recorded. The configured GitHub CLI returned HTTP 401; authorization refresh
@@ -31,3 +31,24 @@ Active canonical claims T2794/T2800/T2803/T2804 were pushed around 22:45 UTC;
 their approximately three-hour leases must be checked before further canonical
 mutations. Broader acceptance remains incomplete; do not mark these tickets
 done merely because a partial refinement PR merges.
+
+
+## Checkpoint update — 2026-10-23T23:56:35.268320+00:00
+
+GitHub authentication has recovered (actual authenticated API success).
+The first two local checkpoint commits, 97f0701 and dbfb553, are now backed up
+through successful main push 6bb72aa, retaining unrelated incoming evidence.
+Two earlier push attempts failed locally before the HTTPS helper could fork;
+the successful quiet push was returncode 0 and printed the remote update.
+
+The preliminary app preflight was explicitly interrupted, NOT passed. Its
+complete partial transcript and empty owned-cleanup receipt are retained here.
+The app work was safely stashed, DEV fast-forwarded from 5f15de2 to e5ed3ff,
+and the transport source restored with both Glessner liberty additions retained.
+The stash is intentionally retained. No new app commit/PR/merge is claimed yet.
+
+FOURTH-CHECKPOINT contains frozen source/proposals and gait/eye proofs as of
+its request, before that integration. Its original STATE header timestamp
+transcription correction is documented without changing frozen runtime evidence.
+Current scoped splits/claims are being performed through the normal ticket CLI;
+read actual canonical tickets for their current IDs, not this historical snapshot.
