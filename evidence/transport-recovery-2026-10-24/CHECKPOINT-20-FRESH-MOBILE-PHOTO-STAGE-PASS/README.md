@@ -1,0 +1,7 @@
+# Fresh mobile photo stage passes
+
+On committed head be56fb269eee6aa7963b8a8d76d5a950f56f857c, published mobile part 14 passed in 560.999 seconds: 127 staged checks, zero page errors, command and outer return codes 0, complete cleanup with no remaining owned children. The original old-head image-access failure remains in its historical checkpoint; this fresh pass uses normal TLS and actual decoded photographs.
+
+The new full matrix is still RUNNING. Desktop part 14 is active; its partial transcript is not copied as a result. No full browser pass or DEV delivery is claimed. New normal CI is bound to tested merge 0acb98a9adbafa43fa9346b4d00a08f81101a30c, base de91, head be56; its tree equals the locally validated tree a38. Initial API snapshots and latest status are retained. Report and warranted/content-build metadata are green; their job logs were refused at observed Azure hosts 2 and 11. Those exact hosts were saved in configuration draft revision 14, with no live-apply/readiness claim. Primary CI is still pending.
+
+Independent C19 review verifies all saved hashes and committed patch bytes. Fresh-driver review verifies 24 entirely new legs cover all 15 parts at both widths. The final verifier is prepared but has NOT run: after completion it will rehash every published file, validate exact file set/source HEAD/tree, and reread all command/cleanup/coverage receipts. Its existence is not an acceptance result. No production promotion.
