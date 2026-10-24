@@ -1,5 +1,23 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- RUNTIME_RECOVERY_20261024T2312_START -->
+## Runtime recovery and current delivery checkpoint
+
+The verified own stalled fort check driver and its descendants were stopped after process exhaustion; its unfinished check is not PASS. Lightweight command access recovered, and a Linux child-subreaper wrapper was positively checked to reap an orphan while preserving an actual failing command exit7. No PID1 manipulation, unrelated process termination, main promotion or original image acceptance is claimed.
+
+**PR1286 old source cefcbf155 now has all18 actual native smoke groups PASS**, covering all15parts on bothviewports:829desktop+836mobile, zeroerrors; ordinary1065/384 is bound to its identical synthetic tree. **Currentdev70bcc contains real runtime changes and the PR conflicts; fresh integrated-head gates and published coverage are still owed.** The old PASS is not a merge approval for that future tree.
+
+**Fort M3122 remains uncommitted**, with genuine lighthouse assets/native corrections and the interrupted second gate preserved in a closed emergency recovery packet. Checked S3123 bd316 remains public; S3124 is not adopted. Renewed claims, currentdev/bridge integration, fresh wholecheck, app grounding and final coverage remain required.
+
+New exact closed recovery archives:
+
+- [FORT-M3122-UNCOMMITTED-EMERGENCY-INTERRUPTED-GATE-RECOVERY](archives/FORT-M3122-UNCOMMITTED-EMERGENCY-INTERRUPTED-GATE-RECOVERY.tar.gz) — 57 selected files; archive SHA256 `5706a82d1861a5f8e077a27a1c264b76fc37f7639a3ce47bdf1b1e89c7ced23e`; Exact56 closed payloads plus author manifest. Uncommitted genuine lighthouse M3122 plus pending normal incomingAbb merge on checked S3123 bd316. Source files, binary HEAD/index patches, Git state, generated lighthouse master/web, source JPEG and interrupted gate/log/timing bindings preserved. No M code commit or whole-gate PASS: prior second gate was stalled by runtime process exhaustion, later stopped only within verified own check driver/descendants. T3124 unadopted. Latestdev/bridge integration and fresh checks/app/full coverage remain owed. This is recoverable WIP, not original-picture acceptance.
+- [PR1286-OLDCEF-ALL18-ACTUAL-PASS-CURRENTDEV-CONFLICTING](archives/PR1286-OLDCEF-ALL18-ACTUAL-PASS-CURRENTDEV-CONFLICTING.tar.gz) — 59 selected files; archive SHA256 `a8356ad3db996551c9ed8f928b2ee15e5e72d4c418a08e0218b323bb34b3a4c6`; Exact closed actual eighteen native raw smoke runs for old public cefcbf155/treecfb2a9c5: all15parts bothviewports,829desktop/836mobile, exact checkout/env/footer and zero errors. Fresh ordinary1065/384 on identical synthetic tree is separately bound. Currentdev70bcc contains real runtime updates, PR1286 conflicts, and fresh merged-head gates/published coverage are owed. No merge or image acceptance; original2375 remains OPEN/DIFFERS and unchanged far-view budget diagnostic remains both over-cap.
+- [PR1286-ALL18-BODY-STATUS-CORRECTION-DEV-REINTEGRATION-OWED](archives/PR1286-ALL18-BODY-STATUS-CORRECTION-DEV-REINTEGRATION-OWED.tar.gz) — 3 selected files; archive SHA256 `79f2574bcc2db9964c7777291c3bc2be6547b12e0e0b1f13877a15c30070a097`; Closed before/after PR1286 body and API update receipt distinguish actual oldcef eighteen-group PASS from currentdev runtime conflict. Current-head integration, native gate and renewed published coverage remain required. No merge, assertion waiver, picture acceptance or reuse as proof for incoming runtime changes.
+
+<!-- RUNTIME_RECOVERY_20261024T2312_END -->
+
+
 This is a new resumed-work checkpoint. Prior frozen evidence remains unchanged at [final27-archive checkpoint6d4df2f](https://github.com/kevinrhaas/chicago-evidence/blob/6d4df2f307067a664beb00f336138110d3ce5ed2/evidence/image-match-2026-10-22/final-parallel-recovery-20261023T1430/RECOVERY.md). The user renewed permission to continue after the cloud pause.
 
 **Repository visibility correction:** GitHub metadata at `2026-10-24T20:54:55.520370+00:00` records `kevinrhaas/chicago-evidence` as `public`, private=`false`. Earlier references to this repository as private were an unsupported assumption, not access control. Historical labels such as PRIVATEhypothesis mean noncanonical research status only. No visibility setting was changed and frozen evidence remains unchanged.
