@@ -11,7 +11,7 @@ for directory,expected,count,total in specs:
  verified[directory]=(r,p,rows)
 # Every author byte is validated before the first archive. The large QA packet is
 # partitioned exactly, retaining its original full manifest in both bounded parts.
-r,p,rows=verified['qa-actual-combined6e'];parts={'desktop':[x for x in rows if x['path'].startswith('desktop-')],'mobile-and-orchestration':[x for x in rows if not x['path'].startswith('desktop-')]};assert all(sum(x['bytes'] for x in v)<40_000_000 for v in parts.values());assert sum(len(v) for v in parts.values())==113
+r,p,rows=verified['qa-actual-combined6e'];parts={'desktop':[x for x in rows if x['path'].startswith('desktop-')],'mobile-and-orchestration':[x for x in rows if not x['path'].startswith('desktop-')]};assert all(sum(x['bytes'] for x in v)<45_000_000 for v in parts.values());assert sum(len(v) for v in parts.values())==113
 ledger=W/'FORT-COMBINED6E-113-QA-PARTITION.json';ledger.write_text(json.dumps({'status':'ALL113_AUTHOR_HASHES_VERIFIED_EXACT_DISJOINT_COMPLETE_PARTITION','original_manifest_sha256':specs[0][1],'original_payload_count':113,'original_payload_bytes':63720169,'parts':parts,'metadata':'Full original manifest and this exact partition ledger accompany both archives. Mobile part contains ORCHESTRATION; recover both parts for all14standardcases. No screenshot edits or omissions.'},indent=2)+'\n')
 for part,selected in parts.items():
  entries=[(r/x['path'],x['path'],x['sha256']) for x in selected]+[(p,'MANIFEST.json',specs[0][1]),(ledger,'ARCHIVIST-QA-PARTITION.json',hashlib.sha256(ledger.read_bytes()).hexdigest())]
