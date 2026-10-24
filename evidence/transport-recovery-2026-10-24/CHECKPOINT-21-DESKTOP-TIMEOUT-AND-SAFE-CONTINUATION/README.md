@@ -1,0 +1,9 @@
+# Desktop operational timeout retained; safe continuation
+
+On unchanged head be56/tree a38, desktop part 14 reached the external 1800-second wrapper cap. The receipt is return124/timed_outtrue/1800.226s, with126passing assertion lines. Owned timeout cleanup closed Chromium; the transcript consequently records a suite-completion failure saying the browser was closed. This incomplete run is NOT a pass. Cleanup reaped9owned descendants with zero remaining. All source and original published file hashes were then independently reread and remain identical.
+
+The new continuation binding retains ONLY the earlier mobile14pass after rereading its result, positive staged count, SMOKE PASS, zero-page-errors and complete cleanup. It continues remaining mobile/desktop parts and schedules a fresh desktop14attempt last under a3600-second operational cap and a new filename. The failed original stays immutable. Timing flags still compare actual elapsed time to600seconds; no application assertion or repository gate was changed. All24passinglegs are still required for the local complete verifier, which has NOT run.
+
+Normal new-head PR gate and moving-frames checks are confirmedSUCCESS through GitHub run/job/step metadata. Their raw logs were refused at the actually observed Azure18and16hosts. Exacthosts were saved in configuration draft15; no live policy application or raw checkout/metric transcript is claimed. The independent unfiltered full-smoke CI remains running at this snapshot. A green CI result cannot erase an unexplained local red; this wrapper timeout and its induced browser-close failure are explicitly retained and explained.
+
+Public BEFORE-delivery baseline is preserved: DEVbuildde91, oldV17lamp hashes, originalb479horse, neweye derivative404 and yardcameraabsent. NormalTLS. PR1279 remains draft/unmerged; no DEV delivery or production promotion is claimed.
