@@ -1,0 +1,9 @@
+DIAGNOSTIC2 PREPARATION ONLY — NOT EXECUTED
+
+Original helper0ab966… and attempt1 receipts remain immutable. An exact copy is preserved as IMMUTABLE-ORIGINAL-0ab966.mjs. New helper adds only external diagnostics: all-node layoutfailure counts remain exact and unchanged, first8offenders supply actualrectangles/client-scrollsizes/styles/hiddenancestor/closestscrollparent/currenttab, and a screenshot+boundedcontext diagnostic is captured before a layoutorfeed-waitfailure throws. Generalfailures also receive a fallback capture. No screenshotfailure can turn a failedassertion into a pass. Canonical6newschecks, source/content/treeguards, explicitHEAD/buildbinding,20sfeedwait, bootbudgets and all other assertions remain unchanged.
+
+Do not launch until root instructs. Same rootapproved wrapper and --execute-after-gate --expected-head d04f00c625c1e2954959c23937f3047d529526af --output NEWexternaldir. No Chrome, owner, gate, publish or actual helper has run during this preparation.
+
+Attempt1 actualFAIL is retained: mobile20,014past-edge nodes,0cut,0sidewaysscroll,0pageerrors; desktop20swaitFeedtimeout,0pageerrors. Both failed; no currentnotes or wholePART13PASS is claimed. New helper instrumentation is intended to establish whether this is wrongcontainer/hiddenancestor/transition/realgridmin-contentoverflow.
+
+CSS hypothesis: .wn-list/.wn-entry are implicit-auto grids; oldnotes1237/1232containlongunbrokenURLstrings. Sharedcolumn min-content expansion can widen allrows. Currentfeaturechangesonlyworkflow: its entireappsubtreeequals33. ThoseCSS/canonicalsmoke blobs are unchanged across acceptedcbf→33→d04;33's foldchangesnotes only. Thus any confirmedapp/layoutbug is outside thisCI-onlyfeature, but that alone does not permit ignoringit or callingthefocusedproofPASS. Actualrectangles/screenshot and honest inheritedfinding are stillrequired.
