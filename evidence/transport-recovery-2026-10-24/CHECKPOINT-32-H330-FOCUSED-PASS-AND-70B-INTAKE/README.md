@@ -1,0 +1,9 @@
+# Checkpoint 32: H330 focused browser acceptance and new70b intake
+
+H330 completed 97 focused news assertions at both widths and normal/140% text size in1200.667s. Both components, final source/index/full-mirror checks and final zero-error checks passed; actual supervisor return0/cleanup0. Four actual screenshots and all receipts/manifests are retained. ROOT visually inspected the mobile140 screenshot (saved review); the desktop140 screenshot was also viewed and its title, items and date fit the news column. This is focused news evidence, not PART13/all15/full-renderer or publicDEV acceptance.
+
+A known later accepted DEV advance70b includes T3128’s substantive1811Prairie kit/assets and its notes fold. After the focused job closed, ROOT cleanly merged that pinned commit without committing: actual tree9fa/appda9, with all transport/UI bytes preserved. Canonical liberties, source-use and jaunt checks then passed22.539s with complete cleanup. Full preflight and future H3 were not yet available at this checkpoint. All oldH330/C4 browser results stay bound to their original sources.
+
+The normal positively owned PR1279 lease was renewed without force, preserving acquisition receipts. Source work is pushed at H330/PR1279; the clean no-commit70b merge is reconstructible from two public commits and the exact tree binding. No app DEV merge or production promotion is asserted. Separate PR1278 is resolving its actual shared-kit/registry/derived conflicts in its own checkout under an owned supervisor; its old305-base gate is not current70b qualification.
+
+This packet contains only explicitly selected public source evidence and closed runtime receipts. No PRIVATE signed CI log URLs, raw downloaded GitHub logs, environment secrets, GLB payloads or draft configuration responses are included.
