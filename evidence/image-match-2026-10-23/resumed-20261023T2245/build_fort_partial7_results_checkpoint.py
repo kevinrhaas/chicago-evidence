@@ -1,0 +1,18 @@
+from pathlib import Path
+import hashlib,importlib.util,json,re
+W=Path(__file__).resolve().parent;sp=importlib.util.spec_from_file_location('archive_exact',W/'archive_exact.py');m=importlib.util.module_from_spec(sp);sp.loader.exec_module(m)
+r=Path('/tmp/PR1282-head308b-full18-watch/closed-partial7-actual-PASS');p=r/'MANIFEST.json';assert hashlib.sha256(p.read_bytes()).hexdigest()=='b6d57e58eb64e80478fd8260a89c13726ab5e6d34fc3963ee5ccf4ea9b441016';rows=json.loads(p.read_text())['files'];assert len(rows)==19 and sum(x['bytes'] for x in rows)==509538
+for x in rows:
+ q=r/x['path'];assert q.resolve().is_relative_to(r) and q.is_file() and not q.is_symlink();b=q.read_bytes();assert len(b)==x['bytes'] and hashlib.sha256(b).hexdigest()==x['sha256']
+m.archive('PR1282-308b-ACTUAL-PARTIAL7-PASS-11RUNNING',m.author_manifest(r,p),'Exact19closedpayloads+manifest sevenactualPASSrawexact308bcheckout/env/fullSMOKEPASS/zeroerrors:desktop5+8/mobile1-2,3-4,5,6-7,8. ELEVENrunning15:45:50/no full18/currentbudget/merge/PictureMatchinference. Sourceboundfresh1065gate+movingseparatecbeb. GETonly/nooldresultinheritance/sourceorCIactions/livewatcherharvest.')
+p=W/'write_index.py';s=p.read_text();current='''**Delivered:** PR1260 merged normally into dev at `10ac7602e6ca0be8c197367c72d6d6c40fd76c4e` on 24 October at12:48:15UTC, from tested source `5112aadaa97cdf3d42d057b3d4a29219f173666c`. Native scheduled settlement marked utility tickets T3081 and T3082 DONE. The closed merge, lease release and ticket readbacks are archived below.
+
+**Hogan PR1283:** public source `6e66191ebaea1f9d4d15c7a1ac9042a341d3714b` has local1064/384 and hosted1064/384 gate passes, exact official assets, app checks and seventeen completed native smoke groups. Desktop14 measured3,943,402 triangles against the unchanged4,600,000 cap. Desktop13 remains pending in the latest closed evidence; no full18coverage or merge is claimed. Missing moving/humans results are not inferred as passes.
+
+**Fort PR1282:** draft source `308b738e6e6716a7a1411aa6c178e196eb17a719` includes the repaired beams and frozen Hogan dependency. Actual official25exports, decoded joint checks, native fixed point, fourteen new app cases and local1065/384 gate passed. Fresh hosted1065/384 and moving32checks passed on the identical public tree. The latest closed staged-smoke snapshot has seven passes and eleven running at15:45:50; current Full budget, complete18coverage and merge remain pending. The supplemental Fly view does not establish ground access: ground is blocked and accessibility is false.
+
+**Picture acceptance remains open:** original T2372–T2388 image tickets are not certified matches. The fort's sixteen earlier and eight new source comparisons, Hogan comparisons and lighthouse A/B remain DIFFERS. Second-fort gallery work is an unadopted research hypothesis; its first two execution failures remain archived separately. Earlier budget failures, access errors and extra Photos NSS/TLS failure are preserved without relabeling.'''
+s,n=re.subn(r'(?<=<!-- CURRENT_PRIMARY_STATE_START -->)\n.*?\n(?=<!-- CURRENT_PRIMARY_STATE_END -->)','\n'+current+'\n',s,flags=re.S);assert n==1
+needle='- Further producer/integration work is ongoing.';assert s.count(needle)==1
+addition='- PR1282 partial7 preserves nineteen closed payloads plus the original manifest. Seven actual groups pass on exact308b with raw checkout/environment, complete SMOKEPASS and zeroerrors: desktop5/8 and mobile1–2/3–4/5/6–7/8. Eleven jobs remain running at15:45:50. This is not full18coverage, currentbudget, merge approval or PictureMatch; fresh source-bound gate/moving proof is separately preserved as cbeb. No live watcher/source/CI action occurs.\n'
+s=s.replace(needle,addition+needle);p.write_text(s)
