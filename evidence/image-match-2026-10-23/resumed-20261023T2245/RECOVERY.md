@@ -2,7 +2,7 @@
 
 This is a new resumed-work checkpoint. Prior frozen evidence remains unchanged at [final27-archive checkpoint6d4df2f](https://github.com/kevinrhaas/chicago-evidence/blob/6d4df2f307067a664beb00f336138110d3ce5ed2/evidence/image-match-2026-10-22/final-parallel-recovery-20261023T1430/RECOVERY.md). The user renewed permission to continue after the cloud pause.
 
-**Repository visibility correction:** GitHub metadata at `2026-10-24T15:13:10.770341+00:00` records `kevinrhaas/chicago-evidence` as `public`, private=`false`. Earlier references to this repository as private were an unsupported assumption, not access control. Historical labels such as PRIVATEhypothesis mean noncanonical research status only. No visibility setting was changed and frozen evidence remains unchanged.
+**Repository visibility correction:** GitHub metadata at `2026-10-24T15:17:19.667934+00:00` records `kevinrhaas/chicago-evidence` as `public`, private=`false`. Earlier references to this repository as private were an unsupported assumption, not access control. Historical labels such as PRIVATEhypothesis mean noncanonical research status only. No visibility setting was changed and frozen evidence remains unchanged.
 
 **No original T-2372 through T-2388 is certified as an image match by this checkpoint.** Actual comparisons and prepared/unrun work are labelled separately. Prototype exports are not canonical adoption.
 
@@ -12,7 +12,7 @@ This is a new resumed-work checkpoint. Prior frozen evidence remains unchanged a
 
 ## Current work and PR anchors
 
-Read-only metadata snapshot: `2026-10-24T15:13:10.770341+00:00`; raw summary is [PR-SNAPSHOT.json](PR-SNAPSHOT.json).
+Read-only metadata snapshot: `2026-10-24T15:17:19.667934+00:00`; raw summary is [PR-SNAPSHOT.json](PR-SNAPSHOT.json).
 
 - [PR1229](https://github.com/kevinrhaas/chicago/pull/1229): merged=true, head `5e38a1a8d268dcf859be253198b9b6d2ae5b89ba`. This is Hogan's visible first increment; original T-2377 still requires image matching. Do not reconstruct that landed increment from old scratch files.
 - [PR1239](https://github.com/kevinrhaas/chicago/pull/1239): state `closed`, draft=true, head `3fa6e0e84f84a33ccb8ac82c4778f6468af3b029`. Initial resumed work respected its then-live owner. A later closed read-only packet records that owner completed at23:01:42 and actual hosted1060PASS for merge20455(sourcea219+dev5f15). Root owns further lock/dependency/merge decisions; this is not browser or other-target approval.
