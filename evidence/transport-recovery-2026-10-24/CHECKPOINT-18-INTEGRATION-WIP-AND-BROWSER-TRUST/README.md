@@ -1,0 +1,13 @@
+# Uncommitted integration snapshot and secure browser trust recovery
+
+The accepted DEVde91 alreadycontains the Ubuntu24.04 runnerpin fromPR1260/commit10ac7602. The externalone-lineproposal was notapplied as a duplicate. Incoming228paths includecore rendererandthe smokeharness; the actualimpactmap requiresall15parts/bothviewports. OldH329results arehistorical, notvalidationofthisnewtree.
+
+Twenty oldHpassinglegs were retained (mobile1–13/15,desktop1–12). Olddesktop13 was deliberatelyinterrupted130 beforeintegratingnewcorecode, withcleanupcomplete/zeroownedchildren. The existingstandard dev-smoke-state recorderfiledthepassinglogs; originaltrackedSTATEbyteswere restored exactly. Itsrollingbank counts are notcommandcounts (12newreadings/12olderrolled; originals remainbackedup). No oldfullbrowsergate isclaimed.
+
+OrdinarymergeofDEVde91 isUNCOMMITTED. Both entire conflictingblocks inSTATUS/ROADMAP are preserved byte-for-byte, includingROADMAP's one0xFCbyte. Independentindexauditproves222/228incomingpaths matchDEV,all120protectedincomingasset/datapaths exact,53/59oldrecoverypaths exact; sixsharedfilesretainbothsides' additions. The stagedpatch isprederivation andnotfreshgateacceptance.
+
+Three ignored Glessneroutputs wereknownoldmaterializations matchingoldcommittedarchive. Theywere preservedwithhashesoutsidecheckout, then currentDEVarchiveparts/memberswerefullyhashverifiedandmaterializednormally. Noarchivehashwasrewritten. Canonicalorderedowner-tail isrunning; fullpreflightmustpassbeforeappintegrationcommit.
+
+ActualChromiumHTTPSphotoprobe initiallyfailedERR_CERT_AUTHORITY_INVALID. PublicCAwasalreadytrusted; syscalltracingprovedcert9.db W_OK deniedEROFS. Scopedwriteaccess toexisting/home/agent/.pki/nssdb wasapprovedforthisturn. NoCAimport/privatekeyexport/TLSbypasswasneeded. ExactsameChromiumprobe nowHTTP200,decoded400x218,zeroerrorswithnormalcertificateverification. FouroriginalCDNthumbs separatelyHTTP200/hashmatchbothmanifests/fullJPEGdecode. RawPRIVATEtraces/logs andNSSdatabasefiles areexcluded.
+
+Fresh sourcevalidationandnormalCIwillfollowonintegratedhead. No newappcommit/DEVmerge/publicdelivery/productionpromotion isclaimedbythischeckpoint. Allbroaderphoto/native/gait/interactionremaindersstayopen.
