@@ -1,0 +1,17 @@
+# Combined source saved; CI repair normally accepted into DEV
+
+The four-ticket transport/UI source is committed and pushed as c4b8ccb3a20234fdebf43e9ea48f00d9855b9aba, exact tree4b2a7066a039936ddcc65d8c1c891fcf25dd7e5f, APP43838a949e02a01de4ad064aa859c2d11995524d. Original three feature commits remain intact; fourth merge integrates acceptedabb1 plus T3125 CSS/docs/one extra item in the single T3083 changelog anchor. PR1279 remains DRAFT. T3125 was normally moved to REVIEW on1279, notdone.
+
+Full combined preflight passed1066steps/384selftests in640.241s, return0 andcleanup721/0; exact committed tree equals validated index. Canonical compile_liberties --check matches751entries. Current-head publication passed45.098s; a later post-ticket-review publication passed44.174s. No primary DEV merge or complete browser PASS is claimed.
+
+T3121 CI repair is now ordinarily merged via owner-visiblePR1284 as DEV305dc4e0663faf16870c11dab2ed49beb1df3b15. Fresh H84272d6e0c7e9da3a72dde76b080de71783fd212 and actual hostedQ2158db01731a6b3c7c12f53c7bd7b3a7ed0703b3 have tree4a2c75629c545d8be63dcd0ab8f328603539994b; the accepted squash has that exact tree too. Original downloaded hosted log verifies checkoutQ, CHECKPASS1065/384 and workflow-only exemption; report/content also succeeded. No incidental feature fullsmoke. Actual normal SHA-pinned PUT receipt, fresh native/source/check/lease guards and owned-lap release are included. GH_REST_MERGE_BLIND was explicitly unset; no manual dispatch/rerun/status filtering/admin override. The APP remains exactly acceptedabb1.
+
+T3121's downstream integration acceptance is NOT fully closed: PR1277 merged earlier; PR1278 currently has a real red gate. That red is not waived or diagnosed from expected self-test annotations. Normal continuation of1278 is being coordinated separately.
+
+Focused wrapping attempt1 was INTERRUPTED/NONPASS after100.157s, return130, ownedcleanup0. Root moved T3125 toreview while it ran; native ticket.mjs also mirrors site/4d/tickets.json. That mirror mutation invalidated attempt1's complete-file binding. The attempt was stopped immediately and all receipts preserved. Republish also refreshed11 metadata/pack/page files, recorded in the full mirror diff. No committed app source changed; preflight remains valid.
+
+Focused attempt2 is RUNNING on the refreshed, frozen mirror. Mobile normal/140% layout and six news-flow predicates have passed so far with zero errors; desktop and final complete source/mirror guards are still pending. Those partial observations are NOT an overall focusedPASS. No further ticket CLI/mirror/source mutations are permitted during browser qualification.
+
+Fresh24 driver/common/verifier v2 and final guarded focused helper07a05183 are independently reviewed and included; no old outcomes may transfer. Exact focus-report digest -> BEFORE==AFTER -> initial/per-leg/final matrix manifest chain is required. Matrix has not launched yet. Desktop13 uses explicit10800s bound because independently verified accepted-source reference cost7767s; actual >600s stays a budget miss. Post-DEV selected-byte verification and normalUIyard plan are prepared but UNRUN.
+
+This packet preserves source, passing local gate, actual normal CI/DEV repair, interrupted proof and reviewed continuation. It does not claim full renderer completion, four-ticket DEV delivery, production promotion, or complete photographic/native/gait/driver acceptance.

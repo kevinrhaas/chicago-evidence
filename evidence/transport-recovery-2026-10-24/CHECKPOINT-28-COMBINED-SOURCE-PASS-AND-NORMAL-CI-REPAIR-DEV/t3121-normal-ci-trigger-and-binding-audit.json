@@ -1,0 +1,94 @@
+{
+  "captured_utc": "2026-10-24T16:50:27.071378+00:00",
+  "PR": 1284,
+  "H": "d04f00c625c1e2954959c23937f3047d529526af",
+  "B": "33a99a557bd53aa637cc7173589d610f8a15f14b",
+  "Q": "f842d79c092d392ba40da42ea1363e6133820d21",
+  "tree_H_Q": "534ff7c9f129235ad6433e20de124e186d7729f6",
+  "Q_parents": [
+    "33a99a557bd53aa637cc7173589d610f8a15f14b",
+    "d04f00c625c1e2954959c23937f3047d529526af"
+  ],
+  "pr_state": {
+    "state": "open",
+    "draft": true,
+    "locked": false,
+    "mergeable": true,
+    "mergeable_state": "unstable"
+  },
+  "changed_files": [
+    {
+      "filename": ".github/workflows/chicago-4d-smoke.yml",
+      "status": "modified",
+      "changes": 11,
+      "patch": "@@ -14,13 +14,16 @@ name: Chicago 4D \u2014 full smoke\n # It is dispatch-plus-one-path on purpose. The dev gate (chicago-4d-check.yml)\n # stays ~90 s and advisory speed matters there; a ~25-minute-per-viewport\n # Playwright crawl on every push would be a queue, not a gate (one path is not\n-# a queue). The nightly bake already smokes the mirror it publishes. The single push path makes the\n-# workflow self-testing \u2014 an edit to it runs the full unfiltered gate from the\n-# pushed ref \u2014 and is also the only way to run it on a branch at all, because\n-# workflow_dispatch resolves filenames on the default branch only.\n+# a queue). The nightly bake already smokes the mirror it publishes.\n+# The single push path self-tests workflow edits once they land on dev (T-3121).\n+# Merging that edit into a PR branch must not launch another full measurement on\n+# its head and leave its normal gate waiting for the 150-minute timeout.\n+# Explicit dispatch is unchanged; GitHub requires the workflow to be registered\n+# on the default branch. Empty inputs still run both viewports and every part.\n \n on:\n   push:\n+    branches: [dev]\n     paths:\n       - '.github/workflows/chicago-4d-smoke.yml'\n   workflow_dispatch:"
+    }
+  ],
+  "workflows": {
+    "chicago-4d-smoke.yml": {
+      "sha256": "f0f6c6f5cf942af4e49609b7854bdd1472bd98e06159e687ed76893138e7a73c",
+      "trigger_prefix": "name: Chicago 4D \u2014 full smoke\n\n# The renderer smoke on a runner WITHOUT the per-command ceiling.\n#\n# ROADMAP \u00a7 THE RUN BUDGET, and T-0060: a steward run's single foreground\n# command is capped at ten minutes, and by 2026-08-18 neither viewport's full\n# unfiltered pass fit inside it. Steward runs verify with SMOKE_STAGE parts\n# (each fits a command); THIS workflow is where an unfiltered pass lives \u2014 the\n# reference measurement the halves are audited against, and the only place the\n# whole gate runs as one process. Dispatch it on any ref, e.g.:\n#\n#   gh workflow run chicago-4d-smoke.yml --ref <branch> -f viewport=mobile\n#\n# It is dispatch-plus-one-path on purpose. The dev gate (chicago-4d-check.yml)\n# stays ~90 s and advisory speed matters there; a ~25-minute-per-viewport\n# Playwright crawl on every push would be a queue, not a gate (one path is not\n# a queue). The nightly bake already smokes the mirror it publishes.\n# The single push path self-tests workflow edits once they land on dev (T-3121).\n# Merging that edit into a PR branch must not launch another full measurement on\n# its head and leave its normal gate waiting for the 150-minute timeout.\n# Explicit dispatch is unchanged; GitHub requires the workflow to be registered\n# on the default branch. Empty inputs still run both viewports and every part.\n\non:\n  push:\n    branches: [dev]\n    paths:\n      - '.github/workflows/chicago-4d-smoke.yml'\n  workflow_dispatch:\n    inputs:\n      viewport:\n        description: 'SMOKE_VIEWPORT \u2014 empty for both, or mobile / desktop'\n        required: false\n        default: ''\n      stage:\n        description: 'SMOKE_STAGE \u2014 empty for the full body, or a part 1..15 / a range like 3-4'\n        required: false\n        default: ''\n\n"
+    },
+    "chicago-4d-check.yml": {
+      "sha256": "75f19567011ae22a3b6d16f2c7829c164358251852d7b1033ac47b276eadaec4",
+      "trigger_prefix": "name: Chicago 4D \u2014 gate\n\n# The fast half of the two-speed build: schema, provenance, date gates,\n# referential integrity, licences, staleness, datum re-derivation, JS parse.\n# Seconds, and no Blender \u2014 the content build lives in chicago-4d-bake.yml.\n#\n# THIS IS THE DEV GATE (chicago/4d/docs/PIPELINE.md). It runs on PRs INTO dev and\n# on pushes TO dev. Merging into dev is STAGE, not ship \u2014 it publishes only the\n# /4d/dev/ preview, and production moves only when the owner dispatches\n# chicago-4d-promote-to-prod.yml.\n#\n# THE PUSH TRIGGER IS FILTERED TO dev AND main, AND THE COMMENT THAT USED TO STAND\n# HERE SAID NOT TO DO THAT (T-1288). It said an unfiltered push trigger was\n# deliberate, \"so nobody tidies it into `branches: [main]`\", because the gate has to\n# cover steward branches too. That reason is real and it is already served by the\n# `pull_request` trigger; what the unfiltered push actually bought was a SECOND,\n# IDENTICAL RUN.\n#\n# A steward branch with an open pull request satisfies BOTH triggers, so every push\n# to it started this 439-step suite TWICE on the same commit. Measured 2026-09-17 on\n# every open PR in the queue at once \u2014 #1413, #1412, #1411, #1409, #1405 and #1392\n# each carried two `gate` check runs on one head sha.\n#\n# AND IT IS NOT ONLY WASTE. A pull request is not `clean` until every required check\n# has passed, so the PR waited on the SLOWER of two identical runs. That was\n# observed directly: four PRs sat `blocked` with one gate green and its twin still\n# in progress. The duplicate was doubling time-to-mergeable, and the lap re-pushes\n# every open PR on every merge into dev, so the cost was paid once per PR PER LAP \u2014\n# four laps in the hour this was found.\n#\n# WHAT THE FILTER GIVES UP, stated rather than glossed: a steward branch pushed\n# BEFORE its pull request exists is not gated by that push. The gap closes the\n# moment the PR opens, which in this repo is the same run \u2014 and a run that dies\n# before opening one now gets a DRAFT PR from the steward's salvage step (T-1155),\n# which fires `pull_request` and gates it. Nothing that was covered stops being\n# covered; only the second copy goes.\n# AND IT MUST RUN ON A WORKFLOW-ONLY CHANGE, or such a change can never merge.\n# `gate` is a REQUIRED check on dev. A pull request that touches only\n# .github/workflows/ produced no gate run at all, so the requirement could never be\n# satisfied and the PR sat `blocked` for ever. Found on #1433 \u2014 the fix for an\n# eleven-hour production deploy outage, which changes deploy.yml and\n# chicago-4d-promote-to-prod.yml and nothing else, and was therefore unmergeable by\n# construction. The paths below now cover the whole workflow directory rather than\n# this one file. A workflow edit is rare and consequential, and check.sh already\n# holds assertions about these files, so paying the gate for one is right.\non:\n  push:\n    branches: [dev, main]\n    paths:\n      - 'chicago/4d/**'\n      - 'chicago/reference/**'\n      - '.github/workflows/**'\n  pull_request:\n    paths:\n      - 'chicago/4d/**'\n      - 'chicago/reference/**'\n      - '.github/workflows/**'\n  workflow_dispatch:\n\n"
+    },
+    "chicago-4d-moving-frames.yml": {
+      "sha256": "27ae7e91ad7c308b4da8dee3e1920bd0ece46d4af00253b2e9f8e60c28b7f64e",
+      "trigger_prefix": "name: Chicago 4D \u2014 moving frames\n\n# T-2106. THE MOVING-FRAME GATE, IN A CI LEG OF ITS OWN.\n#\n# The owner's report (2026-10-04) was that walking lagged, and every frame budget\n# this project held was read at a STAND. tools/measure_walk_frames.mjs drives a\n# walk, a turn in place, a flight and a ride frame by frame and times what flora\n# spends in each; `--gate` holds the worst frame and the p95 per tier to the\n# ceilings written in that file, and `--verify` checks that a rebuild spread over\n# frames lands exactly the plants a one-frame rebuild deals. Until this leg the\n# gate only ran when a steward run thought to run it.\n#\n# It is NOT in check.sh, and NOT in the dev gate's `gate` job, because it is a\n# browser run of about seven minutes: the dev gate is the window in which a PR can\n# be overtaken, and it does not get longer for one family of files. It runs beside\n# it, on the pull requests that can move a moving frame: the renderer's own\n# JavaScript, the flora and tree data it plants from, and this tool.\n#\n# Desktop only, unthrottled. The phone stand-in reads the same code under a 4x CPU\n# throttle somebody chose; the desktop reading is the one on this runner that is\n# not scaled by a factor, which is why the ceilings are written against it.\n\non:\n  pull_request:\n    paths:\n      - 'chicago/4d/renderers/web/js/**'\n      - 'chicago/4d/data/flora/**'\n      - 'chicago/4d/tools/measure_walk_frames.mjs'\n      - 'chicago/4d/tools/check_upload_release.mjs'\n      - '.github/workflows/chicago-4d-moving-frames.yml'\n  workflow_dispatch:\n\n"
+    },
+    "chicago-4d-stuck-report.yml": {
+      "api_exit": 1
+    }
+  },
+  "protection_read": {
+    "exit": 1,
+    "response": {
+      "message": "Resource not accessible by integration",
+      "documentation_url": "https://docs.github.com/rest/branches/branch-protection#get-status-checks-protection",
+      "status": "403"
+    }
+  },
+  "interpretation": {
+    "ordinary_feature_push_full_smoke_expected": false,
+    "dev_push_touching_smoke_workflow_full_smoke_expected": true,
+    "workflow_dispatch_preserved": true,
+    "branch_and_path_filters_both_required": true,
+    "required_protection_not_verified": "Integration denied protection endpoint; do not infer requirement settings."
+  },
+  "scope": "Read-only metadata/config audit; source application outputs and prior smoke results are separately bound.",
+  "remote_mutations": false,
+  "ordinary_branch_metadata": {
+    "name": "dev",
+    "protected": false,
+    "protection": {
+      "enabled": false,
+      "required_status_checks": {
+        "enforcement_level": "off",
+        "contexts": [],
+        "checks": []
+      }
+    },
+    "sha": "33a99a557bd53aa637cc7173589d610f8a15f14b"
+  },
+  "check_runs": {
+    "H": [
+      {
+        "id": 120928165361,
+        "name": "gate",
+        "head_sha": "d04f00c625c1e2954959c23937f3047d529526af",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 120927871510,
+        "name": "report",
+        "head_sha": "d04f00c625c1e2954959c23937f3047d529526af",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ],
+    "Q": []
+  },
+  "last_updated_utc": "2026-10-24T16:52:02.302498+00:00"
+}
