@@ -1,0 +1,29 @@
+--- /workspace/.cloud-setup/logs/transport-recovery/6ab-transport-ui-wrapping-preparation/6ab-transport-ui-focused-wrapping-guarded-v4.mjs
++++ /workspace/.cloud-setup/logs/transport-recovery/6ab-transport-ui-wrapping-preparation-v5/6ab-transport-ui-focused-wrapping-guarded-v5.mjs
+@@ -12,7 +12,7 @@
+ const BASE='3d5d4df6ecdf103ad28c0eb299df7be851ba797f'; // Pre-UI merged transport tree, deliberately not wholesale DEV.
+ const STAGED_TREE='757e30973d8e8b13d167e86fe95aeb5f58c6a41d';
+ const EXPECTED_APP='77cd7218e00cf750ad1cb423fc05ddb0376ba560';
+-const BASELINE_RECIPE_SHA='8ee4dcf135bc40faed18370045ae27f7661ece5f76417d0fffd36a40aef5e7e6';
++const BASELINE_RECIPE_SHA='f8147890eaba5729ad17f6edb01e1cccaee6015ca9d087f00c9752406b434892';
+ const CSS_SHA='e780623862943720d6d30322423c4f7e3ed886f80064dbfaa2bb6f9aa85c55ce';
+ const BASE_CSS_SHA='0f60b79eb1ae0bd48c367772811964ed272a36b1609988b52160b374101cdb0f';
+ const OWNED_FILES=[{"path":"chicago/4d/changelog.d/T-3083.json","sha256":"860e9a30aff1ad5b88135a28e855f8165ca9f028ecb431573c5568ff535d57a0"},{"path":"chicago/4d/docs/ROADMAP.md","sha256":"c38716485531f697d5f0fb06f1fb9154d3948755d2beabc63a24c79047fb4813"},{"path":"chicago/4d/docs/STATUS.md","sha256":"b65304970da28f90ed50a52a5e3ee9071b0061af16cf15d88225754e43628209"},{"path":"chicago/4d/renderers/web/css/walk.css","sha256":"e780623862943720d6d30322423c4f7e3ed886f80064dbfaa2bb6f9aa85c55ce"}];
+@@ -33,7 +33,7 @@
+ const EXPECTED_HEAD=arg('--expected-head');
+ const PREFLIGHT_PREFIX=arg('--preflight-prefix');
+ const PUBLISH_PREFIX=arg('--publish-prefix');
+-if(PREFLIGHT_PREFIX!=='/workspace/.cloud-setup/logs/transport-recovery/6ab-transport-ui-full-preflight-before-commit')throw new Error('Use only the exact fresh6ab preflight receipt bound by this preparation; another gate prefix requires reviewed rebinding');
++if(PREFLIGHT_PREFIX!=='/workspace/.cloud-setup/logs/transport-recovery/6ab-transport-ui-refreshed-base-preflight-before-commit')throw new Error('Use only the exact fresh6ab preflight receipt bound by this preparation; another gate prefix requires reviewed rebinding');
+ if(!PUBLISH_PREFIX?.startsWith('/workspace/.cloud-setup/logs/transport-recovery/6ab-transport-ui-')||PUBLISH_PREFIX.endsWith('/'))throw new Error('Supply the actual fresh6ab committed publication prefix; no old publisher receipt default');
+ if(!PREFLIGHT_PREFIX?.startsWith('/workspace/.cloud-setup/logs/transport-recovery/')||PREFLIGHT_PREFIX.endsWith('/'))throw new Error('Supply the actual fresh final-base UI preflight prefix; no inherited receipt default');
+ if(!/^[0-9a-f]{40}$/.test(EXPECTED_HEAD))throw new Error('Expected head must be a complete40hexSHA');
+@@ -85,6 +85,8 @@
+  check('baseline construction and actual preflight input pins agree',recipe.new_pre_ui_baseline_tree===BASE&&recipe.candidate_tree===STAGED_TREE&&recipe.app_subtree===EXPECTED_APP&&recipe.expected_preflight_prefix===PREFLIGHT_PREFIX&&sha(rootInputBytes)===recipe.root_preflight_source_binding_sha256&&JSON.stringify([...recipe.actual_delta_baseline_to_candidate].sort())===JSON.stringify(OWNED_FILES.map(x=>x.path).sort()));
+  const rootInput=JSON.parse(rootInputBytes);
+  check('actual6ab preflight input binds this candidate tree and APP',rootInput.candidate_tree===STAGED_TREE&&rootInput.app_subtree===EXPECTED_APP&&rootInput.incoming_dev==='6ab39e9a32a8270b96d9ab252cfddc5962a871a3');
++ const repairBytes=read(new URL('./ROOT-DEV-TRACKING-REPAIR.json',import.meta.url)),repair=JSON.parse(repairBytes);
++ check('refreshed-base gate provenance retains actual DEV tracking repair',sha(repairBytes)===recipe.dev_tracking_repair_sha256&&repair.new_origin_dev===rootInput.incoming_dev&&repair.source_index_tree_unchanged===true);
+  const publisher=JSON.parse(read(PUBLISH_PREFIX+'.result.json')),publisherCleanup=JSON.parse(read(PUBLISH_PREFIX+'.cleanup.json'));
+  check('actual fresh6ab publisher completed in this clone with owned cleanup',publisher.cwd===APP&&publisher.command.some(x=>String(x).endsWith('tools/publish.sh'))&&publisher.returncode===0&&publisher.timed_out===false&&publisherCleanup.cleanup_complete===true&&Array.isArray(publisherCleanup.remaining_owned_children)&&publisherCleanup.remaining_owned_children.length===0,{cwd:publisher.cwd,command:publisher.command,returncode:publisher.returncode,timed_out:publisher.timed_out,cleanup_complete:publisherCleanup.cleanup_complete,remaining:publisherCleanup.remaining_owned_children});
+  report.publisher_receipt_sha256=sha(read(PUBLISH_PREFIX+'.result.json'));report.publisher_cleanup_sha256=sha(read(PUBLISH_PREFIX+'.cleanup.json'));
