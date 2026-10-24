@@ -1,0 +1,11 @@
+from pathlib import Path
+import hashlib,importlib.util,json
+W=Path(__file__).resolve().parent;sp=importlib.util.spec_from_file_location('archive_exact',W/'archive_exact.py');m=importlib.util.module_from_spec(sp);sp.loader.exec_module(m)
+r=Path('/tmp/PR1283-head6e6619-full18-watch/closed-partial6-actual-PASS');p=r/'MANIFEST.json';assert hashlib.sha256(p.read_bytes()).hexdigest()=='88af8a1cc56fe3c7da6d600b529c0ef2381d7bb0aa623a3f9684f0091210b825';rows=json.loads(p.read_text())['files'];assert len(rows)==16 and sum(x['bytes'] for x in rows)==434528
+for x in rows:
+ q=r/x['path'];assert q.resolve().is_relative_to(r) and q.is_file() and not q.is_symlink();b=q.read_bytes();assert len(b)==x['bytes'] and hashlib.sha256(b).hexdigest()==x['sha256']
+m.archive('PR1283-6e6619-ACTUAL-PARTIAL6-PASS-12RUNNING',m.author_manifest(r,p),'Exact16closedpayloads+manifest partial6of18 actualPASS14:00;desktop8+mobile1-2,3-4,5,6-7,8. Allrawexact6e6619checkout/env stage/viewport bothrunjobSUCCESS,zeroFAILcounts/fullSMOKEPASS/zeroerrors. TWELVErunning/no fullcoverage/mergeapproval/oldPASSinheritance. GETonlyliveobserverunduplicated,no mutation/credentialinspection. No livewatch/canonicalfolder selected.')
+p=W/'write_index.py';s=p.read_text();needle='- Further producer/integration work is ongoing.';assert s.count(needle)==1
+addition='- The PR1283six-group partial snapshot preserves sixteen closed payloads plus originalmanifest: desktop8andmobile1–2/3–4/5/6–7/8eachactualPASSonexact6e6619, with rawcheckout/env/stage/viewport, bothrun/jobSUCCESS, zeroFAILcounts/fullSMOKEPASSandzeroerrors. **ONLY6of18complete with12running at14:00**; no fullcoverage/mergeapproval or oldPASSinheritance. The existing GET-onlyobserver remains unduplicated and liveoutputs/canonicaltree are excluded.\n'
+s=s.replace(needle,addition+needle);s=s.replace('All18accepted native hostedruns are separately bound, initiallyZEROactualresults; later hostedresults and delivery remain separate. No Hoganmerge is claimed.','All18accepted native hostedruns are separately bound; a later14:00closed timepoint proves6of18actualPASS/12running. Fullhostedcoverage and delivery remain pending; no Hoganmerge or olderPASSinheritance is claimed.')
+p.write_text(s)
