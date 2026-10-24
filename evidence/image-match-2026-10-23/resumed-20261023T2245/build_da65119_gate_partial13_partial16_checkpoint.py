@@ -1,0 +1,13 @@
+from pathlib import Path
+import hashlib,importlib.util,json
+WORK=Path(__file__).resolve().parent
+spec=importlib.util.spec_from_file_location('archive_exact',WORK/'archive_exact.py');mod=importlib.util.module_from_spec(spec);spec.loader.exec_module(mod)
+packets=[('/tmp/PR1260-head-da65119-watch/closed-hosted-gate-and-moving-frames','abf3e0e73d3ad0cb85b215f14b4bc49c2b714b4974af038d30a74ebe460b3c51',10,1987007,'PR1260-da65119-ACTUAL-hosted1063-moving32-PASS-SMOKES-PARTIAL','Exact10 closed actualconsolidatedhostedproofpayloads plus manifest. Rawgate1063/383PASS,movingframesceiling+32uploadreleasePASS/Ubuntu24. Exactcheckoutmerge4e877caaparentsindependentlyverifiedda65119+85a456. Only11of18stagedPASS/sevenpendingatcapture,currentremotedevc961separate. NO fullcoverage/mergeapproval/currentdevinheritance,oldH4/H5neverborrowed,noliveoutputsselected.'),('/tmp/PR1260-head-da65119-watch/closed-partial13-actual-results','c5071f2b429f37863c07bcd2604913d6fbf05f6be4054a072cb0417ba8c4fb17',30,870134,'PR1260-da65119-13of18-ACTUAL-PASS-PARTIAL','Exact30 closed partial13actualresultpayloads plus manifest. Exactda65119head/stage/viewport/rawlogs/zeroerrors/allpassingcounts,13of18PASS/fivegroupsrunning08:01. Hosted1063/383/movingproofabf3separateretained,NO finalcoverage/mergeapproval/oldH4H5orcurrentdevinheritance. Earlierdatessnapshotsimmutable,nomutations/livewatchharvesting.'),('/tmp/PR1260-head-da65119-watch/closed-partial16-actual-results','fd1d2294fd301255d07357cb29db70a4a6537bfc67f942e3d32368f7ac60edaf',36,1081946,'PR1260-da65119-16of18-ACTUAL-PASS-DESKTOP1314-PENDING','Exact36 closed partial16actualresultpayloads plus manifest. Exactda65119checkout/stage/viewport/counts/rawlogs/zeroerrors,16of18PASSonlydesktop13/14pending08:16. Hostedgate1063/383+movingseparatelyboundtestedmerge85a456,currentdevc109distinct. NO finalcoverage/mergeapproval/historicalorcurrentdevinheritance. Earlierpartial13andgate11of18timepointsimmutable,nolivewatchsourceoutputsselected.')]
+for directory,expected,count,total,name,note in packets:
+ root=Path(directory);manifest=root/'MANIFEST.json';assert hashlib.sha256(manifest.read_bytes()).hexdigest()==expected
+ author=json.loads(manifest.read_text());rows=author['files'];assert len(rows)==count
+ if isinstance(rows,dict):rows=[{'path':k,**v} for k,v in rows.items()]
+ assert sum(r['bytes'] for r in rows)==total
+ for row in rows:
+  p=root/row['path'];assert p.resolve().is_relative_to(root) and p.is_file() and not p.is_symlink();assert not any(part in ['__pycache__','node_modules','.git'] for part in p.parts) and p.suffix!='.pyc';data=p.read_bytes();assert len(data)==row['bytes'] and hashlib.sha256(data).hexdigest()==row['sha256']
+ mod.archive(name,mod.author_manifest(root,manifest),note)
