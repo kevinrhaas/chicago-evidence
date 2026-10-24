@@ -1,0 +1,5 @@
+# Desktop stages5–6 passed
+
+StableH3290195d/treebac89999, draftPR1279. Both actualcommands returned0, finalSMOKEPASS, zero pageerrors, complete owned-child cleanup. Desktop1–6 andmobile1–13/15 are nowfunctionalpasses;desktop7running atcapture. Exacttimingsareinleg-summaryandoriginalresult/logs. Stage5completed30assertions/17stagedchecks in514.045s.
+
+Mobile14remainsanactualfailedpage-errorcheckfromproxyblockedCDNimages;desktop14isunrun/deferredforthesameconfirmedaccessprerequisite. Bothremainrequired. MainnormalCIgate/report/warrantedscreenPASS;movingInstallPlaywrightFAILbeforeanyrenderermeasurement,originalstderrblockedatAzurelogstorage. Exactnetworksettingsanddynamicstartupinstructionsaresavedindraft12,notapplied. No fullbrowsergate/DEVmerge/publicdelivery/productionclaim.
