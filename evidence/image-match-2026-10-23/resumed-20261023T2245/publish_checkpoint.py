@@ -5,6 +5,7 @@ import hashlib
 import json
 import shutil
 import subprocess
+import sys
 
 WORK = Path(__file__).resolve().parent
 REPO = WORK / 'remote-evidence'
@@ -17,11 +18,47 @@ def run(args, check=True):
         raise RuntimeError(f'Command failed ({result.returncode}): {args[0]} {args[1]}\n{result.stderr}')
     return result
 
+def verify_archive_availability():
+    rows = json.loads((WORK / 'ARCHIVES.json').read_text())
+    ledger_path = WORK / 'STORAGE-ARCHIVE-OMISSIONS.json'
+    ledger = json.loads(ledger_path.read_text()) if ledger_path.exists() else {'files': []}
+    allowed = {r['name']: r for r in ledger['files']}
+    assert len(allowed) == len(ledger['files'])
+    absent = []
+    for row in rows:
+        source = Path(row['archive'])
+        if source.is_file():
+            assert not source.is_symlink()
+            assert source.stat().st_size == row['bytes'] and sha(source) == row['sha256'], source
+            continue
+        entry = allowed.get(source.name)
+        assert entry is not None, 'Missing archive without remote-verification ledger: ' + str(source)
+        assert entry['sha256'] == row['sha256'] and entry['bytes'] == row['bytes']
+        proof = entry['independent_remote_readback']
+        path = str(REL / 'archives' / source.name)
+        assert entry['git_path'] == path and proof['path'] == path
+        assert proof['status'] == 'PASS' and proof['sha256'] == row['sha256'] and proof['bytes'] == row['bytes']
+        blob = run(['git', 'rev-parse', 'HEAD:' + path]).stdout.strip()
+        assert blob == entry['git_blob'] == proof['git_blob']
+        indexed = run(['git', 'ls-files', '--stage', '--', path]).stdout.split()
+        assert indexed[:3] == ['100644', blob, '0'], 'Uncertain archive index: ' + path
+        data = subprocess.check_output(['git', 'cat-file', 'blob', blob], cwd=REPO)
+        assert len(data) == row['bytes'] and hashlib.sha256(data).hexdigest() == row['sha256']
+        absent.append({'path': path, 'git_blob': blob, 'bytes': row['bytes'], 'sha256': row['sha256'], 'status': 'COMMITTED_INDEX_BLOB_AND_PRIOR_REMOTE_READBACK_PASS'})
+    return absent
+
 assert not run(['git', 'status', '--porcelain']).stdout
-run(['git', 'pull', '--ff-only', '--quiet', 'origin', 'main'])
+absent = verify_archive_availability()
+if '--check-storage' in sys.argv:
+    print(json.dumps({'status': 'STORAGE_AVAILABILITY_PASS', 'verified_absent_archives': len(absent)}))
+    raise SystemExit(0)
+# Avoid automatic repack scratch while storage is constrained; normal refs/push behavior is unchanged.
+run(['git', '-c', 'gc.auto=0', '-c', 'maintenance.auto=false', 'pull', '--ff-only', '--quiet', 'origin', 'main'])
+absent = verify_archive_availability()
 DEST.mkdir(parents=True, exist_ok=True)
 selected = [WORK / name for name in ['ARCHIVES.json', 'RECOVERY.md', 'PR-SNAPSHOT.json', 'SCHOOL-SELECTION.json']]
 selected += sorted(WORK.glob('*.py'))
+selected += sorted(WORK.glob('STORAGE-*.json'))
 selected += sorted((WORK / 'archives').iterdir())
 selected += sorted((WORK / 'publications').glob('*.json'))
 if (WORK / 'TICKETS-POINTER-RECEIPT.json').exists():
@@ -35,7 +72,8 @@ for source in selected:
     shutil.copyfile(source, destination)
     assert sha(source) == sha(destination)
     copied.append({'path': str(REL / rel), 'bytes': source.stat().st_size, 'sha256': sha(source)})
-run(['git', 'add', '--', str(REL)])
+run(['git', 'add', '--sparse', '--', str(REL)])
+assert not run(['git', 'diff', '--cached', '--diff-filter=D', '--name-only', '--', str(REL / 'archives')]).stdout, 'Archive deletion forbidden'
 changed = run(['git', 'diff', '--cached', '--name-only']).stdout.splitlines()
 assert changed and all(p.startswith(str(REL) + '/') for p in changed)
 run(['git', 'commit', '-q', '-m', 'Checkpoint resumed picture comparisons and guarded integration work'])
@@ -52,7 +90,7 @@ else:
     raise RuntimeError('Three normal pushes raced with main; checkpoint commit remains local.')
 head = run(['git', 'rev-parse', 'HEAD']).stdout.strip()
 remote = run(['git', 'ls-remote', 'origin', 'refs/heads/main']).stdout.strip().split()[0]
-receipt = {'published_at': datetime.now(timezone.utc).isoformat(), 'repository': 'kevinrhaas/chicago-evidence', 'commit': head, 'observed_remote_main': remote, 'push': push_log, 'files': copied, 'remote_readback': []}
+receipt = {'published_at': datetime.now(timezone.utc).isoformat(), 'repository': 'kevinrhaas/chicago-evidence', 'commit': head, 'observed_remote_main': remote, 'push': push_log, 'files': copied, 'verified_absent_archives': absent, 'remote_readback': []}
 (WORK / 'LATEST-PUBLICATION.json').write_text(json.dumps(receipt, indent=2) + '\n')
 
 # Re-read the published index plus every archive through the GitHub blob API.
