@@ -1,0 +1,13 @@
+{
+  "reviewed_utc": "2026-10-25T00:40:02.990296+00:00",
+  "state": "CORRECTION: original independent-static no-blocker verdict does not cover discovered deterministic verifier tail bug; original receipt preserved",
+  "original_review": {
+    "path": "/workspace/.cloud-setup/logs/transport-recovery/glessner-460d-tls-composite-independent-static-review.json",
+    "sha256": "edfd5cf3bc375703761604606a45d4a640b557a8906584baf4c1a9fb76365aa1"
+  },
+  "affected_frozen_verifier_sha256": "d40e7bbe97ad78e4c6ec84f582055df0a33551038a5b7a447de57f29d34070d2",
+  "finding": "common.verify_selected returns coverage dictionary with Python int part keys via dict(Counter). Saving internal proof to JSON stringifies these keys. Frozen verifier compares newly computed proof directly with JSON-loaded internal proof; int-key versus string-key dictionaries compare unequal, so this exact tail cannot reach PASS even with matching actual successful coverage.",
+  "credit": "queue_review static binding implementation review found it; glessner initial static review missed it.",
+  "required_direction": "ROOT must authorize NEW immutable JSON-normalized tail/verifier/closure contract; never change460d/currentdriver or transfer a failed/unrun tail into success. Compare full proof values in canonical JSON form, preserve all existing assertions/originalfailure/7sealed+17new/sourcecensus/index guards. Require actual new successful verifier/enclosing closure receipts before downstream consumers.",
+  "current_action": "No frozen edits, helper execution, source/runtime/network/Git actions. NewHTTP/yard consumers remain preparation-only, awaiting actual explicit replacement-tail contract and sharedbinding pins."
+}

@@ -1,0 +1,1 @@
+Actual official H3 ordinary CI proof. Both completed normal pull_request attempt1 jobs and stdout checkouts are source-bound. Full24 renderer and DEV delivery are separate pending gates. Raw PRIVATE sources are excluded; hashes retain provenance. Earlier scoped collector401 does not describe root/API credential readiness. No helper/network/browser run occurred during export.
