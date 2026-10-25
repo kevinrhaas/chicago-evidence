@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- GREENTREE_RECOVERY_20261025_START -->
+## Green Tree Tavern — authored correction and genuine family export checkpoint
+
+This PUBLIC recovery snapshot preserves work on the existing original T2376, without filing a photo follow-up. The source-bounded ground-floor correction and native entrance controls have genuine pinned masters and real web derivatives for all23 family phases; all22 defaults are byte-identical. It contains the target assets and authored source plus family recipe/provenance guards. The closed snapshot is stable; the live61-step native tail is deliberately excluded. **Final scene/app/preflight/code-commit/PR/merge/image acceptance remain PENDING.** Archive storage is not a completed picture match or a final gate verdict.
+
+- [GREENTREE-T2376-AUTHORED-GENUINE23-PREFLIGHT-APP-PENDING-20261025](archives/GREENTREE-T2376-AUTHORED-GENUINE23-PREFLIGHT-APP-PENDING-20261025.tar.gz) — Recoverable implementation snapshot for original T2376 on currentdevc6. V3 authored frontage and native entrance controls plus actual pinned twenty-three-family master exports and supported real web derivatives are complete. All twenty-two default master and web bytes are exactly preserved. Includes all ten authored/target-asset files, target native master/web, twenty-three-family recipe fragment and export/prebake-feature logs. Source hashes were stable before and after this closed copy. Final scene/native tail, actual app review, required preflight, code commit, PR, merge and original image acceptance are PENDING. The live native61 tail folder is excluded; no final gate PASS or source-picture matches is implied.
+<!-- GREENTREE_RECOVERY_20261025_END -->
+
+
 <!-- CURRENT_RECOVERY_20261025_START -->
 ## Current recovery and delivery status — 25 October 2026
 
