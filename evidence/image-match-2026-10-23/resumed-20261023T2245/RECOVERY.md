@@ -1,5 +1,19 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- CURRENT_RECOVERY_20261025_START -->
+## Current recovery and delivery status — 25 October 2026
+
+This evidence repository is PUBLIC. The older dated snapshots below remain historical records. PR1286 has now actually merged into dev as `e72b8ba35750b468d6eb368324bf4e3508c51de3`; its final source and hosted synthetic share the squash entire tree, and its actual final hosted gate passed1069steps/384self-tests. The old cef smoke PASS is not reused for that final runtime. A new exact-e72 eighteen-group native published matrix has been dispatched; this checkpoint saves accepted source-bound dispatches, not terminal results.
+
+Utilities3123/3124 also merged through PR1298/1300. The original seventeen picture-match cases were all unfinished at the new closed audit; lighthouse3122 had a live external owner. The runtime restarted and cleared `/tmp`; the previously archived uncommitted fort snapshot was recovered and verified. Currentdevc6 objects were imported with bounded metadata and missing-blob reads, preserving all unrelated local Git metadata. New canonical work follows the current T3153 visitor-visible stopping rule and uses existing picture tickets. No production promotion or original-image acceptance is asserted by these archives.
+
+- [CURRENT-DEV-C6-BOUNDED-VERIFIED-OBJECT-RECOVERY-20261025](archives/CURRENT-DEV-C6-BOUNDED-VERIFIED-OBJECT-RECOVERY-20261025.tar.gz) — Current dev c6e6dd exact objects recovered through an isolated bounded metadata fetch and only 604 missing tip blobs. Every new blob content Git SHA1/SHA256/size, both metadata pack trailers and verify-pack, tip-object membership and common ancestor305 were verified. Only origin/dev changed; other refs, indices, HEADs and config remained unchanged. Existing packed blobs were not all reread; no application test or new code acceptance is claimed.
+- [ORIGINAL17-CURRENT-OWNERSHIP-AND-MERGED-FORT-INCREMENTS-20261025](archives/ORIGINAL17-CURRENT-OWNERSHIP-AND-MERGED-FORT-INCREMENTS-20261025.tar.gz) — Closed current original17 ticket and open-PR audit plus actual PR1298/1300 hosted gate logs:1065/384 and1066/384 PASS. Lake House utility3123 and second-fort gallery utility3124 are merged; original image cases remain open. Lighthouse3122 has an independently observed live external owner at audit time. Green Tree source preimages are compatible with the existing bounded proposal. This ownership/readiness snapshot is not model or image-match acceptance.
+- [PR1286-ACTUAL-DEV-MERGE-FINAL-GATE-AND-COVERAGE-GAP-20261025](archives/PR1286-ACTUAL-DEV-MERGE-FINAL-GATE-AND-COVERAGE-GAP-20261025.tar.gz) — Actual PR1286 merged dev squash e72b8ba from final cf894535. Final source, hosted synthetic and actual squash entire trees equal4a262e; final raw hosted gate1069/384 PASS, utility3126 DONE and lap FREE. The previous cef eighteen-run PASS does not cover the final changed runtime. This closed audit explicitly records the remaining final-head full published coverage gap; original2375 is not accepted.
+- [PR1286-MERGED-E72-ALL18-DISPATCH-BOUND-NOT-RESULTS-20261025](archives/PR1286-MERGED-E72-ALL18-DISPATCH-BOUND-NOT-RESULTS-20261025.tar.gz) — New post-merge verification ref fixed at actual dev squash e72b8ba, whose entire tree equals final cf894535. All eighteen explicit native workflow dispatches were accepted and independently bound to requested viewport, stage, event and exact source head. Covers all fifteen parts on both viewports. Dispatch receipts only: no terminal smoke PASS or original image acceptance is asserted, and the live observer folder is excluded.
+<!-- CURRENT_RECOVERY_20261025_END -->
+
+
 <!-- RUNTIME_RECOVERY_20261024T2312_START -->
 ## Runtime recovery and current delivery checkpoint
 
