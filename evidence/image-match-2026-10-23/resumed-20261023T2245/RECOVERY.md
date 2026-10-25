@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- JAIL_PALISADE_RECOVERY_20261025_START -->
+## Log jail — authored palisade and optional comparison-stage checkpoint
+
+This PUBLIC recovery archive preserves UNCOMMITTED work on existing original T2380. The source-bounded pointed plank palisade and optional formal comparison stage reuse the native enclosure renderer. Focused geometry/default controls and source freshness tests passed, including a real stale-fence refusal. No masters, web derivatives, asset registries or population were changed. **Native pipeline, formal renders, published app review, full gate, commit, PR, merge and image acceptance remain PENDING.** These source and unit-check receipts are recoverable work, not a completed picture match.
+
+- [JAIL-T2380-AUTHORED-PALISADE-OPTIONAL-PHOTO-STAGE-PENDING-20261025](archives/JAIL-T2380-AUTHORED-PALISADE-OPTIONAL-PHOTO-STAGE-PENDING-20261025.tar.gz) — Recoverable UNCOMMITTED authored snapshot for claimed original T2380:19 changed source paths plus binary patch, logs and state. Optional native pointed-pale geometry has nine byte-identical legacy-flat controls and normals/winding/gap/tier checks; the optional native enclosure comparison stage and source/hash freshness checks passed, including actual image-gate refusal of a stale fence. Narrow core not_pictured rulings preserve inferred core grades. No master, web, asset registry or population changes; no model-family bake. Native derived pipeline, formal renders, actual published app review, required full gate, code commit, PR, merge and original image acceptance remain PENDING. Only this closed snapshot is archived; no live agent folders or completion claim.
+<!-- JAIL_PALISADE_RECOVERY_20261025_END -->
+
+
 <!-- GREENTREE_RECOVERY_20261025_START -->
 ## Green Tree Tavern — authored correction and genuine family export checkpoint
 
