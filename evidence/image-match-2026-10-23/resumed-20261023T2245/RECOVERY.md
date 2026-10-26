@@ -1,5 +1,15 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- FINAL_GT_WOLF_NATIVE_CLOSURE_20261026_START -->
+## Final Green Tree handoff and Wolf Point pre-transplant native recovery
+
+Two frozen packets preserve the actual externally merged GT state and remaining repair donors, plus Wolf Point owning61/all44/package closure before transplant. **No joined GT whole-gate/newmatrix after external merge is claimed; the five repairs await visible carriers. Wolf Point new NYPL render is UNREVIEWED and final app/gate/PR/all8 coverage remains pending.** Prior native and checked-source dependencies are retained separately.
+
+- [GREENTREE-PR1328-FINAL-EXTERNAL-MERGE-NATIVE783-ALL44-WIP10-REPAIR-DONOR-HANDOFF-20261026](archives/GREENTREE-PR1328-FINAL-EXTERNAL-MERGE-NATIVE783-ALL44-WIP10-REPAIR-DONOR-HANDOFF-20261026.tar.gz) — Final closed GT operational handoff: actual external PR1328 merge/dev readbacks, original ticket OPEN and Andreas comparison DIFFERS retained; current EB1 native202/7/57 PASS/reaper, read-only all44 serialization proof, all10 remaining WIP inputs with modes/hashes and safe index/merge metadata, exact5/four-tool donor patches/preimages, normal own-lap release404 and CPU return. Joined whole-gate/commit/push/newmatrix after external merge are NOT claimed. The strict repairs were checked only on public6a61, not merged EB1; visible Mary1334/Tremont carriers owe their own fresh combined gates/full18. Depends checkedca159/index354, nativea13 and immutableeb1/index352; no live logs or worker files.
+- [WOLFPOINT-T2386-DEEP-BROWN82-NATIVE61-ALL44-PACKAGE5-PRETRANSPLANT-RECOVERY-20261026](archives/WOLFPOINT-T2386-DEEP-BROWN82-NATIVE61-ALL44-PACKAGE5-PRETRANSPLANT-RECOVERY-20261026.tar.gz) — Closed full recovery and owning-native proof before root-authorized normal stash/FFa575 transplant. Actual owning61 fixed point in two laps, one all44 proof-equal workbook restoration, package5/finalpublish PASS. Full source/binary patch, raw index, target master/web pair,82 registry rows and private native stash-create ref f6aab95 retained. One retained-camera newmaster NYPL render is UNREVIEWED, not a match verdict. Final application/fullgate/PR/all8-picture coverage remains pending; no original2386 closure. Prior production82/default81 byte-exact packet index354 is a dependency, not duplicated. Source-only native milestone does not claim old app or matrix acceptance on the later combined tree.
+<!-- FINAL_GT_WOLF_NATIVE_CLOSURE_20261026_END -->
+
+
 <!-- A575_REPAIR_PREIMAGES_20261026_START -->
 ## Actual Green Tree merge tree and missing tested repair preimages
 
