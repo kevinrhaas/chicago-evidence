@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- DEV8F_VERIFIED_IMPORT_CAS_1452_20261026_START -->
+## Exact new dev objects imported and cached dev safely updated after root authorization
+
+One frozen packet preserves ROOTnewEXACT8f importandNORMALcachedoriginCASa9→8f ACTUALPASS afterallsourcegatesclosed. Freshremote8fverified, ALL16,915tipblobs checked, allotherrefs/primaryHEAD/index/config EXACT. **Old16non13reuseINVALIDagainst8f globaldata/assets: FRESH18required, evenafterfuturecanonicalrelease-notespartitionfix.** Jailnextall4CPUfull3priority/TremontwaitactualJailclosure. Notcodegate, matrix ormergeacceptance.
+
+- [CURRENTDEV-8F-ROOT-VERIFIED-IMPORT-CAS-A9-TO-EXACT8F-ACTUALPASS-20261026](archives/CURRENTDEV-8F-ROOT-VERIFIED-IMPORT-CAS-A9-TO-EXACT8F-ACTUALPASS-20261026.tar.gz) — Closed ROOTnewEXACT8fauthorization actualPASS14:49:08 afterWolfallnative/code/GitpushCLOSED/allothergatesidle. FreshremoteSTILL8f/tree777633; NORMALcachedoriginCASa9→8f, ALLotherrefs andprimaryHEAD/index/config EXACT. All16,915tipblobs membership/sizes verified;36newGitSHA-checkedblobs23,028,113B, totalallocated11,177,984B. No commonsourcefetch/hugepack, nativeimportreaper0/allreaped. Old16non13reuse INVALIDagainst8fincomingglobaldata/assets: FRESH18required evenafterfuturecanonicalrelease-notespartitionfix. JAILnextall4CPUfull3/TremontwaitJailclosure. Notcodegate/matrix/mergeacceptance.
+<!-- DEV8F_VERIFIED_IMPORT_CAS_1452_20261026_END -->
+
+
 <!-- ROOT_AUTH_8F_PRICE_CAUSE_WOLF_1447_20261026_START -->
 ## New author merge authority, exact new-dev price, release-hash cause and checked Wolf head
 
