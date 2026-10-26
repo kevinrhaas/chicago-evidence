@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- JAIL_8CD_CHECKED_DISPATCHED_1317_20261026_START -->
+## Jail checked public current-dev head and one bound renderer dispatch
+
+One frozen packet preserves actual1072/384/all3 checked and normally pushed public8cd Jail current-dev head, exact native input hashes, and exactlyone full18 bounddispatch. **Dispatch is not a matrix verdict; live observers excluded and currenthead browser/moving/CI results remain pending. No original image-match, READY or merge acceptance is claimed.**
+
+- [JAIL-T2380-8CD2-CHECKED-PUBLIC-A9BASE-ONE18-BOUND-DISPATCH-20261026](archives/JAIL-T2380-8CD2-CHECKED-PUBLIC-A9BASE-ONE18-BOUND-DISPATCH-20261026.tar.gz) — Closed ACTUAL1072/384/all3PASS normalcodecommit+committedCLIDs/historyPASS+normalFFpush to DEV DRAFT1333 head8cd2db60777947a16399459fd2945eb804849a51/treef725 witha9c5base; clean nativeglobalhashc2750ca30058eb81/changelog663440aae881bf6f. ExactlyONEfull18batch18uniquebound dispatches: DISPATCHED_NOT_RESULTS. BothliveREADONLYobservers excluded. Currenthead moving/gate/matrixverdicts pending; no READY, merge or originalDONE claim.
+<!-- JAIL_8CD_CHECKED_DISPATCHED_1317_20261026_END -->
+
+
 <!-- JAIL_GUARDED_FINISHER_1310_20261026_START -->
 ## Jail prepared guarded finisher code while full3 remains pending
 
