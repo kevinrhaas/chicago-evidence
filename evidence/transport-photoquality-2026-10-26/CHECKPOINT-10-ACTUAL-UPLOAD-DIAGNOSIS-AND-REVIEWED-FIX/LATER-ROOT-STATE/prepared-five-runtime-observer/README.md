@@ -1,0 +1,17 @@
+# External actual lifecycle observer, five-runtime revision
+
+Preparation only. No browser has been launched with this revision. Historical observer `1cadb53a3a967c8c017662b0ae2b2d31d1080628ddc4f9a1ee1cfa113f9441f4` and its actual NONPASS/stopped receipts are untouched.
+
+Changes from that historical observer are limited to:
+
+1. Require exactly five unique reviewed runtime paths with valid SHA-256 pins: main, ktx2, texture-residency, shared-images, and buildings. Both source and served mirror must match all five. Manifest bytes SHA is retained. Whole tracked source, native mirror, vendor and HEAD before/after guards remain unchanged.
+2. Import the actual served `walk/js/travel-settings.js` FLY settings, which the whole source/mirror inventories pin. Read actual walker groundY/eyeY and camera Y. Require the exact native absolute flight clamp at 900m above datum, its corresponding relative altitude, flying state, zero resident sources and an eviction increment equal to the positive initial resident count. This corrects the old datum mismatch without lowering the native ceiling or reducing the eviction requirement.
+3. After real boot, real welcome world entry and native held clock, call the native Three renderer `setAnimationLoop(null)`. The original explicit native `api.step()` calls and browser `requestAnimationFrame` waits are byte-exact. This stops duplicate implicit renderer draws on a software GPU; it does not mock drawing, residency, uploads, context handling or pixels. Context-reload reenters the same setup after genuine reload.
+
+Every subsequent return, actual readback/GL error, pixel comparison, native detail transaction, refetch/bank-zero, stable record/sampler, real WEBGL lose/restore/reload, page/request/console error and cleanup assertion is byte-exact to the historical observer. Existing GL getError calls are unchanged. No cap, native memory measurement, production API or vendor code is altered.
+
+Source reasoning for manual drawing: native main's held animation loop calls governor.rest before drawing; native api.step also calls governor.rest, applyGovernor and the real tick. governor.rest sets scale=1, pace=1 and shadowFresh=true regardless of its tier field. Stopping the renderer loop therefore does not skip held-frame shadow refresh or retain an adaptive reduced scale. Browser window RAF remains available to the unchanged explicit waits. Visitor frame pacing and automatic black-box watchSteps coverage are outside this focused observer's claims; native full gate remains separate.
+
+Run only after root grants the exclusive heavy slot and the new native source publication is frozen. Use a fresh supervisor prefix, output directory and short owned TMPDIR; never reuse historical output files. The five-runtime manifest must be the exact newly published runtime manifest, not the old V4 four-file manifest or stale mirror. External package resolution can use a read-only `node_modules` symlink to `/workspace/.cloud-setup/npm/node_modules`; verify actual Playwright1.56.1 before launch. Do not install packages into an app checkout.
+
+Preparation verification: `node --check observe-lifecycle.mjs`; `node check-observer-controls.mjs` passes29 real pure-validator/frozen-source controls. They do not evaluate the browser entrypoint or launch a browser. Independent review, actual mobile/desktop graphics lifecycle, actual native memory both profiles, root PNG review and the full native gate remain required.

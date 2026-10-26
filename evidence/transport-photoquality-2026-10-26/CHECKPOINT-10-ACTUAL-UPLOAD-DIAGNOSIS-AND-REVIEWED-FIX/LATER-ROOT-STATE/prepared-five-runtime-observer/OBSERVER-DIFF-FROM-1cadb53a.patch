@@ -1,0 +1,80 @@
+--- historical/observe-lifecycle-1cadb53a.mjs
++++ proposed/observe-lifecycle.mjs
+@@ -22,9 +22,10 @@
+     'renderers/web/js/texture-residency.js',
+     'renderers/web/js/main.js',
+     'renderers/web/js/shared-images.js',
++    'renderers/web/js/buildings.js',
+   ]);
+   if (!Array.isArray(rows) || rows.length !== required.size) {
+-    throw new Error('Runtime manifest must contain exactly the four reviewed runtime paths');
++    throw new Error('Runtime manifest must contain exactly the five reviewed runtime paths');
+   }
+   const seen = new Set();
+   for (const row of rows) {
+@@ -51,6 +52,7 @@
+ const result = { scope: 'T3173 actual published 1904 lifecycle observer', started_utc: new Date().toISOString(),
+   app_root: appRoot, published_root: mirror, runtime_manifest: path.resolve(arg('--runtime-manifest')),
+   runtime_manifest_sha256: runtimeManifestSha256, runtime_module_count: expectedManifest.length,
++  execution_mode: 'Native renderer animation loop stopped after real enter/hold; original explicit native step and window RAF loops unchanged',
+   status: 'RUNNING', rows: [], failures: [], visual_acceptance: 'UNRUN', memory_acceptance: 'SEPARATE_NATIVE_TOOL',
+   browser_closed: false, server_closed: false };
+ const save = async () => fs.writeFile(path.join(out, 'ACTUAL-STATE.json'), `${JSON.stringify(result, null, 2)}\n`);
+@@ -119,6 +121,17 @@
+   { name: 'desktop', viewport: { width: 1280, height: 800 }, hasTouch: false, isMobile: false, deviceScaleFactor: 1, detail: 'full' },
+ ];
+ const stand = { local_e: 1405, local_n: -3230, yaw_deg: 270, pitch_deg: 0 };
++// Native FLY.maxAltitude is absolute camera Y above datum, not ground-relative altitude.
++function matchesNativeFlightClamp(observed, requestedAltitude) {
++  const { ground_y: ground, eye_y: eye, altitude } = observed.walker;
++  const { max_altitude: max, min_clearance: min } = observed.native_flight || {};
++  if (![ground, eye, altitude, max, min, requestedAltitude].every(Number.isFinite)
++      || max !== 900 || min <= 0 || !observed.walker.flying) return false;
++  const requestedEye = ground + Math.max(min, requestedAltitude);
++  const expectedEye = Math.max(ground + min, Math.min(max, requestedEye));
++  return eye === expectedEye && observed.camera[1] === expectedEye
++    && altitude === expectedEye - ground;
++}
+ async function enterAndHold(page) {
+   await page.waitForFunction(() => window.__chicago4d?.ready || window.__chicago4d?.error,
+     null, { timeout: 420000 });
+@@ -133,6 +146,15 @@
+     }
+     if (api.welcome.state !== 'world') throw new Error('Welcome did not enter the actual world');
+     api.setAnimationHold(true);
++    const { FLY } = await import(new URL('../walk/js/travel-settings.js', location.href).href);
++    if (!Number.isFinite(FLY.maxAltitude) || !Number.isFinite(FLY.minClearance)) {
++      throw new Error('Native flight settings unavailable');
++    }
++    window.__t3173ObserverFlight = { max_altitude: FLY.maxAltitude, min_clearance: FLY.minClearance };
++    // Stop only Three's implicit renderer RAF. Every explicit native step() and
++    // window requestAnimationFrame loop below remains byte-for-byte unchanged.
++    api.renderer.setAnimationLoop(null);
++    window.__t3173ObserverManualLoop = true;
+   });
+ }
+ async function settle(page, waypoint = null) {
+@@ -157,7 +179,9 @@
+     return { detail: api.detail, profile: api.device?.choice, welcome: api.welcome.state,
+       renderer_calls: api.renderer.info.render.calls, triangles: api.renderer.info.render.triangles,
+       camera: api.camera.position.toArray(), camera_quaternion: api.camera.quaternion.toArray(), banked_assets: api.bankedAssets,
++      native_flight: { ...window.__t3173ObserverFlight }, manual_renderer_loop: window.__t3173ObserverManualLoop === true,
+       walker: { e: api.walker.state.e, n: api.walker.state.n, altitude: api.walker.state.altitude,
++        ground_y: api.walker.state.groundY, eye_y: api.walker.state.eyeY,
+         flying: api.walker.state.flying }, upload_release: api.uploadRelease,
+       residency: r && { ...r, problems: [...r.problems] }, crash_guard: { ...api.crashGuard } };
+   }, waypoint);
+@@ -298,9 +322,10 @@
+       await settle(page); row.captures.noise = await frame(page, `${name}-noise`);
+       row.held_noise = await compare(page, `${name}-before`, `${name}-noise`);
+       row.away = await settle(page, { ...stand, altitude_m: 1000, pitch_deg: -30 });
+-      check(`${name}: real movement evicts resident sources`, row.away.walker.flying
+-        && row.away.walker.altitude >= 900 && row.away.residency.evictions > row.initial.residency.evictions
+-        && row.away.residency.resident < row.initial.residency.resident, row.away);
++      check(`${name}: native absolute flight clamp and complete real source eviction`,
++        matchesNativeFlightClamp(row.away, 1000) && row.away.manual_renderer_loop
++        && row.initial.residency.resident > 0 && row.away.residency.resident === 0
++        && row.away.residency.evictions - row.initial.residency.evictions === row.initial.residency.resident, row.away);
+       row.returned = await settle(page, stand);
+       check(`${name}: actual return retranscodes and uploads`, row.returned.residency.retranscodes > row.initial.residency.retranscodes
+         && row.returned.residency.uploads > row.initial.residency.uploads && row.returned.residency.pending === 0

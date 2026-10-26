@@ -1,0 +1,71 @@
+{
+  "frozen_utc": "2026-10-26T22:07:53.393392+00:00",
+  "scope": "External2pathproposal only; no app/source/index mutation; no browser launched.",
+  "baseline": {
+    "HEAD": "35f64c6ff344847f21c36fd5631dd7a28c72348a",
+    "TREE": "a12bde3638a91372081561024690e4976072a592",
+    "APP": "7588a262443e1d32b78c44dd73b5b89bcc8b75af",
+    "accepted_EC": "ecfff9f56ce359b70aa520e97d1923c12a6dafb2"
+  },
+  "sources": [
+    {
+      "path": "renderers/web/js/buildings.js",
+      "original_path": "/tmp/chicago-photo-worker-t2793-20261026/chicago/4d/renderers/web/js/buildings.js",
+      "original_sha256": "8512eecd0d0182b202179ca7d772298246b1ed141eb349148c77344732b3e135",
+      "proposed_path": "/tmp/T3173-PER-MATERIAL-SHADOW-OWNER-REVISION-20261026/proposed/renderers/web/js/buildings.js",
+      "proposed_sha256": "b7014d01ab7e0d72264de282e3cb64f37255e18b838833c76a92adcdd015ddc0",
+      "proposed_bytes": 64982
+    },
+    {
+      "path": "tools/test_batch_shadow_cull.mjs",
+      "original_path": "/tmp/chicago-photo-worker-t2793-20261026/chicago/4d/tools/test_batch_shadow_cull.mjs",
+      "original_sha256": "b3aace5727297bc51e8f1ed21f938090a8da8a40e77ec9a7497a34009bc32bf6",
+      "proposed_path": "/tmp/T3173-PER-MATERIAL-SHADOW-OWNER-REVISION-20261026/proposed/tools/test_batch_shadow_cull.mjs",
+      "proposed_sha256": "5be1a19e601013ede4330c199f0b3ed97c659826941549a7ae58e5b63425c267",
+      "proposed_bytes": 18527
+    }
+  ],
+  "patch_sha256": "9fc46e7db168be7364ae831ea14ad2aa4cb96e3bc18a31009f099df2e5addc15",
+  "actual_CPU_runs": [
+    {
+      "prefix": "/tmp/T3173-PER-MATERIAL-SHADOW-OWNER-REVISION-20261026/native-owner-attempt1",
+      "scope": "28prior+6new CPU controls",
+      "returncode": 0,
+      "seconds": 0.2148103849904146,
+      "cleanup_complete": true,
+      "remaining_owned_children": []
+    },
+    {
+      "prefix": "/tmp/T3173-PER-MATERIAL-SHADOW-OWNER-REVISION-20261026/native-owner-final",
+      "scope": "28prior+8new=36 CPU controls; actual shadow/uniform kernels and production residency",
+      "returncode": 0,
+      "seconds": 0.16453529399586841,
+      "cleanup_complete": true,
+      "remaining_owned_children": []
+    },
+    {
+      "prefix": "/tmp/T3173-PER-MATERIAL-SHADOW-OWNER-REVISION-20261026/native-coalesce",
+      "scope": "existing batch coalescing owner",
+      "returncode": 0,
+      "seconds": 1.026170415978413,
+      "cleanup_complete": true,
+      "remaining_owned_children": []
+    },
+    {
+      "prefix": "/tmp/T3173-PER-MATERIAL-SHADOW-OWNER-REVISION-20261026/native-images",
+      "scope": "existing image15+residency66 controls",
+      "returncode": 0,
+      "seconds": 0.21541861901641823,
+      "cleanup_complete": true,
+      "remaining_owned_children": []
+    }
+  ],
+  "native_original_cull_controls": 28,
+  "new_controls": 8,
+  "native_final_controls": 36,
+  "source_and_index_unchanged": true,
+  "actual_prior_GPU_trace": "/tmp/t3173-upload-call-v4-20261026-attempt1/DECISIVE-ACTUAL-UPLOAD-DIAGNOSIS.json",
+  "mechanism": "One custom depth material shared by unrelated colour batches. Native getDepthMaterial changes public map to null for a mapless batch; native refreshUniformsCommon does not clear old uniforms.map on null. Unchanged material.version also omits automatic map-presence program changes. Actual AWAY shadow trace submits 10zero-byte mip arrays into a new512GPUallocation from this raw source.",
+  "correction": "Distinct confidence-patched depth owner per actual live bucket.material; initialize native map/alpha/displacement/clipping/settings before residency census; exact perbatch customDepth/cull identity; dispose each once. No vendor,cache,geometry,pixel,cap changes.",
+  "qualification": "Native CPU/source semantics only. Actual both-profile memory, published/full source gates and GPU lifecycle/pixels after adoption remain UNRUN."
+}

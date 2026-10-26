@@ -1,0 +1,25 @@
+# Transport CHECKPOINT10 — frozen historical evidence
+
+Frozen 2026-10-26T22:12:23.555085+00:00. This packet copies closed external receipts and reviewed proposals. No app/index/mirror reads during staging, repository/evidence/ticket/Git/CI mutation, tests or browsers were performed by the assembler. No photo-quality, full published smoke, ticket completion or DEV delivery is claimed.
+
+## What actually failed and closed
+
+The original V4 observer2 stopped at root request: actual130/1215.824s/cleanup0. Its unchanged last partial journal still says RUNNING; the separate REQUESTED-STOP-INCOMPLETE-RESULT is the truthful final supplement. Mobile retains all three failure entries: altitude-datum assertion, returned readback GL1281, and people.json HEAD ERR_ABORTED. Pixel equality does not erase native upload errors. Desktop produced initial/noise frames only; its detail cycle, residency return and context-loss proof were incomplete. Original PNG paths and exact hashes are retained in receipts; images are not copied here.
+
+The subsequent same-source mobile GPU-call diagnostic closed actualNONPASS1/278.382s/cleanup0, source/mirror/vendor/HEAD unchanged. Its3161events/sixcensuses have no dropped events or bookkeeping notes. Exactly ten zero-byte mip uploads occur during AWAY, into a new512x512 nativeBC7/sRGB allocation, at the native shadow renderObject stack. Run-local GPU7833/texture4066/source4067 and actual source/owner census identify flat_brick_basecolor; the shared RELEASED sentinel2773 is not an identity. INITIAL has no bad calls; this does not support a RETURN-format mismatch diagnosis. All63 real source returns and equal held/returned pixels still do not qualify a run with these GL/request/assertion failures.
+
+The full8033130-byte trace is included losslessly as a500344-byte gzip. FULL-TRACE-LOSSLESS-BINDING.json records original absolute path, rawSHA256dedae19f..., compressedSHA and byte-for-byte decompression verification. It contains call/owner metadata, not compressed image payload arrays. Six identical4.36MB closed guard bodies remain at their retained original paths/read-only CAS; source-guard-references records independently verified exact paths/bytes/SHA and the actual immutable dedup receipt. None of these guards is a snapshot of later app staging.
+
+## Reviewed external corrections and real CPU results
+
+The depth-owner two-path proposal is frozen at original manifestddb41f6a..., patch9fc46e7d..., productionb7014d01..., test5be1a19e.... The old shared depth object can change its public map to null while the native cached uniform retains a prior released texture; native program selection also misses that presence change on unchanged material.version. The correction gives each distinct live colour material one stable confidence-patched depth owner with actual map/alpha/displacement/settings initialized before residency. Native PCF/VSM, packed confidence hooks, exact per-batch cull identity and disposal remain supported. No geometry/caps/vendor changes, map/shadow disabling, error suppression or full mip retention.
+
+Actual existing native shadow owner36PASS(28prior+8new),0.164535s/cleanup0 includes the genuine pinned getDepthMaterial/refreshUniformsCommon stale-alias negative control and production residency co-owner eviction/return. Decoder/GPU bookkeeping there are CPU doubles, not browser proof. Existing coalescePASS1.026170s and image15+66PASS0.215419s/cleanup0 are separately copied. Earlier34-control receipt stays historical. Both root and independent source-review receipts are included. Root review's final-test-pending/adoptedfalse wording is its original earlier timestamp; root subsequently accepted final patch+native36 and authorized the exclusive writer. That operator message is context, not a fabricated formal source-adoption receipt.
+
+The existing HEAD-body external hunk/metadata/test and actual native fixturePASS0 are copied. It awaits the real zero-byte HEAD response body while preserving method/cache/single probe/error locality/GET sharing. Root described14controls; the native output explicitly reports two deliberately broken body/async variants rejected. It has no actual new-source browser claim and introduces no global error suppression.
+
+## V5 explicitly pending
+
+V5 actual source tuple/adoption, native publisher/mirror bindings, both-profile memory, corrected GPU lifecycle/pixels, full source/preflight, fresh checked HEAD/CI and both-width published full smoke are **UNRUN / NOT CAPTURED in this historical packet**. The extra depth/uniform objects must fit unchanged native budgets (previous mobile margin977667B). Root will attach later closed actual receipts in a separate immutable append with its own manifest before pushing. Preserve this base manifest and original failures; do not rewrite them into success.
+
+MANIFEST.json lists original absolute paths, SHA256 and exact-copy verification plus generated files. The gzip row also records the full raw trace binding. No GLB/ZIP/heap/raw image buffers, signedURLs or credentials included.

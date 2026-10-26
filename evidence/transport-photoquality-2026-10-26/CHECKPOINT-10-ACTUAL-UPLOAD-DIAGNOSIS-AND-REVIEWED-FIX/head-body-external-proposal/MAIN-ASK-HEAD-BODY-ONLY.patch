@@ -1,0 +1,15 @@
+--- a/chicago/4d/renderers/web/js/main.js
++++ b/chicago/4d/renderers/web/js/main.js
+@@ -4565,7 +4565,11 @@
+       ask() {
+         if (asked) return;
+         asked = true;
+-        fetch(url, { method: 'HEAD', cache: 'no-cache' }).then((r) => { known = r.ok; }, () => { known = false; });
++        // Complete the zero-byte body too: discarding Chromium's HEAD response
++        // can leave its request aborted even after a successful HTTP status.
++        fetch(url, { method: 'HEAD', cache: 'no-cache' }).then(async (r) => {
++          await r.arrayBuffer(); known = r.ok;
++        }).catch(() => { known = false; });
+       },
+       load() {
+         if (people) return Promise.resolve(people);
