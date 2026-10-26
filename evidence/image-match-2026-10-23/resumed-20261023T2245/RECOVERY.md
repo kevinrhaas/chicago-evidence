@@ -1,5 +1,15 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- BRIDGE_FINAL_ALL18_20261026_START -->
+## Drawbridge post-merge coverage — all eighteen groups complete
+
+**The final-head published coverage gap is now resolved.** All18 native published smoke groups passed on exact actual dev squash `e72b8ba35750b468d6eb368324bf4e3508c51de3`:829desktop/836mobile, zero failures and page errors. The whole tree equals final sourcecf894535 and the hosted ordinary synthetic; the actual final ordinary gate passed1069steps/384self-tests. Every raw log and checkout/input/workflow/event binding was freshly audited. Desktop13 completed naturally within the unchanged150-minute limit, with no retries, waivers or source edits. Earlier dispatch/partial/gap archives below are historical snapshots superseded by this self-contained terminal proof. **Original T2375 remains OPEN/DIFFERS; runtime smoke success is not picture-match acceptance.** The second archive is a compact dated latest-dev object-import receipt, not an app test.
+
+- [PR1286-MERGED-E72-ALL18-ACTUAL-PASS-FINAL-20261026](archives/PR1286-MERGED-E72-ALL18-ACTUAL-PASS-FINAL-20261026.tar.gz) — Self-contained actual post-merge native published smoke proof on exact dev squash e72b8ba35750b468d6eb368324bf4e3508c51de3. All eighteen groups PASS:829desktop and836mobile, zero failures/page errors. Entire tree4a262ea93fba930cbf833229f1538762a6763940 equals final cf894535 source and ordinary hosted synthetic3d4ab. Every raw log was freshly audited for exact checkout, viewport/stage, native published command, workflow/event/attempt1 and SHA. Final desktop13 naturally passed00:44:10 within unchanged150-minute timeout; no retry, waiver, cap or source change. Includes actual final hosted1069/384 gate, tree/parent bindings, utility3126 DONE and original2375 OPEN/DIFFERS, plus PR-body metadata correction/readback. Resolves the older final-head coverage gap; original image-match acceptance remains unclaimed. Validator made no source or local-worktree change.
+- [CURRENT-DEV88-COMPACT-BOUNDED-IMPORT-20261026](archives/CURRENT-DEV88-COMPACT-BOUNDED-IMPORT-20261026.tar.gz) — Compact closed latest88-prefix current-dev source-object import receipt. Preserves actual bounded import, immutable source/hash and Git-state checks as recorded in its closed author manifest. This is dated source recovery/provenance, not a new app/full-gate result or original-image acceptance.
+<!-- BRIDGE_FINAL_ALL18_20261026_END -->
+
+
 <!-- GREENTREE_CURRENT_WIP_20261026_START -->
 ## Green Tree — current staged source and closed app review
 
