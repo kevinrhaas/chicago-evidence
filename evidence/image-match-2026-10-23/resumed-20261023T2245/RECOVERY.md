@@ -1,5 +1,15 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- ROOT_FRESHDEV_GT_CACHE_CLEAR_1427_20261026_START -->
+## Root fresh dev reference and explicitly authorized exact GT cache cleanup
+
+Two independent frozen packets preserve ONEfreshROOTremoteDEVref70a8 unchanged with cacheda9frozen/noimport, and ROOTexplicitACKed exactGTloosegeneratedbaselinecleanup after392durability. **All4340live/archive members reverified and local49.5MBexactarchive retained;168,431,616Bfreed without source/assets/evidence changes. Thisisresourcecleanup and readonlymetadata only, no latestdevglobalhash or newnative/wholegate/PRPASS claim.**
+
+- [ROOT-DEV70A8-FRESH-READONLY-REF-UNCHANGED-1425-20261026](archives/ROOT-DEV70A8-FRESH-READONLY-REF-UNCHANGED-1425-20261026.tar.gz) — Closed ONEfreshROOT remoteDEVref14:25:49 still70a8/tree6b136, exactpriorPRICE404 reused: fourbudgetdocs/changelog/validatepaths, fourmissingblobs4,385,687B; no runtime/assets/active1835/Lib/index/IDs. cachedorigin/dev BEFORE/AFTERa9unchanged, NO fetch/import/sourcecommonGitwrites. READONLYprice/refonly, actuallatestdevnativeglobalinputhash/revalidationstillrequired.
+- [GREENTREE-T2376-ROOT-ACK-EXACT-LOOSE-BASELINE-CACHE-CLEARED-1424-20261026](archives/GREENTREE-T2376-ROOT-ACK-EXACT-LOOSE-BASELINE-CACHE-CLEARED-1424-20261026.tar.gz) — Closed exactROOTexplicitACK afterdurable392 losslessproof: all4340live+archivemembers reverified, ONLYloosegeneratedbefore-publishedcache removedONCE,168,431,616Bfreed. Local49.5MBexactarchive andfallback1322inventory retained; authoredsource/assets/app/evidenceunchanged. ThisisresourcecleanupONLY, GTa9prepared21afa/dependencyWAIT_TREMONT, no newnative/wholegate/PRPASS or originalDONE.
+<!-- ROOT_FRESHDEV_GT_CACHE_CLEAR_1427_20261026_END -->
+
+
 <!-- ROOT_PICKUP_JAIL_BODY_WOLF_NATIVE_1422_20261026_START -->
 ## Root pickup snapshot, Jail qualified PR body and Wolf native closure
 
