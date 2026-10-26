@@ -1,5 +1,18 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- ROOT66125_PENDING_NORMAL_MERGE_RECOVERY_2030_20261026_START -->
+## Root Carpenter exact66125 merge candidate is recoverable; combined gates remain pending
+
+The full current staged binary-safe patch at HEADb3fb/MERGE_HEADWolf562 is saved with every index path/mode/blob and exact staged tree66125b5b2cadc30c405f852f470f5f69117dce39. **The patch was ACTUALLY restored into a new private index at b3fb and rebuilt exactly66125 with every staged entry equal**, using a read-only source-object alternate and no fetch. Source HEAD/merge/staged logical contents stayed exact; an initial native-gate raw-index serialization change is preserved without claiming byte-identical mutable stat caches. No source/index/refs were written by publisher. No unstaged or untracked files existed at capture.
+
+The checked public Jailbbbe/tree8978 delta is already in this candidate; its normal ancestry attachment after the Wolf merge is still owed, with exact full-tree equality required for source-identical reuse. Closed native44/package/publish bindings and raw serialization inventory are preserved. **Current combined full3 and functional browser review2022 are ACTIVE/PENDING in this frozen snapshot.** The review's live directory/log/results and full3 live logs are excluded; only explicitly labeled active statuses and closed runner/BINDING remain. A separate scoped Root-reported finite parcel/image/STORE review is not a whole-gate certificate.
+
+Only CONFIGURATION.json, BROWSER-PROBE.json and probe-reaper.json from the task-local browser trust folder are included. Exact-host trust worked without ignoring TLS errors; no browser profile, Local State, cookies or certificate database is published. Recovery instructions operate in a NEW private checkout and preserve ordinary merge ancestry. No current app-wide PASS, code commit/PR, READY/merge or original DONE is claimed. Root459 baseline correction and policy precision421 remain effective.
+
+- [ROOT-CARPENTER-EXACT66125-PENDING-JAIL-WOLF-MERGE-FULL-BINARY-RECOVERY-20261026](archives/ROOT-CARPENTER-EXACT66125-PENDING-JAIL-WOLF-MERGE-FULL-BINARY-RECOVERY-20261026.tar.gz) — Exclusive READONLY Root capture: HEADb3fb939f510a4ffe009a7c45f104ddadc76d3761/MERGE_HEAD562a4a9adaee706a97ea3b83b06b6cda89a69fc4, exact staged66125b5b2cadc30c405f852f470f5f69117dce39 on currentdev Carpenter branch. Full binary-safe staged patch and every index path/mode/blob; no unstaged/untracked source. Patch ACTUALLY rebuilt exact66125/all entries in new private index using read-only source alternate/no fetch, wrapper0/all reaped. Checked public Jailbbbe518720601b785e79628bf247ee4b9f9d4ed8/tree8978 delta already adopted; ordinary ancestry attachment remains pending and any source-identical reuse requires full-tree equality. Closed native44 binding/raw-serialization inventory/package/publish proofs included; two redundant serialization payloads inventory-only. Current full3 runner/BINDING and explicitly ACTIVE snapshots included, no live gate logs. Functional2022 still active at capture, its directory/log/results excluded. ONLY three requested browser-trust JSON receipts, native exact-host certificate trust/no TLS ignore; never profile/LocalState/cookies. Parent reported finite182parcel/90imagejoin/STORE2 review is scoped statement, not gate result. Initial raw-index hash change retained honestly while semantic staged tree stayed exact; no publisher source/index/ref writes. No current whole3/app/commit/PR/readiness/original DONE claim.
+<!-- ROOT66125_PENDING_NORMAL_MERGE_RECOVERY_2030_20261026_END -->
+
+
 <!-- JAIL_FROZEN_RAIL_HEADROOM_OWNED_RENEWALS_2010_20261026_START -->
 ## Frozen Jail rail fix measures384MiB; whole gate still pending
 
