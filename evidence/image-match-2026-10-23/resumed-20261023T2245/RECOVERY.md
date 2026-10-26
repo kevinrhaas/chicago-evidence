@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- TREMONT_PRETRANSPLANT_COMPLETE_20261026_START -->
+## Tremont complete recovery before a575 transplant
+
+One frozen packet preserves the complete corrected binary WIP, native closure and exact alternate-index recovery alongside the actual failed gate. **No combined whole-gate, final app/matrix, PR/merge or original picture-match completion is claimed.** Previously durable346 app/2+2 proof is retained separately.
+
+- [TREMONT-T2385-COMPLETE-BINARY-WIP-NATIVE-FAILURE-RECOVERY-BEFORE-A575-20261026](archives/TREMONT-T2385-COMPLETE-BINARY-WIP-NATIVE-FAILURE-RECOVERY-BEFORE-A575-20261026.tar.gz) — Closed complete T2385 recovery before root-authorized merge cleanup and a575 transplant: corrected binary WIP patch, raw old/staged indexes, HEAD cf25 and pending MERGE_HEAD132e metadata, exact alternate-index recovery, private native stash9e4885, and exact current tree89c3b1dc retained. Successful native capacity closure and exact reader proofs are preserved alongside the full failed gate and original supplementary guard stops. This packet does not claim a passing combined whole gate, final application/matrix, PR/merge, original picture-match completion, or acceptance on a575. Older durable346 app/2+2 packets remain dependencies and are not republished.
+<!-- TREMONT_PRETRANSPLANT_COMPLETE_20261026_END -->
+
+
 <!-- FINAL_GT_WOLF_NATIVE_CLOSURE_20261026_START -->
 ## Final Green Tree handoff and Wolf Point pre-transplant native recovery
 
