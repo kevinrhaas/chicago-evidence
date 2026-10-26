@@ -1,5 +1,16 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- TREMONT_CORRECTED_PICTURE_CANONICAL_SOURCE_1915_20261026_START -->
+## Tremont corrected source now retains the pictured three-storey canonical form
+
+The approved source correction preserves currentdev's exact three-storey shuttered geometry and placement; only paint changes from unpainted to yellow with inferred confidence. The smaller Gale TEXT interpretation is an optional native version. Three redundant unmerged Gifford version paths were withdrawn after byte-exact immutable public1290 retention and backups; all old source/proofs remain recoverable. The complete current source archive and explicit deletions are verified, including every nested source hash/size/mode after remote readback.
+
+**Canonical and optional Gale production exports have NOT run. Existing canonical GLB remains honestly stale for the new inputs until the pair is built.** No new photo, published-app, native/global gate, commit or original completion is claimed. Frozen1290 matrix17/18 at this snapshot certifies its old source only and never this corrected WIP. Tremont remains independent after Wolf, outside the Carpenter/Green Tree critical path. Root correction459 remains current.
+
+- [TREMONT-T2385-CORRECTED-PICTURED3-SOURCE-YELLOW-OPTIONAL-GALE2-NOT-BUILT-20261026](archives/TREMONT-T2385-CORRECTED-PICTURED3-SOURCE-YELLOW-OPTIONAL-GALE2-NOT-BUILT-20261026.tar.gz) — Root-approved source adoption preserves exact currentdev three-storey/shuttered canonical geometry and placement, changing only yellow paint and inferred confidence. Smaller two-storey Gale TEXT reading becomes optional native gale-reading. Three duplicate unmerged Gifford record/master/WEB paths withdrawn ONLY after immutable public1290 byte/hash/size retention and local backup. Complete ten existing-file source archive, explicit three deletions, approved parser/input-hash guards and public retention included. Every outer and nested source member independently verified after immutable remote readback. Canonical+Gale pair NOT built; old canonical GLB honestly stale for new input until export. No new photo/app/global gate/commit or original DONE. Frozen1290 matrix17PASS/desktop13 pending at snapshot is historical old-source proof, NEVER new corrected-WIP certification.
+<!-- TREMONT_CORRECTED_PICTURE_CANONICAL_SOURCE_1915_20261026_END -->
+
+
 <!-- ROOT_TREMONT_BASELINE_CORRECTION_NEW_CHAIN_1855_20261026_START -->
 ## Current correction: preserve the pictured three-storey Tremont; withdraw the unmerged two-storey default
 
