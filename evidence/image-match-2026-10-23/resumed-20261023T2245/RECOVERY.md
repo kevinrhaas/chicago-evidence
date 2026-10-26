@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- WOLF_DESKTOP_REMAINING_COMPONENTS_20261026_START -->
+## Wolf Point remaining desktop and explicit component coverage
+
+One frozen packet preserves the naturally completed remaining desktop targeted assertions and their aggregate with prior index361 components. **The old desktop status143 is not relabeled whole PASS. Whole gate, code commit, DEV draft PR, FULL18 and all8-picture acceptance remain pending.** No source/geometry/rights/match changes or live folders are included.
+
+- [WOLFPOINT-T2386-DESKTOP-REMAINING-PASS-EXPLICIT-COMPONENT-COVERAGE-20261026](archives/WOLFPOINT-T2386-DESKTOP-REMAINING-PASS-EXPLICIT-COMPONENT-COVERAGE-20261026.tar.gz) — Closed fresh remaining-desktop and aggregate targeted-component checkpoint: actual Sources/newLib, both doors/four ground assertions, fresh HTTP WEB and maps, errors/caps and ordinary DOM FreeRoam PASS; natural closure06:47:16 exit0 with all children reaped. Explicit component reuse is limited to index361 mobile full targeted PASS and desktop normal/ByGrade/Photos already completed there. Old desktop termination status143 is retained and NOT relabeled whole-run PASS. Required targeted components are covered in aggregate; whole gate, code commit, DEV draft PR, FULL18 and all8-picture acceptance remain pending. No source, geometry, rights or match verdict changes; no live folders archived.
+<!-- WOLF_DESKTOP_REMAINING_COMPONENTS_20261026_END -->
+
+
 <!-- JAIL_E81_FROZEN_PARTIAL9_20261026_START -->
 ## Jail frozen nine-of-eighteen smoke snapshot
 
