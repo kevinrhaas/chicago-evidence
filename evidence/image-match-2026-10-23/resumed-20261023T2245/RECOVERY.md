@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- GREEN_TREE_ACTUAL_SASH_PHOTO_REVIEW_1815_20261026_START -->
+## Green Tree middle sash fixed in actual same-camera comparison; annex remains open
+
+The genuine selected export from456 now has an actual before/after photo review using byte-exact original drawing and provisional camera. The seventh sash fixes the bounded middle-opening discrepancy. **Whole verdict remains DIFFERS: annex massing is OPEN; original T2376 remains incomplete.** The complete current21-file source WIP is recoverable, with nested archive members independently verified after immutable remote readback. No global gate, current published-app PASS, code commit or PR is claimed. Integration waits for checked Carpenter and exact recipe validation; all counterevidence and July1835 limits remain.
+
+- [GREEN-TREE-T2376-ACTUAL-FIXED-CAMERA-MIDDLE-SASH-REVIEWED-STILL-DIFFERS-20261026](archives/GREEN-TREE-T2376-ACTUAL-FIXED-CAMERA-MIDDLE-SASH-REVIEWED-STILL-DIFFERS-20261026.tar.gz) — Closed actual unchanged-camera before/after photo review: middle lower door replaced by seventh sash and bounded discrepancy fixed. Whole case remains DIFFERS, enclosed-annex massing OPEN and July1835 uncertainty/counterevidence retained. Complete current21-file WIP archive has every nested member hash/size/mode verified in RAM, then independently after immutable remote archive readback. Native photo exit0/all reaped, real comparison and reviewed match retained. No current global/preflight/published-app acceptance, code commit/PR or original DONE. Selected export reuse only if exact recipe38d1d02c87618a7a6af8b67bef60a97f3c8a72e3bfc3a882802040ea1c04167d unchanged after checked Carpenter integration.
+<!-- GREEN_TREE_ACTUAL_SASH_PHOTO_REVIEW_1815_20261026_END -->
+
+
 <!-- JAIL_GT_CARPENTER_WIP_PROGRESS_1808_20261026_START -->
 ## Current Jail native proof and real memory failure; source WIP preserved for Green Tree and Carpenter
 
