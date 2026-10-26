@@ -1,5 +1,17 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- JAIL_FROZEN_RAIL_HEADROOM_OWNED_RENEWALS_2010_20261026_START -->
+## Frozen Jail rail fix measures384MiB; whole gate still pending
+
+The exact publicb3fb-to-staged897824de ten-file delta has an actual phoneLight384.0MiB result below the unchanged400 ceiling. Parked rail CPU storage drops12,183,792 bytes while actual GPU buffer/texture allocations remain exact. Normal lifecycle and five same-world held geometry/pixel frames pass; positive controls detect changed rails. **The pre-existing first-pose GL1281 is reproduced in both exact baseline and candidate, explicitly retained and never relabelled zeroGL.** The insufficient static experiment was restored, with its actual receipts retained. No cap or native asset change is claimed.
+
+**Frozen8978 full3 started19:57:52 and remains ACTIVE/PENDING in this closed snapshot; this checkpoint is not checked or merge-ready.** The actual hostedb3fb403.3>400 failure remains preserved at464. Only closed files are published. Exact-own native Tremont/Green Tree renewals extend to23:05:54/23:06:46 with unchanged source and no foreign override; other heavy work remains idle during Jail's whole gate. No source Git/refs are accessed by checkpoint publication, and no original completion is claimed.
+
+- [JAIL-T2380-FROZEN8978-LAZY-RAIL384-MEMORY-HELD-FRAMES-FULL3-PENDING-20261026](archives/JAIL-T2380-FROZEN8978-LAZY-RAIL384-MEMORY-HELD-FRAMES-FULL3-PENDING-20261026.tar.gz) — Exact publicb3fb→frozen stagedtree897824de45d16cd90fe2400cd3b8aace341d42ea ten-file patch/hash list. Actual phoneLight384.0/400 PASS, parked railCPU drops12,183,792B while actual GPU buffer/texture bytes remain EXACT; no Lib/data/geometry/native asset/cap change. Actual normal walk/upload/drop/rebuild/pick/appFull→Light PASS; five held304200-pixel baseline/lazy frames zero differences and visible geometry bytes exact, two street positive controls detect changed rails. Baseline first-pose GL1281 reproduced in exactb3fb control and candidate and explicitly retained, NOT zeroGL; other queues empty, zero page/network/console errors. Insufficient static experiment was restored/not adopted, raw receipts retained. Full3 started19:57:52 ACTIVE/PENDING and excluded live files; not checked or merge-ready. Hostedb3fb403.3>400 FAIL remains historical464; original DIFFERS.
+- [GREEN-TREE-TREMONT-EXACT-OWNED-NATIVE-RENEWALS-THROUGH2305-2306-20261026](archives/GREEN-TREE-TREMONT-EXACT-OWNED-NATIVE-RENEWALS-THROUGH2305-2306-20261026.tar.gz) — Fresh exact-own guards renewed Tremont native lap5dfe6bbc0b7e361996fa1c56e5965f0928ffeb65 through23:05:54 and GT native ticket claimdd2c1fee917a6d4e0c52a9223f5838935e0b8763 through23:06:46. Both native exit0/all reaped, unchanged code/model/source. Standing root exact-owned-marker/owned-ref exception only; no foreign override. Heavy work idle while frozen Jail8978 all4CPU whole gate runs; no acceptance or original DONE.
+<!-- JAIL_FROZEN_RAIL_HEADROOM_OWNED_RENEWALS_2010_20261026_END -->
+
+
 <!-- MARY_PROPOSAL_JAIL_MEMORY_TREMONT_NATIVE_1935_20261026_START -->
 ## Checked Jail retains real memory failure; corrected Tremont native pair and photo now exist
 
