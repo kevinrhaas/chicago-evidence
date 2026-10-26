@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- CARPENTER_CORRECTED_CAMERA_HELD_SIGNATURE_1828_20261026_START -->
+## Carpenter genuine corrected-camera comparison and held-print credit recovered
+
+The corrected diagnostic camera now has a genuine rerender and fresh DIFFERS review. Small measured JPEG differences are recorded precisely, without a byte-equality claim. Inspection of the held full-size print resolves the signed surname BRAUNHOLD; the source and existing library credit are corrected while the given-name initial remains unresolved. Native library rebuild/check passed. **This remains uncommitted app WIP on checked1290, with no final current app/nativegate or original DONE.** Prior image-storePR5/public byte-exact derivatives are preserved separately; no new host code or production app promotion is claimed. Complete binary WIP and all untracked files are recoverable.
+
+- [CARPENTER-T2382-CORRECTED-CAMERA-REAL-RERENDER-HELD-BRAUNHOLD-CREDIT-WIP-20261026](archives/CARPENTER-T2382-CORRECTED-CAMERA-REAL-RERENDER-HELD-BRAUNHOLD-CREDIT-WIP-20261026.tar.gz) — Closed complete current binary WIP patch and all untracked files on checked1290. Genuine corrected-camera rerender and fresh DIFFERS review; measured small JPEG changes are explicitly NOT byte equality. Full-size held print resolves signed surname BRAUNHOLD; source and existing library credit corrected, given-name initial unresolved. Actual native library rebuild/check PASS. Prior image-storePR5 merged and immutable public JPEG readbacks remain PASS; this adds no host code. No final current app/nativegate, code commit/PR, READY/merge or original DONE. All existing source limitations and current dev integration requirements retained.
+<!-- CARPENTER_CORRECTED_CAMERA_HELD_SIGNATURE_1828_20261026_END -->
+
+
 <!-- GREEN_TREE_ACTUAL_SASH_PHOTO_REVIEW_1815_20261026_START -->
 ## Green Tree middle sash fixed in actual same-camera comparison; annex remains open
 
