@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- JAIL_E81_CHECKED_PUBLIC_20261026_START -->
+## Jail checked public draft and smoke dispatch checkpoint
+
+One frozen packet preserves the actual local1072/384 whole-gate and three-question PASS, committed history checks and normal public push ofe81/tree350334. **The PR is DRAFT;18 native groups are dispatched, not accepted. Live matrix/observer files are excluded, and no CI PASS, merge or picture-match acceptance is claimed.** Publication helper failures and successful fallback remain visible.
+
+- [JAIL-T2380-E81-CHECKED-PUBLIC-DRAFT-1072-384-MATRIX-DISPATCH-20261026](archives/JAIL-T2380-E81-CHECKED-PUBLIC-DRAFT-1072-384-MATRIX-DISPATCH-20261026.tar.gz) — Closed Jail checked-public checkpoint: actual local1072/384 and all three questions PASS with frozen guards, committed CL/IDs/history PASS, normal fast-forward push of publice81 tree350334, root-converted DRAFT and own lap through09:17:42UTC. Exactly18 native groups dispatched, but live matrix and gate-observer outputs are EXCLUDED; no CI PASS, merge or image acceptance is claimed. Both publication-helper failures and successful REST fallback retained. Native c65f9553 packet is a separate dependency. Dispatch is not completion; originalT2380 picture-match completion remains unclaimed.
+<!-- JAIL_E81_CHECKED_PUBLIC_20261026_END -->
+
+
 <!-- WOLF_APP_PARTIAL_CORRECTED_20261026_START -->
 ## Wolf Point mobile pass and corrected desktop partial checkpoint
 
