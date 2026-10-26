@@ -1,5 +1,16 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- TREMONT_FROZEN1290_FINAL_FULL18_HISTORICAL_1918_20261026_START -->
+## Frozen Tremont1290 matrix completed all18; corrected pictured source remains unbuilt
+
+All18 original matrix legs genuinely passed19:01:33 on frozen1290/tree d073, both viewports stages1–15, with independently verified raw checkout/head/publish/smoke/count bindings and zero failures/errors. Observer and terminal closer exited0 with every child reaped. No retry or duplicate matrix was dispatched.
+
+**This certifies ONLY the old frozen1290 two-storey world. It does NOT certify corrected three-storey/yellow source adopted19:03.** That corrected source is recoverable at460; canonical/optional Gale native pair, fresh photo/app and global acceptance remain pending. The default-two proposal remains withdrawn, currentdev pictured three-storey form remains the approved baseline, and Root459 integration-chain correction remains effective. All old proofs are retained as historical source-bound evidence, with no READY/merge or original DONE claim.
+
+- [TREMONT-T2385-FROZEN1290-FINAL-ACTUAL-FULL18-OLD-TWOSTOREY-ONLY-20261026](archives/TREMONT-T2385-FROZEN1290-FINAL-ACTUAL-FULL18-OLD-TWOSTOREY-ONLY-20261026.tar.gz) — GENUINE final frozen1290/tree d073 all18 actual native published legs PASS19:01:33, both viewports stages1–15, positive counts/zero failures/errors. Every raw checkout/head/publish/smoke/count binding independently rechecked; original observer and terminal closer exit0/all children reaped. Exactly one original matrix, no retry/duplicate. STRICTLY old frozen1290 TWO-STOREY world only. Corrected pictured three-storey/yellow source was adopted19:03 and is separately durable460, with no canonical/Gale native pair, app/global acceptance yet. This completed historical proof must NEVER be relabelled current corrected-source proof. Old source/results retained, no READY/merge or original DONE claim.
+<!-- TREMONT_FROZEN1290_FINAL_FULL18_HISTORICAL_1918_20261026_END -->
+
+
 <!-- TREMONT_CORRECTED_PICTURE_CANONICAL_SOURCE_1915_20261026_START -->
 ## Tremont corrected source now retains the pictured three-storey canonical form
 
