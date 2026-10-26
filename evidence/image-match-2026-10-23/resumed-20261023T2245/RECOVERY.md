@@ -1,5 +1,17 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- ROOT_AUTH_8F_PRICE_CAUSE_WOLF_1447_20261026_START -->
+## New author merge authority, exact new-dev price, release-hash cause and checked Wolf head
+
+Four independent frozen packets preserve **NEWROOTauthority: authors mayREADY and normalmergeDEV whenallpolicygreen; oldROOT-onlybottleneck explicitlySUPERSEDED**, exactfresh8fREADONLYprice(old70CASSTOPPED), Jailrelease-metadatahashCAUSEreadonlyproof(NOTglobalEQ/acceptance), and Wolfactualcheckedpublic562 withONE18bounddispatch(NOTRESULTS). No latestdevvalidation, originalDONE ormergeacceptance claimed. All liveoutputs excluded.
+
+- [ROOT-RESILIENCE-AUTHORITY-EPOCH-AUTHORS-READY-MERGE-WHEN-GREEN-1434-20261026](archives/ROOT-RESILIENCE-AUTHORITY-EPOCH-AUTHORS-READY-MERGE-WHEN-GREEN-1434-20261026.tar.gz) — Closed NEWstandingROOTauthorityepoch: authors mayREADY and normalmergeDEV whenALLpolicygreen; oldROOT-onlyREADYbottleneck explicitlySUPERSEDED. ConditionalCAS70 onlyafterWolfcheckedclosure, JAILnextall4CPUfull3prioritythenTremont. Snapshotnotvalidation; fresh8fsubsequentlyviolated70CAScondition, so70CASSTOPPED andnewrootprice/authrequired. No sourcewrites.
+- [CURRENTDEV-8F-EXACT-READONLY-PRICE-STOP70CAS-NOIMPORT-20261026](archives/CURRENTDEV-8F-EXACT-READONLY-PRICE-STOP70CAS-NOIMPORT-20261026.tar.gz) — Closed exact8f708/tree777633 READONLYprice70→8f: DentT3162PR1331+fold,41paths,36missingtipblobs23,028,113B. Dent1904master/WEB replacesdraft, Lib/catalog/sourcecards/1904jaunts/rightsbaseline/research derivatives. No actualrendererJS exceptchangelog, no generatorcode oractive1835non-source sidecars; existingDentID/283set pendingnativeproof. Isolatedfilteredmetadata only, sourcecommonobjects/refsuntouched/cacheda9still; old70CASSTOPPED. No latestdevvalidation/globalEQ or mergeclaim.
+- [JAIL-T2380-RELEASE-META-NATIVE-HASH-CAUSE-READONLY-NOACCEPTANCE-20261026](archives/JAIL-T2380-RELEASE-META-NATIVE-HASH-CAUSE-READONLY-NOACCEPTANCE-20261026.tar.gz) — Closed READONLYcausalproof: privateALTimmutable8cdindex+UNALTEREDnativehashalgorithm reproducesoldc275/current856. ALL1,200,617B trackedlisting paths/modes/blobIDsidentical; ONLYnormalizedHTMLdifference generatedc4d-releases2305→2306. Oldnotes6634/new9c5creproduced; actualsourceindex/publishedHTMLunchanged. ReconstructedoldnormalizedHTML honestlylabeled, no originaltimestampspretended. ROOTpartitionbugreviewneeded; globalEQNOTCLAIMED/old16reuseSTOPPED untilfix+actualproof. No codefix/acceptance.
+- [WOLFPOINT-T2386-562-CHECKED-PUBLIC-ONE18-BOUND-DISPATCH-NOTRESULTS-20261026](archives/WOLFPOINT-T2386-562-CHECKED-PUBLIC-ONE18-BOUND-DISPATCH-NOTRESULTS-20261026.tar.gz) — Closed FULLsourcepipeline0/allreaped: actual1072/384/all3/committedCLIDs/history/nativehash483067ea722f494f/notessep663440aae881bf6f; normalFFpublic562a4a9/tree62bd/parents4fe+bffc. ExactlyONE18uniquebounddispatch14:43:54 DISPATCHED_NOT_RESULTS, readonlyobserverliveexcluded. OriginalOPEN/DIF/freshremote8fnewerprice/CASpending. NEWROOTauthorREADY+normaldevmergeauthorityonlywhenallpolicygreen; oldROOT-onlyinstruction superseded. No activeGit/native/codeworker/no latestdevvalidation ormergeclaim.
+<!-- ROOT_AUTH_8F_PRICE_CAUSE_WOLF_1447_20261026_END -->
+
+
 <!-- DEV70A8_OBJECTS_ONLY_NOREF_1431_20261026_START -->
 ## Current dev immutable objects staged with all source references unchanged
 
