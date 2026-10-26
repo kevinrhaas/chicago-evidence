@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- JAIL_A9C5_NATIVE_CLOSED_1251_20261026_START -->
+## Jail native closure after current-dev integration
+
+One frozen packet preserves exact normalmerge e81+a9c5 native rederivation and source guards. **Whole native full3 is still running and excluded; no codecommit, fresh renderer matrix, original image-match or merge acceptance is claimed.** Protected source and regenerated serializationbytes remain independently recoverable.
+
+- [JAIL-T2380-A9C5-NATIVE-CLOSED-FROZENF725-FULL3-PENDING-20261026](archives/JAIL-T2380-A9C5-NATIVE-CLOSED-FROZENF725-FULL3-PENDING-20261026.tar.gz) — Closed exact normalmerge preparation e81+a9c5 frozenf725: native202+7+57/pkg/publishPASS, all5362protected/all44 audit includingregeneratedserializationbytes. CandidateTEXTpatch plus fullpath/blobSHA references, binarypictures independently publice81. Preserves duplicate1904strictID resolution284 to EXACTincoming283 list. Full3 RUNNING and all live gate logs EXCLUDED; no whole-code gate, codecommit, new smoke, ready or merge claim. Original2380 remainsOPEN/DIF.
+<!-- JAIL_A9C5_NATIVE_CLOSED_1251_20261026_END -->
+
+
 <!-- GT_LOSSLESS_WOLF_MARY_1243_20261026_START -->
 ## Green Tree lossless historical baseline and Wolf/StMary recovery metadata
 
