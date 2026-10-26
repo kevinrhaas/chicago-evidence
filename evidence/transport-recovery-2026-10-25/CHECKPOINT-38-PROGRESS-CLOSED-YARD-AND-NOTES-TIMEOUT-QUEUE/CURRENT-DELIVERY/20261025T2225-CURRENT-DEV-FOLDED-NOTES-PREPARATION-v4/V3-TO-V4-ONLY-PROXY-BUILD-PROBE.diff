@@ -1,0 +1,30 @@
+--- FROZEN-V3-6952
++++ NEW-V4-normal-proxy-curl-build-only
+@@ -89,7 +89,26 @@
+  if(activate){if(touch)await page.touchscreen.tap(p.x,p.y);else await page.mouse.click(p.x,p.y);}
+ }
+ async function screenshot(page,name){const file=activeView.label+'-'+name+'.png';await page.screenshot({path:path.join(OUT,file),timeout:90000});const b=fs.readFileSync(path.join(OUT,file));need(b.length>10000,'Empty screenshot');activeView.screenshots.push({file,bytes:b.length,sha256:sha(b)});save();}
+-async function publicBuild(page){const r=await page.request.get(DEV+'build.json',{maxRedirects:0,timeout:90000,headers:{'Cache-Control':'no-cache'}});need(r.status()===200,'Official DEV build failed/redirected');const b=await r.body();need(b.equals(oldBuilds[0]),'Public DEV moved since the actual selected-byte receipt');report.builds.push({status:r.status(),bytes:b.length,sha256:sha(b),build:JSON.parse(b)});save();}
++async function publicBuild(page){
++ const index=report.builds.length,stem='official-build-'+String(index).padStart(2,'0');
++ const bodyFile=stem+'.body',headersFile=stem+'.headers',statusFile=stem+'.status',commandFile=stem+'.command.json';
++ const bodyPath=path.join(OUT,bodyFile),headersPath=path.join(OUT,headersFile),statusPath=path.join(OUT,statusFile);
++ for(const file of [bodyPath,headersPath,statusPath,path.join(OUT,commandFile)])need(!fs.existsSync(file),'Never overwrite a prior official build observation');
++ const curlArgs=['--silent','--show-error','--no-insecure','--no-location','--proto','=https','--proto-redir','=https','--max-redirs','0','--connect-timeout','20','--max-time','60','--header','Cache-Control: no-cache','--output',bodyPath,'--dump-header',headersPath,'--write-out','%{http_code}',DEV+'build.json'];
++ const row={observation_index:index,url:DEV+'build.json',route:'Normal curl with inherited proxy environment, HTTPS verification and no redirects',result:'RUNNING'},began=Date.now();
++ report.builds.push(row);save();let stdout='',stderr='',returncode=0;
++ try{stdout=execFileSync('curl',curlArgs,{cwd:'/workspace',env:process.env,stdio:['ignore','pipe','pipe'],encoding:'utf8',maxBuffer:1024*1024});}
++ catch(e){returncode=Number.isInteger(e.status)?e.status:-1;stdout=e.stdout?.toString()||'';stderr=cleanText(e.stderr?.toString()||e.message);}
++ fs.writeFileSync(statusPath,stdout);
++ const fileProof=(file,name)=>fs.existsSync(file)?{file:name,bytes:fs.statSync(file).size,sha256:sha(fs.readFileSync(file))}:{file:name,present:false};
++ row.status=Number(stdout.trim());row.curl_status_raw=stdout;row.curl_returncode=returncode;row.seconds=(Date.now()-began)/1000;row.body_file=fileProof(bodyPath,bodyFile);row.headers_file=fileProof(headersPath,headersFile);row.status_file=fileProof(statusPath,statusFile);row.stderr=stderr;row.result='FAIL';
++ fs.writeFileSync(path.join(OUT,commandFile),JSON.stringify({program:'curl',arguments:curlArgs,cwd:'/workspace',inherited_proxy_environment_preserved:true,TLS_verification_enabled:true,redirects_followed:false,returncode,http_status_raw:stdout,stderr,body:row.body_file,headers:row.headers_file,status:row.status_file},null,2)+'\n');
++ row.command_file=fileProof(path.join(OUT,commandFile),commandFile);save();
++ need(returncode===0,'Official DEV build normal inherited-proxy curl failed');
++ need(stdout.trim()==='200','Official DEV build failed/redirected');
++ const b=fs.readFileSync(bodyPath);need(b.equals(oldBuilds[0]),'Public DEV moved since the actual selected-byte receipt');
++ row.bytes=b.length;row.sha256=sha(b);row.build=JSON.parse(b);row.result='PASS';save();
++}
+ async function drain(){while(pendingTasks.size)await Promise.allSettled([...pendingTasks]);}
+ try{
+  const require=createRequire('/workspace/.cloud-setup/npm/package.json'),{chromium}=require('playwright');
