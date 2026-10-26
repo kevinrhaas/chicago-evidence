@@ -1,5 +1,15 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- GT_NATIVE_CARPENTER_UNADOPTED_20261026_START -->
+## Green Tree closed native checkpoint and unadopted Carpenter proposal
+
+Two closed packets preserve Green Tree cb93 native202+7+57/audit/package/publish and a one-record Carpenter door-recess proposal. **Green Tree whole gate is RUNNING_NOT_PASS, repaired glass runtime UNVERIFIED and ce89 integration/smoke/merge OWED. The Carpenter proposal is UNADOPTED: no canonical edit, claim, bake, after-image, gate or PR exists.** No live files are copied and no original picture acceptance or new ticket is claimed.
+
+- [GREENTREE-PR1328-CB93-NATIVE202-7-57-CLOSED-WHOLEGATE-RUNNING-20261026](archives/GREENTREE-PR1328-CB93-NATIVE202-7-57-CLOSED-WHOLEGATE-RUNNING-20261026.tar.gz) — Closed cb93 native/source checkpoint: actual native202+7+57, audit, package and publish PASS. Required whole gate RUNNING_NOT_PASS elsewhere and excluded; repaired glass runtime remains UNVERIFIED, ce89 integration, required smoke coverage and merge OWED. Depends earlier authoredcb93/v2 repair, old checked code/matrix causal and genuine asset/app checkpoints. Native PASS is not whole gate, current repaired runtime, all18 published smoke, merge or original2376 picture acceptance.
+- [CARPENTER-T2382-CE892-UNADOPTED-DOOR-RECESS-ONE-RECORD-PROPOSAL-20261026](archives/CARPENTER-T2382-CE892-UNADOPTED-DOOR-RECESS-ONE-RECORD-PROPOSAL-20261026.tar.gz) — UNADOPTED next-original T2382 Carpenter door-recess proposal on ce892: one-record patch ONLY with actual source and before-state bindings. NO canonical source edit, original ticket claim, native bake, after-image, codegate, public PR, merge, picture match or completion. This archived proposal is recoverable review material and does not authorize or claim new ticket creation or adoption.
+<!-- GT_NATIVE_CARPENTER_UNADOPTED_20261026_END -->
+
+
 <!-- TREMONT_FOURAPPS_FROZEN_RECOVERY_20261026_START -->
 ## Tremont four native loads and exact frozen source recovery
 
