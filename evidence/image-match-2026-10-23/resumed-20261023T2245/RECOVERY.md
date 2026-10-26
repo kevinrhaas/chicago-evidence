@@ -1,5 +1,16 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- MARY_NATIVE_JAIL_MOVING_FAIL_RETRY_1341_20261026_START -->
+## St Mary native closure and Jail actual moving-frame failure with one unchanged retry
+
+Three independent frozen packets preserve StMary native closure with whole3 stillrunning, Jail REALmoving32.9ms-over32ms flora cap failure, and exactlyONE unchangedexistingrun retry accepted/queued. **The first failure is retained without a noiseclaim; retry is STARTONLY, not a result. Whole3 and liveoutputs excluded. No original image-match, READY or merge acceptance is claimed.**
+
+- [ST-MARY-T2384-JAIL8CD-NATIVE-CLOSED-WHOLE3-PENDING-20261026](archives/ST-MARY-T2384-JAIL8CD-NATIVE-CLOSED-WHOLE3-PENDING-20261026.tar.gz) — Closed Mary native202+7+57/package/publish/5362protected/all44PASS withcheckedJail8cddependency;216binaryreferencesverifiedpublic3f74. Sourceexactrecoveryonly; whole3RUNNING NOTPASS. No codecommit/newdispatch/READY/merge or originalDONE claim; liveoutputs excluded.
+- [JAIL-T2380-8CD-MOVING-ATTEMPT1-ACTUAL-FLORA-CAP-FAIL-20261026](archives/JAIL-T2380-8CD-MOVING-ATTEMPT1-ACTUAL-FLORA-CAP-FAIL-20261026.tar.gz) — Closed REALmovingattempt1FAIL: balanced-flightflora32.9ms exceeded unchanged32ms cap; phoneuploadSKIPPED. Rawlogs/exactcheckoutTREE/cap-program equivalencewitholde81PASS retained. NO noiseclaim and NOTPASS. No code/workflow/caps/assertion changes, no READY/merge.
+- [JAIL-T2380-8CD-MOVING-ONE-UNCHANGED-RETRY-ACCEPTED-STARTONLY-20261026](archives/JAIL-T2380-8CD-MOVING-ONE-UNCHANGED-RETRY-ACCEPTED-STARTONLY-20261026.tar.gz) — Closed exactlyONEUNCHANGED retry of existingmovingrun40328523867 observedattempt2QUEUED. ACCEPTED_NOT_RESULT; previousactualFAIL retained. No code/cap/workflow/assertion changes, no newmatrixdispatch or ready/merge. Liveoutputs excluded.
+<!-- MARY_NATIVE_JAIL_MOVING_FAIL_RETRY_1341_20261026_END -->
+
+
 <!-- JAIL_8CD_HOSTED_PARTIAL9_1334_20261026_START -->
 ## Jail hosted native gate actual PASS and partial nine renderer groups
 
