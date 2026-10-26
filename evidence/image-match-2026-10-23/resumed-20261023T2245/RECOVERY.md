@@ -1,5 +1,15 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- GT_DISCLOSURE_TREMONT_CHECKED1337_20261026_START -->
+## Green Tree disclosure increment and Tremont checked public draft
+
+Two frozen packets preserve GT real disclosure parser-field correction/native package closure and Tremont actual1070/384/all3 checked publicc878 draftPR1337. **GT aggregateapp remains pending with v2 disclosure failure retained and default mobile fuel grass-obscured; Tremont liveFULL18 is excluded/pending. No image-match, final-world, performance or merge acceptance is claimed.** Prior recovery dependencies remain separate without duplicated assets.
+
+- [GREENTREE-T2376-L134-DISCLOSURE-FIELD-FIX-NATIVE-CLOSED-APP-PENDING-20261026](archives/GREENTREE-T2376-L134-DISCLOSURE-FIELD-FIX-NATIVE-CLOSED-APP-PENDING-20261026.tar.gz) — Closed GT disclosure-field correction increment depending on exact indices371+373: replaces only docs/LIBERTIES.md and data/liberties.json to fix real L134 UI parser fields. Actual native owners142/150 and checks, package5/publish, all2059 physical files,79 controls,44 registry members,Yard,782 otherLib rows,880 names and1322 fallback hashes PASS. Closedv2 mobile BEFORE PASS/AFTER disclosure FAIL and old auxiliary occlusion retained. Correctedv3 source included but ALL livev3 logs/status/output excluded. Aggregate app, whole gate, codecommit, PR, matrix and merge PENDING. Default mobile fuel image is grass-obscured; no claim that all three fuel rounds are visible. No original image-match completion.
+- [TREMONT-T2385-CHECKED-C878-1070-384-PUBLIC-DEV-DRAFT1337-20261026](archives/TREMONT-T2385-CHECKED-C878-1070-384-PUBLIC-DEV-DRAFT1337-20261026.tar.gz) — Closed Tremont checked-public code checkpoint: actual FULL3 PASS1070/384 and all three questions, normal commitc878258c511eb4854ffbd93c5c08ba2e0b8ea9a1/tree9092, actual committed changelog/IDs, normal push to DEV DRAFTPR1337 and direct same-actor native lap. All reapers closed. Prior public376/363/358 recovery dependencies reused without asset duplication. Live assigned FULL18 dispatch is excluded and pending; no original image-match, final-world or performance claim. This checked-code milestone does not claim later matrix or merge acceptance.
+<!-- GT_DISCLOSURE_TREMONT_CHECKED1337_20261026_END -->
+
+
 <!-- MARY_3F74_PARTIAL17_DESKTOP13_PENDING_20261026_START -->
 ## St Mary seventeen actual legs with desktop13 pending
 
