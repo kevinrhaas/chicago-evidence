@@ -1,5 +1,15 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- GT_CONCRETE_PROPOSAL_MARY17_1610_20261026_START -->
+## Green Tree concrete unadopted sash proposal and St Mary seventeen source-bound groups
+
+Two frozen packets preserve a concreteexisting-attribute GreenTree south-middle sash proposal withsourcecounterevidence andactualschema/constructorprobe, and StMary exact17actualrawPASSgroups onfrozenbffc/a9. **ProposalUNADOPTED/noexport/nativegate/match/DONE; Marydesktop13stillRUNNING/NOTfull18/currentdevacceptance.** ExistingWIP/sourceunchanged, liveoutputs excluded, no duplicateworkers orsourceadoption. Priorpolicycorrection421andforeignheadqualifications continue.
+
+- [GREENTREE-T2376-SOUTH-MIDDLE-SASH-CONCRETE-UNADOPTED-PROPOSAL-20261026](archives/GREENTREE-T2376-SOUTH-MIDDLE-SASH-CONCRETE-UNADOPTED-PROPOSAL-20261026.tar.gz) — Closed concreteREADONLYexistingone-recordside_entrance:null proposal: exactpreimage/proposedJSON+attribute-onlypatch/Libdraft, actualschema/from_phase probe andpicturedcount/identity/date/counterevidence. ONEtargetnative+WEB/22FTcontrols/noAPI, Greytestimonyretainedratherthanassertingblindlaterdoor. ExplicitUNADOPTED/noexport/nativewholegate/match/DONE; existing14wagonshedWIP unchanged. Evidenceonly, notsourceadoption.
+- [ST-MARY-T2384-BFFC-EXACT17-ACTUAL-RAWGROUPS-OLD-A9-NOTCURRENTHEAD-20261026](archives/ST-MARY-T2384-BFFC-EXACT17-ACTUAL-RAWGROUPS-OLD-A9-NOTCURRENTHEAD-20261026.tar.gz) — Closed exact17ACTUALrawverifiedPASS groups onfrozenbffc/treeafee/basea9; desktop13stillRUNNING snapshot. NOTfull18/currentdev/READY/merge/DONE. Existingoneobserver/jobcontinues, liveoutputs excluded, sourcepublicbffc unchanged; laterlegitimateJail/devintegrationstillpending. No duplicateworkers/sourcewrites.
+<!-- GT_CONCRETE_PROPOSAL_MARY17_1610_20261026_END -->
+
+
 <!-- PRIVATE_JAIL23DD_CHECKED_FIXTURE_CLEANUP_1606_20261026_START -->
 ## Checked private Jail rescue branch and verified redundant-fixture cleanup
 
