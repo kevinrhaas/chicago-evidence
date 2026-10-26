@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- GREENTREE_FIRST_PUBLIC_PR1328_20261026_START -->
+## Green Tree — first checked public code PR1328
+
+The original T2376 correction now has an actual public code PR into dev: [PR1328](https://github.com/kevinrhaas/chicago/pull/1328). Frozen cf25/tree651c passed the full1070-step/384-self-test required-reader gate, native preflight and committed-head questions; the normal push, public PR and remote lap are recorded. Recoverable source/assets and app evidence remain linked to the earlier staged WIP manifest5abaf19 and genuine23-family checkpoints. **Combined latest88 integration, native checks, CI and final published coverage remain PENDING before merge. Original T2376 remains OPEN/DIFFERS.** This archive is a checked public checkpoint, not a merge or image acceptance.
+
+- [GREENTREE-T2376-FIRST-PUBLIC-CODE-PR1328-FINAL-INTEGRATION-PENDING-20261026](archives/GREENTREE-T2376-FIRST-PUBLIC-CODE-PR1328-FINAL-INTEGRATION-PENDING-20261026.tar.gz) — Actual first public Green Tree code PR1328 into dev: frozen cf25 commit with entire tree651c, completed required-reader1070-step/384-self-test PASS, all three native preflight questions plus actual committed-head questions PASS, normal push and REST public-PR/head/lap proofs. Depends on the earlier current staged WIP manifest5abaf19 and genuine23-family/app-binding checkpoints for full recoverable source/assets and app evidence. Combined latest88 dev integration, native derived checks, ordinary CI and required full published coverage remain PENDING before merge. OriginalT2376 stays OPEN/DIFFERS; this is a checked public code checkpoint, not a merged or accepted picture match.
+<!-- GREENTREE_FIRST_PUBLIC_PR1328_20261026_END -->
+
+
 <!-- BRIDGE_FINAL_ALL18_20261026_START -->
 ## Drawbridge post-merge coverage — all eighteen groups complete
 
