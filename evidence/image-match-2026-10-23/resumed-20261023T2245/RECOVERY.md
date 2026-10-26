@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- WOLF_MARY_BFFC_PREPARED_1417_20261026_START -->
+## Wolf Point prepared checked-Mary dependency while native work runs
+
+One frozen23-file packet preserves WolfPoint authored resolution/82pair guards and guarded command code for normalmerge with checkedMarybffc includingJail8cd. **Supportednative and exactlyone guardedpipeline are CURRENTLYRUNNING; liveoutputs excluded, notPASS.** FirstcallerhelperSTOP andcorrectedv2 remain retained. No duplicatejobs, originalDONE, READY or mergeclaim.
+
+- [WOLFPOINT-T2386-CHECKED-MARY-BFFC-PREPARED-NATIVE-RUNNING-NOTPASS-20261026](archives/WOLFPOINT-T2386-CHECKED-MARY-BFFC-PREPARED-NATIVE-RUNNING-NOTPASS-20261026.tar.gz) — Closed23file prepared recovery for authorized normalmerge4fe withcheckedMarybffc includingcheckedJail8cd. Authoredresolution/nativeentrywiseregistry guardsPASS,82pairs/freshrecipesexact. Native--resolveCURRENTLYRUNNING NOTPASS. Closedguards/scripts/firstcallerhelperSTOP+correctedv2 retained, all live native/pipeline logs excluded. Exactlyoneguarded native→whole3→codecommit→DRAFT1336push→18 pipeline alreadyrunning; no duplicate/READY/merge/originalDONE. Allsourcebinaries independently public4fe/Marybffc.
+<!-- WOLF_MARY_BFFC_PREPARED_1417_20261026_END -->
+
+
 <!-- JAIL_MOVING_PASS_QUALIFIED_1408_20261026_START -->
 ## Jail unchanged moving retry actual PASS with first real failure retained
 
