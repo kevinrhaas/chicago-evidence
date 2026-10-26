@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- JAIL_QUALIFIED_APP_20261026_START -->
+## Log jail — closed mobile/desktop app review with explicit qualifications
+
+The actual desktop focused driver passed; the mobile run has a qualified PASS with the original readiness, served-path and coarse-planner proxy assertion failures retained. Native geometry and eight frame-budget readings, normal/ByGrade, credits/Lib, root visual reviews, ground bounds and an actual nine-step grounded gateway crossing are saved with zero page/network/unexpected-loader errors. A coarse blockedAt endpoint near the core wall remains recorded separately; this is neither a broad accessibility nor a performance claim. Browser/server closure and child reaping completed. This delta depends on the native5170cc30 and formal-a5740959 archives already in index310. **Both formal views remain DIFFERS; keeper-house/compound ambiguities stay OPEN. Latest-dev integration, native/full-code gate, preflight, PR, merge and original-image acceptance remain PENDING.** No live folders, new model assets or full-source duplicates are archived.
+
+- [JAIL-T2380-TWO-VIEWPORT-QUALIFIED-APP-DELTA-20261026](archives/JAIL-T2380-TWO-VIEWPORT-QUALIFIED-APP-DELTA-20261026.tar.gz) — Closed UNCOMMITTED both-viewport jail app delta on base9f, depending on native manifest5170cc30 and formal deltaa5740959 already in index310; no model/master or full-source duplication. Actual desktop1280x800 focused driver PASS and mobile390x780 qualified PASS, native geometry/grade/placement/attribute and ground-bound checks, all eight native frame-budget readings, actual nine-step grounded walker crossing, normal/ByGrade, credited Sources/Lib, root visual/card review and zero page/network/unexpected loader errors are preserved. Initial wrong served-renderer path,240-second mobile readiness limit and local coarse-planner proxy assertion failure are retained alongside the corrected600-second readiness run and actual walker evidence. Coarse blockedAt endpoint near the core wall remains recorded; no performance or general accessibility claim beyond the tested path, and no production assertions changed. Browser/server closed and all children reaped. Keeper-house absence and full compound/gate ambiguity remain OPEN; BOTH formal views remain DIFFERS. Latest GreenTreecf25+88 integration, native/full-code gate, preflight, code PR, merge and original-image acceptance are PENDING.
+<!-- JAIL_QUALIFIED_APP_20261026_END -->
+
+
 <!-- GREENTREE_FIRST_PUBLIC_PR1328_20261026_START -->
 ## Green Tree — first checked public code PR1328
 
