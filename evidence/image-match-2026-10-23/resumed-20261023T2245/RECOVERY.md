@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- TREMONT_A575_SOURCE_NATIVE_20261026_START -->
+## Tremont corrected a575 source and native recovery
+
+One frozen packet preserves the owned-only a575 transplant, native115/all44 closure and exact complete-tree reconstruction through four unchanged asset blobs already durable in public358. **The full three-question gate, codecommit, PR and FULL18 remain pending; no image-match completion is claimed.** Original supplementary classification stops and exact reader proofs remain available.
+
+- [TREMONT-T2385-A575-SOURCE-NATIVE115-ALL44-ASSET-REUSE-WHOLEGATE-PENDING-20261026](archives/TREMONT-T2385-A575-SOURCE-NATIVE115-ALL44-ASSET-REUSE-WHOLEGATE-PENDING-20261026.tar.gz) — Closed corrected Tremont a575 source/native checkpoint without duplicated asset bytes: complete candidate tree14dd258dcf7f58cfeeb42b3eea2654bda222a50d verified by alternate-index applying complete source patch plus four exact unchanged asset Gitblobs referenced from public358 in ASSET-REUSE.json. Guarded owned-only a575 transplant, exact public6a61 tools, native115 PASS in two laps, actual-a575 all44 audit with four proof-equal-only restores, package/publish/causal and strictfixtures PASS retained. Original supplementary classification stop and exact reader proofs retained honestly. All2180 resident bytes and whole seating ledger exact. Required full three-question gate remains pending an actual two-core lease; no codecommit, PR, FULL18, image-match completion or later-tree acceptance is claimed. Public358 is a necessary recovery dependency, not republished.
+<!-- TREMONT_A575_SOURCE_NATIVE_20261026_END -->
+
+
 <!-- JAIL_E81_CHECKED_PUBLIC_20261026_START -->
 ## Jail checked public draft and smoke dispatch checkpoint
 
