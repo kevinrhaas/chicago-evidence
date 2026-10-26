@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- JAIL_8CD_BODY_MOVING_STATUS_1343_20261026_START -->
+## Jail exact PR body reporting real moving failure and unchanged retry pending
+
+One frozen metadata packet preserves exactREST PR1333DRAFT8cd body before/after/request/readback with hostednativePASS and REALmovingflora32.9-over32msFAIL/phoneSKIPPED. **One unchangedexistingrun retry is QUEUED_NOTPASS; no cap/workflow/assertion changes or originalDONE.** No live outputs or sourcewrites.
+
+- [JAIL-T2380-8CD-PRBODY-REAL-MOVINGFAIL-UNCHANGEDRETRY-PENDING-20261026](archives/JAIL-T2380-8CD-PRBODY-REAL-MOVINGFAIL-UNCHANGEDRETRY-PENDING-20261026.tar.gz) — Closed exactREST PR1333DRAFT8cd body before/after/request/readback statingcurrenthostednativePASS, REAL32.9ms-over32ms movingfloraFAIL/phoneSKIPPED, oneUNCHANGEDexistingrunattempt2QUEUED_NOTPASS. Metadataonly, no source/cap/workflow/assertion changes or originalDONE; liveoutputs excluded.
+<!-- JAIL_8CD_BODY_MOVING_STATUS_1343_20261026_END -->
+
+
 <!-- MARY_NATIVE_JAIL_MOVING_FAIL_RETRY_1341_20261026_START -->
 ## St Mary native closure and Jail actual moving-frame failure with one unchanged retry
 
