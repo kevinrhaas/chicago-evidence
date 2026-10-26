@@ -1,5 +1,17 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- WOLF_MARY_OLD_FULL18_OWNED_CONTROL_1625_20261026_START -->
+## Wolf and St Mary actual full matrices on frozen heads, with precise preservation and source-control limits
+
+Four frozen packets preserve GENUINEall18nativepublishedBOTHviewportsPASS on oldWolf562 and oldMarybffc/a9, a preciseforeign0dOWNED164asset+7path preservation proof, and Maryreadonlysashcontrolreview(NOTgeometry-ready). **Oldsource-boundfullmatrices are NOTexternal0d/currentdev/Jailacceptance, READY/merge or originalDONE.** MarymovingactualCANCELLED remainsNOTPASS; correctedreadonlyparserKeyError remainsNOTproductfailure. Newworld/workflow/gateinputs requirequalifiedcurrentcoverage; policycorrection421andexternalownership constraintscontinue. No branchadoption orsourcewrites.
+
+- [WOLFPOINT-T2386-562-FINAL-ACTUAL-FULL18-PASS-OLDHEAD-NOTFOREIGN0D-20261026](archives/WOLFPOINT-T2386-562-FINAL-ACTUAL-FULL18-PASS-OLDHEAD-NOTFOREIGN0D-20261026.tar.gz) — Closed GENUINEall18nativepublishedBOTHviewports1–15 rawverifiedPASS onFROZEN562/tree62bd/global483067ea722f494f/notessep663440aae881bf6f. Checkout/publish/smokesuccess/positivecounts/0fails/errors exact; observerclosed16:08:35/reaper0/allreaped. NOTexternal0d/currentdevcertificate (Dent/newrunner/gate changes real; exactDRAFTrestore433), originalOPEN/DIF/NOTDONE. No duplicateworkers/sourceadoption/READY/merge.
+- [WOLFPOINT-T2386-FOREIGN0D-OWNED164ASSETS-SEVENPATHS-IDENTITY-NOTWORLD-PASS-20261026](archives/WOLFPOINT-T2386-FOREIGN0D-OWNED164ASSETS-SEVENPATHS-IDENTITY-NOTWORLD-PASS-20261026.tar.gz) — Closed READONLYOWNEDpreservation: ALL164LogDwellingassetpaths+7ownedproducer/record/sidecar/source/changelog/dossier BYTEEXACTimmutable562→foreign0d, all82nativeassetrows/WEBmastersfingerprints EXACT. NewDent/world/workflow/gatechanges NOTcertified; no branchadoption/push/READY/currentworldPASS. InitialWEB.assets-vs-WEB.mastersparserKeyError corrected+retained, NOTproductgatefailure.
+- [ST-MARY-T2384-READONLY-SASH-CONTROL-REVIEW-NOT-GEOMETRY-READY-20261026](archives/ST-MARY-T2384-READONLY-SASH-CONTROL-REVIEW-NOT-GEOMETRY-READY-20261026.tar.gz) — Closed ROOTrequestedsource-controlreview: actualnativeoptiontable/inputhashes showNOTgeometry-ready underexistingone-recordcontrols. No adoption/export/API/body/camera/Lib/assetchanges; no camera-onlywaiver/falseDONE. Originalnoticeablevertical OPEN/DIF remains. ReadonlyprepONLY, notnewvisiblework or acceptance.
+- [ST-MARY-T2384-BFFC-FINAL-ACTUAL-FULL18-PASS-OLD-A9-NOTCURRENTDEV-20261026](archives/ST-MARY-T2384-BFFC-FINAL-ACTUAL-FULL18-PASS-OLD-A9-NOTCURRENTDEV-20261026.tar.gz) — Closed actual18of18rawverifiedPASS frozenbffc/treeafee/basea9 ONLY; closer0/allreaped16:09:52, independentall18rawSHA-bindingrecheck16:23. ExactlyONEoriginal18dispatch. NOTcurrentdev/Jailacceptance/READY/merge/DONE; movingactualCANCELLEDlater70synthetic qualificationretained, notmovingPASS. Existingold17packetnotduplicated; no source/newworkerwrites.
+<!-- WOLF_MARY_OLD_FULL18_OWNED_CONTROL_1625_20261026_END -->
+
+
 <!-- GT_CONCRETE_PROPOSAL_MARY17_1610_20261026_START -->
 ## Green Tree concrete unadopted sash proposal and St Mary seventeen source-bound groups
 
