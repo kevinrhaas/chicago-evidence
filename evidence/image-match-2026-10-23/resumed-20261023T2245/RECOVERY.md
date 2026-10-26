@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- JAIL_E81_FULL18_TERMINAL_CD78_DIRTY_20261026_START -->
+## Jail full eighteen actual passes on the tested immutable head
+
+One frozen terminal packet preserves all18 actual native raw-log passes on exacte81/tree350334, both viewports and positive counts with zero failures/page errors. Hosted whole-gate and unchanged moving-retry passes remain durable dependencies. **Tested basea575 is explicit; freshdevcd78 leaves draftPR1333 DIRTY. These passes do not claim current-base readiness, merge or original-image acceptance.** No live observers, import, merge or extra dispatch are represented.
+
+- [JAIL-T2380-E81-FULL18-ACTUAL-RAWLOG-PASS-DEV-CD78-DRAFT-DIRTY-20261026](archives/JAIL-T2380-E81-FULL18-ACTUAL-RAWLOG-PASS-DEV-CD78-DRAFT-DIRTY-20261026.tar.gz) — Closed Jail final full18 terminal packet: all18 actual native raw-log passes on exact e81/tree350334, both viewports covering1–15, positive nonempty counts and zero failures/page errors. Tested basea575 remains explicit. Hosted1072/384, report/warranted and unchanged moving-frames retry PASS remain referenced durable dependencies; no live observers remain. Fresh read-only devcd78f4e7939a02ab7699aa031183bf02b2d77133 makes PR1333 DRAFT/DIRTY; no import, merge or extra dispatch performed. Full18 success on the tested immutable head does NOT claim current-base readiness, merge or original-image acceptance.
+<!-- JAIL_E81_FULL18_TERMINAL_CD78_DIRTY_20261026_END -->
+
+
 <!-- WOLF_1336_CHECKED_BOUND18_20261026_START -->
 ## Wolf Point checked4fe7 draftPR1336 and bound eighteen-dispatch checkpoint
 
