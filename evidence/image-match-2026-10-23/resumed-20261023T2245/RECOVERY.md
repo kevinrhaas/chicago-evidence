@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- MARY_A575_NATIVE_CANDIDATE_20261026_START -->
+## St Mary a575-native uncommitted candidate recovery
+
+One frozen packet preserves the actual normal a575 integration and owning-native closure with the checked donor tools and combined STATUS additions. **Candidate76532 is not committed, pushed or freshly whole-gated; FULL18 remains pending, publicPR1334 remains checked e303, and originalT2384 remains DIF.** Initial helper/bootstrap failures are retained; no active folders are included.
+
+- [ST-MARY-T2384-A575-NATIVE202-7-57-ALL44-PACKAGE-UNCOMMITTED-CANDIDATE-20261026](archives/ST-MARY-T2384-A575-NATIVE202-7-57-ALL44-PACKAGE-UNCOMMITTED-CANDIDATE-20261026.tar.gz) — Closed Mary a575-native source checkpoint: actual normal a575 merge, four exact checked donor tools, incoming/own/GT STATUS append union, canonical changelog preservation and only proven folded T2376 fragment removal. Genuine FULL202 +7+57 fixed point PASS, one actual-a575 ALL44 audit and package/finalpublish PASS;588 physical files and44 baseline bytes exact. Initial helper refusal and premature bootstrap failure retained. Frozen candidate tree76532c48417518f91f6dd92d27931ea5b7240d6c is NOT committed, pushed or freshly whole-gated; FULL18 pending and originalT2384 remains DIF. PublicPR1334 still checked e303. Only closed immutable files included, no active folders or inherited whole-gate/matrix acceptance claimed.
+<!-- MARY_A575_NATIVE_CANDIDATE_20261026_END -->
+
+
 <!-- WOLF_A575_NATIVE_CLOSURE_20261026_START -->
 ## Wolf Point a575-integrated native recovery
 
