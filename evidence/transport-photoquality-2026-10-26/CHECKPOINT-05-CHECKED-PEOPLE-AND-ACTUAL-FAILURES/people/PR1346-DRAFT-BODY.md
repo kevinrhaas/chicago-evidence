@@ -1,0 +1,9 @@
+Extend the canonical portable-human authoring path with reusable waistcoat, short-jacket and hat assemblies for the existing reconstructed residents Otis Bardwell, Joseph Dufresne and Martin Flynn. Add an optional adult dress study for existing reconstructed Mary Flynn: separate bodice, gathered skirt, apron and closed shoes on the shared rig.
+
+This is a source checkpoint for T-1789. Canonical Blender exports and photographic acceptance are still required before delivery. The town's current figures and scene eligibility are unchanged; the draft dress preview retains provisional skin/hair and unfinished closures. Appearance is reconstructed, with the 1835 Wild print used only as a period silhouette analogue. Licenses and original source-manifest bytes are preserved.
+
+Validation at `1cbb1817508593562f99ed378b6932368b5699b9`: complete native preflight passed 1,071 checks and 384 intentional self-tests; actual new-HEAD changelog, ticket-ID and ancestry checks passed; normal push confirmed and checkout clean. Preflight took 805.578 seconds, exceeding the documented 600-second timing target. Earlier source-consumer and isolation-record failures are retained and corrected, rather than reported as passes.
+
+The previous exact-source canonical generation exported the male studies, then failed installing Playwright. Its artifact download is currently denied at the official artifact host. The new dress source has not yet completed a canonical run. Upstream intake, qualified exports, source-to-render comparisons, full applicable published-app smoke and ordinary CI remain pending. No T-1789 completion or DEV merge is claimed.
+
+Visible-progress scope: the source work directly enables the owner-requested T-1789 resident library and its visible garments; this draft is not a completed scene change. No workflow or exporter validation is weakened.
