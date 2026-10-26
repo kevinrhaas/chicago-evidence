@@ -1,5 +1,15 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- WOLF_NATIVE_MARY_BACKLINKS_20261026_START -->
+## Wolf Point native/source fixed point and St Mary source backlinks
+
+Two closed packets preserve Wolf Point owning61/native/package/source controls and St Mary registered53 source-use tail, semantic restoration and focused checks. **Wolf Point required current-camera coverage and candidate app/full gate are still pending; there is no code PR or picture match. St Mary genuine fullv2 FAIL2/1070 is retained and active FULLv3 files are excluded; no whole-gate PASS or code PR is claimed.** All source and recovery dependency bindings remain explicit, including prior physical assets and qualified app limitations.
+
+- [WOLFPOINT-T2386-CB93-NATIVE-SOURCE-FIXEDPOINT-APP-GATES-PENDING-20261026](archives/WOLFPOINT-T2386-CB93-NATIVE-SOURCE-FIXEDPOINT-APP-GATES-PENDING-20261026.tar.gz) — Closed currentWIPcb93 source patch, entry and exact two model assets, official package/publish and owning61 fixed point. Complete one23XLSX plus21gzip proof with serialization restoration, package5 fixed point/final publish, all assets/people/source controls exact. Initial missing Recorded-date native rejection retained with narrowly corrected newlib date/namekey and generated closure. All eight source pictures/nine compositions reviewed, but required current-camera coverage remains missing. NO candidate application, full gate, code commit, PR, matched pictures or original2386 closure yet; awaiting app slot. Prior darkened source5c1ef and clear/obscured baseline archives remain dated history rather than current acceptance.
+- [STMARY-T2384-SOURCE-BACKLINKS-53TAIL-SEMANTIC-RESTORE-FULLV2-FAIL-V3-PENDING-20261026](archives/STMARY-T2384-SOURCE-BACKLINKS-53TAIL-SEMANTIC-RESTORE-FULLV2-FAIL-V3-PENDING-20261026.tar.gz) — Closed all43 current nonmesh implementation inputs with private Git index/merge-parent recovery metadata; registered53 source-use tail completed two laps, all44 semantic proofs with two binary restorations, package5/finalpublish and four focused source/confidence/loading/stack PASS. Actual normal claim renewal07:15 retained. Genuine fullv2 FAIL2/1070 retained. Copied source candidate102070f was frozen and verified before/after; active FULLv3 running elsewhere and ALL its active files are excluded. Depends prior combined8855/physical8adc/qualified-app8f347/two-fix0d766 archives for durable assets and history. No codecommit, PR, whole-gate PASS, merge or original picture acceptance claimed.
+<!-- WOLF_NATIVE_MARY_BACKLINKS_20261026_END -->
+
+
 <!-- GREEN_TREE_CAUSAL_TREMONT_NATIVE_20261026_START -->
 ## Green Tree matrix causes and authored repairs; Tremont native checkpoint
 
