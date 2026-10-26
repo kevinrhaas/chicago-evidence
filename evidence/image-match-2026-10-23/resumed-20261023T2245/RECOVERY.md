@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- STMARY_QUALIFIED_APP_20261026_START -->
+## St Mary — official Moss comparison and qualified app evidence
+
+The actual official Moss frame and discrepancy register remain **DIFFERS**: vertical sash height is a visible OPEN difference, while source-camera/date conflicts and tolerance limits are recorded separately. The initial caption-fixture FAIL is preserved. Mobilev2 passed with timings; desktop required normal/ByGrade/card/ground assertions, zero-error and actual web-hash checks passed, **but the desktop wrapper FAILED on an extra90-second PNG timeout, leaving the final PNG/rollup missing. This is not wholev2 PASS.** All children closed/reaped. This delta depends on the271-asset8adc6ad1 and current20aff258bea0d archives in index310, with no GLB duplication. Full smoke/final native gate/latest integration/PR/merge and original-image acceptance remain unclaimed. Only the closed packet is archived.
+
+- [STMARY-T2384-OFFICIAL-MOSS-DIFFERS-QUALIFIED-APP-WRAPPER-FAIL-20261026](archives/STMARY-T2384-OFFICIAL-MOSS-DIFFERS-QUALIFIED-APP-WRAPPER-FAIL-20261026.tar.gz) — Closed official Moss source comparison and QUALIFIED app delta, depending on genuine271 assets manifest8adc6ad1 and current20aff native delta258bea0d already in index310. Actual formal Moss frame and discrepancy register remain DIFFERS: visible vertical sash-height difference OPEN, with camera/date conflicts and tolerance limits separately qualified. Initial v1 caption-fixture FAIL is retained; mobilev2 PASS and timings are saved. Desktop required normal/ByGrade/card/ground assertions, zero-error and actual web-hash proofs passed, BUT its wrapper retained FAIL on an additional90-second PNG timeout with the last PNG/rollup missing. This is NOT wholev2 PASS, full renderer smoke, final native/code gate, latest-dev integration, PR, merge or original-image acceptance. All children closed/reaped; no GLB duplication and no live folder copied.
+<!-- STMARY_QUALIFIED_APP_20261026_END -->
+
+
 <!-- ORIGINAL17_PROGRESS_0109_20261026_START -->
 ## Original-ticket progress — immutable 01:09 snapshot
 
