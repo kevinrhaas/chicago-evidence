@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- TREMONT_EXACT_TWO_LEAF_FULL3_PENDING_20261026_START -->
+## Tremont exact two-leaf correction with new whole gate pending
+
+One frozen increment preserves only two leaf reports and STATUS changes, native19 checks and exact alternate-index reconstruction from public363. Prior1070-step/two-failure gate and startup-only resource STOP remain visible. **The one new requiredFULL3 is running elsewhere and pending; no live files or passing whole-gate/commit/PR/matrix/merge claim are included.** Public363 source and public358 four-asset dependencies remain explicit without duplication.
+
+- [TREMONT-T2385-EXACT-TWO-LEAF-CORRECTION-NATIVE19-FULL3-PENDING-20261026](archives/TREMONT-T2385-EXACT-TWO-LEAF-CORRECTION-NATIVE19-FULL3-PENDING-20261026.tar.gz) — Closed exact Tremont two-leaf correction increment only: exact two leaf reports plus STATUS delta from durable public363/tree14dd to candidate9092, verified alternate-index recovery and no asset copies. Prior1070-step FULL with two failures retained; native19 business-owner/staffing leaf refresh preserves48 firms, all people, quotas and allocations, with native checks and selftests PASS. Original startup-only resource STOP and verified closed-metadata forwarding proofs retained. Exactly one new required FULL3 is currently RUNNING and remains pending; no live folder or claimed whole-gate PASS is archived. Durable public363/source and public358/four-asset dependencies remain explicit, no duplicate prior asset/app packets. No codecommit, PR, matrix, merge or picture-match completion claim.
+<!-- TREMONT_EXACT_TWO_LEAF_FULL3_PENDING_20261026_END -->
+
+
 <!-- JAIL_E81_FULL18_TERMINAL_CD78_DIRTY_20261026_START -->
 ## Jail full eighteen actual passes on the tested immutable head
 
