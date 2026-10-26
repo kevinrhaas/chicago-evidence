@@ -1,5 +1,15 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- READONLY_DEV70A8_PRICE_1348_20261026_START -->
+## Latest dev 70a8 read-only four-path price without import
+
+Two frozen packets preserve actualREST401/nativeGitfallback diagnostics and READONLY exactfour-path delta a9c5 to currentdev70a8: native publishedsitebudget T3170measurement/re-budget, changelog anddocs only. **No renderer/smoke/assets/active1835/Lib/catalog/index/1904IDs changed. Cachedorigin/dev remaineda9; nofetch/import/sourceGitwrites.** Priceonly, not actualcurrentdevinputhash or validation/merge acceptance.
+
+- [CURRENTDEV-70A8-READONLY-FOUR-PATH-PRICE-NOFETCH-NOIMPORT-20261026](archives/CURRENTDEV-70A8-READONLY-FOUR-PATH-PRICE-NOFETCH-NOIMPORT-20261026.tar.gz) — Closed READONLY APIcompare/tiptree/no-lazy source objectmembership price a9c5→fresh70a8 tree6b136. EXACT4paths: T3170publishedsitebudget docs/growthJSON, changelog.js, validate.py nativeSITE_BUDGET_MB384→416. NOactualrenderer/smoke/assets/active1835/Lib/catalog/index/new1904IDs changes. Fourmissingtipblobs4,385,687B. Cachedorigin/dev BEFORE/AFTERa9 unchanged; NOFETCH/IMPORT/sourceGit/refchanges. ThisisPRICEONLY, no currentdevglobalinputhash/validation/merge acceptance claim.
+- [GITHUB-REST401-NATIVE-GIT-DYRUN-FALLBACK-CLOSED-20261026](archives/GITHUB-REST401-NATIVE-GIT-DYRUN-FALLBACK-CLOSED-20261026.tar.gz) — Closed NONSECRET actualRESTHTTP401 badcredentials observations plus successful standardnativeGit lsremote, bounded180KB filteredshallowmetadatafetch, unchangedpushDRYRUN and immutablepublicraw200 proof. No proxy/token/authflow changes; oldpublisher/sourcecommonGituntouched. Supports normalFFnativeGit checkpointfallback only; RESTPRmutations/dispatch remainblocked.
+<!-- READONLY_DEV70A8_PRICE_1348_20261026_END -->
+
+
 <!-- JAIL_8CD_BODY_MOVING_STATUS_1343_20261026_START -->
 ## Jail exact PR body reporting real moving failure and unchanged retry pending
 
