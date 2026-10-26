@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- JAIL_E81_FROZEN_PARTIAL9_20261026_START -->
+## Jail frozen nine-of-eighteen smoke snapshot
+
+One frozen06:37 packet preserves exactly9 actual native raw-log-verified passes, including desktop/mobile strict-opacity and mobile footprint assertions. **The other nine groups and ordinary gate were pending at closure; this is not full coverage, merge or original-image acceptance.** Live observers are excluded and checked-public index362 remains a dependency.
+
+- [JAIL-T2380-E81-FROZEN-PARTIAL9-OF18-STRICT-OPACITY-FOOTPRINT-PASSES-20261026](archives/JAIL-T2380-E81-FROZEN-PARTIAL9-OF18-STRICT-OPACITY-FOOTPRINT-PASSES-20261026.tar.gz) — Closed frozen06:37 Jail partial-results snapshot: exactly9 of18 actual native raw-log-verified passes, including both desktop8 and mobile8 strict-opacity predicates and mobile9–12 footprint checks. Exact head/checkout/environment, actual native publish/smoke success, positive nonempty counts, zero failures and zero page errors retained. Other nine groups and ordinary gate were pending at closure; live observers excluded. Checked-public ac3cfbc0/index362 is a separate dependency. No full matrix coverage, merge or original-image acceptance is claimed; this snapshot does not predict later live results.
+<!-- JAIL_E81_FROZEN_PARTIAL9_20261026_END -->
+
+
 <!-- TREMONT_A575_SOURCE_NATIVE_20261026_START -->
 ## Tremont corrected a575 source and native recovery
 
