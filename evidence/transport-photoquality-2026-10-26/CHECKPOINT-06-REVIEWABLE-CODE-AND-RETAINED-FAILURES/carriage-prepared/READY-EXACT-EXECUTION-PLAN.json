@@ -1,0 +1,37 @@
+{
+  "state": "PREPARED ONLY, wait root explicit heavy-slot grant",
+  "activate": "source /workspace/.cloud-setup/transport-photo-toolchain-activate.sh",
+  "cwd": "/tmp/chicago-photo-worker-t3084-20261026/chicago/4d",
+  "native_publish": {
+    "supervisor_prefix": "/workspace/.cloud-setup/logs/transport-recovery/t3084-e97-optical-diagnostic-native-publish-20261026-1",
+    "timeout_seconds": 600,
+    "command": [
+      "python",
+      "/tmp/T3084-RUNTIME-DELIVERY-PREPARED-20261026/publish-clean-e97-for-diagnostic.py",
+      "/tmp/T3084-E97-OPTICAL-DIAGNOSTIC-NATIVE-PUBLISH-20261026-1"
+    ]
+  },
+  "dependent_observer": {
+    "require": "Publisher actual0 result+complete cleanup0 and source/mirror binding;root slot still held",
+    "supervisor_prefix": "/workspace/.cloud-setup/logs/transport-recovery/t3084-e97-optical-only-full-light-20261026-1",
+    "timeout_seconds": 1200,
+    "command": [
+      "node",
+      "/tmp/T3084-RUNTIME-DELIVERY-PREPARED-20261026/diagnose-optical-only-e97-full-light-v1.cjs",
+      "/workspace/.cloud-setup/logs/transport-recovery/t3084-e97-optical-diagnostic-native-publish-20261026-1",
+      "/tmp/T3084-E97-OPTICAL-DIAGNOSTIC-NATIVE-PUBLISH-20261026-1",
+      "/tmp/T3084-E97-OPTICAL-ONLY-FULL-LIGHT-20261026-1"
+    ],
+    "expected_frames": 24,
+    "result": "Actual diagnostic; budget red remains NONPASS, source adoption/whole gate/photo acceptancefalse"
+  },
+  "source_cleanup_and_policy": "Originalclean e97, source/masters/protectedprimary preserved; native500MiB/tmpcapacityguard; all appcapsunchanged; freshFull/Lightreadings beforebudgetdecision",
+  "script_sha256": {
+    "/tmp/T3084-RUNTIME-DELIVERY-PREPARED-20261026/publish-clean-e97-for-diagnostic.py": "2af2942b8c11c2d53b0126259f25f09aa1dac087bff9aa9275d34d74f4dcd921",
+    "/tmp/T3084-RUNTIME-DELIVERY-PREPARED-20261026/diagnose-optical-only-e97-full-light-v1.cjs": "8528609299a096611222099e018696fd965effa32fa4bb843f5f620821c179b9",
+    "/tmp/T3084-RUNTIME-DELIVERY-PREPARED-20261026/generate-optical-delivery.mjs": "8ba09b8e97ca1bfd987f88738a48cad427bc1c7c13c470aba3ae3cbd3d2b3ea5",
+    "/tmp/T3084-RUNTIME-DELIVERY-PREPARED-20261026/verify-optical-delivery.py": "d08f32e754e495ec6cc9fd960f8a17b9027f3e26c65e256f7c323a7f5556f883",
+    "/tmp/T3084-RUNTIME-DELIVERY-PREPARED-20261026/check-actual-inspection-policy-isolation.mjs": "7e8232d858779c1294b559f135ebbe525d87655930ed8334d21376d8c36c7d5f"
+  },
+  "scoped_offline_guard": "GIT_NO_LAZY_FETCH is ONLY used on read-only git snapshot commands; explicitly removed from native publisher environment to preserve native fetch semantics"
+}

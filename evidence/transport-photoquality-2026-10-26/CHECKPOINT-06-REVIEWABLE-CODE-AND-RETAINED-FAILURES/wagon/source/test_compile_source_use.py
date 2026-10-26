@@ -1,0 +1,223 @@
+#!/usr/bin/env python3
+"""Fixture tests for source-use semantics, publication boundaries and determinism."""
+import json
+from pathlib import Path
+import tempfile
+import unittest
+from unittest.mock import patch
+import audit_confidence
+import compile_source_use
+from compile_source_use import Compiler, compile_outputs, owned_resolves, MANIFEST, NEWSPAPERS, STEP
+
+
+class SourceUseTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        for sid, tier in [('map', 1), ('memory', 3), ('unused', 4), ('paper', 1)]:
+            self.put(f'data/sources/{sid}.json', dict(
+                id=sid, citation=f'{sid} citation', type='map', date='1834', tier=tier,
+                url=f'https://example.org/{sid}', archived_url='', author='INTERNAL AUTHOR',
+                rights_status='check_required', verified=True,
+                what_it_supplies=['geometry'], note='INTERNAL NOTE'))
+        self.put('data/scenes/1835.json', {'target_date': '1835-07-01', 'terrain_epoch': 'e1834'})
+        self.put('data/sidecars/1835/index.json', {'structures': []})
+
+    def put(self, path, value):
+        p = self.root / path
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(json.dumps(value))
+
+    def rows(self, c):
+        return {r['source_id']: r for r in json.loads(c.outputs()['index.json'])['sources']}
+
+    def test_exact_typed_edges_mixed_confidence_and_counts(self):
+        c = Compiler(self.root)
+        c.record('structures', 'structure', 'house', {
+            'position': {'sources': ['map', 'memory'], 'confidence': 'attested', 'locator': 'p. 4'},
+            'roof': {'sources': ['map'], 'confidence': 'reconstructed'}}, 'scene')
+        edges = json.loads(c.outputs()['map.json'])['edges']
+        self.assertEqual(edges, [
+            dict(source_id='map', entity_type='structure', entity_id='house', claim='position', confidence='attested', locator='p. 4',
+                 locator_text='p. 4', use='scene'),
+            dict(source_id='map', entity_type='structure', entity_id='house', claim='roof', confidence='reconstructed', locator=None, use='scene')])
+        # T-2825: the detail view names what a use is about, never by its record id alone.
+        self.assertIn('house', json.loads(c.outputs()['map.json'])['names'])
+        self.assertEqual(self.rows(c)['map']['counts'], {'entities': 1, 'claims': 2, 'grades': [[1, 0, 1], [1, 0, 0]]})
+        self.assertEqual(self.rows(c)['memory']['counts'], {'entities': 1, 'claims': 1, 'grades': [[1, 0, 0], [1, 0, 0]]})
+        self.assertEqual(self.rows(c)['unused']['use'], 'unused')
+        self.assertEqual(json.loads(c.outputs()['unused.json'])['edges'], [])
+
+    def test_raw_index_accepts_exact_ceiling_and_rejects_next_utf8_byte(self):
+        c = Compiler(self.root)
+        size = len(c.outputs()['index.json'].encode())
+        # Exercise the real boundary with the normal fixture, without introducing
+        # an implausible 190 KB citation into the reader's language conversion.
+        with patch.object(compile_source_use, 'INDEX_BUDGET', size):
+            self.assertEqual(len(c.outputs()['index.json'].encode()), size)
+            # A non-ASCII character must be charged as UTF-8 bytes, not one character.
+            c.sources['map']['citation'] += 'é'
+            with self.assertRaisesRegex(ValueError, 'source index .* exceeds .*byte budget'):
+                c.outputs()
+
+    def test_dangling_source_refused(self):
+        with self.assertRaisesRegex(ValueError, 'unresolved source missing'):
+            Compiler(self.root).record('flora', 'flora', 'zone', {'sources': ['missing']}, 'scene')
+
+    def paper(self):
+        self.put('data/research/newspapers/corpus.json', {'issues': [
+            {'id': 'paper_1835_07_01', 'source_id': 'paper', 'publication': 'Daily Paper', 'date': '1835-07-01'},
+            {'id': 'paper_1835_07_02', 'source_id': 'paper', 'publication': 'Daily Paper', 'date': '1835-07-02'}]})
+        for day in ['01', '02']:
+            self.put(f'data/research/newspapers/extracted/issue{day}.json', {
+                'issue_id': f'paper_1835_07_{day}', 'claims': [
+                    {'id': 'c1', 'locator': {'issue_page': 3, 'column': 2, 'artifact_role': 'INTERNAL',
+                                           'text_path': 'data/research/private.txt'}}]})
+
+    def test_newspaper_alias_and_registered_citation_join(self):
+        self.paper()
+        c = Compiler(self.root)
+        for sid in [NEWSPAPERS, 'paper']:
+            c.record('businesses', 'business', 'shop', {'source_id': sid, 'tier': 'attested',
+                     'claim_ids': ['paper_1835_07_02#c1', 'paper_1835_07_01#c1']}, 'scene')
+        edges = json.loads(c.outputs()['paper.json'])['edges']
+        self.assertEqual(len(edges), 2)
+        self.assertEqual(edges[0]['locator'], dict(issue_id='paper_1835_07_01',
+            issue_date='1835-07-01', publication='Daily Paper', claim_id='paper_1835_07_01#c1', page=3, column=2))
+        self.assertEqual(self.rows(c)['paper']['counts'], {'entities': 1, 'claims': 1, 'grades': [[1, 0, 0], [1, 0, 0]]})
+        self.assertEqual(json.loads(c.outputs()['paper.json'])['source']['citation'], 'paper citation')
+
+    def test_alias_needs_resolvable_claim(self):
+        for ids in [[], ['missing#c1']]:
+            with self.assertRaises(ValueError):
+                Compiler(self.root).record('businesses', 'business', 'shop',
+                    {'source_id': NEWSPAPERS, 'claim_ids': ids}, 'scene')
+
+    def test_public_partition_and_no_research_paths(self):
+        c = Compiler(self.root)
+        c.record('decisions', 'decision', 'd1', {'sources': ['map'],
+            'locator': 'data/research/private.pdf', 'note': 'data/research/private.pdf'}, 'research')
+        blob = ''.join(c.outputs().values())
+        for forbidden in ['INTERNAL', 'rights_status', 'verified', 'data/research/', 'check_required']:
+            self.assertNotIn(forbidden, blob)
+        self.assertEqual(json.loads(c.outputs()['map.json'])['source']['what_it_supplies'], ['geometry'])
+        self.assertEqual(json.loads(c.outputs()['map.json'])['edges'][0]['locator'], None)
+
+    def test_unknown_and_conjectural_do_not_gain_confidence(self):
+        c = Compiler(self.root)
+        for grade, expected in [('unknown', 'reconstructed'), ('conjectural', 'reconstructed'), ('documented', 'attested')]:
+            c.record('terrain', 'terrain', grade, {'sources': ['map'], 'confidence': grade}, 'research')
+            edge = next(e for e in json.loads(c.outputs()['map.json'])['edges'] if e['entity_id'] == grade)
+            self.assertEqual(edge['confidence'], expected)
+
+    def test_use_precedence_retains_all_edges_and_type_distinct_entities(self):
+        c = Compiler(self.root)
+        for kind, use in [('structure', 'other_scene'), ('person', 'scene'), ('decision', 'research')]:
+            c.record(kind, kind, 'same_id', {'sources': ['map']}, use)
+        self.assertEqual(self.rows(c)['map']['use'], 'scene')
+        self.assertEqual(self.rows(c)['map']['counts']['entities'], 3)
+        self.assertEqual(json.loads(c.outputs()['map.json'])['uses'], ['scene', 'other_scene', 'research'])
+
+    def test_adapters_and_deterministic_output(self):
+        self.put('data/structures/house.json', {'id': 'house', 'phases': [
+            {'id': 'now', 'documented_range': {'from': '1830-01-01', 'to': '1840-01-01'},
+             'roof': {'sources': ['map'], 'confidence': 'inferred'}},
+            {'id': 'later', 'documented_range': {'from': '1841-01-01', 'to': '1880-01-01'},
+             'roof': {'sources': ['memory'], 'confidence': 'attested'}}]})
+        self.put('data/sidecars/1835/index.json', {'structures': [{'id': 'house', 'sidecar': 'sidecars/1835/house.json'}]})
+        self.put('data/sidecars/1835/house.json', {'citations': [{'source_id': 'map'}]})
+        self.put('data/sidecars/1835/people.json', {'people': [{'id': 'p1', 'household': 'h1'}]})
+        self.put('data/residents/households/h1.json', {'id': 'h1', 'sources': ['map'], 'persons': [
+            {'id': 'p1', 'grade': 'reconstructed', 'age': {'sources': ['memory']}}]})
+        self.put('data/businesses/biz_shop.json', {'id': 'shop', 'present_at_scene_date': False, 'sources': ['map']})
+        self.put('data/flora/zones/zone.json', {'id': 'zone', 'plantable_in_scene': False, 'sources': ['map']})
+        self.put('data/exclusions.json', {'excluded': [{'id': 'omitted', 'sources': ['memory']}]})
+        self.put('data/terrain/epochs.json', {'epochs': [{'id': 'e1834', 'sources': ['map']}, {'id': 'e1812', 'sources': ['memory']}]})
+        self.put('data/fauna/zones/birds.json', {'id': 'birds', 'in_modelled_extent': True, 'sources': ['memory']})
+        self.put('data/liberties.json', {'liberties': [{'id': 'L1', 'sources': ['map']}]})
+        a, report = compile_outputs(self.root)
+        b, report2 = compile_outputs(self.root)
+        self.assertEqual(a, b)
+        self.assertEqual(report, report2)
+        edges = [e for name, body in a.items() if name != 'index.json' for e in json.loads(body)['edges']]
+        self.assertIn(('person', 'p1', 'scene', 'reconstructed'),
+                      [(e['entity_type'], e['entity_id'], e['use'], e['confidence']) for e in edges])
+        self.assertIn('other_scene', {e['use'] for e in edges})
+        self.assertEqual(next(e['use'] for e in edges if e['entity_id'] == 'shop'), 'exclusion')
+        self.assertEqual(next(e['use'] for e in edges if e['entity_id'] == 'zone'), 'research')
+        self.assertEqual(next(e['use'] for e in edges if e['entity_id'] == 'e1834'), 'scene')
+        self.assertEqual(next(e['use'] for e in edges if e['entity_id'] == 'e1812'), 'other_scene')
+        self.assertEqual(next(e['use'] for e in edges if e['entity_id'] == 'birds'), 'scene')
+        self.assertEqual(next(e['confidence'] for e in edges if e['entity_id'] == 'L1'), 'reconstructed')
+
+    def test_other_scene_lists_its_own_sources(self):
+        """T-2079: 1904 lists what its records cite; 1835's own use and edges are unchanged."""
+        self.put('data/structures/house.json', {'id': 'house', 'phases': [
+            {'id': 'old', 'documented_range': {'from': '1830-01-01', 'to': '1840-01-01'},
+             'roof': {'sources': ['map'], 'confidence': 'inferred'}},
+            {'id': 'new', 'documented_range': {'from': '1890-01-01', 'to': '1950-01-01'},
+             'roof': {'sources': ['memory'], 'confidence': 'attested'}}]})
+        self.put('data/sidecars/1835/index.json', {'structures': [{'id': 'house', 'sidecar': 'sidecars/1835/house.json'}]})
+        self.put('data/sidecars/1835/house.json', {'citations': [{'source_id': 'map'}]})
+        self.put('data/scenes/1904.json', {'target_date': '1904-07-01', 'terrain_epoch': 'e1871', 'layers': ['terrain', 'street_grid']})
+        self.put('data/sidecars/1904/index.json', {'structures': [{'id': 'house'}]})
+        self.put('data/street_grid/1904.json', {'streets': [{'id': 'prairie', 'sources': ['paper']}]})
+        c = Compiler(self.root)
+        c.collect()
+        outputs = c.outputs()
+        uses = json.loads(c.scene_outputs(outputs)['1904'])['uses']
+        self.assertEqual(uses, {'map': 'other_scene', 'memory': 'scene', 'paper': 'scene', 'unused': 'unused'})
+        self.assertEqual(self.rows(c)['map']['use'], 'scene')
+        self.assertEqual(self.rows(c)['paper']['use'], 'other_scene')
+        old = json.loads(outputs['map.json'])['edges']
+        self.assertTrue(all('scenes' not in e for e in old), 'an 1835-only edge gains no scenes key')
+        new = json.loads(outputs['memory.json'])['edges']
+        self.assertEqual([(e['use'], e['scenes']) for e in new], [('other_scene', ['1904'])])
+        self.put('data/scenes/1904.json', {'target_date': '1904-07-01', 'layers': ['residents']})
+        with self.assertRaisesRegex(ValueError, 'cannot read them yet'):
+            Compiler(self.root).collect()
+
+    def test_confidence_audit_validates_backlinks_and_still_rejects_authored_errors(self):
+        self.put('data/exclusions.json', {'excluded': [{'id': 'x', 'sources': ['map'], 'confidence': 'attested'}]})
+        outputs, _ = compile_outputs(self.root)
+        for name, body in outputs.items():
+            self.put('data/sidecars/1835/sources/' + name, json.loads(body))
+        with patch.object(audit_confidence, 'ROOT', self.root):
+            self.assertEqual(audit_confidence.audit()[0], [])
+            forged = json.loads(outputs['map.json'])
+            forged['edges'][0]['confidence'] = 'inferred'
+            self.put('data/sidecars/1835/sources/map.json', forged)
+            self.assertTrue(any('differs from its authored claim' in e for e in audit_confidence.audit()[0]))
+            self.put('data/sidecars/1835/ordinary.json', {'id': 'ordinary', 'confidence': 'attested'})
+            self.assertTrue(any('attested with no source' in e for e in audit_confidence.audit()[0]))
+
+    def test_compiled_cited_structure_requires_backlink(self):
+        self.put('data/sidecars/1835/index.json', {'structures': [{'id': 'absent', 'sidecar': 'sidecars/1835/absent.json'}]})
+        self.put('data/sidecars/1835/absent.json', {'citations': [{'source_id': 'map'}]})
+        with self.assertRaisesRegex(ValueError, 'cited current structure has no edge'):
+            compile_outputs(self.root)
+
+    def test_manifest_lists_exactly_what_the_compiler_writes(self):
+        """T-3131: the step's resolves is set to the written set, and the drift is reported both ways."""
+        other = {'command': ['python3', 'tools/compile_scene.py'], 'resolves': ['chicago/4d/a.json']}
+        manifest = {'steps': [other, {'command': list(STEP), 'resolves': ['chicago/4d/gone.json', 'chicago/4d/kept.json']}]}
+        missing, extra = owned_resolves(manifest, {'chicago/4d/new.json', 'chicago/4d/kept.json'})
+        self.assertEqual((missing, extra), (['chicago/4d/new.json'], ['chicago/4d/gone.json']))
+        self.assertEqual(manifest['steps'][1]['resolves'], ['chicago/4d/kept.json', 'chicago/4d/new.json'])
+        self.assertEqual(other['resolves'], ['chicago/4d/a.json'])
+        self.assertEqual(owned_resolves(manifest, {'chicago/4d/new.json', 'chicago/4d/kept.json'}), ([], []))
+        with self.assertRaises(SystemExit):
+            owned_resolves({'steps': [other]}, set())
+
+    def test_committed_manifest_names_every_source_file(self):
+        """T-3131: the committed list names every committed per-source file (303 of 436 had drifted)."""
+        manifest = json.loads(MANIFEST.read_text())
+        listed = set(next(s for s in manifest['steps'] if s['command'] == STEP)['resolves'])
+        root = MANIFEST.parents[1]
+        on_disk = {'chicago/4d/' + str(p.relative_to(root)) for p in (root / 'data/sidecars/1835/sources').glob('*.json')}
+        self.assertEqual(on_disk - listed, set())
+
+
+if __name__ == '__main__':
+    unittest.main()
