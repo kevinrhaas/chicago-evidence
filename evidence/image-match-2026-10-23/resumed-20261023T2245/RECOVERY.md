@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- MARY_1334_OWNLAP_070751_20261026_START -->
+## St Mary verified own-lap renewal receipt
+
+One tiny frozen receipt preserves the authorized same-actor native renewal at07:07:51UTC, marker40e61bd2 and native expiry10:07:51UTC on unchanged draftPR1334/head3f74. **This is lease evidence only; FULL18 remains pending with no ready or merge claim.** No source, app, native or branch changes are represented.
+
+- [ST-MARY-T2384-PR1334-OWNLAP-VERIFIED-RENEWAL-070751-20261026](archives/ST-MARY-T2384-PR1334-OWNLAP-VERIFIED-RENEWAL-070751-20261026.tar.gz) — Closed routine parent-authorized St Mary own-lap renewal only: fresh exact actor and PR1334 head3f74/DRAFT verified; native direct lap --force limited to the same verified own actor. Native held-status and REST readback confirm marker40e61bd2279ce49550cfef2fdd2ba41f34118cf7 at07:07:51UTC and native three-hour expiry10:07:51UTC. No foreign override, manual timestamp, source, native, app or branch change. All commands closed/reaped. FULL18 remains pending and no ready or merge claim is made. Checked/dispatched ef327d58/index367 is a separate dependency.
+<!-- MARY_1334_OWNLAP_070751_20261026_END -->
+
+
 <!-- JAIL_MOVINGFRAMES_TIMEOUT_RETRY_START_20261026_START -->
 ## Jail moving-frames timeout and one queued retry start
 
