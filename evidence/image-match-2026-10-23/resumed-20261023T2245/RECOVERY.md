@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- JAIL_HOSTED_FROZEN_PARTIAL14_20261026_START -->
+## Jail hosted whole-gate and frozen fourteen-of-eighteen snapshot
+
+One frozen packet preserves actual hosted1072/384 PASS on synthetic062d700f, exactly matching tree350334 with parents[a575,e81], plus14 actual matrix passes. **Four groups and moving-frames were pending at the last metadata read; full matrix coverage, merge and original-image acceptance are not claimed.** Exact readers/base and changelog arguments are retained; live files are excluded.
+
+- [JAIL-T2380-E81-HOSTED1072-384-EXACTTREE-FROZEN14-OF18-20261026](archives/JAIL-T2380-E81-HOSTED1072-384-EXACTTREE-FROZEN14-OF18-20261026.tar.gz) — Closed Jail hosted and frozen partial14 checkpoint: actual hosted1072/384 PASS on synthetic062d700f with exact tree350334 and ordered parents[a575,e81], required readers/base true and changelog arguments a575 to e81. Raw native log, compare/commit proof, report and warranted raw logs plus SUCCESS metadata retained. Exactly14 of18 actual matrix groups passed in the frozen snapshot; four groups and moving-frames were pending at the last metadata read. No live files, full matrix coverage, merge or original-image acceptance claimed. Durable indices362/364 remain separate dependencies. Hosted synthetic-tree proof is explicitly bound and not generalized to unseen later trees.
+<!-- JAIL_HOSTED_FROZEN_PARTIAL14_20261026_END -->
+
+
 <!-- WOLF_DESKTOP_REMAINING_COMPONENTS_20261026_START -->
 ## Wolf Point remaining desktop and explicit component coverage
 
