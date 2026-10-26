@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- STMARY_TWO_CAUSAL_FIXES_20261026_START -->
+## St Mary — two causal fixes and retained full-gate failure
+
+This closed packet records two narrow authored fixes and targeted loading/stack checks PASS, while preserving the genuine fullgate FAIL2/1070 log and wrapper closures. **The new full gate is RUNNING elsewhere and is neither copied nor claimed PASS. This is not a code PR or picture acceptance.** STATE clarifies that the free-space floor was an external orchestration budget; no native2GiB assertion exists or was changed.
+
+- [STMARY-T2384-TWO-CAUSAL-FIXES-FOCUSED-PASS-FULLGATE-FAIL-RETAINED-20261026](archives/STMARY-T2384-TWO-CAUSAL-FIXES-FOCUSED-PASS-FULLGATE-FAIL-RETAINED-20261026.tar.gz) — Closed two narrow authored fixes with genuine fullgate FAIL2/1070 log retained, targeted loading/stack checks PASS and wrapper closures. Depends combined Mary checkpoint8855c84a and physical271 checkpoint8adc6ad1. Not a code PR or full-gate PASS. STATE corrects earlier wording: free-space floor was ROOT external orchestration budget; no native2GiB assertion exists or was changed. Live FULLv2 running elsewhere is excluded, and no mutable active-job files are included. Prior qualified app wrapper FAIL, official picture DIFFERS and integration/merge/image-acceptance limits remain unchanged.
+<!-- STMARY_TWO_CAUSAL_FIXES_20261026_END -->
+
+
 <!-- TWELVE_CLOSED_CHECKPOINTS_20261026_START -->
 ## Closed code, native, source and recovery checkpoints — qualified results
 
