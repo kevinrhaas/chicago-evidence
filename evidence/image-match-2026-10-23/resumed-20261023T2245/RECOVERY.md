@@ -1,5 +1,15 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- PRIVATE_JAIL23DD_CHECKED_FIXTURE_CLEANUP_1606_20261026_START -->
+## Checked private Jail rescue branch and verified redundant-fixture cleanup
+
+Two frozen packets preserve ACTUAL1073/385/all3 checked private8f+Jail rescue code, normalcommit/endingchecks/dirtyfalse and NEWpublicverificationbranch23dd, plus ROOTconditionallyapproved exactredundantfixturecleanup after433reconstructiondurability andfreshzero-livechecks. **No public1333write/dispatch, foreign6bacceptance, currentwhole18, READY/merge or originalDONE claim.** Prioractual3FAIL/focusedrepair remainretained. Only13,742,080Buniquebytes freed; source/rootworktree/refs/assets untouched andall417/433FULLHTML/index/helper/recipe/treeproof retained. Policycorrection421continues; exactsource-boundcoverage andrequiredchecks remainmandatory.
+
+- [JAIL-T2380-PRIVATE8F-23DD-CHECKED-1073-385-PUBLIC-VERIFICATION-BRANCH-NO1333WRITE-20261026](archives/JAIL-T2380-PRIVATE8F-23DD-CHECKED-1073-385-PUBLIC-VERIFICATION-BRANCH-NO1333WRITE-20261026.tar.gz) — Closed ACTUAL1073/385 ALL3/nativepreflight+normalcodecommit/committedCLIDs/history+emptyGitstatus/native dirtyfalse andNORMAL NEWverificationbranchpush PASS. PubliccheckpointHEAD23dddb8feb6698d6a601d200e49c79a56939935f/treecffd onverification/t2380-8f-release-partition-23dddb8feb66-20261026. EXACTprivate8f+Jailsource checkpoint ONLY, NO public1333write/dispatch/foreign6bacceptance/READY/merge/originalDONE. Firstprivate3FAIL andfocused4filerepairqualifications retained; ROOTexclusivecleansourcehandoff/all4CPUlease released.
+- [JAIL-T2380-EXACT-REDUNDANT-PRIVATE-MIGRATION-FIXTURE-CLEANUP-AFTER433DURABILITY-20261026](archives/JAIL-T2380-EXACT-REDUNDANT-PRIVATE-MIGRATION-FIXTURE-CLEANUP-AFTER433DURABILITY-20261026.tar.gz) — Closed ROOTconditionalcleanup afteractual433migration+exactrestoreinputs durabilityACK, freshzero liveFD/cwd/commandrefs andstrictpathguard. ONLYredundantprivate/tmpmigrationfixture removed; actualtmpfree+13,742,080B (hardlinkdu1.1GBwasNOTuniquefreebytes). All417/433FULLHTML/index/helper/recipe/actualfreshTREErebuildproofs retained; public17,431entrysourceprovenance exact. No sourcecommon/index/ref/asset/publishedworld changes or newvalidationclaim.
+<!-- PRIVATE_JAIL23DD_CHECKED_FIXTURE_CLEANUP_1606_20261026_END -->
+
+
 <!-- EXTERNAL_HEADS_PROOF_MIGRATION_RESTORATION_1555_20261026_START -->
 ## External public heads: preserve our tested work, partial results, failures and reconstructable migration
 
