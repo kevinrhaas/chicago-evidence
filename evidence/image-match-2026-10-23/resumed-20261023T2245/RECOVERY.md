@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- JAIL_MOVINGFRAMES_ATTEMPT2_PASS_20261026_START -->
+## Jail actual moving-frames attempt2 pass
+
+One frozen packet preserves actual unchanged native moving-frames PASS and upload-release PASS32, bound to checkout062d700f/tree350334 and merge-basee81. The first confirmed30-minute cancellation remains separately durable in index368. **Matrix status is17 of18 with desktop13 pending; no readiness, merge or original-image acceptance is claimed.** No source/workflow/cap/assertion changes or extra retry occurred.
+
+- [JAIL-T2380-E81-MOVINGFRAMES-ATTEMPT2-ACTUAL-PASS-MATRIX17-OF18-20261026](archives/JAIL-T2380-E81-MOVINGFRAMES-ATTEMPT2-ACTUAL-PASS-MATRIX17-OF18-20261026.tar.gz) — Closed Jail actual moving-frames attempt2 terminal PASS: exact e81 actual checkout062d700f/tree350334/merge-base=e81; both native steps SUCCESS with actual unchanged --verify --gate flags, moving-frame PASS and upload-release PASS32. Raw native84,849-byte log and metadata retained; collector exited0/all children reaped. First confirmed30-minute cancellation remains separately durable index368 and is not relabeled. No source, workflow, cap or assertion changes, no extra retry. Frozen matrix status17 of18 with desktop13 pending; no readiness, merge or original-image acceptance claimed.
+<!-- JAIL_MOVINGFRAMES_ATTEMPT2_PASS_20261026_END -->
+
+
 <!-- ROOT_SNAPSHOT_GT_WAGONBAY_HOLD_20261026_START -->
 ## Root coordination snapshot and Green Tree wagon-bay native hold
 
