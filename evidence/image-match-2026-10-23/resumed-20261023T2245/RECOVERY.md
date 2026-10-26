@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- ROOT_COORDINATION_SECOND_RELOCATION_20261026_START -->
+## Root coordination and second closed-checkpoint relocation proof
+
+This closed three-file snapshot saves coordination state and exact second relocation proof for two closed directories, with atomic forwarding and all original paths preserved. **No new PASS, merge, picture match or completion is claimed.** The external startup free-space floor is an orchestration budget distinct from quality assertions. No live code, index or running-job files are included.
+
+- [ROOT-COORDINATION-0434-SECOND-RELOCATION-RECEIPTS-NO-NEW-PASS-20261026](archives/ROOT-COORDINATION-0434-SECOND-RELOCATION-RECEIPTS-NO-NEW-PASS-20261026.tar.gz) — Closed three-file root coordination snapshot and exact second relocation proof for two closed directories, including atomic-forwarding receipt and script. All original paths preserved. No live/code/index reads are included and no new PASS, merge, original match or completion is claimed. External startup free-space floor is an orchestration budget, distinct from quality assertions. Relocation receipts establish closed-checkpoint recovery only; existing code/app/gate and ticket acceptance scopes remain unchanged.
+<!-- ROOT_COORDINATION_SECOND_RELOCATION_20261026_END -->
+
+
 <!-- WOLF_NATIVE_MARY_BACKLINKS_20261026_START -->
 ## Wolf Point native/source fixed point and St Mary source backlinks
 
