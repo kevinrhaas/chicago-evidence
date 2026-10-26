@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- JAIL_MOVINGFRAMES_TIMEOUT_RETRY_START_20261026_START -->
+## Jail moving-frames timeout and one queued retry start
+
+One frozen packet preserves actual attempt1 cancellation at the explicit30-minute job limit, desktop walking SUCCESS and incomplete phone step. After ruling out an active/valid replacement, exactly one authorized existing-run retry was observed QUEUED on unchanged inputs. **This is a retry START, not its result, full matrix acceptance, readiness, merge or image acceptance.** Accepted-POST proof prevents repeats; live retry logs are excluded.
+
+- [JAIL-T2380-E81-MOVINGFRAMES-TIMEOUT-ONE-RETRY-QUEUED-START-ONLY-20261026](archives/JAIL-T2380-E81-MOVINGFRAMES-TIMEOUT-ONE-RETRY-QUEUED-START-ONLY-20261026.tar.gz) — Closed Jail moving-frames cancellation and one-retry START only: actual attempt1 CANCELLED with explicit30-minute job-limit annotation, desktop walking step SUCCESS and phone step incomplete. Root authorized exactly one existing-run retry only after checking no active or valid e81 replacement. Attempt2 was observed QUEUED on unchanged e81/workflow/caps/assertions; accepted POST marker prevents repeat retries. Exact named RERUN-START-MANIFEST and original MANIFEST payload both retained. This is NOT a retry outcome, full matrix result, readiness, merge or original-image acceptance; live retry logs are excluded.
+<!-- JAIL_MOVINGFRAMES_TIMEOUT_RETRY_START_20261026_END -->
+
+
 <!-- MARY_3F74_CHECKED_BOUND18_20261026_START -->
 ## St Mary checked public3f74 and bound eighteen-dispatch milestone
 
