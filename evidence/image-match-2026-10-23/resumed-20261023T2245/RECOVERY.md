@@ -1,5 +1,16 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- ROOT_PICKUP_JAIL_BODY_WOLF_NATIVE_1422_20261026_START -->
+## Root pickup snapshot, Jail qualified PR body and Wolf native closure
+
+Three independent frozen packets preserve selfcontainedROOTpickup observationSNAPSHOT_NOT_COMPLETION, Jail exactqualifiedPRbody, and Wolf actualnative202+7+57/package/publish closure. **Wolfwhole3 remainsRUNNING, all liveoutputs excluded, latestdev70integration/inputhashproof/revalidation still mandatorybeforeREADY. No originalDONE, combinedmatrix ormergeacceptance claimed.**
+
+- [ROOT-PICKUP-JAIL-MARY-SNAPSHOT-NOTCOMPLETION-1420-20261026](archives/ROOT-PICKUP-JAIL-MARY-SNAPSHOT-NOTCOMPLETION-1420-20261026.tar.gz) — Closed selfcontained ROOTpickup OBSERVATION_SNAPSHOT_NOT_COMPLETION: exactfrozenheads/nativehashes/proofs/liveobserverpointers/partialmatrices, latest70READONLYprice, CPUtransferWolf14:05, locks15:27 andcheckeddependencychain. NoREADY/rootcapacity/latestdevintegration+immutableinputhash/revalidation constraints explicit. Liveoutputs excluded; notnewvalidation ormergeclaim.
+- [JAIL-T2380-8CD-PRBODY-MOVING-RETRY-PASS-FIRSTFAIL-RETAINED-20261026](archives/JAIL-T2380-8CD-PRBODY-MOVING-RETRY-PASS-FIRSTFAIL-RETAINED-20261026.tar.gz) — Closed exactREST PR1333DRAFT8cd body readback statingactualmovingunchangedretryPASS with FIRSTREALFAILretained, newdev70unintegrated/testedbasea9ONLY. Metadataonly; no sourcewrites/liveoutputs orcombinedmatrix/READY/mergeclaim.
+- [WOLFPOINT-T2386-MARY-BFFC-NATIVE-CLOSED-FULL3-RUNNING-20261026](archives/WOLFPOINT-T2386-MARY-BFFC-NATIVE-CLOSED-FULL3-RUNNING-20261026.tar.gz) — Closed candidate62bd908f actualsupportedfull202+7+57/all44strictwholeproof/fiveprovenserde-onlyrestores withgeneratedbytes retained/package5/publishPASS14:18:34. Nativewrapper0/allreaped;2927assetregistry/3883sourcepeople-generatorcontrols exact,82pairsfreshhashes/no rebake. Whole3CURRENTLYRUNNING notPASS; livegate/pipelinelogs excluded. No codecommit/matrix/READY/merge/originalDONE claim; preparedsnapshotdependencyindex407 retained.
+<!-- ROOT_PICKUP_JAIL_BODY_WOLF_NATIVE_1422_20261026_END -->
+
+
 <!-- WOLF_MARY_BFFC_PREPARED_1417_20261026_START -->
 ## Wolf Point prepared checked-Mary dependency while native work runs
 
