@@ -1,5 +1,15 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- ROOT_SNAPSHOT_GT_WAGONBAY_HOLD_20261026_START -->
+## Root coordination snapshot and Green Tree wagon-bay native hold
+
+Two frozen packets preserve the root coordination/cache-relocation snapshot and GT wagon-bay owning-native milestone. **The root snapshot is not completion. GT native PASS coexists with a woodpile-only scopeguard FAIL pending root adjudication; no later app/package/wholecheck/commit/PR/matrix/merge acceptance is claimed.** All source recovery files are retained while reproducible158MB copies are not duplicated.
+
+- [ROOT-COORDINATION-SNAPSHOT-NOT-COMPLETION-CACHE-RELOCATION-0715-20261026](archives/ROOT-COORDINATION-SNAPSHOT-NOT-COMPLETION-CACHE-RELOCATION-0715-20261026.tar.gz) — Closed root coordination SNAPSHOT_NOT_COMPLETION: actual observed code heads, leases, still-running gates, required queue and draft process retained. Installer-only377MB cache deletion verified against official HEAD/SHA while installed binary retained; four/five/six atomic forwarding receipts and scripts included. No live files or source changes, no new PASS, readiness or merge claims. This is a frozen coordination/recovery snapshot, not later task status.
+- [GREENTREE-T2376-WAGONBAY-NATIVE202-7-57-WOODPILE-SCOPE-HOLD-20261026](archives/GREENTREE-T2376-WAGONBAY-NATIVE202-7-57-WOODPILE-SCOPE-HOLD-20261026.tar.gz) — Closed GT2376 wagon-bay native checkpoint under scope hold: actual FULL202+7+57 native PASS, source11 unchanged, ALL44/outside PASS and all2059 physical files exact. Scopeguard FAIL is explicitly retained for the natural own GT woodpile addition after the former bay clears; root adjudication pending at closure. All14 WIP source/generated files, binary patch, own claim and private old-stash recovery proof retained. BEFORE whole published manifest included but158MB reproducible copies not duplicated. No app, package, finalpublish, wholecheck, codecommit, PR, matrix or merge claimed for this new candidate; no original picture-match completion.
+<!-- ROOT_SNAPSHOT_GT_WAGONBAY_HOLD_20261026_END -->
+
+
 <!-- MARY_1334_OWNLAP_070751_20261026_START -->
 ## St Mary verified own-lap renewal receipt
 
