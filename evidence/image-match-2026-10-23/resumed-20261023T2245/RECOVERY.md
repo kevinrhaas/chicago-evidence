@@ -1,5 +1,18 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- TREMONT_REFERENCE_METADATA_V2_RESOURCE_FAILURE_2312_20261026_START -->
+## Tremont reference-copy metadata saved; visible inline-image review remains unrun
+
+The current supplement layers exactly over480cf784. Genuine same-geometry/numeric-camera diagnostic photo was rerendered and reviewed matches; image-storePR7 merged995d and strictpublicHTTPS bytes are verified. This is a credited owner-approved reference copy with **rights still UNKNOWN**, not a newpublicdomain claim or productionapp promotion.
+
+**Earlier BOTHviewport body/version/flight app checks passed, but hidden-pane card text did NOT establish a visible inline image. The new focused visible-card harness is NOT RUN.** Owningmetadata nativeclosure/publish, checkedMary/Wolf/currentdev adoption, fresh visiblecardBOTHviewport review and ONE new actual fullpreflight/normalcheckedancestry/commit/correctedpush/READY/DEVmerge remain pending. Public1337 remains historical1290DRAFT and originalcase is notDONE.
+
+The actual repairedv2 preflight still FAILED1/1077 solely on residentresearch scratch ENOSPC; rawfailure/reaper remain, no semantic/globalPASS is inferred. Owned22:44 Tremont/GT renewals extend to2026-10-27T01:43:59/01:44:19.037 with exactown safeguards. GT source remains frozen awaiting checkedCarpenter and its realannex discrepancy remains. Only closed data are archived; no live gate logs, trustprofile, sourceGit/index/ref or sourceasset edits. CPU3nice19 only, no browser/timedmeasurement here.
+
+- [TREMONT-T2385-CURRENT-REFERENCECOPY-PR7-METADATA-ACTUAL-V2-ENOSPC-RENEWALS-NOCARDCHECK-20261026](archives/TREMONT-T2385-CURRENT-REFERENCECOPY-PR7-METADATA-ACTUAL-V2-ENOSPC-RENEWALS-NOCARDCHECK-20261026.tar.gz) — Closed69member6.77MB supplement layers over480cf784 source. Actualv2FAIL1/1077 from residentresearch drift scratch ENOSPC only, full rawfailure/reaperretained; no semantic/globalPASS. Samecanonical geometry/numericcamera; diagnostic_only and credited owner-approved Gifford reference-copy card path, rights remainUNKNOWN. Native photo genuinely rerendered/reviewedmatches. Image-storePR7merged995d/strictpublicHTTPSbytes verified, no newpublicdomainclaim orappproductionpromotion. EarlierBOTHviewport body/version/flightchecks PASS but hidden-pane text did NOT prove visibleinlineimage. New focused visiblecardharness NOTRUN. Owningmetadata nativeclosure/publish, adoptcheckedMary/Wolf/currentdev, visiblecardreviewBOTH/newactualfull3/normalcheckedancestry/codecommit/correctedpush/Ready/DEVmerge/DONE allpending; public1337stillhistorical1290DRAFT. OwnedT2385lap until2026-10-27T01:43:59Z andGTclaimuntil01:44:19.037Z, freshsame-owner guards/closedrenewals included. No live logs/trustprofile/sourceGit edits.
+<!-- TREMONT_REFERENCE_METADATA_V2_RESOURCE_FAILURE_2312_20261026_END -->
+
+
 <!-- CAPACITY_AND_NATIVE_REPAIRS_CURRENT_MARY_ROOT_LIGHTHOUSE_2245_20261026_START -->
 ## Native capacity recovered; current native and repair milestones saved with pending gates explicit
 
