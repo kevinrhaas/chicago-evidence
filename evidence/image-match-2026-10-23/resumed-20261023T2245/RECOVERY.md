@@ -1,5 +1,16 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- CHECKED10E_IMPORT132E_WOLFPREP_20261026_START -->
+## Green Tree checked code head, current source import and Wolf Point preparation
+
+Three closed recovery packets preserve the checked second public Green Tree PR1328 head10e, the bounded current dev132e source import and Wolf Point preparation. **Green Tree latest132e integration, CI, all18 published groups and merge are pending; the Wolf Point native fixture is prepared but UNRUN, with no code, bake, browser or picture acceptance claim.** No live folders or duplicated model assets are included.
+
+- [GREENTREE-T2376-PR1328-CHECKED10E-FINAL132E-INTEGRATION-PENDING-20261026](archives/GREENTREE-T2376-PR1328-CHECKED10E-FINAL132E-INTEGRATION-PENDING-20261026.tar.gz) — Actual second normal public Green Tree PR1328 code commit10e, tree822, with cf25+88 parents. Frozen whole1070/384 PASS, all three questions plus committed-head questions and native guards, real push, PR REST readback, own lap renewal and full budget are retained. Latest132e integration, CI, all18 native published groups and merge are PENDING; zero18 old-head dispatches were made. No duplicate assets; original2376 remains open and comparison DIFFERS.
+- [CURRENT-DEV132E-BOUNDED14-IMPORT-WOLF-ACK-FREEZE-V2-20261026](archives/CURRENT-DEV132E-BOUNDED14-IMPORT-WOLF-ACK-FREEZE-V2-20261026.tar.gz) — Closed bounded current dev132e import of14 verified blobs, CAS receipt, primary Wolf Point acknowledgement/freeze and CLEAR, with protected23 unchanged. No source-writer mutation. Version2 corrects README count21 to actual23, already correct in compatibility metadata. This source import is not an application, native gate or picture acceptance result.
+- [WOLFPOINT-T2386-PREPARED-CLEAN88-CLAIM-NATIVE-FIXTURE-UNRUN-20261026](archives/WOLFPOINT-T2386-PREPARED-CLEAN88-CLAIM-NATIVE-FIXTURE-UNRUN-20261026.tar.gz) — Closed Wolf Point preparation records primary clean88, normal claimae4c, current eight source-picture and master/WEB map bindings, and a prepared UNRUN native fixture. No Wolf Point code change, bake, browser review, publish or picture match is claimed.
+<!-- CHECKED10E_IMPORT132E_WOLFPREP_20261026_END -->
+
+
 <!-- JAIL_COMBINED88_RECOVERY_20261026_START -->
 ## Log jail — combined current source and native fixed point
 
