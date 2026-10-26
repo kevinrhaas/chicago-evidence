@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- ORIGINAL17_PROGRESS_0109_20261026_START -->
+## Original-ticket progress — immutable 01:09 snapshot
+
+At ticket head865042ea, captured26October approximately01:09-01:10UTC, the seventeen original picture cases were0DONE/11OPEN/5CLAIMED/1SPLIT. Jail, St Mary and Tremont had live claims; school and Wolf Point claim timestamps were expired. Green Tree2376 was released for remaining image work while partial implementation PR1328 stayed open. First-fort2387 split ancestry to child3041 was verified. PR1328/cf25 was dirty **at that timestamp** while88 integration was uncommitted; this is not a permanent or current-block assertion. Partial dev improvements are not original picture sign-off. This archive performed no ticket or Git mutations.
+
+- [ORIGINAL17-IMMUTABLE-PROGRESS-SNAPSHOT-0109-NO-SIGNOFF-20261026](archives/ORIGINAL17-IMMUTABLE-PROGRESS-SNAPSHOT-0109-NO-SIGNOFF-20261026.tar.gz) — Read-only original seventeen-ticket progress snapshot from immutable ticket head865042ea, captured2026-10-26 approximately01:09-01:10UTC. Original cases:0DONE,11OPEN,5CLAIMED,1SPLIT. Three live original claims are jail, St Mary and Tremont; school and Wolf Point claim timestamps are expired. Original2376 was released for remaining picture work while its partial implementation PR1328 remains open. Original2387 split ancestry to child3041 was independently verified. PR1328 headcf25 was dirty at this snapshot while latest88 integration remained uncommitted; that dated observation is not a claim of a permanent/current block. No Git or ticket mutations; partial dev improvements are not original-picture sign-off.
+<!-- ORIGINAL17_PROGRESS_0109_20261026_END -->
+
+
 <!-- TREMONT_WOLFPOINT_CLOSED_20261026_START -->
 ## Tremont native delta and Wolf Point read-only picture review
 
