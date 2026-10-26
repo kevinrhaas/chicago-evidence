@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- MARY_JAIL_DEP_PREPARED_1332_20261026_START -->
+## St Mary authored resolution with checked Jail dependency and prepared guarded code
+
+One frozen packet preserves StMary authored resolutions with checkedpublicJail8cd dependency, separateactualdevbasea9, protected-input guards and prepared guarded command code. **Native is CURRENTLYRUNNING and all live outputs excluded; no currentnative/full3PASS, codecommit, newdispatch, original image-match or merge acceptance is claimed.** Inspect actual reapers/state before recovery; never duplicate jobs.
+
+- [ST-MARY-T2384-CHECKED-JAIL-8CD-DEPENDENCY-AUTHORED-PREPARED-CODEONLY-20261026](archives/ST-MARY-T2384-CHECKED-JAIL-8CD-DEPENDENCY-AUTHORED-PREPARED-CODEONLY-20261026.tar.gz) — Closed authored/preparedCODE recovery of normalmerge Mary3f74 pluscheckedpublicJail8cd, distinctactualdevbasea9. All588GLBexact/nativeentrywise own271+allincomingothers, strict283list duplicatefix, incomingdocsplusownonly,5362protected/all44INPUTSexact. SupportednativeCURRENTLYRUNNING, preparedguardedpipeline WAITnative thenwhole3/commit/endingchecks/normalDRAFTpush/ONE18 CODEONLY. Liveoutputs excluded. NOcurrentnative/full3PASS, codecommit, newdispatch, READY, merge or originalDONE claim.
+<!-- MARY_JAIL_DEP_PREPARED_1332_20261026_END -->
+
+
 <!-- JAIL_8CD_CHECKED_DISPATCHED_1317_20261026_START -->
 ## Jail checked public current-dev head and one bound renderer dispatch
 
