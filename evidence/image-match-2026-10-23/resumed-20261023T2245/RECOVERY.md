@@ -1,5 +1,18 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- FINAL_MATRICES_CURRENTDEV_1230_20261026_START -->
+## Final matrix records and bounded current-dev import
+
+Five frozen packets preserve final old-base browser matrices, fresh own-lap receipts and the bounded latest-dev object import. **Tremont has16PASS/2FAIL; these records do not claim current-dev integrated validation, original image-match completion or merge acceptance.** Prior recovery dependencies remain separate without duplicated assets.
+
+- [ST-MARY-T2384-3F74-FINAL-FULL18-ACTUAL-PASS-OLD-BASE-DRAFT-DIRTY-20261026](archives/ST-MARY-T2384-3F74-FINAL-FULL18-ACTUAL-PASS-OLD-BASE-DRAFT-DIRTY-20261026.tar.gz) — Closed exact3f74 full18 published desktop/mobile raw-log PASS, including final delayed desktop13; old basea575 proof only. DRAFT1334 remains DIRTY against newerdev. No latestdev or image-match completion claim.
+- [TREMONT-T2385-C878-FINAL-FULL18-16PASS-2PROBEFAIL-20261026](archives/TREMONT-T2385-C878-FINAL-FULL18-16PASS-2PROBEFAIL-20261026.tar.gz) — Closed actualc878 full18 terminal results:16PASS and2FAIL with exact stale-probe diagnosis preserved. Not whole-matrix PASS. DRAFT1337 remains incomplete pending causal repair, currentdev integration, actual validation. No assertion weakening or image-match completion.
+- [JAIL-MARY-OWN-LAPS-FRESH-VERIFIED-1227-20261026](archives/JAIL-MARY-OWN-LAPS-FRESH-VERIFIED-1227-20261026.tar.gz) — Fresh same-actor native lap renewals and exact PR ownership metadata for Jail1333 and StMary1334. Ownership receipt only; no validation or merge claim.
+- [WOLFPOINT-T2386-4FE7-FINAL-FULL18-ACTUAL-PASS-OLD-BASE-20261026](archives/WOLFPOINT-T2386-4FE7-FINAL-FULL18-ACTUAL-PASS-OLD-BASE-20261026.tar.gz) — Closed exact4fe7 published full18 native groups with actual raw-log results and qualifications. Old basea575 source proof only, DRAFT1336 must integrate currentdev and satisfy applicable checks. No all-eight-images match or originalDONE claim.
+- [CURRENTDEV-A9C5-BOUNDED-VERIFIED-IMPORT-1229-20261026](archives/CURRENTDEV-A9C5-BOUNDED-VERIFIED-IMPORT-1229-20261026.tar.gz) — Root-authorized bounded source object import: currentdeva9c5/tree87df;68 SHA1-verified missingtipblobs45.6MB uncompressed,17.5MB totalallocated;16,903tipblobs verified. Freshremote unchanged, CAS cachedorigin/dev a575 to a9c5; rootHEAD/index/config and allotherrefs unchanged. Incoming1904geometry and stage14strictIDs scope measured; no source worktree edits or PR integration yet.
+<!-- FINAL_MATRICES_CURRENTDEV_1230_20261026_END -->
+
+
 <!-- GT_DISCLOSURE_TREMONT_CHECKED1337_20261026_START -->
 ## Green Tree disclosure increment and Tremont checked public draft
 
