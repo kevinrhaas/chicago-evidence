@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- JAIL_8CD_HOSTED_PARTIAL9_1334_20261026_START -->
+## Jail hosted native gate actual PASS and partial nine renderer groups
+
+One frozen packet preserves hosted1072/384 native gate ACTUALPASS on exact public8cd integrated tree, plus ONLY9of18 actual published renderer groups. **This is not a combined full18 result; movingframes remains pending and liveobservers excluded.** No original image-match, READY or merge acceptance is claimed.
+
+- [JAIL-T2380-8CD-HOSTED-GATE-ACTUAL-PASS-PARTIAL9-NOT-FULL18-20261026](archives/JAIL-T2380-8CD-HOSTED-GATE-ACTUAL-PASS-PARTIAL9-NOT-FULL18-20261026.tar.gz) — Closed hostedgate40328523589/job121591438780 ACTUALPASS1072/384/readers1/base1/changelogactuala9-to8cd. Syntheticcheckout1d587 treeEXACTf725/mergebase8cd, rawSHAfcbd2a917f63069383bae40f720684772d41cc13b76f3bdee267d6c09ce2c3dd. ONLY9/18actualnativepublishedgroupsPASS/positivecounts/0errors; NOcombinedfull18. Existingmoving40328523867 stillpending. Liveobservers excluded. PRDRAFT/originalDIF, no ready/newhead/mergeclaim.
+<!-- JAIL_8CD_HOSTED_PARTIAL9_1334_20261026_END -->
+
+
 <!-- MARY_JAIL_DEP_PREPARED_1332_20261026_START -->
 ## St Mary authored resolution with checked Jail dependency and prepared guarded code
 
