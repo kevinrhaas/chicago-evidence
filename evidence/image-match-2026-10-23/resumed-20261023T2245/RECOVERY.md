@@ -1,5 +1,16 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- ROOT_TREMONT_BASELINE_CORRECTION_NEW_CHAIN_1855_20261026_START -->
+## Current correction: preserve the pictured three-storey Tremont; withdraw the unmerged two-storey default
+
+**This current plan supersedes earlier recovery instructions to use checked1290 as the final Carpenter baseline.** The sole Tremont Gifford PICTURE shows three storeys and shutters; Gale is TEXT. Existing dev already has three storeys. The unmerged1290 default-two proposal is being withdrawn, not promoted; its old matrices and source remain historical evidence only. No new owner choice is needed to preserve the existing pictured default, and no new revised source is certified by old1290 checks.
+
+After checked Jail, Root will save all WIP and retain old1290 refs, create a NEW private Carpenter branch from checked Jail, normal-merge frozen checked Wolf562 (includes Mary and existing three-storey Tremont), then reapply only Root-authored Carpenter/source/image inputs and perform fresh owning and acceptance checks. **Current order: Jail → Mary → Wolf → Carpenter → Green Tree. Corrected Tremont proceeds independently after Wolf.** Green Tree export reuse still requires exact recipe validation. Root's exact own T2382 native claim renewal extends to21:31:59.365; source code unchanged. Jail whole3 remains ACTIVE in this frozen snapshot; no whole-gate completion, READY, merge or original DONE is claimed. No source Git/refs were accessed by checkpoint publication.
+
+- [ROOT-TREMONT-PICTURE-BASELINE-CORRECTION-NEW-CHAIN-OWN-CARPENTER-CLAIM-20261026](archives/ROOT-TREMONT-PICTURE-BASELINE-CORRECTION-NEW-CHAIN-OWN-CARPENTER-CLAIM-20261026.tar.gz) — Priority CLOSED coordination correction: sole Tremont Gifford PICTURE shows three storeys/shutters; Gale is TEXT. Existing dev three-storey default is preserved; unmerged1290 default-two proposal is withdrawn, not promoted. Historical1290 checks/evidence remain historical and do not certify revised source. Root final Carpenter baseline will use NEW private branch from checked Jail plus normal merge frozen checkedWolf562 (Mary and existing three-storey Tremont), then only authored Carpenter/image inputs. Old1290 private/public refs remain saved. New order Jail→Mary→Wolf→Carpenter→GT; corrected Tremont independent after Wolf. Native Root T2382 exact own-claim renewal72cd426fe4a753be1f582151301abb0b14db081f through21:31:59.365, fresh no-rival guards and ordinary refusal retained; code unchanged. Jail whole3 ACTIVE at18:44:38, no current whole-gate claim, source importer/ref work or original DONE.
+<!-- ROOT_TREMONT_BASELINE_CORRECTION_NEW_CHAIN_1855_20261026_END -->
+
+
 <!-- CARPENTER_CORRECTED_CAMERA_HELD_SIGNATURE_1828_20261026_START -->
 ## Carpenter genuine corrected-camera comparison and held-print credit recovered
 
