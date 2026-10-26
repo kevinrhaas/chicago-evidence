@@ -1,5 +1,15 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- TREMONT_WOLFPOINT_CLOSED_20261026_START -->
+## Tremont native delta and Wolf Point read-only picture review
+
+Tremont has genuine two-master/two-web output with twenty-two default-family byte controls preserved. Its canonical Gifford comparison remains **DIFFERS**, and its native Gifford alternative is byte-identical to the old model. This delta depends on authored003/index310 and public GreenTreecf25/index313; full derived pipeline, app, gate and PR are not implied. The second archive is a **read-only** Wolf Point review of all eight source pictures and unchanged current master/web: no claim, code, new render, gate or image acceptance. A darker-roof possibility remains conditional on fresh normal-map-aware app review. These are closed snapshots, not live folders or completed image matches.
+
+- [TREMONT-T2385-GENUINE-TWO-OUTPUT-DELTA-CANONICAL-DIFFERS-20261026](archives/TREMONT-T2385-GENUINE-TWO-OUTPUT-DELTA-CANONICAL-DIFFERS-20261026.tar.gz) — Closed originalT2385 native delta on baseGreenTreecf25 plus88: genuine two masters and two real web derivatives, with all twenty-two other family master/web bytes exact. Includes source patch and actual canonical Gifford comparison DIFFERS; the native Gifford alternative version is byte-identical to the prior model. Depends on authored003 archive in index310 and public GreenTreecf25 checkpoint in index313. No full202-step derived pipeline, actual app, required gate, code PR, merge or original-image acceptance is claimed.
+- [WOLFPOINT-T2386-READONLY-EIGHT-PICTURE-READINESS-NO-ADOPTION-20261026](archives/WOLFPOINT-T2386-READONLY-EIGHT-PICTURE-READINESS-NO-ADOPTION-20261026.tar.gz) — Read-only originalT2386 readiness review: all eight source pictures were viewed, current master/web bytes are retained exactly and source-camera calibration remains provisional. No ticket claim, code change, new render, gate PASS or matches verdict. One conditional future roof dark-tone candidate requires fresh normal-map-aware actual app review before any canonical adoption. This stores the evidence and limitation, not a new follow-up ticket or implemented correction.
+<!-- TREMONT_WOLFPOINT_CLOSED_20261026_END -->
+
+
 <!-- JAIL_QUALIFIED_APP_20261026_START -->
 ## Log jail — closed mobile/desktop app review with explicit qualifications
 
