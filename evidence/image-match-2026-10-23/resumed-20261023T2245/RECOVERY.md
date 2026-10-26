@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- GT_WAGONBAY_ACCEPTED_APP_PENDING_20261026_START -->
+## Green Tree accepted fuel scope and application-pending increment
+
+One frozen increment documents root-accepted ownGT three-round fuel, accepted strict guard and package/publish PASS, depending on index371. **The first mobile run failed a broad selector count; correctedv2 source is included but every livev2 output is excluded. Quad app remains running, with no app PASS/fullgate/commit/PR/matrix/merge claim.** Prior scopeguard failure stays durable as history.
+
+- [GREENTREE-T2376-WAGONBAY-ACCEPTED-FUEL-PACKAGE-PUBLISH-APP-PENDING-20261026](archives/GREENTREE-T2376-WAGONBAY-ACCEPTED-FUEL-PACKAGE-PUBLISH-APP-PENDING-20261026.tar.gz) — Closed incremental GT wagon-bay packet depending on exact b31/index371: only three documentation/entry recovery files superseded to document root-accepted natural ownGT three-round fuel. New strict accepted guard, native package5/publish and all1322 fallback hashes PASS. First mobile-before-app run is CLOSED FAIL only on broad L134 selector count2 versus1; actual normal/ByGrade/ground/source components and zero errors retained. Corrected exact-summary selectorv2 source included, but all livev2 logs/status/output are EXCLUDED. Quad app remains RUNNING at closure; no application PASS, fullgate, codecommit, PR, matrix or merge claim, and no original picture-match completion. Prior scopeguard failure remains separately durable rather than relabeled.
+<!-- GT_WAGONBAY_ACCEPTED_APP_PENDING_20261026_END -->
+
+
 <!-- JAIL_MOVINGFRAMES_ATTEMPT2_PASS_20261026_START -->
 ## Jail actual moving-frames attempt2 pass
 
