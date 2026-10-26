@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- JAIL_COMBINED88_RECOVERY_20261026_START -->
+## Log jail — combined current source and native fixed point
+
+The closed jail overlay now records public cf25+88 parents and staged treec899, with binary omissions explicitly bound to those parents and prior recovery packages. Native61 completed two stable laps; package5/publish, 5343 protected files, artifact audit and normal claim renewal are saved. **Whole preflight is RUNNING elsewhere with no final footer, and is not archived or claimed PASS. No code commit, PR, merge or image acceptance yet.** The older9f qualified app delta remains in index314 and the formal comparisons in index310 remain DIFFERS; neither is reused as new combined-head app acceptance. Only this closed packet is included.
+
+- [JAIL-T2380-COMBINED88-SOURCE-NATIVE-FIXEDPOINT-PREFLIGHT-PENDING-20261026](archives/JAIL-T2380-COMBINED88-SOURCE-NATIVE-FIXEDPOINT-PREFLIGHT-PENDING-20261026.tar.gz) — Closed recoverable combined originalT2380 source overlay relative to latest88, with public GreenTreecf25 and88 parents and staged treec899. Binary files are intentionally omitted with exact parent/prior-package recovery bindings retained; this is not a duplicate full model archive. Actual native61 reader tail settled through two stable laps, package5 and publish passed;5343 protected files, full artifact audit and own normal claim-renewal receipt are preserved. Required whole preflight is RUNNING elsewhere on frozen source with no footer; it is not copied or claimed PASS. No code commit, PR, merge or image acceptance yet. Prior9f qualified app evidence is in index314 and both formal comparisons remain DIFFERS in index310; those older results are not promoted to combined-current-head app PASS.
+<!-- JAIL_COMBINED88_RECOVERY_20261026_END -->
+
+
 <!-- STMARY_QUALIFIED_APP_20261026_START -->
 ## St Mary — official Moss comparison and qualified app evidence
 
