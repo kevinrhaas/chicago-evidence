@@ -1,5 +1,15 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- WOLF_MOBILE_MARY_PUBLIC1334_20261026_START -->
+## Wolf Point qualified mobile result and St Mary checked public PR1334
+
+Two closed packets save Wolf Point mobile technical native PASS with roof material gap still OPEN, and St Mary actual1070/384/three-question plus committed-ID checks PASS on public codee303/PR1334. **Wolf Point old desktop was canceled before launch, and its future deep-brown repair/cohort is not implemented here. St Mary full18 published coverage is not PASS and merge remains blocked by required dependency/integration/coverage. Original2384 remains DIFFERS; neither packet is original picture signoff.** Earlier failures and exact head/time scope remain explicit. No live jobs are copied.
+
+- [WOLFPOINT-T2386-MOBILE-TECHNICAL-PASS-PALE-ROOF-OPEN-DESKTOP-CANCELED-20261026](archives/WOLFPOINT-T2386-MOBILE-TECHNICAL-PASS-PALE-ROOF-OPEN-DESKTOP-CANCELED-20261026.tar.gz) — Closed actual mobile technical native application PASS, but roof visibly remains pale and material gap OPEN. Old desktop job canceled BEFORE launch with no result; no desktop PASS inferred. Current darkened WIP patch/entry/two model assets retained with all children reaped and same-actor native claim renewal34ced receipts. Includes copies of root third relocation JSON/script, not a separate relocation publication. Local deep-brown opt-in repair and82 cohort were authorized future work but are NOT implemented or baked in this packet. Depends prior native closure14f96 and darkened/source/baseline history. No original picture match, codecommit, codePR or merge claimed.
+- [STMARY-T2384-PUBLICPR1334-CHECKEDE303-ACTUAL1070-PASS-COVERAGE-MERGE-PENDING-20261026](archives/STMARY-T2384-PUBLICPR1334-CHECKEDE303-ACTUAL1070-PASS-COVERAGE-MERGE-PENDING-20261026.tar.gz) — Closed actual normal pushed code HEADe30384643bd27fd7eec50432d3416a5e399dc958/tree102070f6837066aefa94801820449e00b89bd78e, full1070/384 plus all three required questions PASS unchanged, actual committed CL/IDs PASS. Public DEV PR1334, native own lap/status held verified and all wrappers exit0/reaped. Readonly initial check snapshot has seven nonfinal runs and dependency PR1328 OPEN at eb1cb6a at that snapshot. Full18 published groups NOT PASS, merge blocked and original2384 DIFFERS/not DONE. Prior failed runs remain dependencies74c6/8855/8adc and earlier qualified app limitations are not rewritten. No live jobs or source edits by publisher; no merge or original signoff claim.
+<!-- WOLF_MOBILE_MARY_PUBLIC1334_20261026_END -->
+
+
 <!-- GT_NATIVE_CARPENTER_UNADOPTED_20261026_START -->
 ## Green Tree closed native checkpoint and unadopted Carpenter proposal
 
