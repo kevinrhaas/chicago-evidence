@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- MARY_OLD_NATIVE_HASH_1257_20261026_START -->
+## St Mary old-source native input hash before integration
+
+One frozen packet preserves the clean3f74 oldbase native input and changelog hashes before integration. **This is an old-source read-only receipt, not latestdev validation or a currenttree-retag.** No codegate, sourcewrite, original image-match or merge acceptance is claimed.
+
+- [ST-MARY-T2384-3F74-OLD-NATIVE-INPUT-HASH-BEFORE-INTEGRATION-20261026](archives/ST-MARY-T2384-3F74-OLD-NATIVE-INPUT-HASH-BEFORE-INTEGRATION-20261026.tar.gz) — Closed clean3f74 oldbasea575 nativeglobalhash sha256:b48b5252ad6d161b andseparatechangelogHash sha256:276f984b9293d58a raw ask/unchangedhash receipt. Source-read-only and no currenttree-retag/import. NOT latestdeva9 validation, notnewcodegate/sourcewrite/merge acceptance.
+<!-- MARY_OLD_NATIVE_HASH_1257_20261026_END -->
+
+
 <!-- JAIL_A9C5_NATIVE_CLOSED_1251_20261026_START -->
 ## Jail native closure after current-dev integration
 
