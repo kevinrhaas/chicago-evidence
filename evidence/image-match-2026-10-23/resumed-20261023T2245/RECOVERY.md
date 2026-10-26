@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- MARY_3F74_CHECKED_BOUND18_20261026_START -->
+## St Mary checked public3f74 and bound eighteen-dispatch milestone
+
+One frozen packet preserves actual fresh1070/384/all3 PASS, committed checks and normal public push of3f74/tree76532 to draftPR1334. All18 dispatches are closed and uniquely head-bound. **Renderer outcomes remain live elsewhere and are not PASS yet; no ready/merge claim is made, and originalT2384 remains DIF.** Native source index360 remains a dependency; live observers are excluded.
+
+- [ST-MARY-T2384-CHECKED3F74-PUBLIC-DRAFT-1070-384-BOUND18-DISPATCH-20261026](archives/ST-MARY-T2384-CHECKED3F74-PUBLIC-DRAFT-1070-384-BOUND18-DISPATCH-20261026.tar.gz) — Closed St Mary checked-public and bound-dispatch milestone: actual fresh1070/384 and all three questions PASS, committed CL/IDs PASS, normal fast-forward push3f74a5514ed6ed3cd75a80512a6cccfbab4ed919/tree76532c48 to existingPR1334. DRAFT preserved and native own lap held/verified. All18 dispatches completed/reaped and uniquely bound to this immutable head; BOUND_DISPATCH plus payloads included. Renderer runs remain LIVE elsewhere and are excluded: only immutable closed dispatch/read-only snapshots are archived, no current/live observers. Full18 outcomes are NOT PASS yet, no ready or merge claim, originalT2384 remains DIF. Native source27378d88/index360 remains a separate dependency.
+<!-- MARY_3F74_CHECKED_BOUND18_20261026_END -->
+
+
 <!-- JAIL_HOSTED_FROZEN_PARTIAL14_20261026_START -->
 ## Jail hosted whole-gate and frozen fourteen-of-eighteen snapshot
 
