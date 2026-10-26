@@ -1,5 +1,15 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- CHECKED_GT_WOLF82_20261026_START -->
+## Checked Green Tree cb93 recovery and Wolf Point deep-brown native cohort
+
+Two closed packets preserve Green Tree checked cb93 whole3/public verification recovery and the genuine82 Wolf Point native cohort. **Green Tree old132 matrix ended12PASS/6FAIL; its live EB1 join is excluded and no new final matrix or merge is claimed. Wolf Point owning readers, semantic restoration, package/app/full-gate work remains pending.** The earlier exact a13 native packet is already archived and is not duplicated.
+
+- [GREENTREE-PR1328-CHECKED-CB93-PUBLIC6A61-OLD132-12PASS6FAIL-EB1-PENDING-20261026](archives/GREENTREE-PR1328-CHECKED-CB93-PUBLIC6A61-OLD132-12PASS6FAIL-EB1-PENDING-20261026.tar.gz) — Closed actual whole3 PASS: 1070 gate steps and384 self-tests on frozen cb93 candidate tree8b72ea1e2f20ff8805df4ea8ffed6a253b7aeb08, normal checked commit6a61ab6eca1f1ea2322302d131e847b383ac9c8b and committed changelog/ID questions PASS. Normal new public verification ref preserves checked code while original PR branch external eb1 remains untouched; normal history-preserving join plan and external ownership receipts retained. Old132 matrix FINAL actual12PASS/6FAIL includes recovered desktop13 raw PASS; this is not a new final matrix. Current EB1 native is running separately and its live logs are excluded. No final EB1 whole-gate/matrix/merge or original2376 picture acceptance claimed. Depends exact a13ad1c2 native closure packet already archived; no duplicate of that packet.
+- [WOLFPOINT-T2386-DEEP-BROWN82-DEFAULT81-BYTEEXACT-READERS-APP-GATE-PENDING-20261026](archives/WOLFPOINT-T2386-DEEP-BROWN82-DEFAULT81-BYTEEXACT-READERS-APP-GATE-PENDING-20261026.tar.gz) — Closed genuine82 master exports and82 real web derivatives for the opt-in deep-brown Wolf Point implementation. All81 default master/web pairs are BYTE-EXACT, with independent oriented geometry/confidence/count proof and nonfamily/assets/people/source controls exact; no restores or hash minting. Source WIP/code and target pair/registries plus82 before pairs and legacy API guards retained. Initial no-output relative-script-path native failure and external audit typos remain as dated diagnostics. Native61, all44 semantic/workbook checks, package5/publish, final app/full gate/code PR/matches remain pending; no original2386 closure. Prior pale-mobile350 archive is separate unchanged history, not duplicated or promoted into current acceptance.
+<!-- CHECKED_GT_WOLF82_20261026_END -->
+
+
 <!-- IMMUTABLE_EB1_JAIL_LAP_20261026_START -->
 ## Immutable external PR1328 merge and Jail PR1333 lease recovery
 
