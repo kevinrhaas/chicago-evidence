@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- JAIL_MOVING_PASS_QUALIFIED_1408_20261026_START -->
+## Jail unchanged moving retry actual PASS with first real failure retained
+
+One frozen packet preserves ACTUALmovingattempt2PASS on exact8cd integrated tree, both nativewalk+phoneuploadSUCCESS/32checks with commands/caps/workflow unchanged. **FIRST32.9-over32msREALFAIL remainspublicindex400; exactlyONE retry only. Prior observerHTTP401 was a readerror; onepostrecoveryREADONLYcollector fetchedexistingjob withoutanotherretry/dispatch. Matrixonly16/18, latest70unintegrated, no READY/originalDONE/mergeclaim.**
+
+- [JAIL-T2380-8CD-MOVING-ATTEMPT2-ACTUAL-PASS-FIRST-REALFAIL-RETAINED-20261026](archives/JAIL-T2380-8CD-MOVING-ATTEMPT2-ACTUAL-PASS-FIRST-REALFAIL-RETAINED-20261026.tar.gz) — Closed ACTUALattempt2movingrun40328523867/job121605878368PASS, synthetic1d587TREEEXACTf725/mergebase8cd, bothnativewalk+phoneuploadSUCCESS/32checks unchangedcommands/caps/workflow. RawSHA44b5531261837bda41252c502f099189e2c0bec41392505da342f929ff5a12ea. FIRST32.9-over32msREALFAILremainspublicindex400; exactlyONEretryonly. Oldobserverexit1 HTTP401READERROR notproductfailure; afterauthrestored oneREADONLYterminalcollector0 fetchedexistingjob, no newretry/dispatch. MatrixONLY16/18/latest70unintegrated/DRAFT/originalDIF/rootREADYonly, no mergeclaim.
+<!-- JAIL_MOVING_PASS_QUALIFIED_1408_20261026_END -->
+
+
 <!-- MARY_BFFC_CHECKED_ONE18_BOUND_1406_20261026_START -->
 ## St Mary checked public bffc and one bound full18 dispatch
 
