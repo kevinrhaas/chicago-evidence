@@ -1,0 +1,225 @@
+{
+  "UTC": "2026-10-26T22:39:36.221070+00:00",
+  "state": "ACTUAL_CURRENT_373_CYCLE_GRAPH_PROGRAM_AND_INPUT_PROOF_PASS",
+  "HEAD": "5b658e7e3267be14d81296a89a1eef9459c21afc",
+  "MERGE_HEAD": "373851d158a7b6fc701b9cae1a651aa4b3823f97",
+  "actual_current_manifest_blob": "03b46ade55c72492448447f1300962fb5b6de242",
+  "manifest_sha256": "1270723ea92f21f2df61d83462f0b670e0044d0ce0120fd631ea97e38bf4225f",
+  "manifest_worktree_byteexact_actual373": true,
+  "steps": 202,
+  "actual_373_second_pass": [
+    {
+      "command": [
+        "python3",
+        "tools/model_town_1835.py",
+        "--build"
+      ],
+      "reads_rebuilt": [
+        "chicago/4d/data/sidecars/1835/people.json",
+        "chicago/4d/data/town_census.json"
+      ],
+      "why": "THE MODEL IS ITSELF A LAGGING READER, and it has to lead (T-1602). model_town_1835.py reads data/sidecars/1835/people.json and data/town_census.json, which compile_scene.py and town_census.py rebuild 23 and 49 steps BELOW it, and town_census.py reads the model back, so no linear order settles the pair. On a branch that moves the population the sequence builds the model from the PRE-merge scene; the arrival stage then re-draws from that stale model and the run ends red on the model and on every card it re-drew. Measured 2026-10-04 on dev with people.json, town_census.json and the model taken from before #344 (the shape of a lap that kept a branch's side): one --run left `model_town_1835.py --check` red and 427 files off dev; this entry first, then the three below, returned the cards, model, profile and tiers byte-identical to dev. It goes FIRST because the arrival stage draws from what it writes."
+    },
+    {
+      "command": [
+        "python3",
+        "tools/reconstruct_residents_1835.py",
+        "--stage",
+        "attribute_fill_arrival",
+        "--build"
+      ],
+      "reads_rebuilt": [
+        "chicago/4d/data/reconstruction/1835_town_model.json"
+      ],
+      "why": "THE LAGGING READER, and the whole reason this pass exists. The stage draws arrival_year and reason_for_coming from the town model's arrival_year_of_the_known_layer and birthplace_of_the_old_settlers_who_came_by_1835 tables; model_town_1835.py rebuilds that model further down the sequence, from a profile of the very cards this stage writes. Drawn once more from the settled model, the draws reproduce. Since T-1602 it runs AFTER the model is rebuilt from the settled scene, which is what lets it draw from a model that matches the population rather than the one the sequence started from."
+    },
+    {
+      "command": [
+        "python3",
+        "tools/migrate_attribute_tiers.py",
+        "--build"
+      ],
+      "why": "Downstream of the re-draw above: the tier table is derived per-attribute from the resident layer, so it moves whenever a card does, and the re-draw moves ~1,400 of them."
+    },
+    {
+      "command": [
+        "python3",
+        "tools/profile_population_1835.py",
+        "--build"
+      ],
+      "why": "Also downstream of the re-draw, and LAST by measurement rather than by taste: this is the order that converged by hand on #1495 and again under T-1363's reproduction. It profiles the population the re-draw just moved; the model it feeds is then asserted unmoved by model_town_1835.py --check in the gate, which is the statement that the cycle has settled rather than merely turned."
+    },
+    {
+      "command": [
+        "python3",
+        "tools/seat_platted_ground_1835.py",
+        "--build"
+      ],
+      "reads_rebuilt": [
+        "chicago/4d/data/reconstruction/1835_address_book.json"
+      ],
+      "why": "THE SEATING CHAIN'S BACKWARD EDGE (T-2081). The platted deal reads the address book, which seat_known_1835.py rebuilds below it from the seats this deal wrote, so no linear order settles the pair (the one that puts the address book first refuses outright \u2014 see the chain's step). What travels back is small: each seat copies its household's display name out of the address book. Measured 2026-10-04 with the chain's seven outputs taken from before #396 and everything else at dev: one walk of the chain left exactly two seats behind \u2014 hh_ambrose_joshua and hh_bradford_harriet still named 'a name from the post office's letter lists', the name T-1689 (#398) had already changed on their cards \u2014 and the seat checks red; this entry and the next cleared both, and the tree came back byte-identical to dev with seat_known, both deals, the order book, compile_liberties, house_the_present and seat_trade_roofs all --check green. compile_liberties.py and seat_trade_roofs_1835.py also read the seats and were NOT moved by that difference. A later perturbation (T-2082) did move seat_trade_roofs_1835.py, and it joined this pass below; compile_liberties.py stayed still under that one too, and after_the_pass.between holds it to that answer."
+    },
+    {
+      "command": [
+        "python3",
+        "tools/seat_off_plat_ground_1835.py",
+        "--build"
+      ],
+      "why": "The off-plat deal's scope is the platted deal's `owed` list, so it follows the entry above whenever that one re-runs (T-2081)."
+    },
+    {
+      "command": [
+        "python3",
+        "tools/seat_trade_roofs_1835.py",
+        "--build"
+      ],
+      "why": "THE ONE STEP BETWEEN THE PASS AND THE TAIL THAT MOVES WITH IT (T-2082). seat_trade_roofs_1835.py writes each off-plat adoption's household name into the note of a roof it declines (\"The off-plat deal (T-1614) adopted it for The Miller and Hall tannery household, but ...\"), so when the deal above re-runs and a name travels back from the address book, this step is left one name behind and nothing re-runs it: the tail starts below it. Measured 2026-10-04 by renaming two households in each seat file by hand: of the 47 steps that sat between the pass and the tail, this was the only one whose --check went red (`1835_trade_roof_seats.json is stale`), and --build moved exactly that note. T-2081's reproduction did not move it because no name it moved was an off-plat adoption's. It follows the off-plat deal because that is what it reads."
+    }
+  ],
+  "actual_373_after_the_pass": {
+    "tail_from": "tools/compile_scene.py",
+    "max_laps": 3,
+    "why": "compile_scene.py is the first step below the second pass that reads the resident cards it rewrites, and the step pr-lap.sh has always re-run late (T-1661).",
+    "between": {
+      "measured": "2026-10-04",
+      "how": "Two perturbations of what the pass writes, each on a clean dev tree, each followed by every step below with its own check.sh line (python3 <tool> --check), 2 minutes 30 for the lot. (1) THE ARRIVAL DRAWS, the pass's reason for existing: 150 of arrival_year_of_the_known_layer's 1835 people moved to 1833 in data/reconstruction/1835_town_model.json, then the pass's arrival stage, migrate_attribute_tiers.py and profile_population_1835.py rebuilt from it (383 files moved: the cards' arrival draws, the tier table, the profile). Every step below stayed green. Control: generate_block_infill.py, below the tail, went red on the same tree, so the checks do see the move. (2) THE SEATS, what the seating chain's backward edge carries (T-2081: display names out of the address book): two households renamed in data/reconstruction/1835_platted_seats.json and two in 1835_off_plat_seats.json. Every step below stayed green. seat_trade_roofs_1835.py went red, and it joined the pass instead of this list. Before that, every step here was green on clean dev. To measure a step you add here, run both perturbations, --check it, and restore the tree with git checkout. It is evidence over two perturbations, not a proof over every input, and it is now evidence that a new step cannot skip. settle_family_cycle.py (T-2234, measured 2026-10-09): under both perturbations its --check, the six --checks of the stages it drives, and a --build that settled in one lap moving nothing, all on the perturbed tree.",
+      "insensitive": [
+        "python3 tools/reconstruct_sex_age.py --build",
+        "python3 tools/spend_person_sex_age.py",
+        "python3 tools/reconstruct_modelled_families.py --build",
+        "python3 tools/reconstruct_women_children.py --build",
+        "python3 tools/reconstruct_trade_households.py --build",
+        "python3 tools/settle_family_cycle.py --build",
+        "python3 tools/reconstruct_garrison_1835.py --build",
+        "python3 tools/synthesize_resident_research.py",
+        "python3 tools/apply_census_1840_bridges.py --write",
+        "python3 tools/associations.py --write",
+        "python3 tools/audit_scene_window_trades.py --write",
+        "python3 tools/carry_kinzie_west.py --write",
+        "python3 tools/derive_presence_evidence_leg.py --write",
+        "python3 tools/mint_documented_residents.py",
+        "python3 tools/mint_placed_residents.py",
+        "python3 tools/normalise_structure_function.py --build",
+        "python3 tools/register_letter_list_suspicions.py --build",
+        "python3 tools/trade_census_1835.py --build",
+        "python3 tools/trade_census_spend_1835.py --build",
+        "python3 tools/spend_ladder_rungs.py --build",
+        "python3 tools/qualify_later_trades.py",
+        "python3 tools/derive_resident_roles.py --write",
+        "python3 tools/derive_person_community.py",
+        "python3 tools/location_reconciliation.py --build",
+        "python3 tools/location_spend.py --build",
+        "python3 tools/report_convergence_coverage.py --build",
+        "python3 tools/rule_presence_1835.py --build",
+        "python3 tools/read_fergus_1839_lots.py --build",
+        "python3 tools/survey_stated_kin.py --write",
+        "python3 tools/spend_person_facts.py",
+        "python3 tools/adopt_street_faces.py",
+        "python3 tools/build_staffing_model_1835.py --build",
+        "python3 tools/model_transients_1835.py --build",
+        "python3 tools/canal_approach_occupancy.py --build",
+        "python3 tools/generate_canal_approach_trade.py",
+        "python3 tools/compile_businesses.py --build",
+        "python3 tools/audit_businesses.py --write",
+        "python3 tools/compile_gazetteer.py --build",
+        "python3 tools/fergus_1839_street_faces.py --build",
+        "python3 tools/reconcile_665.py",
+        "python3 tools/seat_kinzie_addition_streets.py --write",
+        "python3 tools/seat_michigan_st_tract.py --write",
+        "python3 tools/seat_wabansia_streets.py --write",
+        "python3 tools/build_order_book_1835.py --build",
+        "python3 tools/seat_known_1835.py --build",
+        "python3 tools/compile_liberties.py",
+        "python3 tools/house_the_present_1835.py",
+        "python3 tools/count_held_head_dwellings_1835.py --build"
+      ],
+      "declared_readers": {
+        "python3 tools/build_order_book_1835.py --build": "Reads both seat files' slot and seat counts, which the two deals in the pass rewrite. What the pass carries back through them is display names (T-2081): two names changed in each seat file left its --check green, and so did T-2081's chain reproduction.",
+        "python3 tools/seat_known_1835.py --build": "Reads the town model (rewritten by the pass's first entry) and both seat files (rewritten by the deals). The model: with 150 of the arrival table's 1835 people moved to 1833 and the arrival stage, tiers and profile rebuilt from it, its --check stayed green, and #382's reproduction (the model rebuilt from a pre-#344 scene) ended with the tree byte-identical to dev. The seats: two names changed in each seat file left it green.",
+        "python3 tools/compile_liberties.py": "Reads both seat files, which the deals in the pass rewrite. T-2081's chain reproduction did not move it, and two names changed in each seat file left its --check green."
+      }
+    }
+  },
+  "last_second_pass_step": 145,
+  "actual_cycle_programs": {
+    "chicago/4d/tools/rederive.mjs": {
+      "accepted373_blob": "02b96ece0cf0faa4fec451ff4aeec34edf23a787",
+      "actual_blob": "02b96ece0cf0faa4fec451ff4aeec34edf23a787",
+      "sha256": "dfae0ca2dd6c4c07e009355230f1f60bb148a40b7edaac44fe808a91685a40fa"
+    },
+    "chicago/4d/tools/compile_liberties.py": {
+      "accepted373_blob": "ac7b9c9bc4dfaee8eba8aed030520a39e09bd58e",
+      "actual_blob": "ac7b9c9bc4dfaee8eba8aed030520a39e09bd58e",
+      "sha256": "3f33fe31df650424fa0fe8bef5b3e3466bac853591e5debae62639b5abe47ad5"
+    },
+    "chicago/4d/tools/compile_source_use.py": {
+      "accepted373_blob": "dd018ebb05a2888ea619a89368ab890128d3673a",
+      "actual_blob": "dd018ebb05a2888ea619a89368ab890128d3673a",
+      "sha256": "098301077b9c115532bc856cb009d951ae8c5c887253dc7f5d028729bad0d187"
+    },
+    "chicago/4d/tools/migrate_attribute_tiers.py": {
+      "accepted373_blob": "fb13b78c0690055d51d568a33905a5f440575333",
+      "actual_blob": "fb13b78c0690055d51d568a33905a5f440575333",
+      "sha256": "ed3551e19cd2cc879e929fa500f854ad9186e9273195db6964befc24ba1202b0"
+    },
+    "chicago/4d/tools/model_town_1835.py": {
+      "accepted373_blob": "50ef1f5562a0f111b5044e62e9edb473155eba22",
+      "actual_blob": "50ef1f5562a0f111b5044e62e9edb473155eba22",
+      "sha256": "0947783290b3b3c6696768269fb602dba28b0be862bddc77f94646db3e3356ce"
+    },
+    "chicago/4d/tools/profile_population_1835.py": {
+      "accepted373_blob": "32124b7f0beb559ebcee483eb2abea1603095497",
+      "actual_blob": "32124b7f0beb559ebcee483eb2abea1603095497",
+      "sha256": "c522e872304ab04dccf4d0e2ae4842fcb1010f85ef26d028eb1596aed8ec623e"
+    },
+    "chicago/4d/tools/reconstruct_residents_1835.py": {
+      "accepted373_blob": "bb20b242f15371c0cd7840b61d6b1a36e33b7fc6",
+      "actual_blob": "bb20b242f15371c0cd7840b61d6b1a36e33b7fc6",
+      "sha256": "213770bc74abeea5bfbee5f66bff3211df21c103e3ee94f6e22a1fc87b42faf9"
+    },
+    "chicago/4d/tools/seat_off_plat_ground_1835.py": {
+      "accepted373_blob": "6eff60e82a5619740a6c018e03f6d12a9c5bbd98",
+      "actual_blob": "6eff60e82a5619740a6c018e03f6d12a9c5bbd98",
+      "sha256": "ea88928171ad8cdc667111d229b5d532e5f098ca895585378b5d33afb37092f1"
+    },
+    "chicago/4d/tools/seat_platted_ground_1835.py": {
+      "accepted373_blob": "ebd36b2e077102b7d8592f8778b337340b1f00e3",
+      "actual_blob": "ebd36b2e077102b7d8592f8778b337340b1f00e3",
+      "sha256": "4cbfcc93e280fe1d77e1cc1fd9332ed5d0dd0745cb33c723f68b7620347a6a5b"
+    },
+    "chicago/4d/tools/seat_trade_roofs_1835.py": {
+      "accepted373_blob": "98fe029ea3bd82b0d7ee0d9d20beebe42723ad98",
+      "actual_blob": "98fe029ea3bd82b0d7ee0d9d20beebe42723ad98",
+      "sha256": "df4d32163cd8a953875801445959c768f20ae5d9f177fe96e43de8ae2a524d38"
+    }
+  },
+  "actual_current_cycle_inputs2268_bound_directly_to_373_tree": true,
+  "cycle_errors": [],
+  "changed_accepted_blobs_vs_priorEC_inventory": [],
+  "why_prior_path_inventory_remains_applicable": "Theinventorynames are reused, but everyexpectedblob was reboundtoACTUAL373treeand everycurrentbyteverified. Allseven currentcycleprogramsourceblobsandacceptedmanifest/declarationsarebyteidentical; no priorECverdictisassumed.",
+  "remaining_U_actual_owners": {
+    "chicago/4d/data/liberties.json": [
+      {
+        "step": 142,
+        "command": [
+          "python3",
+          "tools/compile_liberties.py"
+        ]
+      }
+    ],
+    "chicago/4d/docs/measurements/source_use_coverage.md": [
+      {
+        "step": 150,
+        "command": [
+          "python3",
+          "tools/compile_source_use.py"
+        ]
+      }
+    ]
+  },
+  "current_minimum_future_canonical_path": "RootGO forLib142/check/stage, deriveNEWcombinedcount from373raw+ownappend; nevercopyoldEC793. Then supportednative--resolve usesactual remainingowner150 belowlastpass145, nativeprerequisitepublish+53stepfixedpointtail. No producerexecuted.",
+  "new_373_check_isolation_and_five_controls": "Incomingstep_isolationandnewtests arebyteexact373; actualcheck.sh preservesallincominginsertionsplusentireownpubliccheck source (separatesemanticunionproof).",
+  "source_tuple": "HEAD5b/MERGE373; TREE/APP unavailable untiltwoUresolve",
+  "owner_producer_browser_fullgate_commit_or_fetch": false
+}

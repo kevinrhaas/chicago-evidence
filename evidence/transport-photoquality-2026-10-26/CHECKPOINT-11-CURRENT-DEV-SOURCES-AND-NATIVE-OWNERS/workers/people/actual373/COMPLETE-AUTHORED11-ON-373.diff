@@ -1,0 +1,1413 @@
+diff --git a/.github/workflows/chicago-4d-humans.yml b/.github/workflows/chicago-4d-humans.yml
+index 20da6da19..9c279d998 100644
+--- a/.github/workflows/chicago-4d-humans.yml
++++ b/.github/workflows/chicago-4d-humans.yml
+@@ -71,7 +71,7 @@ on:
+         type: boolean
+         default: false
+       source_ref:
+-        description: 'Immutable reviewed source SHA, required only for the separate dress study'
++        description: 'Dress source: blank uses this definition SHA; otherwise only the original reviewed source or this definition SHA'
+         type: string
+         default: ''
+ 
+@@ -89,7 +89,7 @@ jobs:
+     outputs:
+       dress_source_sha: ${{ steps.dress_binding.outputs.source_sha }}
+     steps:
+-      # A separate definition ref may execute only this reviewed source commit.
++      # Dress source is either the original reviewed commit or this actual definition SHA.
+       # Validate inputs before checkout; default/PR/push checkout remains unchanged.
+       - name: Validate opt-in study request before checkout
+         if: github.event_name == 'workflow_dispatch'
+@@ -107,8 +107,13 @@ jobs:
+           if dress:
+               if os.environ['TEAMSTERS_ENABLED']=='true' or os.environ['SEATED_ENABLED']=='true':
+                   raise SystemExit('The dress study must run separately from teamster/seated studies')
+-              if not re.fullmatch(r'[0-9a-f]{40}',source) or source!='1cbb1817508593562f99ed378b6932368b5699b9':
+-                  raise SystemExit('Dress source_ref must equal the reviewed immutable source SHA')
++              definition=os.environ['GITHUB_SHA']
++              if not re.fullmatch(r'[0-9a-f]{40}',definition):
++                  raise SystemExit('The actual workflow definition SHA is invalid')
++              source=source or definition
++              if not re.fullmatch(r'[0-9a-f]{40}',source) or source not in {
++                  '1cbb1817508593562f99ed378b6932368b5699b9',definition}:
++                  raise SystemExit('Dress source_ref must equal the original reviewed source or actual definition SHA')
+           elif source:
+               raise SystemExit('source_ref applies only to the opt-in dress study')
+           with open(os.environ['GITHUB_OUTPUT'],'a') as output:
+@@ -133,7 +138,7 @@ jobs:
+           import json,os,subprocess
+           actual=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+           expected=os.environ['EXPECTED_SOURCE']
+-          if actual!=expected or actual!='1cbb1817508593562f99ed378b6932368b5699b9':
++          if actual!=expected or actual not in {'1cbb1817508593562f99ed378b6932368b5699b9',os.environ['GITHUB_SHA']}:
+               raise SystemExit('Fixture checkout does not match the reviewed dress source')
+           print(json.dumps({'scope':'same-source fixture prerequisite','source_sha':actual,
+               'workflow_definition_sha':os.environ['DEFINITION_SHA'],
+@@ -363,6 +368,27 @@ jobs:
+           NODE_PATH="$(npm root -g)" node tools/human_seated_driver.cjs /tmp/teamster-studies/seated-driver
+           NODE_PATH="$(npm root -g)" node tools/transport/smoke_wagon_driver.cjs . /tmp/teamster-studies/wagon-driver-source
+           NODE_PATH="$(npm root -g)" node tools/transport/smoke_wagon_driver.cjs ../../site/4d /tmp/teamster-studies/wagon-driver-published --published
++      - name: Render fixed existing assemblies as native Blender CPU stills
++        if: github.event_name == 'workflow_dispatch' && inputs.build_teamsters
++        working-directory: chicago/4d
++        env:
++          BLENDER_CACHE: /opt/blender-dl
++          DEFINITION_SHA: ${{ github.workflow_sha }}
++        run: |
++          set -euo pipefail
++          source generators/blender.pin
++          "$BLENDER_CACHE/$BLENDER_DIR/blender" -b -noaudio --disable-autoexec --factory-startup --python-exit-code 1 \
++            --python tools/render_human_assembly_stills.py 2>&1 | tee /tmp/teamster-blender-stills.log
++      - name: Preserve small native Blender assembly stills separately
++        if: always() && github.event_name == 'workflow_dispatch' && inputs.build_teamsters
++        uses: actions/upload-artifact@v4
++        with:
++          name: resident-teamster-blender-stills-${{ github.sha }}
++          if-no-files-found: warn
++          retention-days: 30
++          path: |
++            /tmp/teamster-blender-stills/
++            /tmp/teamster-blender-stills.log
+       - name: Preserve masters, exports and inspection evidence
+         if: always()
+         uses: actions/upload-artifact@v4
+@@ -403,7 +429,7 @@ jobs:
+           python3 - <<'PY'
+           import hashlib,json,os,pathlib,subprocess
+           actual=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+-          if actual!=os.environ['EXPECTED_SOURCE'] or actual!='1cbb1817508593562f99ed378b6932368b5699b9':
++          if actual!=os.environ['EXPECTED_SOURCE'] or actual not in {'1cbb1817508593562f99ed378b6932368b5699b9',os.environ['GITHUB_SHA']}:
+               raise SystemExit('Dress checkout does not match the verified fixture source')
+           root=pathlib.Path('/tmp/dress-study');root.mkdir(exist_ok=False)
+           files=['generators/blender.pin','tools/human_teamster_blend.py','tools/human_dress_components.py',
+diff --git a/chicago/4d/assets/LICENSES.md b/chicago/4d/assets/LICENSES.md
+index c6f358b1a..d3474b3e7 100644
+--- a/chicago/4d/assets/LICENSES.md
++++ b/chicago/4d/assets/LICENSES.md
+@@ -1479,3 +1479,8 @@ Generated bodice, skirt, apron and low-shoe arrays from `tools/human_dress_compo
+ | `authored/humans/makehuman_hm08/makehuman/data/targets/macrodetails/asian-female-young.target` | Verbatim MakeHuman graphical asset, CC0-1.0 explicit upstream header; original credit retained, pinned commit/URL/hash in SOURCE-female.json. |
+ | `authored/humans/makehuman_hm08/makehuman/data/targets/macrodetails/caucasian-female-young.target` | Verbatim MakeHuman graphical asset, CC0-1.0 explicit upstream header; original credit retained, pinned commit/URL/hash in SOURCE-female.json. |
+ | `authored/humans/makehuman_hm08/makehuman/data/targets/macrodetails/universal-female-young-averagemuscle-averageweight.target` | Verbatim MakeHuman graphical asset, CC0-1.0 explicit upstream header; original credit retained, pinned commit/URL/hash in SOURCE-female.json. |
++
++
++### T-1789 optional female clothing finishing source
++
++Original bonnet, cuff, waistband/back-tie and covered-closure arrays generated by the explicit finishing_version1 option in tools/human_dress_components.py are CC0-1.0 project-authored geometry. Its deterministic dye/weave values are original generated material content; generator/test code remains GPL-3.0-or-later. Existing body, skin, hair and upstream source notices remain unchanged. The cleared public-domain Wild1835 source supplies only a bounded silhouette cross-check, with no copied pixels or traced shapes. Dimensions, pattern, color and named outfit are reconstructed under L-human-dress-finishing-1789. This source-only increment installs no new GLB, texture or canonical master and supplies no photographic/production eligibility.
+diff --git a/chicago/4d/changelog.d/T-1789.json b/chicago/4d/changelog.d/T-1789.json
+index ae97ab291..70981a194 100644
+--- a/chicago/4d/changelog.d/T-1789.json
++++ b/chicago/4d/changelog.d/T-1789.json
+@@ -2,6 +2,6 @@
+   "title": "Extend the modular resident wardrobe",
+   "kind": "change",
+   "items": [
+-    "Nothing you can see yet: reusable workwear sources assemble distinct waistcoat, short-jacket and hat outfits for existing reconstructed residents. The optional adult dress study adds a reusable bodice, gathered skirt, separate apron and closed shoes to the same canonical authoring path. Canonical exports, appearance and visual acceptance remain pending."
++    "Nothing you can see yet: reusable workwear sources assemble distinct waistcoat, short-jacket and hat outfits for existing reconstructed residents. The optional adult dress study adds a reusable bodice, gathered skirt, separate apron and closed shoes, plus an explicit reconstructed bonnet/cuff/waist/closure finish. Updated canonical exports, appearance and visual acceptance remain pending."
+   ]
+ }
+diff --git a/chicago/4d/data/humans/recipes/adult_dress_1835.json b/chicago/4d/data/humans/recipes/adult_dress_1835.json
+index 4e155fa7e..f01b6b14a 100644
+--- a/chicago/4d/data/humans/recipes/adult_dress_1835.json
++++ b/chicago/4d/data/humans/recipes/adult_dress_1835.json
+@@ -54,7 +54,7 @@
+   "sources": [
+     "wild_1835_third_vine"
+   ],
+-  "basis": "Original reusable bodice, gathered skirt, separate apron and source-fitted closed shoes. Cuts, seam construction, proportions, colours and outfit choice are conjectural. Complete source anatomy remains unchanged beneath clothing. No accepted photographic or historical personal likeness.",
++  "basis": "Original reusable bodice, gathered skirt, separate apron and source-fitted closed shoes. Cuts, seam construction, proportions, colours and outfit choice are conjectural. Complete source anatomy remains unchanged beneath clothing. No accepted photographic or historical personal likeness. Optional v1 finishing adds a conjectural pale bonnet, linen cuffs/waistband/back ties and self-cloth front fastening; no traced pattern, measured1835construction or personal possession claim.",
+   "source_scope": "Actually viewed held John Caspar Wild1835 Cincinnati painting supplies only tiny full-skirt/bodice/head-covering silhouette analogues. Exact completion before1July is unknown; Cincinnati does not attest Chicago presence, personal wardrobe, material, seams or measurements. No source image pixels or traced garment shapes enter the asset.",
+   "colors_linear_rgba": {
+     "skin": [
+@@ -92,6 +92,12 @@
+       0.031,
+       0.022,
+       1.0
++    ],
++    "headwear__linen_bonnet": [
++      0.72,
++      0.68,
++      0.58,
++      1
+     ]
+   },
+   "workwear_coverage": {
+@@ -131,6 +137,7 @@
+     "standing_source_only": true,
+     "production_eligible": false,
+     "walking_seated_or_photo_accepted": false,
+-    "generator": "tools/human_dress_components.py"
++    "generator": "tools/human_dress_components.py",
++    "finishing_version": 1
+   }
+ }
+diff --git a/chicago/4d/docs/LIBERTIES.md b/chicago/4d/docs/LIBERTIES.md
+index 1a58464d6..19a3f8fd0 100644
+--- a/chicago/4d/docs/LIBERTIES.md
++++ b/chicago/4d/docs/LIBERTIES.md
+@@ -14549,7 +14549,7 @@ than leaving the entry claiming a population it no longer has.
+ 
+ ### L264 — The brick course is set from a period common brick, because the rhythm of a brick wall cannot be drawn without one and this project holds no Chicago brick
+ 
+-**Scope:** `structures.records[brick_fabric]` — 194 structures (174 until T-3151, 2026-10-25, whose twenty-one brick drafts of Indiana Avenue's east frontage, 18th to 20th Street, say brick because the 1911 Sanborn sheet colours them brick, and take no course from this substrate either (nine say brick with a stone front and five frame, so they leave this count), while T-3011's background row, which they replace, leaves it; 173 until T-3011, 2026-10-25, whose one background row on Indiana Avenue's east frontage, 18th to 20th Street, says brick as a reconstruction (sheet 27, which would colour it, is not in hand), and takes no course from this substrate either; 172 until T-3130, 2026-10-25, whose draft of the ice-cream works rising at 1605-1613 Indiana says brick because the 1911 sheet colours it brick and the Tribune of November 1903 calls it a brick building, and takes no course from this substrate either; 171 until T-3013, 2026-10-25, whose draft of Bane Brothers' livery at 2129-2131 Indiana Avenue says brick because the 1911 Sanborn sheet colours the building brick, and takes no course from this substrate either; 168 until T-3068, 2026-10-24, whose three brick drafts on Indiana Avenue's east frontage, 16th to 18th Street (1601's corner row and 1637's house from Robinson 1886, which colours them brick, and 1619's from the 1911 sheet, which does), say brick and take no course from this substrate either (1641's says brick with a stone front, so it leaves this count, and 1727's and 1735's say frame); 159 until T-3019, 2026-10-23, whose nine brick drafts of the background on Indiana Avenue's east frontage, 16th to 18th Street, and the row at 209-217 East Sixteenth Street say brick because the 1911 Sanborn sheet colours them brick and Robinson 1886 agrees, and take no course from this substrate either (1615-1617's and 1703's say brick with a stone front, so they leave this count); 143 until T-3018, 2026-10-22, whose sixteen brick drafts of the background on Calumet Avenue's west frontage, 20th to 22nd Street, say brick because the 1911 Sanborn sheet colours them brick, and take no course from this substrate either (2004's and 2016's say brick with a stone front, 2128's stone over a brick rear, and 2032's yard building frame, so they leave this count); 125 until T-3009, 2026-10-22, whose eighteen drafts of the background on Indiana Avenue's east frontage, 20th to 22nd Street, the First Presbyterian Church among them, say brick because the 1911 Sanborn sheet colours them brick, and take no course from this substrate either; 110 until T-3008, 2026-10-22, whose fifteen drafts of the background on Calumet Avenue's west frontage, 18th to 20th Street, say brick because the 1911 Sanborn sheet colours them brick, and take no course from this substrate either; 104 until T-2982, 2026-10-22, whose six drafts of the district's edges on East Twentieth Street and Calumet Avenue say brick because the 1911 Sanborn sheet colours them brick, and take no course from this substrate either: `generators/archetypes/prairie_draft.py` draws them in a flat colour; 105 until T-2543, 2026-10-16, whose refinement of the 1812 Prairie draft reads a stone lower front off Albert Levy's photograph, so it says brick with a stone front and leaves this count; 106 until T-2440, 2026-10-15, which moved the drawing of John H. Hamline's stone-fronted house from 1619 to 1621, so the 1621 draft that said brick now says brick with a stone front and leaves this count, while 1619 returns to its draft, which says stone-front masonry; 105 until T-2443, 2026-10-13, which stands the 1635 Forsyth house as a district draft that says brick because Robinson 1886 colours it so, and takes no course from this substrate either; 106 until T-2432, 2026-10-13, whose refinement of the 1625 Prairie draft reads a stone street front off the house's 1890 photograph, so it says brick with a stone front and leaves this count; 107 until T-2433, 2026-10-13, which refined the 1623 draft to Granger Farwell's stone-fronted K01 house and so took it out of this population; 16 until T-2321's `wheeler_house_1812_prairie_coach_house`, 2026-10-10, attested brick on the 1911 sheet 28, whose K12 walls are drawn in flat colour and take no course from this liberty; 4 until T-2049's `first_fort_dearborn_magazine`, 2026-10-04, attested brick by Quaife and, like the courthouse below, resolved by no scene yet, so it takes no course today; 5 until T-2329, 2026-10-10, whose eleven Prairie Avenue district drafts of 1904 say brick because the 1911 Sanborn sheet colours them brick, and take no course from this substrate either: `generators/archetypes/prairie_draft.py` draws them in a flat colour and never reads `materials.py`; 17 until T-2330, 2026-10-11, whose twelve east-side drafts of the same block say brick for the same reason and take no course from it either; 29 until T-2334, 2026-10-11, whose twenty-five drafts on the west side of the 16th-18th block say brick for the same reason, 1620's because Robinson 1886 colours it so, and take no course from it either; 54 until T-2335, 2026-10-11, whose thirteen brick drafts on the east side of the same block say brick for the same reason, and take no course from it either; 67 until T-2351, 2026-10-11, whose seventeen brick drafts on the west side of the 20th-22nd block say brick for the same reason, and take no course from it either; 84 until T-2352, 2026-10-11, whose twenty-three brick drafts on the east side of the same block say brick for the same reason, and take no course from it either). The `brick` substrate in
++**Scope:** `structures.records[brick_fabric]` — 194 structures (195 until T-3162, 2026-10-26, whose refinement of the 1823 Prairie draft reads a stone street front off the Dent house's engraving and its 1883 album vignette, so it says brick with a stone front and leaves this count; 194 until T-3164, 2026-10-26, whose lodge between Pullman's glasshouse ranges at 1800 Calumet Avenue says brick because the 1911 Sanborn sheet colours it brick, and takes no course from this substrate either: `generators/archetypes/prairie_draft.py` draws it in a flat colour; 174 until T-3151, 2026-10-25, whose twenty-one brick drafts of Indiana Avenue's east frontage, 18th to 20th Street, say brick because the 1911 Sanborn sheet colours them brick, and take no course from this substrate either (nine say brick with a stone front and five frame, so they leave this count), while T-3011's background row, which they replace, leaves it; 173 until T-3011, 2026-10-25, whose one background row on Indiana Avenue's east frontage, 18th to 20th Street, says brick as a reconstruction (sheet 27, which would colour it, is not in hand), and takes no course from this substrate either; 172 until T-3130, 2026-10-25, whose draft of the ice-cream works rising at 1605-1613 Indiana says brick because the 1911 sheet colours it brick and the Tribune of November 1903 calls it a brick building, and takes no course from this substrate either; 171 until T-3013, 2026-10-25, whose draft of Bane Brothers' livery at 2129-2131 Indiana Avenue says brick because the 1911 Sanborn sheet colours the building brick, and takes no course from this substrate either; 168 until T-3068, 2026-10-24, whose three brick drafts on Indiana Avenue's east frontage, 16th to 18th Street (1601's corner row and 1637's house from Robinson 1886, which colours them brick, and 1619's from the 1911 sheet, which does), say brick and take no course from this substrate either (1641's says brick with a stone front, so it leaves this count, and 1727's and 1735's say frame); 159 until T-3019, 2026-10-23, whose nine brick drafts of the background on Indiana Avenue's east frontage, 16th to 18th Street, and the row at 209-217 East Sixteenth Street say brick because the 1911 Sanborn sheet colours them brick and Robinson 1886 agrees, and take no course from this substrate either (1615-1617's and 1703's say brick with a stone front, so they leave this count); 143 until T-3018, 2026-10-22, whose sixteen brick drafts of the background on Calumet Avenue's west frontage, 20th to 22nd Street, say brick because the 1911 Sanborn sheet colours them brick, and take no course from this substrate either (2004's and 2016's say brick with a stone front, 2128's stone over a brick rear, and 2032's yard building frame, so they leave this count); 125 until T-3009, 2026-10-22, whose eighteen drafts of the background on Indiana Avenue's east frontage, 20th to 22nd Street, the First Presbyterian Church among them, say brick because the 1911 Sanborn sheet colours them brick, and take no course from this substrate either; 110 until T-3008, 2026-10-22, whose fifteen drafts of the background on Calumet Avenue's west frontage, 18th to 20th Street, say brick because the 1911 Sanborn sheet colours them brick, and take no course from this substrate either; 104 until T-2982, 2026-10-22, whose six drafts of the district's edges on East Twentieth Street and Calumet Avenue say brick because the 1911 Sanborn sheet colours them brick, and take no course from this substrate either: `generators/archetypes/prairie_draft.py` draws them in a flat colour; 105 until T-2543, 2026-10-16, whose refinement of the 1812 Prairie draft reads a stone lower front off Albert Levy's photograph, so it says brick with a stone front and leaves this count; 106 until T-2440, 2026-10-15, which moved the drawing of John H. Hamline's stone-fronted house from 1619 to 1621, so the 1621 draft that said brick now says brick with a stone front and leaves this count, while 1619 returns to its draft, which says stone-front masonry; 105 until T-2443, 2026-10-13, which stands the 1635 Forsyth house as a district draft that says brick because Robinson 1886 colours it so, and takes no course from this substrate either; 106 until T-2432, 2026-10-13, whose refinement of the 1625 Prairie draft reads a stone street front off the house's 1890 photograph, so it says brick with a stone front and leaves this count; 107 until T-2433, 2026-10-13, which refined the 1623 draft to Granger Farwell's stone-fronted K01 house and so took it out of this population; 16 until T-2321's `wheeler_house_1812_prairie_coach_house`, 2026-10-10, attested brick on the 1911 sheet 28, whose K12 walls are drawn in flat colour and take no course from this liberty; 4 until T-2049's `first_fort_dearborn_magazine`, 2026-10-04, attested brick by Quaife and, like the courthouse below, resolved by no scene yet, so it takes no course today; 5 until T-2329, 2026-10-10, whose eleven Prairie Avenue district drafts of 1904 say brick because the 1911 Sanborn sheet colours them brick, and take no course from this substrate either: `generators/archetypes/prairie_draft.py` draws them in a flat colour and never reads `materials.py`; 17 until T-2330, 2026-10-11, whose twelve east-side drafts of the same block say brick for the same reason and take no course from it either; 29 until T-2334, 2026-10-11, whose twenty-five drafts on the west side of the 16th-18th block say brick for the same reason, 1620's because Robinson 1886 colours it so, and take no course from it either; 54 until T-2335, 2026-10-11, whose thirteen brick drafts on the east side of the same block say brick for the same reason, and take no course from it either; 67 until T-2351, 2026-10-11, whose seventeen brick drafts on the west side of the 20th-22nd block say brick for the same reason, and take no course from it either; 84 until T-2352, 2026-10-11, whose twenty-three brick drafts on the east side of the same block say brick for the same reason, and take no course from it either). The `brick` substrate in
+ `generators/common/materials.py` has carried `tile_m = None` since T-0007, and three of the four
+ are the records that take a course the moment it carries one: `fort_dearborn_commandants_quarters`,
+ `fort_dearborn_magazine` and `lake_house_construction`. **materials.md says "two records are
+@@ -22458,7 +22458,6 @@ never increases the total.
+ **Recorded:** 2026-10-08.
+ 
+ 
+-
+ ### L405 — Thirteen invented houses on the School Section tier's Wells blocks south of Madison
+ 
+ **Decision:** the School Section's Madison–Monroe tier, which T-2144 joined to the plat on the owner's
+@@ -22504,7 +22503,6 @@ naming the block.
+ **Recorded:** 2026-10-06 (T-2146).
+ 
+ 
+-
+ ### L-glessner-tower-proportions-2172 — raised courtyard glazing
+ 
+ **Decision:** The upper dining-tower band is reconstructed at 20.9–24 ft above north grade,
+@@ -24142,7 +24140,7 @@ once.
+ 
+ ### L-draft-prairie-18-20-west-2329 — The west side of Prairie Avenue, 18th to 20th, stood up as a district draft: every height, roof, opening and feature reconstructed
+ 
+-**Covers:** `edson_keith_house_1906_prairie.draft_1904.form.draft_elevation`, `edson_keith_house_1906_prairie.draft_1904.form.draft`, `edson_keith_house_1906_prairie_coach_house.draft_1904.form.draft_elevation`, `edson_keith_house_1906_prairie_coach_house.draft_1904.form.draft`, `elbridge_keith_house_1900_prairie.draft_1904.form.draft_elevation`, `elbridge_keith_house_1900_prairie.draft_1904.form.draft`, `elbridge_keith_house_1900_prairie_coach_house.draft_1904.form.draft_elevation`, `elbridge_keith_house_1900_prairie_coach_house.draft_1904.form.draft`, `henderson_house_1816_prairie_coach_house.draft_1904.form.draft_elevation`, `henderson_house_1816_prairie_coach_house.draft_1904.form.draft`, `house_1828_prairie.draft_1904.form.draft_elevation`, `house_1828_prairie.draft_1904.form.draft`, `house_1828_prairie_coach_house.draft_1904.form.draft_elevation`, `house_1828_prairie_coach_house.draft_1904.form.draft`, `house_1918_prairie.draft_1904.form.draft_elevation`, `house_1918_prairie.draft_1904.form.draft`, `house_1918_prairie_coach_house.draft_1904.form.draft_elevation`, `house_1918_prairie_coach_house.draft_1904.form.draft`, `jones_house_1834_prairie.draft_1904.form.draft_elevation`, `jones_house_1834_prairie.draft_1904.form.draft`, `jones_house_1834_prairie_coach_house.draft_1904.form.draft_elevation`, `jones_house_1834_prairie_coach_house.draft_1904.form.draft`, `marsh_house_1824_prairie.draft_1904.form.draft_elevation`, `marsh_house_1824_prairie.draft_1904.form.draft`, `marsh_house_1824_prairie_coach_house.draft_1904.form.draft_elevation`, `marsh_house_1824_prairie_coach_house.draft_1904.form.draft`, `moulton_lowden_house_1912_prairie.draft_1904.form.draft_elevation`, `moulton_lowden_house_1912_prairie.draft_1904.form.draft`, `moulton_lowden_house_1912_prairie_coach_house.draft_1904.form.draft_elevation`, `moulton_lowden_house_1912_prairie_coach_house.draft_1904.form.draft`, `shed_1834_1900_prairie.draft_1904.form.draft_elevation`, `shed_1834_1900_prairie.draft_1904.form.draft`.
++**Covers:** `edson_keith_house_1906_prairie.draft_1904.form.draft_elevation`, `edson_keith_house_1906_prairie.draft_1904.form.draft`, `edson_keith_house_1906_prairie_coach_house.draft_1904.form.draft_elevation`, `edson_keith_house_1906_prairie_coach_house.draft_1904.form.draft`, `elbridge_keith_house_1900_prairie.draft_1904.form.draft_elevation`, `elbridge_keith_house_1900_prairie.draft_1904.form.draft`, `elbridge_keith_house_1900_prairie_coach_house.draft_1904.form.draft_elevation`, `elbridge_keith_house_1900_prairie_coach_house.draft_1904.form.draft`, `henderson_house_1816_prairie_coach_house.draft_1904.form.draft_elevation`, `henderson_house_1816_prairie_coach_house.draft_1904.form.draft`, `house_1828_prairie_coach_house.draft_1904.form.draft_elevation`, `house_1828_prairie_coach_house.draft_1904.form.draft`, `house_1918_prairie.draft_1904.form.draft_elevation`, `house_1918_prairie.draft_1904.form.draft`, `house_1918_prairie_coach_house.draft_1904.form.draft_elevation`, `house_1918_prairie_coach_house.draft_1904.form.draft`, `jones_house_1834_prairie.draft_1904.form.draft_elevation`, `jones_house_1834_prairie.draft_1904.form.draft`, `jones_house_1834_prairie_coach_house.draft_1904.form.draft_elevation`, `jones_house_1834_prairie_coach_house.draft_1904.form.draft`, `marsh_house_1824_prairie_coach_house.draft_1904.form.draft_elevation`, `marsh_house_1824_prairie_coach_house.draft_1904.form.draft`, `moulton_lowden_house_1912_prairie.draft_1904.form.draft_elevation`, `moulton_lowden_house_1912_prairie.draft_1904.form.draft`, `moulton_lowden_house_1912_prairie_coach_house.draft_1904.form.draft_elevation`, `moulton_lowden_house_1912_prairie_coach_house.draft_1904.form.draft`, `shed_1834_1900_prairie.draft_1904.form.draft_elevation`, `shed_1834_1900_prairie.draft_1904.form.draft`.
+ **Decision:** the owner's district pass (2026-10-08) drafts the whole of Prairie Avenue as a
+ serviceable first model that the per-building tickets then refine in place. On the west side of
+ the 18th-20th block (Sanborn 1911 sheet 28) it stands nine houses and nine alley buildings —
+@@ -24194,13 +24192,15 @@ the house, its posts and roof left to the house's own pass.
+ `draft.replaceable_by`) replaces its attributes in place, under the same id, from a photograph,
+ plate, plan or measured drawing; the alley buildings are T-1935's.
+ **Retired in part:** 1816 Henderson's house by T-2963 (piece 1 of T-1886), which refined it in place on the K01 frontage kit under `L-k01-1816-henderson-2963`; its stable is still this draft's.
++**Retired in part:** 1828 Shipman's house by T-3166 (piece 1 of T-1887), which refined it in place on the K01 frontage kit under `L-k01-1828-shipman-1887`; its stable is still this draft's.
++**Retired in part:** 1824 Pomeroy/Marsh's house by T-3167 (piece 2 of T-1887), which refined it in place on the K01 frontage kit under `L-k01-1824-marsh-1887`; its stable is still this draft's.
+ **Ticket:** T-2329 (piece 1 of T-2159, the district draft's 18th-20th block).
+ **Review:** `docs/RESEARCH/prairie-draft-west-2329/README.md`.
+ **Recorded:** 2026-10-10 (T-2329).
+ 
+ ### L-draft-prairie-18-20-east-2330 — The east side of Prairie Avenue, 18th to 20th, stood up as a district draft: every height, roof, opening and feature reconstructed
+ 
+-**Covers:** `armour_corwith_house_1945_prairie.draft_1904.form.draft_elevation`, `armour_corwith_house_1945_prairie.draft_1904.form.draft`, `armour_corwith_house_1945_prairie_coach_house.draft_1904.form.draft_elevation`, `armour_corwith_house_1945_prairie_coach_house.draft_1904.form.draft`, `coleman_ames_house_1811_prairie_coach_house.draft_1904.form.draft_elevation`, `coleman_ames_house_1811_prairie_coach_house.draft_1904.form.draft`, `dent_house_1823_prairie.draft_1904.form.draft_elevation`, `dent_house_1823_prairie.draft_1904.form.draft`, `doane_house_1827_prairie.draft_1904.form.draft_elevation`, `doane_house_1827_prairie.draft_1904.form.draft`, `doane_house_1827_prairie_coach_house.draft_1904.form.draft_elevation`, `doane_house_1827_prairie_coach_house.draft_1904.form.draft`, `kellogg_house_1923_prairie.draft_1904.form.draft_elevation`, `kellogg_house_1923_prairie.draft_1904.form.draft`, `kellogg_house_1923_prairie_coach_house.draft_1904.form.draft_elevation`, `kellogg_house_1923_prairie_coach_house.draft_1904.form.draft`, `marshall_field_house_1905_prairie.draft_1904.form.draft_elevation`, `marshall_field_house_1905_prairie.draft_1904.form.draft`, `marshall_field_house_1905_prairie_coach_house.draft_1904.form.draft_elevation`, `marshall_field_house_1905_prairie_coach_house.draft_1904.form.draft`, `marshall_field_jr_house_1919_prairie.draft_1904.form.draft_elevation`, `marshall_field_jr_house_1919_prairie.draft_1904.form.draft`, `ream_house_1901_prairie.draft_1904.form.draft_elevation`, `ream_house_1901_prairie.draft_1904.form.draft`, `ream_house_1901_prairie_coach_house.draft_1904.form.draft_elevation`, `ream_house_1901_prairie_coach_house.draft_1904.form.draft`, `sears_meeker_house_1815_prairie_coach_house.draft_1904.form.draft_elevation`, `sears_meeker_house_1815_prairie_coach_house.draft_1904.form.draft`.
++**Covers:** `armour_corwith_house_1945_prairie.draft_1904.form.draft_elevation`, `armour_corwith_house_1945_prairie.draft_1904.form.draft`, `armour_corwith_house_1945_prairie_coach_house.draft_1904.form.draft_elevation`, `armour_corwith_house_1945_prairie_coach_house.draft_1904.form.draft`, `coleman_ames_house_1811_prairie_coach_house.draft_1904.form.draft_elevation`, `coleman_ames_house_1811_prairie_coach_house.draft_1904.form.draft`, `doane_house_1827_prairie_coach_house.draft_1904.form.draft_elevation`, `doane_house_1827_prairie_coach_house.draft_1904.form.draft`, `kellogg_house_1923_prairie.draft_1904.form.draft_elevation`, `kellogg_house_1923_prairie.draft_1904.form.draft`, `kellogg_house_1923_prairie_coach_house.draft_1904.form.draft_elevation`, `kellogg_house_1923_prairie_coach_house.draft_1904.form.draft`, `marshall_field_house_1905_prairie.draft_1904.form.draft_elevation`, `marshall_field_house_1905_prairie.draft_1904.form.draft`, `marshall_field_house_1905_prairie_coach_house.draft_1904.form.draft_elevation`, `marshall_field_house_1905_prairie_coach_house.draft_1904.form.draft`, `marshall_field_jr_house_1919_prairie.draft_1904.form.draft_elevation`, `marshall_field_jr_house_1919_prairie.draft_1904.form.draft`, `ream_house_1901_prairie.draft_1904.form.draft_elevation`, `ream_house_1901_prairie.draft_1904.form.draft`, `ream_house_1901_prairie_coach_house.draft_1904.form.draft_elevation`, `ream_house_1901_prairie_coach_house.draft_1904.form.draft`, `sears_meeker_house_1815_prairie_coach_house.draft_1904.form.draft_elevation`, `sears_meeker_house_1815_prairie_coach_house.draft_1904.form.draft`.
+ **Decision:** the second half of the 18th-20th block's draft (T-2330, piece 2 of T-2159), run by
+ the same builder under the same rules as `L-draft-prairie-18-20-west-2329`, whose "What is
+ invented" and "What is not" hold here word for word: the heights, roof families and pitches, bay
+@@ -24233,6 +24233,11 @@ gone, and its stable keeps `coleman_ames_house_1811_prairie_coach_house` here.
+ **1815 retired from this liberty by T-3155 (2026-10-25):** the house now stands as the K01
+ stone-front house under `L-k01-1815-sears-1893`, under the same id; its draft attributes are gone,
+ and its coach house keeps `sears_meeker_house_1815_prairie_coach_house` here.
++**1823 retired from this liberty by T-3162 (2026-10-26):** the house now stands as the K01
++stone-front house under `L-k01-1823-dent-1894`, under the same id; its draft attributes are gone.
++**1827 retired from this liberty by T-3171 (2026-10-26):** the Doane house's main block now stands as the K01 stone house
++read off the Chicagology photograph, under `L-k01-1827-doane-3171`, under the same id; its draft attributes are gone. Its coach
++house stays this draft's.
+ **Ticket:** T-2330 (piece 2 of T-2159, the district draft's 18th-20th block).
+ **Review:** `docs/RESEARCH/prairie-draft-east-2330/README.md`.
+ **Recorded:** 2026-10-11 (T-2330).
+@@ -26374,6 +26379,46 @@ the rest stands open on the two match records.
+ **Ticket:** T-3155 (piece 1 of T-1893), T-3156 (piece 2).
+ **Review:** `docs/RESEARCH/k01-1815-sears-1893/README.md`.
+ **Recorded:** 2026-10-25 (T-3155).
++
++### L-k01-1823-dent-1894 — 1823 Prairie refined from the district draft to a K01 stone-front house under a mansard, its south pavilion, window groups and stacks read off its pictures
++
++**Decision:** the house at 1823 Prairie Avenue, Thomas Dent's (T-3162, piece 1 of T-1894), is no
++longer a district draft. It stands, under the draft's own id `dent_house_1823_prairie`, as a
++`k01_frontage` record built by `generators/k01_emit.py`, against its two pictures: the Chicagology
++engraving after a photograph (`chicagology_1823_dent_engraving`, undated; rights check_required:
++forms and proportions only) and the 1883 New Chicago Album vignette of the same view
++(`newberry_new_chicago_album_1883_residences`, no known restrictions). A smooth light stone front on
++brick flanks, two storeys over a raised basement under a slated mansard with dormers; a pavilion at
++the front's south end, flush with the south wall, under a steep hipped crown; a group of three
++windows to a storey in the front's north part; the door beside the pavilion up its stoop; a moulded
++cornice; tall stacks; a two-storey rear range.
++**What is read, not invented.** From the 1911 Sanborn sheet 28 (trace s28fp-1823-b1, census
++s28-1823-front and s28-1823-wing): the front block's place and plan (13.88 m along the front between
++the north wall at lot v -7.71 and the south wall at 6.17, the front's main plane at lot u 32.85), the
++pavilion's projection (lot v 0.43-6.15, 1.12 m forward), the rear range's narrowing and depth, 'brick',
++'3B; rear2B'. From the engraving, through its camera
++(`data/reference_views/dent_house_1823_prairie/chicagology_engraving.json`): the principal floor, the
++storey heights and the wall head, the street windows' places, the pavilion's windows, the north flank's
++window columns, the dormers' places, the mansard's curb, the north stack's place and top. From the
++vignette: the stone front against the brick flank, and the same composition dated 1883.
++**What is invented.** The walls' thickness; which stone (K02's Bedford limestone: the pictures say
++light and smooth, and K02's Lemont profile cannot course a 2.35 m base) and its two-course base; the
++brick's colour; the south flank's and the rear's windows (no picture sees them); the rear range's
++windows on its south flank and rear and its flat deck; the mansard's deck; the south stack's place;
++the stacks' plans; the rainwater; the sash pattern.
++**What is not built.** The pavilion's pediment of paired lights in front of its steep roof, which
++stands about 2 m higher than K05's steepest hipped crown reaches; the mansard's cresting; the broad
++carved pediment over the triple group (K05's gable head over one sash); the north flank's paired
++lights under one pediment; the north flank's one-storey box bay under a hood; the stack at the north
++flank's rear, over the rear range, where K01 stands no stack; the stoop that climbs from the north;
++the narrow light beside the door; the grilled arched basement doorway under the landing; the moulded
++window heads and surrounds: open on the match record.
++**How to resolve:** T-3163 (piece 2 of T-1894) builds those, solves the 1883 vignette's camera, and
++brings the match records to `matches`.
++**Covers:** `dent_house_1823_prairie.as_mapped_1904.form.wall_thickness_front_m`, `dent_house_1823_prairie.as_mapped_1904.form.wall_thickness_side_m`, `dent_house_1823_prairie.as_mapped_1904.form.service_wall_brick`, `dent_house_1823_prairie.as_mapped_1904.form.stair_tread_m`, `dent_house_1823_prairie.as_mapped_1904.form.roof_pitch_deg`, `dent_house_1823_prairie.as_mapped_1904.form.window_kit`, `dent_house_1823_prairie.as_mapped_1904.form.rainwater`, `dent_house_1823_prairie.as_mapped_1904.form.stair_landing_depth_m`, `dent_house_1823_prairie.as_mapped_1904.form.north_bays`, `dent_house_1823_prairie.as_mapped_1904.form.rear_bays`
++**Ticket:** T-3162 (piece 1 of T-1894).
++**Review:** `docs/RESEARCH/k01-1823-dent-1894/README.md`.
++**Recorded:** 2026-10-26 (T-3162).
+ ### L-k01-1625-mcbirney-tudor-2432 — 1625 Prairie refined from the district draft to a K01 rock-faced stone front read off its 1890 photograph, its steep wall gable stood in for by a dormer until K01 can raise one
+ 
+ **Decision:** the house at 1625 Prairie Avenue (T-2432, piece 1 of T-1869) is no longer a district
+@@ -31567,7 +31612,6 @@ set by hand and judged by eye; no source describes a Prairie Avenue elm's limbs.
+ **Recorded:** 2026-10-22 (T-3017).
+ 
+ 
+-
+ ### L-workwear-coverage-1789 — Source-owned work clothes, closed shoes and reconstructed eyes
+ 
+ **Decision:** The original 1835 worker authoring uses full-body source-shared normal ease, source-triangle garment boundaries, a collar joined to the shirt before reduction, a closed shoe loft and original opaque sclera/iris/pupil surfaces. These are reconstructed construction choices, not recorded garments or individual likenesses. Existing L418/source and resident identity limits remain.
+@@ -33529,7 +33573,6 @@ the stable, ranges and porte-cochere in `pullman_house_1729_prairie_ranges`.
+ **Recorded:** 2026-10-25 (T-1880).
+ 
+ 
+-
+ ### L-lighthouse-visible-prototype-2373 — Picture-bounded lighthouse form
+ 
+ **Covers:** `chicago_lighthouse_1832.tower_1832.form.tower_diameter_m`, `chicago_lighthouse_1832.tower_1832.form.tower_openings`, `chicago_lighthouse_1832.tower_1832.form.tower_profile`, `chicago_lighthouse_1832.tower_1832.form.tower_lantern_detail`, `chicago_lighthouse_1832.tower_1832.form.tower_masonry`.
+@@ -33549,6 +33592,7 @@ the stable, ranges and porte-cochere in `pullman_house_1729_prairie_ranges`.
+ **Ticket:** T-3122, a bounded visible increment; original T-2373 remains open.
+ 
+ **Recorded:** 2026-10-24; adopted 2026-10-25 (T-3122). Freshly baked with the pinned Blender through the current producer: the lighthouse master carries 8,021 triangles and the other 24 fort-family masters and web derivatives come out byte-identical. The overall height the profile reaches is 12.84968 m against the unchanged 12.19 m (40 ft) wall-height literal, whose datum stays unresolved.
++
+ ### L-k01-1729-pullman-heads-3157 — 1729 Prairie's arched windows and dormers read off the Detroit print, their mouldings laid as K02 voussoir rings and plain surrounds
+ 
+ **Decision:** the Pullman house's Prairie front (T-3157, a piece of T-1881) now lays the Detroit
+@@ -33578,6 +33622,354 @@ closer to the front than this one (T-3161) replaces the rings with the mouldings
+ **Review:** `docs/RESEARCH/photo-match/pullman_house_1729_prairie/detroit_det_4a08065-side-by-side.jpg`.
+ **Recorded:** 2026-10-25 (T-3157).
+ 
++### L-green-tree-right-front-entry — Green Tree front-ground opening order
++
++**Covers:** `green_tree_tavern.frame_1833.form.front_ground_layout`.
++
++**Decision:** Render two lower sash to the viewer's left of a rightmost entrance on the main +y front gable only. This revises the archetype's centre-door/flanking-sash assumption. The actual whole Andreas1884 p634/n1301, Trowbridge/Gale1902 facing printedp35/n55 and Kurz1893 panel11 agree about relative opening order, not exact July1835 state or dimensions. Kurz may derive from Andreas and Trowbridge may rely on later material. An exterior +y view reverses the local-u axis: the declared ascending LOCAL fractions [.20,.50,.78] mean door,sash,sash and project to viewer-left sash,sash,door. The unchanged bearing and provisional camera are not flipped to fit a picture. Exact fractions, retained .85×1.35m sash and1.20×2.10m door stock, vertical bands, casing, joinery and hidden treatment are **reconstructed**, not measured. The attribute remains reconstructed; stronger metrics grades are refused.
++
++**Source:** `andreas_1884_green_tree_hotel_plate`, `trowbridge_green_tree_1902`, `kurz_allison_1893`; retain their existing publication credits/locators and qualified chronology/dependence notes. Existing public-domain underlying artwork status is unchanged. Exclude `chm_green_tree_1859` (check_required/unverified) and the engraving distributed as site1859.jpg from governing geometry; that filename does not verify CHM photographic identity or license later shopfront fittings in1835.
++
++**Native access:** The pure engine-neutral `resolved_front_ground_stations` dataclass property supplies the same actual local door centre to the mesh and to `generate_entrances.front_doors` after exact sidecar-selected SOURCE-phase resolution. The builder and native front reader both consume the actual property directly; its numeric value is already included by the unchanged native recipe, so there is no unhashed geometry helper or hash-only proxy. Preserve primary front-wall semantics and the generic facade API's frame_tavern UNREAD state. New threshold, trodden approach and doorway-clearance zone must follow the moved door. Absent control retains centred defaults and native metadata exactly. No new side door, renderer API or wider façade inventory is inferred.
++
++**Limits:** Upper two-versus-three sash, attic, text-attested south-side entrance, ell/other additions, roof, finish, geographic placement, camera and all previous uncertainties remain unchanged. No historical date, dimension, hidden feature, rights or grade promotion. Preserve historical ledger entries; this paragraph revises only the front-ground opening assumption. The earlier externalV1 mirrored the source and left native access centred; externalV2 corrected those but its plain geometry helper escaped recipe freshness: it is blocked/unadopted and remains immutable, not silently overwritten.
++
++**How to resolve:** Genuine current-source23family exports/default parity, source-specific cameras and actual app/native/source-card side-by-sides. CPU projection/layout agreement is not a render, dated1835 attestation or `matches` verdict. All original image comparisons remain DIFFERS.
++
++**Ticket:** T-2376; the original image-match ticket remains open until its visible discrepancies are resolved. No follow-up ticket is filed.
++
++**Recorded:** 2026-10-25.
++
++
++### L-k01-1828-shipman-1887 — 1828 Prairie refined from the district draft to a K01 stone-front house under a mansard, its canted bay and arched porch read off its photographs
++
++**Decision:** the house at 1828 Prairie Avenue, Daniel B. Shipman's (T-3166, piece 1 of T-1887),
++is no longer a district draft. It stands, under the draft's own id `house_1828_prairie`, as a
++`k01_frontage` record built by `generators/k01_emit.py`, against the automobile photograph
++(`chicagology_1828_shipman_automobile`, about 1897-1906) and the Glessner House Museum's partial view
++(`glessner_blog_1828_shipman_partial`, undated), both rights check_required (forms and proportions
++only): a light ashlar front two tall storeys over a raised basement, a canted bay through both
++storeys on the front's south part, a porch on columns with a deep entablature and a balustrade at the
++stoop's head on its recessed north part, a moulded stone cornice and a slated mansard with dormers, a
++round bay and a canted bay on the south flank, the rear range, and an iron fence on a stone curb.
++**What is read, not invented.** From the 1911 Sanborn sheet 28 (trace s28fp-1828-b1, census
++s28-1828-front): the front block's place and plan (19.4 by 8.2 m), the front bay's width and
++projection, the south flank's round and canted bays, the rear range ('rear2B'), brick with a stone
++front. From the automobile photograph, through its solved camera
++(`data/reference_views/house_1828_prairie/chicagology_automobile.json`): the principal floor, the
++principal storey and its windows' heights, the bay's windows, the porch's place, height, entablature
++and balustrade, the basement windows, the fence. From the partial view: the second storey's height in
++proportion, the cornice, the mansard and its two street dormers. Every height rests on the camera's
++distance (its `solve`).
++**What is invented.** The walls' thickness and the flanks' brick and its tone (the prints are
++monochrome); the mansard's deck and its pitch; the treads; the flank, north and rear walls' windows,
++and the flank bays' storeys, windows and roofs (no picture sees them); the stacks' places; the
++rainwater; the sash pattern; the rear range's storeys, windows and flat deck; the side gate.
++**What is not built.** The porch's round arches and its third column, its carving and its stone
++balustrade; the stoop's balustered cheeks; the bay's panelled pilasters; the basement windows' full
++height; the bay carried up into the mansard with its own dormer; and the print's stretch of front
++wall south of the bay, which the sheet does not draw: open on the match record for T-3168.
++**How to resolve:** T-3168 builds those, solves the partial view's camera, and brings both match
++records to `matches`.
++**Covers:** `house_1828_prairie.as_mapped_1904.form.wall_thickness_front_m`, `house_1828_prairie.as_mapped_1904.form.wall_thickness_side_m`, `house_1828_prairie.as_mapped_1904.form.service_wall_brick`, `house_1828_prairie.as_mapped_1904.form.roof_pitch_deg`, `house_1828_prairie.as_mapped_1904.form.stair_tread_m`, `house_1828_prairie.as_mapped_1904.form.side_bays`, `house_1828_prairie.as_mapped_1904.form.north_bays`, `house_1828_prairie.as_mapped_1904.form.rear_bays`, `house_1828_prairie.as_mapped_1904.form.chimneys`, `house_1828_prairie.as_mapped_1904.form.rainwater`, `house_1828_prairie.as_mapped_1904.form.window_kit`
++**Ticket:** T-3166 (piece 1 of T-1887).
++**Review:** `docs/RESEARCH/k01-1828-shipman-1887/README.md`.
++**Recorded:** 2026-10-26 (T-3166).
++
++### L-pullman-glasshouses-1800-calumet-3164 — Pullman's glasshouse ranges and lodge across 18th Street, read off the 1911 sheet and glazed from the K13 kit
++
++**Decision:** the 1904 scene gains the Pullman estate's glasshouse ground at 1800 S. Calumet Avenue,
++across 18th Street from the house (T-3164, piece 1 of T-1934), which the district draft left as open
++grass because the sheet-28 trace never drew it (`L-draft-prairie-16-18-east-2335`; this entry
++supersedes that paragraph's note that the ground is left to T-1934). Five records: the cross-shaped
++pavilion at the head of the north range (`pullman_glasshouse_1800_calumet_pavilion`), the north-south
++range (`_north`), the east-west range (`_east`) and its narrower rounded end (`_east_end`), all built
++by `generators/k13_emit.py` from the K13 kit (`L-k13-conservatory-kit-2305`), and the two-storey brick
++lodge at the angle (`pullman_lodge_1800_calumet`) on the district draft's builder. **What is read.**
++Each outline, between the drawn lines' centres on the committed sheet 28 raster, carried by the sheet's
++fitted similarity (1.47 m RMS on independent houses): the pavilion's long arm 8.34 by 12.59 m, the north
++range 8.90 by 23.71 m, the east range 7.13 by 16.83 m, the end 5.56 m wide ending in a semicircle, the
++lodge 8.95 by 11.58 m; one storey on every glasshouse and two on the lodge, as printed; 'GREEN HO.' and
++'GLASS ROOF' as lettered. Inferred for 1904 on the sheet-28 census's allocation
++(`s28-pullman-service-garden`), which rests on the image research placing Beman's conservatory across
++18th Street, toward Calumet. **What is invented.** Every size above the plan: the eaves (3.4 m on the
++pavilion, 2.6 m on the north range, 2.4 m on the east range and its end), the 30 degree glass roofs, the
++pavilion's lantern, the bay counts, the ridge ventilators, the plinths, gutters and staging of the kit,
++and the pavilion's door in its north end. The rounded end is the kit's new `span_apse` form: seven planar
++facets under a half-cone of glass, its apex carried 0.7 m past the springing. The lodge is a hipped two-storey brick block with three bays on its
++alley front, a door at its south end and one stack, the draft rules' brick-family values; nothing
++describes it beyond the sheet's '2' and 'D', and the census itself grades it reconstructed.
++**What is not built.** The pavilion's middle arms (the cross is built as its long arm alone, 1.3 m and
++1.4 m short of the drawn width over 7 m of its length), the quarter-round one-storey piece in the angle
++north of the east range, and the dashed partition across the east range. Where two houses meet, one end
++wall stands for both (the kit's `abuts`), so no line of sight crosses a second glass envelope; the
++pavilion stops 5 cm short of the north range's end for the same reason. **Two readings of the sheet.**
++This copy washes the lodge pink in a triangle that runs diagonally into the east range; the lodge is read
++as the rectangle its lines and the dashed east line bound, and the wash as the colourist's. That is also
++why the outlines are read by hand at named pixels (as `L-k13-pullman-bay-2306` read the house's bay off
++sheet 20) and not by `tools/trace_prairie_1904_footprints.py`, whose colour rule would follow the wash.
++**How to resolve:** T-3165 solves the 1894 plates and the conservatory and palm-house photographs and
++works every one of these to them: the pavilion's true form and height, the ranges' sections, the lodge's
++face, and the building date the census reads off the 1894 plate.
++**Covers:** `pullman_glasshouse_1800_calumet_pavilion.as_standing_1904.form.conservatory`, `pullman_glasshouse_1800_calumet_pavilion.as_standing_1904.form.construction`, `pullman_glasshouse_1800_calumet_pavilion.as_standing_1904.form.stories`, `pullman_glasshouse_1800_calumet_north.as_standing_1904.form.conservatory`, `pullman_glasshouse_1800_calumet_north.as_standing_1904.form.construction`, `pullman_glasshouse_1800_calumet_north.as_standing_1904.form.stories`, `pullman_glasshouse_1800_calumet_east.as_standing_1904.form.conservatory`, `pullman_glasshouse_1800_calumet_east.as_standing_1904.form.construction`, `pullman_glasshouse_1800_calumet_east.as_standing_1904.form.stories`, `pullman_glasshouse_1800_calumet_east_end.as_standing_1904.form.conservatory`, `pullman_glasshouse_1800_calumet_east_end.as_standing_1904.form.construction`, `pullman_glasshouse_1800_calumet_east_end.as_standing_1904.form.stories`, `pullman_lodge_1800_calumet.as_standing_1904.form.draft_elevation`.
++**Ticket:** T-3164.
++**Recorded:** 2026-10-26 (T-3164).
++
++### L-pullman-1729-pavilions-3158 — 1729 Prairie's front divided into pavilions off the Detroit print: piers, frieze, modillions and mansard ribs, their places read and their sections reconstructed
++
++**Decision:** the Pullman house's Prairie front (T-3158, a piece of T-1881) is divided into pavilions as
++the Detroit Publishing photograph (`loc_det_4a08065_pullman_residence`) shows it, through its solved
++camera `data/reference_views/pullman_house_1729_prairie/detroit_det_4a08065.json`: three rusticated
++piers in the front's brownstone and a fourth turning the south-west corner onto 18th Street, from the
++base's coping to the cornice's bed; the moulded stone cornice broken forward over each; a deep frieze
++between the second storey's heads and the cornice, with a bed course and framed panels between the
++piers; a row of modillions under the cornice's corona all round; raised ribs on the mansard's Prairie
++face over the first two piers; and the north-west pavilion's own dormer (`street_front_pavilions`, built
++by `generators/archetypes/k01_pavilions.py`, and a fifth entry in `mansard.dormers`).
++**What is read, not invented.** Each pier's place and width along the front (x 363-380, 412-428 and
++497-515 px, about 1.2 m each), the corner's banded return, the ribs' places (x 369-379 and 413-423), the
++frieze's depth between the window heads (about 10.6 m) and the cornice (about 12.0 m), the modillions'
++existence as a dotted band under the corona, and the north-west dormer's place and size. The print gives
++14-16 px a metre on the front.
++**What is invented.** The banding's rhythm and depth (0.4 m courses, 0.1 m channels, a 0.15 m step in
++and out, 0.15 m proud): the print shows long-and-short banded courses but not their joints to a
++centimetre. The third pier is held to v 14.74, 0.15 m short of its reading, so it stands clear of the
++south windows' voussoir rings. The frieze's bed course (10.70-10.86 m) and its panels' number and
++framing (one panel up to 2.6 m long between each pair of piers, framed in 0.1 m strips 0.08 m proud):
++the print reads the frieze as a band of shadowed panels. The modillions' size and pitch (0.15 m wide,
++0.25 m out, every 0.5 m) and their run round the walls the print does not see. The ribs' 0.6 m section
++and their brownstone (the print, monochrome, gives them the walls' tone). The north-west dormer stands
++at v 1.5, 0.1 m off the print's centre, the nearest the mansard's hip lets its face stand. The curb's
++step between the sections (about 0.15 m) is not built.
++**How to resolve:** a picture closer to the front (T-3161: the Albertype plate, the CHM and Taylor
++views) replaces the banding's rhythm, the panels and the modillions with what it shows.
++**Ticket:** T-3158.
++**Review:** `docs/RESEARCH/photo-match/pullman_house_1729_prairie/detroit_det_4a08065-side-by-side.jpg`.
++**Recorded:** 2026-10-26 (T-3158).
++
++### L-k01-1816-henderson-crowns-2964 — 1816 Prairie's two canted bays carried up into crowned mansards of their own, under iron cresting, read off its photograph
++
++**Decision:** 1816 Prairie's photograph (`chicagology_1816_henderson_photo`) shows both canted bays
++carried up past the cornice into mansards of their own — the front's a raised crown over the corner,
++the flank's lower — each under iron cresting, with cresting along the main deck's street curb,
++square-headed dormers under pediments, and a fence of cast-iron scrollwork. T-2964 (piece 2 of T-1886)
++builds them: K08 learns a mansard bay roof (`roof.mansard`: a lower face at one pitch to a curb, then
++a deck), K10's bracketed cornice may run round a bay on any wall, the bays' crowns carry K10's iron
++cresting round their curbs, and the main deck's cresting may stand on the sides a picture shows
++(`mansard.deck.cresting.sides`). Every other K01, K12, K13 and K16 asset rebuilt byte-identical.
++**What is read, not invented.** Through the photograph's solved camera: that both bays rise through
++the cornice under their own mansards and cresting; their rises as fractions of the wall under them
++(the front's crown about a third of the corner's height, its deck 0.4 m over the main curb; the
++flank's about two-fifths), good to about half a metre; the cresting on the main deck's street curb;
++the dormers' pediments; the stack's place behind the front's south end.
++**What is invented.** Both crowns' lower faces at 76 degrees and their decks at a tenth; the
++cresting's pattern and its 0.6 m height (K10's iron ridge cresting, as 1801's deck carries it — the
++print's panels read only as a dense pierced band); the dormers' pediments at 40 degrees; the fence's
++pattern (K11's scroll band, the nearest the kit has to the print's full-height scrollwork). The main
++deck's south, north and rear curbs carry no cresting: the south shows none behind the flank's crown,
++the other two are out of the camera's sight.
++**What is not built.** The dormers in the crowns' own faces, the window hoods' carved crests, the
++balcony's metre-high pierced railing with the window over the door opened onto it, and the brick's
++dark tone: open on the match record. The 1874 Land Owner engraving is not read.
++**How to resolve:** a K08 crown dormer, a door-height opening over a K01 door hood, a crested K09
++hood, and a brick tone a picture can carry on a house with no stone front.
++**Ticket:** T-2964 (piece 2 of T-1886).
++**Recorded:** 2026-10-25 (T-2964).
++
++
++### L-k01-1824-marsh-1887 — 1824 Prairie refined from the district draft to a K01 house: the 1857 Pomeroy villa's flanks and bracketed eaves behind the stone front of about 1880, its cupola ruled out of 1904
++
++**Decision:** the house at 1824 Prairie Avenue, Samuel B. Pomeroy's villa of 1857 refaced in stone
++for George B. Marsh after he bought it in 1880 (T-3167, piece 2 of T-1887), is no longer a district
++draft. It stands, under the draft's own id `marsh_house_1824_prairie`, as a `k01_frontage` record
++built by `generators/k01_emit.py`: brick flanks two tall storeys over a raised basement under a deep
++bracketed cornice and a low hip, behind a stone front with a canted bay through both storeys at its
++south end and a porch on columns under a balustraded balcony at its north end; the rear range; an iron
++fence on a curb. The pictures, all rights check_required and read for forms and proportions only: the
++Pomeroy photograph (`glessner_blog_1824_pomeroy_italianate`, before about 1880), read only for what
++the stone front did not change; the right side of the automobile photograph of 1828
++(`chicagology_1828_shipman_automobile`, about 1897-1906) and of the partial view of 1828
++(`glessner_blog_1828_shipman_partial`), which show 1824's stone front and south flank.
++**What is read, not invented.** From the 1911 Sanborn sheet 28 (trace s28fp-1824-b1, census
++s28-1824-front and s28-1824-wing): the main block's place and plan (12.1 by 9.1 m), the stone strip
++of the new front, the canted bay's width and projection, the stone piece before the north part that
++the porch stands on, the rear range ('rear2B') and its run past the south flank, brick with a stone
++front. From the automobile photograph: the front's composition (bay at the south, entrance porch with
++balcony at the north, stone cheeks, the bay's windows one to a face, its belt and cornice under the
++frieze, the fence). From the Pomeroy photograph: the storeys over a raised basement, the bracketed
++cornice and its eave, the low hip, the lower block beside the main one, the stacks on the flanks. From
++the Glessner House Museum's blog: the stone front of about 1880.
++**What is invented.** Every size the sheet does not give: the floor, storey and window heights (read
++in proportion off unscaled prints; no camera is solved for 1824 yet), the walls' thickness and the
++flanks' brick and its tone, the front stone's quarry, the hip's pitch and covering, the treads, the
++flank windows' number and places, the stacks' places, the rainwater, the sash pattern, the rear
++range's storeys, windows and flat deck, the gates.
++**Ruled.** The cupola the Pomeroy photograph shows before 1880 is not built in 1904: no picture after
++the stone front shows the roof, the sheet prints no lantern, and its '½' storey is met by the attic
++behind the frieze. Recorded as uncertain; a picture of the roof after 1880 overturns it.
++**What is not built.** The flank windows' round heads under hoods (K01 cuts a flank's windows flat);
++the frieze's panels between the brackets; the flanks' light painted or stuccoed finish; the bay's
++pilasters and their incised blocks; the rear range's low hip (a pitched K01 wing is slated, from 45
++degrees) and the bay the sheet draws on its south wall (a K01 wing carries no bay); the one-storey
++projection low on the south flank in the partial view.
++**How to resolve:** T-3168 solves 1824's cameras on the automobile photograph and the partial view,
++builds what is open, and brings the match records to `matches`.
++**Covers:** `marsh_house_1824_prairie.as_mapped_1904.form.wall_thickness_front_m`, `marsh_house_1824_prairie.as_mapped_1904.form.wall_thickness_side_m`, `marsh_house_1824_prairie.as_mapped_1904.form.service_wall_brick`, `marsh_house_1824_prairie.as_mapped_1904.form.roof_pitch_deg`, `marsh_house_1824_prairie.as_mapped_1904.form.roof_covering`, `marsh_house_1824_prairie.as_mapped_1904.form.stair_tread_m`, `marsh_house_1824_prairie.as_mapped_1904.form.side_bays`, `marsh_house_1824_prairie.as_mapped_1904.form.north_bays`, `marsh_house_1824_prairie.as_mapped_1904.form.rainwater`, `marsh_house_1824_prairie.as_mapped_1904.form.window_kit`
++**Ticket:** T-3167 (piece 2 of T-1887).
++**Review:** `docs/RESEARCH/k01-1824-marsh-3167/README.md`.
++**Recorded:** 2026-10-26 (T-3167).
++
++### L-pullman-1729-portico-3159 — 1729 Prairie's portico off the Detroit print: two columns and the flight read, the rest of the row and the balustrade's section reconstructed
++
++**Decision:** the Pullman house's Prairie portico (T-3159, a piece of T-1881) is rebuilt as the Detroit
++Publishing photograph (`loc_det_4a08065_pullman_residence`) shows it, through its solved camera
++`data/reference_views/pullman_house_1729_prairie/detroit_det_4a08065.json`: the door's hood laid in the
++front's brownstone rather than painted joinery (`entrance_kit…hood.fabric: stone`), carried on four
++columns (`hood.columns.at_v_m`) and railed by a stone balustrade (`hood.railing_fabric: stone`), and the
++flight narrowed to the sheet's stoop (2.6 m, `stoop_width_m`) at the portico's north end
++(`stoop_v_m` 5.0), the rest of the portico's floor carried at the landing's height on terraces either
++side of it.
++**What is read, not invented.** Two columns standing on the portico's floor: a lit round shaft at x
++374-381 px (v 6.9) and one at x 322-330 (v 3.05), both footed at y 470; the balustrade's posts and
++balusters at y 380-390 over the entablature (x 343-395); the flight's steps at x 300-370, y 465-490,
++rising between the two columns, its north cheek's raked top (x 335 y 465 to x 298 y 488); and the
++sheet's stoop, 2.6 x 3.4 m (s20fp-1729-b1 p1-p2). The portico's front stands about 13-14 px a metre.
++**What is invented.** The two southern columns (v 8.5 and 10.03): the print loses the portico's south
++half in the ivy, so the row is carried on to the hood's south end, four columns in all (the match
++record's "four or more"). The balustrade's section (0.7 m high, 0.3 m posts, 0.1 m square balusters
++every 0.2 m, a 0.25 x 0.15 m rail), held under the second storey's sills; the print shows turned
++balusters at a scale where their profile cannot be read. The columns' size and capitals are T-1880's.
++**How to resolve:** a picture closer to the portico (T-3161: the Albertype plate, the CHM and Taylor
++views) places the southern columns and gives the balusters' profile.
++**Ticket:** T-3159.
++**Review:** `docs/RESEARCH/photo-match/pullman_house_1729_prairie/detroit_det_4a08065-side-by-side.jpg`.
++**Recorded:** 2026-10-26 (T-3159).
++
++### L-pullman-1729-porte-cochere-3160 — 1729 Prairie's 18th Street flank off the Detroit print: the porte-cochere's west end and south front read, its east end and the flank's windows' places reconstructed
++
++**Decision:** the Pullman house's 18th Street flank (T-3160, a piece of T-1881) is rebuilt as the
++Detroit Publishing photograph (`loc_det_4a08065_pullman_residence`) shows it, through its solved camera
++`data/reference_views/pullman_house_1729_prairie/detroit_det_4a08065.json`: a one-storey porte-cochere
++of brownstone piers and round arches standing 4.27 m out from the flank at s 6.35-11.48 under an
++entablature and a balustrade at the second floor (`porte_cochere`, built by
++`generators/archetypes/k01_porte_cochere.py`); the flank's windows round-headed (`north_bays`, each
++storey's laid once under K06's round fanlight sash); the 18th Street pavilion moved 1.375 m east,
++clear of it; and the Prairie line's low stone wall carried round the corner along 18th Street
++(`boundary.side_return`, K11).
++**What is read, not invented.** The arcade is a block standing out from the wall, not arches in it:
++its west arch reads as wide as it is high (about 15 px a metre either way) where the flank's face gives
++about 5 px a metre along it. Its west face's meeting with the flank (x 598 px), the west arch's jambs
++(x 610 and 645: 0.81-3.18 m out, 2.37 m) and its crown and springing (y 410 and 428: 6.0 and 4.85 m),
++the corner pier (x 645-668) and the south front's arch (x 668-678: s 7.78-10.05, 2.27 m), the
++entablature's soffit (y 402, 6.5 m) and the balustrade (y 389-397, to about 7.4 m). The flank's
++windows' round heads (y 355-365 over the balustrade). The 18th Street wall at x 640-685 to the
++print's x 693 (x 35.0 in the house's frame), 0.9 m as the Prairie run.
++**What is invented.** The block's east end, which the tree and the building beyond hide: closed at s
++11.48 by a corner pier the size of the west one (the print's last pier ends at about s 11.7) with an
++arch mirroring the west end's, so a carriage passes through. The walls' 0.6 m thickness, the
++entablature's 0.35 m depth and 0.15 m projection, the balustrade's section (0.55 m, 0.3 m posts, 0.1 m
++square balusters every 0.2 m); the piers are plain coursed stone where the print's are banded. The
++flank's windows' places (s 3.0, 5.0, 21.5 and 24.5, the one at 6.0 moved to 5.0 clear of the block)
++and the pavilion's place (centred at s 14.5, inside the sheet's u 9.5-19.75). The 1911 sheet's
++'porte-cochere' (s20fp-1729-b1 p4, s 7.75-12.75, 2-5.4 m out) stands 1.4 m east of and 1.1 m further
++out than the print's; the print governs. The run of posts on a lower curb east of x 693 is not built.
++**How to resolve:** a picture nearer the flank (T-3161: the CHM 1905 side view, the Inland plates)
++places its east end, its windows and the pavilion, and the piers' banding.
++**Ticket:** T-3160.
++**Review:** `docs/RESEARCH/photo-match/pullman_house_1729_prairie/detroit_det_4a08065-side-by-side.jpg`.
++**Recorded:** 2026-10-26 (T-3160).
++
++### L-kimball-1801-east-frontispiece-3110 — 1801 Prairie's east range brought to HABS photograph 2: a frontispiece on r3b's wall, and the range's lights cut to the one column the print shows
++
++**Decision:** HABS photograph 2 (Harold Allen, June 1965, from the north-west;
++`habs_kimball_photo_02_nw_1965`), the only picture that shows the 18th Street flank's east range
++whole (a tree stands in front of it in the Taylor print), has its camera solved
++(`data/reference_views/kimball_house_1801_prairie/habs_1965_02_northwest.json`) and the range is
++brought to it (T-3110). **What is read, not invented.** Through the camera, at the wall's depth: a
++shallow stone frontispiece between pilaster strips from grade, about 3.0-3.5 m across, on an axis
++at about u -7.85; a small round-arched light with an ornamental grille at about 2.4-3.1 m over the
++side door; a paired light in the upper storey at about 4.7-5.9 m; a coped gable through the eave
++between pinnacles, its apex about 8.65 m with a finial; and, of the range's other openings, one
++column of lights a storey at about u -12.6. Built: `bays.p_door`, a K08 full-height projection on
++r3b's 18th Street wall, 3.0 m wide and 0.1 m proud, two storeys to the wing's 6.35 m, the grilled
++round-headed light (0.8 x 0.75 m, sill 2.3 m) and a mullioned pair (1.5 x 1.2 m, sill 4.65 m) on
++its axis; r2's three reconstructed lights on that wall become the one column (s 5.3) and r3b's one
++is taken out. **What is invented or held by the kit.** The gable's pitch (1.5, apex about 8.6 m),
++its coping, kneelers, pinnacles and finial (sized after p_gable's), the grille's four bars and
++ring, the pair's mullion and surround, and the frontispiece's 0.1 m projection. **What it stops
++short of.** Its axis stands about 1.15 m west of the print's (u -6.7), because a K08 bay stands on
++one wing's wall and r3b's (u -8.5 to -4.6, the 1911 sheet's rectangle) holds it, where the print's
++straddles the sheet's junction of r3b and r2; the side door itself is not cut (no K01 wing or K08
++bay cuts a door); the hooded dormer on the range's roof and the stack behind the frontispiece are
++not built (a K01 wing's roof takes neither). All open in the match record.
++**How to resolve:** a door a K08 bay or a K01 wing can cut; wing dormers and wing stacks in the
++kit; a measured plan of the east range, or a reading that moves the sheet's junction.
++**Ticket:** T-3110 (piece 4 of T-3003).
++**Recorded:** 2026-10-26 (T-3110).
++
++### L-k01-1827-doane-3171 — 1827 Prairie refined from the district draft to a K01 stone house under a mansard, its pavilion, porch and heights read off the Chicagology photograph
++
++**Decision:** the John W. Doane house at 1827 Prairie Avenue (T-3171, piece 1 of T-1895) is no longer
++a district draft. It stands, under the draft's own id `doane_house_1827_prairie`, as a `k01_frontage`
++record built by `generators/k01_emit.py`, against the undated photograph of the house (after 1882)
++reproduced on chicagology.com (`chicagology_1827_doane_exterior`; rights check_required, read for
++forms and proportions only): stone walls two storeys over a raised basement, a deep moulded stone
++cornice, a slated mansard with pedimented dormers, a shallow pavilion on the front with three lights a
++storey, a porch on columns carrying a balcony at the front's north end, a brick rear range, and an iron
++scroll fence on a stone curb along the Prairie line.
++**What is read, not invented.** From the 1911 Sanborn sheet 28 (trace s28fp-1827-b1, census
++s28-1827-front): the main block's place and plan (24.4 by 15.5 m), the pavilion (5.46 m wide, 0.47 m
++out), the stone range at the front's north end (2.7 by 5.0 m), read as the photograph's porch, the
++brick rear range, stone with a brick rear. From the photograph, through its solved camera
++(`data/reference_views/doane_house_1827_prairie/chicagology_doane_exterior.json`): the principal
++floor, the storey heights, the cornice's and the curb's heights, the windows' heights and widths, the
++pavilion's three lights, the window bay south of it, the porch's balcony height, the two dormers'
++places, the two stacks over the south flank, the fence. Every height rests on the camera's fit (its
++`solve`). The print is monochrome.
++**What is invented.** The stone (Lemont limestone stands for the print's light ashlar); the walls'
++thickness; the mansard's deck and its pitch; the eave's overhang; the treads; the north flank's, the
++south flank's and the rear's windows (no picture read here places them); the rainwater; the sash
++pattern; the plain lintels in place of the photograph's hoods; the rear range's storeys, windows and
++flat deck; the side gate at the lot's north end.
++**What is not built.** The corner block at the south-west corner, which the sheet draws as a feature
++standing 1.1 m out of the front and 1.5 m out of the south flank, and the square tower the photograph
++shows over it; the pavilion's steep pyramidal roof with its finial (T-3172 builds them); the rear
++part's steps out on both flanks (u 0-14.6: 1.2 m north, 1.6 m south); the carved and segmental hoods;
++the alternating stone courses; the porch's arches and its steps along the front; the basement lights'
++full height: open on the match record.
++**How to resolve:** T-3172 builds the corner block, its tower and the pavilion's roof; T-1896 finishes
++the house and brings the match record to `matches`.
++**Covers:** `doane_house_1827_prairie.as_mapped_1904.form.stone_front`, `doane_house_1827_prairie.as_mapped_1904.form.wall_thickness_front_m`, `doane_house_1827_prairie.as_mapped_1904.form.wall_thickness_side_m`, `doane_house_1827_prairie.as_mapped_1904.form.service_wall_brick`, `doane_house_1827_prairie.as_mapped_1904.form.street_front_trim`, `doane_house_1827_prairie.as_mapped_1904.form.roof_pitch_deg`, `doane_house_1827_prairie.as_mapped_1904.form.eave_overhang_m`, `doane_house_1827_prairie.as_mapped_1904.form.stair_tread_m`, `doane_house_1827_prairie.as_mapped_1904.form.side_bays`, `doane_house_1827_prairie.as_mapped_1904.form.north_bays`, `doane_house_1827_prairie.as_mapped_1904.form.rear_bays`, `doane_house_1827_prairie.as_mapped_1904.form.rainwater`, `doane_house_1827_prairie.as_mapped_1904.form.window_kit`
++**Ticket:** T-3171 (piece 1 of T-1895).
++**Review:** `docs/RESEARCH/k01-1827-doane-3171/README.md`.
++**Recorded:** 2026-10-26 (T-3171).
++
++
++
++
++### L-jail-palisade-2380 — The jail's high plank enclosure
++
++**Building:** `log_jail`.
++**Decision:** Add a high, closed plank palisade around the jail. Gale's 1902 memoir, p. 51, remembers the small jail "concealed within a high plank palisade" during a town walk framed in 1835. The independently verified Trowbridge plate facing p. 53 is captioned 1836. The fence's existence and kind are inferred from that retrospective source, rather than from a contemporary contract or a dated description of 1 July.
++**What is reconstructed:** the compact outline 0.70 m beyond the unchanged side and rear walls and 0.748 m in front; the 3.05 m overall height, including 127 mm symmetrical pointed heads; 180 mm backing posts at approximately 2.44 m bays; three backing rails; 254 mm boards with 6 mm gaps; July continuity; and a 2.20 m open passage aligned with the existing doorway. The chosen 10 ft height conceals the 2.66 m walls; it is not a measurement from the drawing. The physical fence run stops at both gateway jambs. The soil, population, building footprint, placement and phase dates are unchanged.
++**Visible limits:** the pointed pale form follows the plate, while its cut and stock dimensions remain chosen. The keeper's house partly within the compound, a hung gate, and the original-cell/later-cell roof identity remain unresolved. This increment does not claim that the jail compound matches its pictures.
++**How to resolve:** dated county specifications or a resolved jail and keeper-house sequence could replace the dimensions and continuity choice. Application review must verify that the fence meets the ground and the passage remains usable.
++**Source:** `trowbridge_first_jail_gale_1902`, actual p. 51 (scan n76) and plate n79. The independently verified 1902 artwork is public domain by publication age; no UCR copy-specific rights or added newspaper layout is used.
++**Ticket:** T-2380.
++**Recorded:** 2026-10-25.
++
++**Application review (2026-10-26):** Checked in the actual published phone and desktop views. The enclosure meets the ground, its pointed tops remain visible, and the open passage is walkable on the tested approach. The keeper-house and full-compound limits above remain unresolved.
++
++
++### L-light-glb-device-profile-2380 — Smaller house maps on Light
++
++**Decision:** The Light device texture profile omits the highest-resolution mip from compressed house maps before upload, as it already does library sheets. Width and height halve once, including when a source leaves and returns to residency. The same encoded asset is kept. This device profile is independent of the scene-detail control.
++**Visible limits:** Close-up map detail is reduced on Light; this is a texture-quality tradeoff, not a lossless image copy or a historical material ruling. Building shapes, placements and source provenance are unchanged. Full device texture profiles retain every mip.
++**Review:** Actual phone views of Glessner's street faces and courtyard and 1827 Prairie retained their masonry, openings and material colours. Both viewports and an explicit eviction/reload completed without page or network errors. All 432 Full and Balanced device-Full texture bindings retained exact mip dimensions and samplers; all 432 phone bindings dropped once. The 1904 phone measured 455.4 MiB before the repair, 399.0 after the mip fix, and 395.8 after also separating transient scalar-reader closure scopes, under the unchanged 400 MiB Light ceiling. These are measured spawn readings, not all-camera invariants.
++**How to resolve:** A future texture/device policy may choose a different tradeoff with measured memory and same-camera review; the full source maps remain available in the same native assets.
++**Ticket:** T-2380, required to clear the current integration memory failure for the visible jail enclosure.
++**Recorded:** 2026-10-26.
++
+ 
+ ## Per-subject liberties
+ 
+@@ -33601,3 +33993,15 @@ closer to the front than this one (T-3161) replaces the rings with the mouldings
+ 
+ **Ticket:** T-1789.
+ **Recorded:** 2026-10-26.
++
++
++### L-human-dress-finishing-1789 - Optional reconstructed bonnet and clothing finishing (T-1789)
++
++**Decision:** The optional adult dress study may explicitly select finishing_version1: an original pale bonnet crown/open upper-side brim,27mm linen cuff overlays,25mm waist band/simple back ties,14mm self-cloth placket and six7mm covered buttons. The bonnet is fitted around the actual unchanged head/hair support; cuffs and closures sample actual garment triangles; ties remain pelvis-bound standing source. All dimensions, pattern, color, textile/fastening and outfit choices are conjectural engineering decisions. Original body, rig, hair and garment/UV arrays are retained.
++
++**Basis:** The actually viewed cleared Wild1835 Cincinnati painting, wild_1835_third_vine, provides only tiny head-covering/full-skirt silhouette analogues. It does not attest a dated before-July1bonnet pattern, Chicago wardrobe, material, sewing detail, dimensions or any personal possession of reconstructed Mary Flynn. No source-image pixels or traced contours enter these components. The finished-dress dye encoding correction preserves the declared linear color; it is not a newly attested historical color.
++
++**How to resolve:** Native source array/UV/skin/rest-clearance tests and unchanged defaults do not establish canonical export, continuous posed fit, reduced LODs, material realism or photographic quality. New canonical source/web images must review bonnet proportion, hair coverage, cuffs, waist and closure. Production eligibility, walking/seated/photo acceptance, scene placement and full T-1789 remain open. Original1cbb reproduction retains its absent-option path.
++
++**Ticket:** T-1789.
++**Recorded:** 2026-10-26.
+diff --git a/chicago/4d/docs/ROADMAP.md b/chicago/4d/docs/ROADMAP.md
+index 1afc52b0b..7d36484d9 100644
+--- a/chicago/4d/docs/ROADMAP.md
++++ b/chicago/4d/docs/ROADMAP.md
+@@ -5898,6 +5898,49 @@ Adopt only the reviewed board-parapet selector and credited Andreas correction,
+ The retained before-change mobile diagnostic records a 349.859 px grid track inside a 292 px host, with text visibly clipped. The scoped news-grid rule allows complete text to wrap within the panel without hiding it or reducing fonts. Delivery checks cover real published mobile/desktop news flows and all-row bounds at 100% and 140%, normal preflight and ordinary exact-head CI. Preserve the failed diagnostic and distinguish focused notes results from a fresh whole-part13/full-renderer pass.
+ 
+ 
++### T-2376 front-ground picture increment - 2026-10-25
++
++Adopted the reviewed V3 front-ground layout with its consumed/hash-covered
++parameter property and matching native primary entrance, without changing the
++legacy40 positional API or22 default physical assets. Genuine23 master/web
++refresh and source comparison are complete. Keep the visibly different annex
++and long-wall reading in the same match record; the T-3153 stopping rule treats
++camera/drawing disagreements within tolerance and creates no follow-up tickets.
++The original remains open while those larger discrepancies remain. App/current-
++base full qualification and actual merge are recorded separately when complete.
++
++
++### T-2380 — source-bounded jail palisade (2026-10-25)
++
++The actual Gale1902 p51 and complete plate/n79 support a high plank enclosure, absent from the previous scene. A compact palisade with pointed tops and a clear doorway-aligned passage is authored through the existing enclosure layer. Height, outline, stock, exact point and July continuity are reconstructed; the jail master, footprint, position, dates and population stay unchanged. Optional formal comparisons reuse the native enclosure renderer, hash its selected records/geometry dependencies/anchor placement, and retain legacy default views. The provisional cameras are compound diagnostics, not solved evidence of the mostly concealed original jail core; narrow not_pictured rulings preserve its existing inferred grade without denying the fence evidence. Keeper-house absence and unresolved cell/roof identity remain in the view discrepancy register. Actual source renders, published app grounding/access review, native reader pipeline and full preflight are still pending at this authored checkpoint. No image match or original ticket completion is claimed.
++
++The native grader retains its generic inferred wording, "no picture of it has been found"; here the two source-specific rulings refer to the concealed, ambiguous jail core. They do not deny the Gale compound picture or its palisade evidence. Provisional diagnostic camera poses are excluded from the historical From this spot reader action. Actual Images/Sources review remains pending.
++
++The finite native 61-step reader tail, owning package fixed point and publish passed on 25 October; 3,285 protected inputs and all 23 incoming workbooks remain byte-exact. On 26 October both official whole-source comparisons rendered the actual native pointed enclosure, with current picture, master, camera, selected enclosure, native geometry dependencies and anchor hashes verified. Both verdicts remain differs: the absent keeper house and unresolved compound/gate relationship are open; contradictory concealed-core roof depictions and provisional framing are recorded as source/camera limitations. Diagnostic cameras preserve picture credits without offering From this spot. Actual published mobile/desktop grounding, access and Sources review, fullcheck/preflight and latest-dev integration remain pending; this is not original-ticket completion.
++
++Published app review completed on 26 October at 390 x 780 and 1280 x 800: actual normal and By Grade views, pointed tops, credited Photos/Sources/Lib, core grade/placement/attributes, diagnostic spot absence, terrain grounding and all eight frame budgets passed. Each tested nine-step native walker path crossed the real gateway at E468.56 without a blocked movement sample; its ground and eye stayed correct. A separate coarse route-planning grid marks the final point near the core wall blocked; the original local-harness failure is preserved and actual-walker access was independently reviewed by root. This qualifies only the tested approach. The earlier 240-second readiness timeout and successful bounded retry are retained without a performance claim. Both formal views remain differs; the missing keeper house and compound/gate relationship remain open. Latest integrated cf25+88 owning native tail and fullcheck/preflight remain pending before code commit or PR.
++
++Combined cf25+88 native validation completed on 26 October: the owning 61-step tail converged in two native laps, the package tail and publish passed, and all 5,343 protected integrated source/asset files remained byte-exact. The single audit of every dirty XLSX/gzip/outside-4d path found two serialization-only changes, proved whole-artifact equality and restored exact incoming88 bytes. The earlier phone/desktop screenshots were captured on 9f7; their selected jail web GLB, native fence JSON/renderer and sidecar remain byte-identical in the combined published mirror. The incoming lighthouse change is preserved. Required wholecheck/preflight, code commit and PR remain pending; original T-2380 remains an unfinished image match.
++
++
++### T-2380 current-dev integration checkpoint — 2026-10-26
++
++Normal integration of foreign6b with actual dev ecfff retains the native palisade and strict independent placement/declared lighthouse-glass checks. Current native generation and all44 artifact audits passed. A real1904 phone overrun was repaired by applying the existing Light mip policy to initial/reloaded GLB textures and separating transient scalar-reader scopes:455.4→395.8MiB with the400MiB floor unchanged. Full desktop1168.7MiB is consciously re-budgeted1125→1300MiB by the existing measured+10%/25MiB rule; all other rows remain exact. Same-camera phone and desktop texture/reload reviews passed. Final checks and source-bound published coverage are on PR#1333. The original pictured jail compound remains DIFFERS; ship the useful enclosure without claiming that the keeper house or roof conflict is solved.
++
++
++T-2380 current ending: hosted1904 phone403.3/400 failure is retained. Deferred existing far-rail buffers recover exactly12,183,792 retained CPU bytes at spawn with identical measured GPU buffers/textures; actual local phone384.0/400. Native geometry/lifecycle regression coverage is added; final actual walk/picture, preflight and hosted qualification are still pending. Original jail compound image mismatch remains open.
++
++T-2380 rail headroom review is now complete: actual normal walk/upload/drop/rebuild/pick and Full→Light passed; five same-frame baseline/candidate pictures and visible rail geometry are exact. Baseline/current first-pose GL1281 remains explicitly qualified; page/network/console errors are zero. Final preflight and current hosted ending remain pending.
++
++
+ ### T-1789 source checkpoint — 26 October2026
+ 
+ Reusable workwear construction and three explicit resident assemblies are authored; CPU source controls cover real geometry, UV surfaces, portable weights, unchanged bodies and meaningful negatives. No new canonical person or photographic-library acceptance is claimed. The full library, including the remaining garment families/base/head/hair options, canonical three-resident exports, posed/LOD/mobile inspection and Mark Beaubien assembly stop, remains T1789 and is tracked in docs/RESEARCH/portable-human-library-T-1789/README.md. Existing reasoning and all original bytes above are retained.
++
++
++### T-1789 optional female finishing source — 26 October2026
++
++The prior verified external dress/male canonical studies provide actual diagnostic images, not photographic acceptance or new installed assets. The optional female source adds a conjectural bonnet, linen cuffs/waistband/back ties and self-cloth fastening, with an explicit finished-dress-only dye encoding correction. Original body/rig/hair/default/male source paths are retained. Focused native source tests pass; complete preflight, fresh canonical exports, actual image/LOD/posed review and photographic/library acceptance remain required. No production, walking/seated, world-placement or ticket-DONE promotion is made. Original1cbb reproduction and strict same-source fixture/study binding remain available.
++
++
++T-1789 evidence-path update (26 October2026): the reviewed native Blender CPU still helper and separate small-artifact step now target the existing three male test assemblies. Actual native execution/stills remain UNRUN and must pass after the source gates; no new identity, world placement, photographic or production acceptance is supplied. This is the bounded library's literal Blender-proof requirement, not actor/gait/tack work.
+diff --git a/chicago/4d/docs/STATUS.md b/chicago/4d/docs/STATUS.md
+index a6f2b3784..00d5158a6 100644
+--- a/chicago/4d/docs/STATUS.md
++++ b/chicago/4d/docs/STATUS.md
+@@ -24950,6 +24950,125 @@ The retained before-change published view at 390 x 780 shows inherited clipping:
+ The change constrains only the three existing news grids to a zero-minimum flexible column and permits intact text, including long links, to wrap. Typography, content, unread logic, navigation and every pre-existing CSS rule remain intact; no clipping mask or smaller font is introduced. Delivery evidence must cover real published 390 x 780 and 1280 x 800 views, every row at 100% and 140% text size, the six news-flow assertions, current content and the About route, together with preflight and ordinary exact-head CI. Focused notes evidence is recorded separately from a whole-part13/full-renderer pass.
+ 
+ 
++## T-2376 - Green Tree front-ground opening correction (2026-10-25)
++
++The main gable front now places two sash to the viewer's left of its rightmost
++entrance. The reconstructed local stations .20/.50/.78 are consumed directly by
++both the mesh and the exact-selected-phase native entrance reader through the
++hash-covered dataclass property. The door and native apron move 2.286m together;
++footprint, bearing, dates, existing finish and all old source grades remain.
++Genuine pinned Blender4.5.3 and supported glTF-Transform4.5.0 refreshed all23
++family masters and derivatives; all22 non-target master AND web bytes are exactly
++unchanged. Native liberties and20 picture-feature tests pass. The ordered61-step
++tail settled after native publish; an initial fresh-checkout missing-mirror
++prerequisite failure is retained, not called PASS. Actual incoming workbook
++serialization was restored only after all12 archive members were semantically
++exact, followed by the native dependent package tail.
++
++Actual source comparisons are registered and still DIFFERS: large annex/massing
++and long-wall entrance differences stay OPEN; camera and conflicting drawing
++details are within tolerance under T-3153. The known unverified1859 catalogue
++photo is not newly cleared or backdated. No new ticket is filed. Actual targeted published app review passed at390x780 and1280x800: normal and
++ByGrade full/front views, four credited picture links, the new liberty, unchanged
++old attributes and placement, actual served WEB hash, and clear grounded approach
++stands at2m and3m. The unchanged coarse route grid blocks an extra1m probe; it is
++a retained diagnostic, not a claimed interior walk. The native Images source
++entries remain link-only in the existing compiler. These captures use the
++preintegration c6 published tree; the incoming9f7 change preserves all operative
++1835 geometry, terrain and entrance inputs exactly. Final current-base full
++preflight and CI results are recorded in the PR when actually complete. Original2376 is not closed
++by this bounded correction.
++
++
++### T-2380 — source-bounded jail palisade (2026-10-25)
++
++The actual Gale1902 p51 and complete plate/n79 support a high plank enclosure, absent from the previous scene. A compact palisade with pointed tops and a clear doorway-aligned passage is authored through the existing enclosure layer. Height, outline, stock, exact point and July continuity are reconstructed; the jail master, footprint, position, dates and population stay unchanged. Optional formal comparisons reuse the native enclosure renderer, hash its selected records/geometry dependencies/anchor placement, and retain legacy default views. The provisional cameras are compound diagnostics, not solved evidence of the mostly concealed original jail core; narrow not_pictured rulings preserve its existing inferred grade without denying the fence evidence. Keeper-house absence and unresolved cell/roof identity remain in the view discrepancy register. Actual source renders, published app grounding/access review, native reader pipeline and full preflight are still pending at this authored checkpoint. No image match or original ticket completion is claimed.
++
++The native grader retains its generic inferred wording, "no picture of it has been found"; here the two source-specific rulings refer to the concealed, ambiguous jail core. They do not deny the Gale compound picture or its palisade evidence. Provisional diagnostic camera poses are excluded from the historical From this spot reader action. Actual Images/Sources review remains pending.
++
++The finite native 61-step reader tail, owning package fixed point and publish passed on 25 October; 3,285 protected inputs and all 23 incoming workbooks remain byte-exact. On 26 October both official whole-source comparisons rendered the actual native pointed enclosure, with current picture, master, camera, selected enclosure, native geometry dependencies and anchor hashes verified. Both verdicts remain differs: the absent keeper house and unresolved compound/gate relationship are open; contradictory concealed-core roof depictions and provisional framing are recorded as source/camera limitations. Diagnostic cameras preserve picture credits without offering From this spot. Actual published mobile/desktop grounding, access and Sources review, fullcheck/preflight and latest-dev integration remain pending; this is not original-ticket completion.
++
++Published app review completed on 26 October at 390 x 780 and 1280 x 800: actual normal and By Grade views, pointed tops, credited Photos/Sources/Lib, core grade/placement/attributes, diagnostic spot absence, terrain grounding and all eight frame budgets passed. Each tested nine-step native walker path crossed the real gateway at E468.56 without a blocked movement sample; its ground and eye stayed correct. A separate coarse route-planning grid marks the final point near the core wall blocked; the original local-harness failure is preserved and actual-walker access was independently reviewed by root. This qualifies only the tested approach. The earlier 240-second readiness timeout and successful bounded retry are retained without a performance claim. Both formal views remain differs; the missing keeper house and compound/gate relationship remain open. Latest integrated cf25+88 owning native tail and fullcheck/preflight remain pending before code commit or PR.
++
++Combined cf25+88 native validation completed on 26 October: the owning 61-step tail converged in two native laps, the package tail and publish passed, and all 5,343 protected integrated source/asset files remained byte-exact. The single audit of every dirty XLSX/gzip/outside-4d path found two serialization-only changes, proved whole-artifact equality and restored exact incoming88 bytes. The earlier phone/desktop screenshots were captured on 9f7; their selected jail web GLB, native fence JSON/renderer and sidecar remain byte-identical in the combined published mirror. The incoming lighthouse change is preserved. Required wholecheck/preflight, code commit and PR remain pending; original T-2380 remains an unfinished image match.
++
++
++### T-2376 — the full-scene batch census retains the lighthouse glass
++
++The immutable checked 132 renderer matrix on `0c78d17b` exposed a real stage 8
++regression oracle mismatch at both viewports: six structure batches, four mapped,
++against the older five/four expectation. The active 1835 GLB census finds exactly
++one BLEND material, the existing T-3122 lighthouse's `lantern_cage_glass` at
++alpha 0.18. Green Tree's material records and primitive material indices are exact
++base 132 values; its opening positions did not create the extra material class.
++
++The scoped smoke repair retains six total and four mapped groups and additionally
++requires five opaque groups plus exactly one unmapped translucent batch owned
++only by the lighthouse, retaining its declared 0.18 uniform opacity within 1e-6.
++The renderer, assets, roughness assertions and reach assertions are unchanged.
++This new opacity predicate is UNVERIFIED at authoring; actual terminal native stage 8
++results on the new checked head belong in PR #1328 and its evidence checkpoint.
++The local one-context readiness timeout is not runtime opacity evidence. The
++original Green Tree image gate remains DIFFERS with its two visitor-visible gaps.
++
++
++The same immutable matrix exposed two further baseline-oracle mismatches. The
++lighthouse's recorded local origin is outside its explicitly offset 3.04 m
++footprint; GLB-CONTRACT fixes the origin at polygon coordinate(0,0), not an
++occupied corner. The shared drawn-placement census now compares the committed
++polygon's area centroid, independently transformed from its placement, with the
++GPU-read plan bounds. The original survey origin, vertex-by-vertex 1 mm transform
++bar, mirror checks, one-metre occupancy bar and sparse-camp treatment remain.
++No geometry, position, footprint or tolerance changes. Hand-authored offset-plan
++fixtures pass; translated, rotated, mirrored and wrong-record-footprint controls
++fail. The actual published reruns remain owed.
++
++The strict 1904 placed-record set also adds only
++`pullman_house_1729_prairie_ranges`: the T-1880/T-1934 separately retained stable
++and rear ranges, explicitly dated 1904-07-01 through 1911 and present in the
++1904 compiled sidecar, with no exclusion or suppressed-render ruling. It was the
++sole extra placed ID in both published viewport failures. Exact placed-set and
++registry equality and zero 1835-town-layer assertions remain. This is a corrected
++closed set, not permission for arbitrary new records; actual new-head stage 14
++results are still required.
++
++
++### T-2380 — Current dev integration and phone texture residency (2026-10-26)
++
++The jail palisade is integrated with actual dev `ecfff9f56ce359b70aa520e97d1923c12a6dafb2`, retaining the incoming 283 unique 1904 structure ids, current runner checks and all active 1835 geometry. Native full202, seven feedback steps, the settled 57-step tail, package export and publish passed; all 44 workbook/gzip artifacts were audited against the incoming tree, with raw regenerated serialization-only variants preserved. All 5,362 protected inputs remained exact.
++
++The current phone memory failure was real: 455.4 MiB against the unchanged 400 MiB Light ceiling. The existing Light texture policy had reached library sheets but not embedded GLB textures. It now reaches both initial decode and residency reload, once per texture. An actual regression fixture failed before the fix and passes 43 cases after it. Separating transient scalar/confidence readers also avoids retaining their source context. Mip-only measured 399.0 MiB; both fixes measured 395.8 MiB. Actual phone street/courtyard/1827 views, desktop Full/Balanced inventories and explicit eviction/reload passed without page or network errors; Full/Balanced mip dimensions and samplers stayed exact. Light deliberately shows less fine map detail; native assets are unchanged.
++
++The 1904 Full desktop measured 1168.7 MiB and failed its former1125 MiB ceiling. Its conscious Full-only re-budget follows the declared reading-plus10%, rounded to25MiB rule:1300MiB. The exact reading and staged-input binding are committed under docs/measurements. The full previous row is preserved at the definition, all five other viewport/year rows remain unchanged, and the phone400MiB floor is preserved. This is a measured point reading, not an all-camera guarantee or a passed old1125 gate.
++
++Native integration/ending gates and the current published both-viewport validation are reported on PR#1333. The selected published parts are1–2,3–4,12,13,14,15, with explicit unchanged active1835 inputs/semantic impact proof supporting dated actual8cd parts5–11; this is not a current whole18 or global-hash-equality claim. All685 active1835 WEB headers have no embedded images or textures. Original T-2380 remains DIFFERS: keeper-house/full-compound and conflicting roof readings remain open; no new photo follow-up is filed.
++
++
++### T-2380 — Hosted phone memory and deferred rail buffers (2026-10-26)
++
++The checked b3fb integration passed the native1076-step/387-self-test gate, both hosted still frames and five memory rows, but the actual hosted1904 phone read403.3MiB against400. This failure remains retained; local395.8 did not establish hosted headroom. A bounded static-instance release experiment recovered only1,013,384 rail CPU bytes and measured395.7 locally after full-count bound caching; it was restored without adoption.
++
++The adopted correction defers the existing far-rail sections until their unchanged drawing reach and disposes them outside that reach plus one-zone hysteresis. It retains native profiles, section order, materials and visibility. Newly reached near/far geometries receive the existing coarse-device upload callback before drawing. No caps, native building assets, rail shape, random scatter or detail reaches changed. The source-bound phone reading is384.0MiB; railway retained CPU drops exactly12,183,792B and actual GPU buffers143,358,180B/textures58,766,513B stay exact. The exact reading and uncommitted runtime-input binding are committed beside the earlier measurements. These are spawn readings, not all-camera guarantees.
++
++The new native lifecycle fixture holds the production rail geometry, all three tiers, boundaries, drop/rebuild identity and upload marking. Current actual walking/picture checks, final native/preflight and current hosted qualification remain pending on PR#1333. The source hash changes, but neither1835 nor1812 contains a railway consumer; their physical inputs and the reviewed selected12 plus dated8cd parts5–11 plan remain explicit. No current whole18 or global equality is claimed. Original T-2380 remains DIFFERS.
++
++Actual published phone review completed at19:55UTC: walking north/south, flying, leaving and returning correctly upload, drop and rebuild rail zones; a vertical pick resolves the actual track; the app switches Full and back to Light. Native baseline and deferred layers on the same terrain/camera/world have identical visible rail attribute/index bytes and zero differing pixels in five304,200-pixel held frames, including after rebuild. Hiding the rails changes19,587/18,380 pixels in the two street controls. Page, network and console-error lists are empty. An extra raw GL diagnostic1281 occurs at the first pose in BOTH the exact b3fb baseline and candidate; later pose queues are empty. It is retained as an existing qualified diagnostic, not described as zero GL errors. Final preflight/current hosted qualification still remains required.
++
++
+ ## T-1789 — modular workwear source checkpoint, 26 October2026
+ 
+ Source construction now supplies three explicit existing-resident wardrobe assemblies: a connected waistcoat and broad hat, an open short jacket, and a shorter jacket/lower-crown hat. Real emitted source boundaries receive physical cloth returns; buttons are sampled on actual waistcoat triangles; lapels/caps have nondegenerate per-corner UVs. The adult35 waistcoat's folded clamped hem is corrected by continuous vertical ease without deleting source faces or changing body anatomy/rig. Ten bounded source controls pass on the actual adult25/35 arrays, including old-defect and malformed/detached negatives. This is not a new canonical/export/posed/browser/photo PASS: installed GLBs remain their prior source, all full T1789 garment/base/head/hair/three-person/Mark-assembly criteria remain open, and new generation plus real visual inspection is required. The complete same-ticket acceptance plan is docs/RESEARCH/portable-human-library-T-1789/README.md.
++
++
++## T-1789 — optional female clothing finishing source, 26 October2026
++
++The original1cbb source completed canonical dress run40376571147: its verified external archive contains eight new raw/web GLBs, a canonical master and24actual images. Mechanical/source/hierarchy/normal checks pass on that prior source; actual images show provisional short hair, a nearly black bodice and unfinished waist/cuffs. The artifacts remain external, and photographic appearance is unaccepted. Male run40379969566 also completed; its actual three-resident images remain visibly unfinished. No new asset is installed by this source iteration.
++
++Only the optional Mary dress study now selects finishing_version1: a reconstructed pale bonnet, source-fitted linen cuffs/waistband/back ties and self-cloth closure. Original body,56-joint rig, hair and old garment arrays/UVs remain intact; the absent-option source/default/male paths remain unchanged. The finished-dress weave encodes its declared linear dye in sRGB; actual prior texture bytes exposed the darker-top mismatch. All6actual native source-consumer/identity/unsafe-input unit tests pass, and independent finite/UV/skin/rest-hair-clearance checks support the source proposal. These are not new Blender/export/LOD/posed/browser/photo results.
++
++The read-only manual dress workflow accepts only original1cbb or its actual definition SHA; a blank source selects that definition SHA. Fixture and dress jobs require the same resolved checkout, and existing native gates remain intact. The new source's complete preflight, canonical generation and actual visible source/web inspection remain pending. Production eligibility, walking/seated/photo acceptance and world placement remain false/open; full T-1789 library/three-person/Mark Beaubien criteria remain open.
++
++
++### T-1789 native Blender still evidence path, 26 October2026
++
++The existing manual teamster workflow now has a bounded proof step for three640px Cycles CPU stills from its same-job canonical masters, preserving source body/rig/master bytes and retaining per-image source/version/camera/SHA receipts in a separate small artifact. This provides the original library ticket's explicit Blender-rendered assembly-proof path; it is not a photographic-quality declaration. Native Blender rendering and the new still artifact remain UNRUN. Existing fixture/source guards, recipes, exporter/browser/LOD validators and production eligibility remain unchanged.
+diff --git a/chicago/4d/tools/human_dress_components.py b/chicago/4d/tools/human_dress_components.py
+index bbaaca05f..0d3464a08 100644
+--- a/chicago/4d/tools/human_dress_components.py
++++ b/chicago/4d/tools/human_dress_components.py
+@@ -340,6 +340,251 @@ def construct(body):
+                              'No canonical Blender master/export, LOD, photo, clipping-all-pose or world-placement acceptance'])
+ 
+ 
++def _finish_merge(target, addition):
++    """Reuse an existing material/object; preserve its original arrays exactly."""
++    need(target['material'] == addition['material'], 'finishing cannot substitute material slots')
++    offset = len(target['positions_m']); face_offset = len(target['triangles'])
++    if 'corner_uvs' not in target:
++        target['corner_uvs'] = [[list(target['uvs'][i]) for i in face] for face in target['triangles']]
++    for key in ('positions_m', 'uvs', 'weights'):
++        target[key].extend(copy.deepcopy(addition[key]))
++    target['triangles'].extend([[i+offset for i in face] for face in addition['triangles']])
++    target['corner_uvs'].extend(copy.deepcopy(addition.get('corner_uvs',
++                               [[addition['uvs'][i] for i in face] for face in addition['triangles']])))
++    target.setdefault('flat_face_indices', []).extend(face_offset+i for i in addition.get('flat_face_indices', []))
++    target.setdefault('receipt', {}).setdefault('optional_finishing_parts', []).append({
++        'name': addition['name'], 'first_vertex': offset, 'added_vertices': len(addition['positions_m']),
++        'first_triangle': face_offset, 'added_triangles': len(addition['triangles']),
++        'construction': copy.deepcopy(addition.get('receipt', {}))})
++
++
++def _finish_cuffs(bodice_mesh, bones):
++    """Small linen bands follow actual outer sleeve faces and their own skin."""
++    ps = bodice_mesh['positions_m']; fs = bodice_mesh['triangles']
++    skip = set(bodice_mesh.get('flat_face_indices', []))
++    outer = [face for fi, face in enumerate(fs) if fi not in skip]
++    used = sorted({i for face in outer for i in face}); remap = {i: j for j, i in enumerate(used)}
++    compact_normals = source_shared_normals([ps[i] for i in used],
++                        [[remap[i] for i in face] for face in outer], used)
++    ns = dict(zip(used, compact_normals))
++    wrist = abs(bones['hand_l']['head_m'][0])-.012
++    result = empty('source_fitted_linen_cuffs', 'garment_outer__plain_apron')
++    for side in (-1, 1):
++        shell = empty('left_cuff' if side > 0 else 'right_cuff', result['material']); cache = {}
++        for face in outer:
++            if max(side*ps[i][0] for i in face) < wrist-.029 or min(side*ps[i][0] for i in face) > wrist-.002:
++                continue
++            poly = [{'p': list(ps[i]), 'uv': list(bodice_mesh['uvs'][i]), 'n': ns[i],
++                     'w': bodice_mesh['weights'][i], 'basis': {i: 1.}} for i in face]
++            poly = _clip(poly, lambda v: side*v['p'][0]-(wrist-.029))
++            poly = _clip(poly, lambda v: (wrist-.002)-side*v['p'][0])
++            ids = []
++            for v in poly:
++                key = tuple((i, round(w, 13)) for i, w in sorted(v['basis'].items()))
++                if key not in cache:
++                    cache[key] = len(shell['positions_m']); length = math.hypot(*v['n'])
++                    need(length > 1e-12, 'undefined source sleeve normal')
++                    shell['positions_m'].append([v['p'][a]+.0025*v['n'][a]/length for a in range(3)])
++                    shell['uvs'].append(list(v['uv'])); shell['weights'].append(skin(v['w']))
++                ids.append(cache[key])
++            for j in range(1, len(ids)-1):
++                f = [ids[0], ids[j], ids[j+1]]
++                if len(set(f)) == 3:
++                    shell['triangles'].append(f); shell['corner_uvs'].append([list(shell['uvs'][i]) for i in f])
++        need(bool(shell['triangles']), 'empty optional cuff')
++        _finish_merge(result, finish_edges(shell, .001))
++    result['receipt']['scope'] = '27mm linen cuff overlays; original sleeve remains exact; source standing only'
++    return result
++
++
++def _finish_segments(mesh, y):
++    """Actual outer triangle/plane intersections, excluding physical edge returns."""
++    lines = []; skip = set(mesh.get('flat_face_indices', [])); ps = mesh['positions_m']
++    for fi, face in enumerate(mesh['triangles']):
++        if fi in skip: continue
++        points = []
++        for a, b in zip(face, face[1:]+face[:1]):
++            p, q = ps[a], ps[b]
++            if p[1] == y: points.append((p[0], p[2]))
++            if (p[1]-y)*(q[1]-y) < 0:
++                t = (y-p[1])/(q[1]-p[1]); points.append((p[0]+t*(q[0]-p[0]), p[2]+t*(q[2]-p[2])))
++        points = list(dict.fromkeys(points))
++        if len(points) == 2 and math.dist(*points) > 1e-12: lines.append(points)
++    return lines
++
++
++def _finish_radius(lines, angle):
++    sx, sz = math.sin(angle), math.cos(angle); hits = []
++    for (x, z), (xx, zz) in lines:
++        dx, dz = xx-x, zz-z; den = sx*dz-sz*dx
++        if abs(den) < 1e-14: continue
++        r = (x*dz-z*dx)/den; t = (sz*x-sx*z)/den
++        if r > 0 and -1e-10 <= t <= 1+1e-10: hits.append(r)
++    need(bool(hits), 'optional waist/tie has no actual garment support')
++    return max(hits)
++
++
++def _finish_waist(parts, bones):
++    waist = bones['spine_02']['head_m'][1]; segments = 96
++    out = empty('linen_waistband_and_back_ties', 'garment_outer__plain_apron')
++    # Sampling every layer prevents the belt from cutting through an apron fold.
++    for row, y in enumerate((waist-.010, waist+.015)):
++        lines = [line for mesh in parts[:3] for line in _finish_segments(mesh, y)]
++        for k in range(segments):
++            a = 2*math.pi*k/segments; r = _finish_radius(lines, a)+.0035
++            out['positions_m'].append([r*math.sin(a), y, r*math.cos(a)])
++            out['uvs'].append([k/segments, float(row)]); out['weights'].append({'pelvis': 1.})
++    for k in range(segments):
++        n = (k+1)%segments; a,b,c,d = k,n,segments+n,segments+k
++        for f, uv in (([a,b,c],[[k/segments,0],[(k+1)/segments,0],[(k+1)/segments,1]]),
++                      ([a,c,d],[[k/segments,0],[(k+1)/segments,1],[k/segments,1]])):
++            out['triangles'].append(f); out['corner_uvs'].append(uv)
++    out = finish_edges(out, .001)
++    for side in (-1,1):
++        tie = empty('back_tie_left' if side < 0 else 'back_tie_right', out['material'])
++        for row in range(9):
++            t = row/8; y = waist+.006-.15*t; lines = _finish_segments(parts[1], y)
++            for col in range(2):
++                a = math.pi+side*(.025+.15*t)+(col-.5)*.115
++                r = _finish_radius(lines, a)+.006+.002*math.sin(math.pi*t)
++                tie['positions_m'].append([r*math.sin(a), y, r*math.cos(a)])
++                tie['uvs'].append([float(col), t]); tie['weights'].append({'pelvis': 1.})
++        for row in range(8):
++            a,b,c,d = 2*row,2*row+1,2*row+3,2*row+2
++            for f in ([a,c,b],[a,d,c]):
++                tie['triangles'].append(f); tie['corner_uvs'].append([tie['uvs'][i] for i in f])
++        _finish_merge(out, finish_edges(tie, .001))
++    out['receipt']['scope'] = '25mm actual-garment fitted waistband and two simple back ties; conjectural cut/width'
++    return out
++
++
++def _finish_closure(bodice_mesh, bones):
++    from human_period_wardrobe import _front_sample
++    out = empty('self_cloth_front_closure', bodice_mesh['material'])
++    low = bones['spine_02']['head_m'][1]+.025
++    high = bones['neck_01']['head_m'][1]-.040
++    for row in range(17):
++        y = low+(high-low)*row/16
++        for col in range(3):
++            x = (col-1)*.007; z,w = _front_sample(bodice_mesh,x,y)
++            out['positions_m'].append([x,y,z+.0025]);out['uvs'].append([col/2,row/16]);out['weights'].append(w)
++    for row in range(16):
++        for col in range(2):
++            a=row*3+col;b=a+1;c=a+4;d=a+3
++            for f in ([a,b,c],[a,c,d]):
++                out['triangles'].append(f);out['corner_uvs'].append([out['uvs'][i] for i in f])
++    out=finish_edges(out,.001)
++    # Closed low-profile self-cloth buttons, not metallic circles or new slots.
++    buttons=empty('six_covered_buttons',out['material']);segments=12
++    for button in range(6):
++        x=.001;y=low+.018+(high-low-.036)*button/5;z,w=_front_sample(bodice_mesh,x,y);start=len(buttons['positions_m'])
++        for row,(depth,radius) in enumerate(((.0035,.003),(.005,.0035),(.006,.0028))):
++            for k in range(segments):
++                a=2*math.pi*k/segments
++                buttons['positions_m'].append([x+radius*math.cos(a),y+radius*math.sin(a),z+depth])
++                buttons['uvs'].append([k/segments,row/2]);buttons['weights'].append(dict(w))
++        for row in range(2):
++            for k in range(segments):
++                n=(k+1)%segments;a=start+row*segments+k;b=start+row*segments+n;c=b+segments;d=a+segments
++                for f,uv in (([a,b,c],[[k/segments,row/2],[(k+1)/segments,row/2],[(k+1)/segments,(row+1)/2]]),
++                             ([a,c,d],[[k/segments,row/2],[(k+1)/segments,(row+1)/2],[k/segments,(row+1)/2]])):
++                    buttons['triangles'].append(f);buttons['corner_uvs'].append(uv)
++        for row in (0,2):
++            center=len(buttons['positions_m']);depth=(.0035,.005,.006)[row]
++            buttons['positions_m'].append([x,y,z+depth]);buttons['uvs'].append([.5,.5]);buttons['weights'].append(dict(w))
++            for k in range(segments):
++                n=(k+1)%segments;f=[center,start+row*segments+k,start+row*segments+n]
++                if row==0:f.reverse()
++                uv=[[.5,.5] if i==center else [.5+.45*math.cos(2*math.pi*((i-start)%segments)/segments),.5+.45*math.sin(2*math.pi*((i-start)%segments)/segments)] for i in f]
++                buttons['triangles'].append(f);buttons['corner_uvs'].append(uv)
++    _finish_merge(out,buttons)
++    out['receipt']['scope']='14mm front placket and six 7mm self-covered buttons sampled from actual bodice; reconstructed fastening only'
++    return out
++
++
++def _finish_bonnet(hair, body):
++    """Original pale bonnet family silhouette, fitted around unchanged actual hair.
++
++    Cleared Wild1835 supplies only tiny head-covering/full-skirt analogues. This
++    crown/brim is a new conjectural construction, never traced/measured evidence.
++    """
++    head_y=next(b['head_m'][1] for b in body['skeleton'] if b['name']=='head')
++    fitting_points=list(hair['positions_m'])
++    for mesh in body['meshes']:
++        for p,w in zip(mesh['positions_m'],mesh['weights']):
++            if sum(w.get(b,0.) for b in ('head','jaw'))>.75 and p[1]>=head_y-.060 and (p[2]<.035 or p[1]>head_y+.050 or abs(p[0])>.055):
++                fitting_points.append(p)
++    points=fitting_points;center=[(min(p[a] for p in points)+max(p[a] for p in points))/2 for a in range(3)]
++    radii=[(max(p[a] for p in points)-min(p[a] for p in points))/2+.012 for a in range(3)]
++    support=max(math.sqrt(sum(((p[a]-center[a])/radii[a])**2 for a in range(3))) for p in points)
++    radii=[r*max(1.,support)*1.025 for r in radii]
++    out=empty('plain_linen_bonnet','headwear__linen_bonnet');segments=64;rows=14;theta0=1.25
++    def vertex(p,uv):
++        i=len(out['positions_m']);out['positions_m'].append(p);out['uvs'].append(uv);out['weights'].append({'head':1.});return i
++    def face(f,uv=None,front=False):
++        a,b,c=[out['positions_m'][i] for i in f];u=[b[i]-a[i] for i in range(3)];v=[c[i]-a[i] for i in range(3)]
++        normal=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]]
++        direction=[0,0,1] if front else [sum(out['positions_m'][i][j]-center[j] for i in f) for j in range(3)]
++        uv=copy.deepcopy(uv or [out['uvs'][i] for i in f])
++        if sum(a*b for a,b in zip(normal,direction))<0:f=list(reversed(f));uv.reverse()
++        out['triangles'].append(f);out['corner_uvs'].append(uv)
++    for row in range(rows):
++        theta=theta0+(math.pi-.11-theta0)*row/(rows-1)
++        for k in range(segments):
++            phi=2*math.pi*k/segments
++            vertex([center[0]+radii[0]*math.sin(theta)*math.sin(phi),center[1]+radii[1]*math.sin(theta)*math.cos(phi),center[2]+radii[2]*math.cos(theta)],[k/segments,row/rows])
++    for row in range(rows-1):
++        for k in range(segments):
++            n=(k+1)%segments;a=row*segments+k;b=row*segments+n;c=b+segments;d=a+segments
++            face([a,b,c],[[k/segments,row/rows],[(k+1)/segments,row/rows],[(k+1)/segments,(row+1)/rows]])
++            face([a,c,d],[[k/segments,row/rows],[(k+1)/segments,(row+1)/rows],[k/segments,(row+1)/rows]])
++    pole=vertex([center[0],center[1],center[2]-radii[2]],[.5,1])
++    for k in range(segments):
++        face([(rows-1)*segments+k,(rows-1)*segments+(k+1)%segments,pole],[[k/segments,(rows-1)/rows],[(k+1)/segments,(rows-1)/rows],[(k+.5)/segments,1]])
++    # Open front brim covers upper/side hair while leaving the face/chin open.
++    start=len(out['positions_m']);columns=49
++    for row in range(4):
++        t=row/3
++        for col in range(columns):
++            phi=-2.13+4.26*col/(columns-1)
++            x=center[0]+radii[0]*math.sin(theta0)*math.sin(phi)*(1+.13*t)
++            y=center[1]+radii[1]*math.sin(theta0)*math.cos(phi)*(1+.04*t)
++            z=center[2]+radii[2]*math.cos(theta0)+t*(.045+.010*max(0.,math.cos(phi)))
++            vertex([x,y,z],[col/(columns-1),t])
++    for row in range(3):
++        for col in range(columns-1):
++            a=start+row*columns+col;b=a+1;c=b+columns;d=a+columns
++            face([a,b,c],front=True);face([a,c,d],front=True)
++    out=finish_edges(out,.001)
++    out['receipt']['construction']='Hair-bounded original bonnet crown and open upper/side brim, no traced source pattern; head-bound standing prototype'
++    out['receipt']['hair_envelope']={'center_m':center,'radii_m':radii,'maximum_hair_ellipsoid_norm':max(math.sqrt(sum(((p[a]-center[a])/radii[a])**2 for a in range(3))) for p in hair['positions_m']),'hair_vertices_unchanged':True}
++    return out
++
++
++def apply_dress_finishing(bundle, body, hair):
++    """Explicit v1 option; absent option preserves the original construction."""
++    need(bundle['body_semantic_sha256']==digest(body),'finishing body/source mismatch')
++    before_body=digest(body);before_hair=digest(hair);before_bundle=copy.deepcopy(bundle)
++    out=copy.deepcopy(bundle);bones={b['name']:b for b in body['skeleton']}
++    cuffs=_finish_cuffs(out['meshes'][0],bones)
++    waist=_finish_waist(out['meshes'],bones)
++    closure=_finish_closure(out['meshes'][0],bones)
++    _finish_merge(out['meshes'][2],cuffs);_finish_merge(out['meshes'][2],waist);_finish_merge(out['meshes'][0],closure)
++    bonnet=_finish_bonnet(hair,body);out['meshes'].append(bonnet)
++    out['materials'][bonnet['material']]={'base_color_linear':[.72,.68,.58,1],'roughness':.92}
++    for old,new in zip(before_bundle['meshes'],out['meshes']):
++        for key in ('positions_m','triangles','uvs','weights'):
++            need(new[key][:len(old[key])]==old[key], 'finishing changed original garment '+key)
++        if 'corner_uvs' in old:need(new['corner_uvs'][:len(old['triangles'])]==old['corner_uvs'],'finishing changed original corner UVs')
++    need(digest(body)==before_body and digest(hair)==before_hair,'finishing changed original body/hair')
++    out['optional_finishing']={'version':1,'source':'wild_1835_third_vine','grade':'reconstructed',
++        'scope':'Conjectural bonnet family silhouette, linen cuffs/waistband/back ties, self-cloth closure; actual source body/rig/hair retained',
++        'new_material_slots':1,'source_body_unchanged':True,'source_hair_unchanged':True,
++        'standing_source_only':True,'production_eligible':False,'walking_seated_or_photo_accepted':False}
++    out['limitations'].append('Optional finishing is an unrendered reconstructed standing-source proposal; no dated bonnet/cut/colour or personal possession is asserted')
++    return out
++
++
+ def prepare_dress_assembly(root, recipe, variant, body):
+     """The opt-in canonical builder's actual source consumer; never a world switch."""
+     root = Path(root).resolve()
+@@ -371,7 +616,13 @@ def prepare_dress_assembly(root, recipe, variant, body):
+     record = json.loads((root/'data/sources'/f'{source_id}.json').read_text())
+     need(record.get('id') == source_id and record.get('rights_status') == 'public_domain'
+          and record.get('asset_use') == 'cross_check', 'dress reference is not the cleared bounded cross-check')
++    finishing = spec.get('finishing_version')
++    need(finishing is None or (type(finishing) is int and finishing == 1), 'unsupported dress finishing version')
+     bundle = construct(body)
++    if finishing == 1:
++        from human_hair_short04 import fit
++        hair, _, _ = fit(body, recipe['hair_component'], root)
++        bundle = apply_dress_finishing(bundle, body, hair)
+     for material, spec in bundle['materials'].items():
+         need(recipe['colors_linear_rgba'].get(material) == spec['base_color_linear'], 'dress material recipe/source disagree')
+     names = {b['name'] for b in body['skeleton']}
+diff --git a/chicago/4d/tools/human_teamster_blend.py b/chicago/4d/tools/human_teamster_blend.py
+index c14e08dea..975cce9fe 100644
+--- a/chicago/4d/tools/human_teamster_blend.py
++++ b/chicago/4d/tools/human_teamster_blend.py
+@@ -244,12 +244,19 @@ def build(args):
+     weave.colorspace_settings.name='sRGB'
+     cloth_material='garment_upper__plain_dress' if dress else 'garment_upper__shirt_linen'
+     base=colors[cloth_material];pixels=[]
++    def encode_srgb(value):
++        return 12.92*value if value <= .0031308 else 1.055*value**(1/2.4)-.055
+     for yy in range(256):
+         for xx in range(256):
+             # The old eight-texel ridges read as giant blocks on body UVs.
+             # This original one-texel alternation has only one percent contrast.
+             shade=.99+.01*((xx+yy)%2)
+-            pixels.extend([base[0]*shade,base[1]*shade,base[2]*shade,1.])
++            if dress and recipe['dress_components'].get('finishing_version') == 1:
++                # Encode linear recipe dye in the PNG's declared sRGB space.
++                # Keep all original/default/male texture pixels unchanged.
++                pixels.extend([encode_srgb(base[0]*shade),encode_srgb(base[1]*shade),encode_srgb(base[2]*shade),1.])
++            else:
++                pixels.extend([base[0]*shade,base[1]*shade,base[2]*shade,1.])
+     weave.pixels=pixels
+     weave.file_format='PNG'
+     weave.pack()
+diff --git a/chicago/4d/tools/render_human_assembly_stills.py b/chicago/4d/tools/render_human_assembly_stills.py
+new file mode 100644
+index 000000000..725b1d17d
+--- /dev/null
++++ b/chicago/4d/tools/render_human_assembly_stills.py
+@@ -0,0 +1,227 @@
++#!/usr/bin/env python3
++# SPDX-License-Identifier: GPL-3.0-or-later
++"""Read trusted same-job masters and render bounded Blender assembly proofs.
++
++Run only through the existing pinned Blender4.5.3 CI launcher. No source save,
++body/rig editing, historical appearance or photographic acceptance is performed.
++The fixed3 source recipes/identities remain unchanged; studio objects live only
++in a new in-memory scene. PNGs/receipts are the only written artifacts.
++"""
++from __future__ import annotations
++import array
++import hashlib
++import json
++import math
++import os
++from pathlib import Path
++import struct
++import subprocess
++import sys
++
++ROOT = Path(__file__).resolve().parent.parent
++ASSETS = ('bardwell_otis_1835', 'dufresne_joseph_1835', 'flynn_martin_1835')
++OUTPUT = Path('/tmp/teamster-blender-stills')
++BLENDER_VERSION = (4, 5, 3)
++SIZE = 640
++SAMPLES = 24
++THREADS = 2
++
++
++def need(value, message):
++    if not value:
++        raise ValueError(message)
++
++
++def sha(path):
++    digest = hashlib.sha256()
++    with path.open('rb') as stream:
++        while chunk := stream.read(1024*1024):
++            digest.update(chunk)
++    return digest.hexdigest()
++
++
++def source_state(objects):
++    """Digest actual source geometry/UVs/weights/shapes and armature/pose state.
++
++    Uses original datablocks, not evaluated render meshes. The actual digest
++    is recorded before and after rendering in native Blender.
++    """
++    digest = hashlib.sha256()
++    def record(value):
++        digest.update(json.dumps(value, sort_keys=True, separators=(',', ':')).encode())
++        digest.update(b'\0')
++    def bulk(data, attribute, width, kind='f'):
++        values = array.array(kind, [0])* (len(data)*width)
++        if values:
++            data.foreach_get(attribute, values)
++        record((attribute, len(data), width, kind));digest.update(values.tobytes())
++    for obj in sorted(objects, key=lambda item: item.name):
++        record((obj.name, obj.type, obj.parent.name if obj.parent else None,
++                [list(row) for row in obj.matrix_world], obj.hide_render))
++        if obj.type == 'MESH':
++            mesh = obj.data
++            record((mesh.name, [m.name if m else None for m in mesh.materials]))
++            bulk(mesh.vertices, 'co', 3)
++            bulk(mesh.loops, 'vertex_index', 1, 'i')
++            bulk(mesh.polygons, 'loop_start', 1, 'i')
++            bulk(mesh.polygons, 'loop_total', 1, 'i')
++            for layer in mesh.uv_layers:
++                record(layer.name);bulk(layer.data, 'uv', 2)
++            if mesh.shape_keys:
++                for key in mesh.shape_keys.key_blocks:
++                    record((key.name, key.value));bulk(key.data, 'co', 3)
++            record([g.name for g in obj.vertex_groups])
++            for vertex in mesh.vertices:
++                record([(g.group, g.weight) for g in vertex.groups])
++            record([(m.name, m.type, m.show_render, m.show_viewport,
++                     getattr(getattr(m, 'object', None), 'name', None)) for m in obj.modifiers])
++        if obj.type == 'ARMATURE':
++            record([(b.name, b.parent.name if b.parent else None,
++                     [list(row) for row in b.matrix_local], list(b.head_local), list(b.tail_local), b.use_deform) for b in obj.data.bones])
++            record([(b.name, [list(row) for row in b.matrix_basis]) for b in obj.pose.bones])
++            action = obj.animation_data.action if obj.animation_data else None
++            record(('active_action', action.name if action else None, obj.data.pose_position))
++    return digest.hexdigest()
++
++
++def png_receipt(path):
++    with path.open('rb') as stream:
++        header = stream.read(24)
++    need(header[:8] == b'\x89PNG\r\n\x1a\n' and header[12:16] == b'IHDR', 'actual PNG output absent')
++    width, height = struct.unpack('>II', header[16:24])
++    need((width, height) == (SIZE, SIZE), 'unexpected actual PNG dimensions')
++    return {'file': path.name, 'bytes': path.stat().st_size, 'sha256': sha(path),
++            'width': width, 'height': height}
++
++
++def render_one(bpy, Vector, asset):
++    master = ROOT / 'assets/authored/humans/teamsters' / asset / 'canonical.blend'
++    need(master.is_file() and master.resolve().is_relative_to(ROOT), 'trusted canonical master missing/outside checkout')
++    before_sha = sha(master)
++    bpy.ops.wm.open_mainfile(filepath=str(master.resolve()), load_ui=False, use_scripts=False)
++    original_scene = bpy.context.scene
++    provenance = original_scene.get('chicago4d_human')
++    need(provenance and provenance.get('asset_id') == asset and provenance.get('grade') == 'reconstructed'
++         and provenance.get('recipe') == 'data/humans/recipes/worker_1835.json', 'actual master identity/recipe mismatch')
++    lod = bpy.data.collections.get('lod0');rig = bpy.data.collections.get('rig')
++    need(lod and rig, 'canonical lod0/rig collections missing')
++    source_objects = list(bpy.data.objects)
++    original_state = source_state(source_objects)
++    meshes = [obj for obj in lod.all_objects if obj.type == 'MESH']
++    need(meshes and all(obj.name.startswith(asset+'_') for obj in meshes), 'unexpected LOD0 source meshes')
++    depsgraph = bpy.context.evaluated_depsgraph_get()
++    points = [evaluated.matrix_world @ Vector(corner)
++              for obj in meshes for evaluated in [obj.evaluated_get(depsgraph)] for corner in evaluated.bound_box]
++    minimum = Vector(tuple(min(p[a] for p in points) for a in range(3)))
++    maximum = Vector(tuple(max(p[a] for p in points) for a in range(3)))
++    need(all(math.isfinite(v) for p in points for v in p), 'nonfinite evaluated source bounds')
++    need(.9 <= maximum.z-minimum.z <= 2.3, 'unexpected measured assembly height')
++    target = (minimum+maximum)/2
++    # New in-memory scene reuses the unchanged source objects/datablocks. No
++    # source collection visibility, pose/action, mesh, rig or material is edited.
++    scene = bpy.data.scenes.new('_T1789_BLENDER_ASSEMBLY_PROOF')
++    for obj in {o.name:o for o in [*lod.all_objects, *rig.all_objects]}.values():
++        scene.collection.objects.link(obj)
++    scene.render.engine = 'CYCLES';scene.cycles.device = 'CPU'
++    scene.cycles.samples = SAMPLES;scene.cycles.use_denoising = True
++    scene.cycles.use_adaptive_sampling = True;scene.cycles.adaptive_threshold = .05
++    scene.cycles.max_bounces = 4;scene.cycles.transparent_max_bounces = 4
++    scene.render.threads_mode = 'FIXED';scene.render.threads = THREADS
++    scene.render.resolution_x = SIZE;scene.render.resolution_y = SIZE;scene.render.resolution_percentage = 100
++    scene.render.image_settings.file_format = 'PNG';scene.render.image_settings.color_mode = 'RGBA'
++    scene.render.image_settings.color_depth = '8';scene.render.image_settings.compression = 15
++    scene.render.film_transparent = False
++    scene.view_settings.view_transform = 'AgX';scene.view_settings.look = 'None'
++    scene.view_settings.exposure = 0;scene.view_settings.gamma = 1
++    world = bpy.data.worlds.new('_T1789_STILL_WORLD');world.use_nodes = True
++    world.node_tree.nodes['Background'].inputs['Color'].default_value = (.12,.12,.12,1)
++    world.node_tree.nodes['Background'].inputs['Strength'].default_value = .35;scene.world = world
++    floor_mesh = bpy.data.meshes.new('_T1789_STILL_FLOOR')
++    z = minimum.z-.003
++    floor_mesh.from_pydata([(-4,-4,z),(4,-4,z),(4,4,z),(-4,4,z)], [], [(0,1,2,3)])
++    floor = bpy.data.objects.new('_T1789_STILL_FLOOR', floor_mesh);scene.collection.objects.link(floor)
++    material = bpy.data.materials.new('_T1789_STILL_FLOOR');material.use_nodes = True
++    bsdf = material.node_tree.nodes['Principled BSDF']
++    bsdf.inputs['Base Color'].default_value = (.16,.17,.18,1);bsdf.inputs['Roughness'].default_value = .8
++    floor.data.materials.append(material)
++    lights = []
++    for name, offset, watts, size in [('key',(-2.5,-3,3),700,2.5),('fill',(3,-2,1.5),300,3),('rim',(1,2.5,2.8),500,2)]:
++        data = bpy.data.lights.new('_T1789_STILL_'+name, 'AREA');data.energy = watts;data.shape = 'DISK';data.size = size
++        obj = bpy.data.objects.new(data.name,data);scene.collection.objects.link(obj);obj.location = target+Vector(offset)
++        obj.rotation_euler = (target-obj.location).to_track_quat('-Z','Y').to_euler()
++        lights.append({'name':name,'location_m':list(obj.location),'watts':watts,'size_m':size,'color':list(data.color)})
++    data = bpy.data.cameras.new('_T1789_STILL_CAMERA');data.type = 'ORTHO';data.clip_start = .05;data.clip_end = 50
++    camera = bpy.data.objects.new(data.name,data);scene.collection.objects.link(camera)
++    camera.location = target+Vector((.45,-1,.16)).normalized()*5
++    rotation = (target-camera.location).to_track_quat('-Z','Y');camera.rotation_euler = rotation.to_euler()
++    corners = [Vector((x,y,z)) for x in (minimum.x,maximum.x) for y in (minimum.y,maximum.y) for z in (minimum.z,maximum.z)]
++    projected = [rotation.inverted() @ (p-target) for p in corners]
++    data.ortho_scale = 1.14*max(max(p.x for p in projected)-min(p.x for p in projected),
++                                max(p.y for p in projected)-min(p.y for p in projected))
++    scene.camera = camera
++    need(all(abs(p[a])/data.ortho_scale <= .5/1.14+1e-9 for p in projected for a in (0,1)), 'source bounding box outside intended camera margin')
++    image = OUTPUT/(asset+'-assembly-threequarter.png');scene.render.filepath = str(image)
++    receipt = {'asset_id':asset,'scope':'Blender still assembly proof only; no photographic acceptance',
++               'source_master':str(master.relative_to(ROOT)),'master_sha256_before':before_sha,
++               'person_reference_id':provenance.get('person_reference_id'),
++               'person_reference_grade':provenance.get('person_reference_grade'),
++               'sources':list(provenance.get('sources',[])),'liberty':provenance.get('liberty'),
++               'source_body_rig_geometry_state_before':original_state,'frame':'as-saved source rest state; no pose/action changed',
++               'lod':0,'source_meshes':[obj.name for obj in meshes],'source_bounds_m':{'min':list(minimum),'max':list(maximum)},
++               'camera':{'type':'ORTHO','location_m':list(camera.location),'target_m':list(target),
++                         'rotation_quaternion_wxyz':list(rotation),'ortho_scale_m':data.ortho_scale,'bbox_margin_factor':1.14,
++                         'clip_start_m':data.clip_start,'clip_end_m':data.clip_end},
++               'lighting':lights,'world_strength':.35,'floor_z_m':z,
++               'engine':'CYCLES','device':'CPU','samples':SAMPLES,'threads':THREADS,'denoise':True,
++               'view_transform':scene.view_settings.view_transform,'look':scene.view_settings.look,
++               'exposure':scene.view_settings.exposure,'photographic_acceptance':False,'production_eligibility_changed':False}
++    try:
++        bpy.ops.render.render(write_still=True, scene=scene.name)
++        receipt['PNG'] = png_receipt(image)
++        receipt['status'] = 'actual_native_render_completed'
++    finally:
++        receipt['master_sha256_after'] = sha(master)
++        receipt['source_body_rig_geometry_state_after'] = source_state(source_objects)
++        receipt['source_master_bytes_unchanged'] = receipt['master_sha256_after'] == before_sha
++        receipt['source_body_rig_geometry_unchanged'] = receipt['source_body_rig_geometry_state_after'] == original_state
++        receipt['source_protection_verified'] = receipt['source_master_bytes_unchanged'] and receipt['source_body_rig_geometry_unchanged']
++        if 'PNG' not in receipt or not receipt['source_protection_verified']:
++            receipt['status'] = 'failed_or_incomplete'
++        (OUTPUT/(asset+'-receipt.json')).write_text(json.dumps(receipt,indent=2)+'\n')
++    need(receipt['source_master_bytes_unchanged'] and receipt['source_body_rig_geometry_unchanged'], 'source master/body/rig changed')
++    return receipt
++
++
++def main():
++    # Imported ONLY by the real native pinned Blender process; no fake bpy path.
++    import bpy
++    from mathutils import Vector
++    need(tuple(bpy.app.version) == BLENDER_VERSION, 'native Blender must match exact4.5.3 pin')
++    need(not ('--' in sys.argv and sys.argv[sys.argv.index('--')+1:]), 'no arbitrary source/output/command arguments accepted')
++    source = subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
++    need(source == os.environ['GITHUB_SHA'], 'master job checkout is not actual definition source')
++    need(not OUTPUT.exists(), 'fresh owned still output directory required')
++    OUTPUT.mkdir()
++    files = ['generators/blender.pin','tools/render_human_assembly_stills.py','tools/human_teamster_blend.py',
++             'tools/human_export.py','data/humans/recipes/worker_1835.json']
++    bound = {name:sha(ROOT/name) for name in files}
++    manifest = {'scope':'Fixed3existing source assemblies rendered in native Blender; no historical likeness/photo acceptance',
++                'source_sha':source,'definition_sha':os.environ['DEFINITION_SHA'],'run_id':os.environ['GITHUB_RUN_ID'],
++                'run_attempt':os.environ['GITHUB_RUN_ATTEMPT'],'blender_version':bpy.app.version_string,
++                'blender_build_hash':bpy.app.build_hash.decode(),'source_file_SHA256':bound,
++                'fixed_assets':list(ASSETS),'photographic_acceptance':False,'production_eligibility_changed':False,'renders':[]}
++    try:
++        for asset in ASSETS:
++            manifest['renders'].append(render_one(bpy,Vector,asset))
++        need({name:sha(ROOT/name) for name in files} == bound, 'bound source files changed')
++        need(len(manifest['renders']) == 3, 'all3actual stills required')
++        manifest['status'] = 'actual_three_native_Blender_stills_completed'
++    except Exception as error:
++        manifest['status'] = 'failed_or_incomplete';manifest['error_type'] = type(error).__name__
++        raise
++    finally:
++        (OUTPUT/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/chicago/4d/tools/test_human_dress_components.py b/chicago/4d/tools/test_human_dress_components.py
+index 585303b23..24df7db8e 100644
+--- a/chicago/4d/tools/test_human_dress_components.py
++++ b/chicago/4d/tools/test_human_dress_components.py
+@@ -111,7 +111,10 @@ class DressComponents(unittest.TestCase):
+ 
+     def test_actual_canonical_source_consumer_preserves_body(self):
+         before = copy.deepcopy(self.body)
+-        bundle = prepare_dress_assembly(ROOT, self.recipe, self.variant, self.body)
++        original_recipe = copy.deepcopy(self.recipe)
++        original_recipe['dress_components'].pop('finishing_version', None)
++        bundle = prepare_dress_assembly(ROOT, original_recipe, self.variant, self.body)
++        self.assertNotIn('optional_finishing', bundle)
+         self.assertEqual(before, self.body)
+         self.assertEqual(hashlib.sha256(self.raw).hexdigest(), BODY_SHA256)
+         self.assertEqual(bundle['skeleton'], self.body['skeleton'])
+@@ -123,6 +126,31 @@ class DressComponents(unittest.TestCase):
+                 self.assertEqual(len(set(face)), 3)
+         self.assertFalse(bundle['meshes'][1]['receipt']['walking_or_seated_accepted'])
+ 
++    def test_optional_finished_consumer_keeps_source_and_pose_bounds(self):
++        before = copy.deepcopy(self.body)
++        finished_recipe = copy.deepcopy(self.recipe)
++        finished_recipe['dress_components']['finishing_version'] = 1
++        bundle = prepare_dress_assembly(ROOT, finished_recipe, self.variant, self.body)
++        self.assertEqual(before, self.body)
++        self.assertEqual(bundle['skeleton'], before['skeleton'])
++        self.assertEqual(len(bundle['meshes']), 5)
++        self.assertEqual(bundle['meshes'][-1]['name'], 'plain_linen_bonnet')
++        self.assertTrue(all(w == {'head': 1.} for w in bundle['meshes'][-1]['weights']))
++        self.assertFalse(bundle['optional_finishing']['production_eligible'])
++        self.assertFalse(bundle['optional_finishing']['walking_seated_or_photo_accepted'])
++        self.assertTrue(bundle['optional_finishing']['source_hair_unchanged'])
++        self.assertLess(bundle['meshes'][-1]['receipt']['hair_envelope']['maximum_hair_ellipsoid_norm'], 1.)
++        for mesh in bundle['meshes']:
++            for face, uv in zip(mesh['triangles'], mesh.get('corner_uvs', [[mesh['uvs'][i] for i in f] for f in mesh['triangles']])):
++                self.assertEqual(len(set(face)), 3)
++                self.assertGreater(abs((uv[1][0]-uv[0][0])*(uv[2][1]-uv[0][1])
++                                       -(uv[1][1]-uv[0][1])*(uv[2][0]-uv[0][0])), 1e-16)
++        for bad in (0, 2, True, '1', {}):
++            invalid = copy.deepcopy(finished_recipe)
++            invalid['dress_components']['finishing_version'] = bad
++            with self.assertRaisesRegex(ValueError, 'finishing version'):
++                prepare_dress_assembly(ROOT, invalid, self.variant, self.body)
++
+     def test_unqualified_pose_or_source_changes_are_refused(self):
+         for key, bad, message in [('production_eligible', True, 'promotion'),
+                                   ('walking_seated_or_photo_accepted', True, 'promotion'),

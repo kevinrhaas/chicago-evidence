@@ -1,0 +1,128 @@
+--- historical/run-pinned-native-memory-20261026.py
++++ proposed/run-pinned-native-memory-accepted-base.py
+@@ -14,6 +14,7 @@
+ import json
+ import math
+ import os
++import re
+ from pathlib import Path
+ import subprocess
+ import sys
+@@ -22,6 +23,7 @@
+ 
+ SUPERVISOR = Path('/workspace/.cloud-setup/transport-supervise.py')
+ METRIC_PATHS = ['chicago/4d/tools/measure_memory.mjs', 'chicago/4d/tools/memory_ceilings.json']
++OLD_DESKTOP_GOAL_BYTES = 1125 * 1024 * 1024
+ 
+ def digest(path):
+     h = hashlib.sha256()
+@@ -39,9 +41,52 @@
+         raise ValueError('Unsafe manifest path: ' + str(name))
+     return p.as_posix()
+ 
++def read_native_reference(git, accepted_base=None):
++    """Read immutable committed native bytes; omitted base retains HEAD behavior."""
++    if accepted_base is not None and not re.fullmatch(r'[0-9a-fA-F]{40}', accepted_base):
++        raise ValueError('Accepted base must be an immutable full 40-hex commit SHA')
++    selected = accepted_base.lower() if accepted_base is not None else 'HEAD'
++    commit = git('rev-parse', '--verify', selected + '^{commit}').decode().strip()
++    if accepted_base is not None and commit != selected:
++        raise AssertionError('Accepted base did not resolve to its exact commit')
++    rows, payloads = {}, {}
++    for name in METRIC_PATHS:
++        data = git('show', commit + ':' + name)
++        rows[name] = {'sha256': hashlib.sha256(data).hexdigest(), 'bytes': len(data),
++                      'git_blob': git('rev-parse', commit + ':' + name).decode().strip()}
++        payloads[name] = data
++    caps = json.loads(payloads[METRIC_PATHS[1]])['ceilings']['1904']
++    limits = {viewport: caps[viewport]['total_bytes'] for viewport in ['mobile', 'desktop']}
++    if not all(isinstance(v, int) and not isinstance(v, bool) and v > 0 for v in limits.values()):
++        raise ValueError('Native committed 1904 ceilings must be positive integer bytes')
++    record = {'mode': 'explicit_accepted_base' if accepted_base is not None else 'HEAD_default',
++              'commit': commit, 'files': rows, 'native_1904_ceilings_bytes': limits}
++    return record, payloads
++
++
++def verify_native_reference(repo, git, reference, accepted_base=None):
++    current_reference, payloads = read_native_reference(git, accepted_base)
++    if current_reference != reference:
++        raise AssertionError('Native committed reference changed')
++    for name, row in reference['files'].items():
++        if digest(Path(repo) / name) != row['sha256']:
++            raise AssertionError('Native metric/ceiling differs from selected committed reference: ' + name)
++    return {name: row['sha256'] for name, row in reference['files'].items()}
++
++
++def historical_desktop_comparison(total_bytes):
++    return {'scope': 'READ_ONLY_SUPPLEMENTAL_OLD_GOAL_NOT_NATIVE_GATE',
++            'old_1125_mib_goal_bytes': OLD_DESKTOP_GOAL_BYTES,
++            'actual_total_bytes': total_bytes,
++            'actual_strictly_below_old_goal': total_bytes < OLD_DESKTOP_GOAL_BYTES,
++            'remaining_bytes_to_old_goal': OLD_DESKTOP_GOAL_BYTES - total_bytes,
++            'changes_native_gate_or_result': False}
++
++
+ def main():
+     ap = argparse.ArgumentParser(description=__doc__)
+     ap.add_argument('--worker', required=True)
++    ap.add_argument('--accepted-base', help='Explicit immutable 40-hex commit for unchanged native metric/caps; omitted means HEAD as before')
+     ap.add_argument('--source-binding', required=True)
+     ap.add_argument('--expected-source-binding-sha256', required=True)
+     ap.add_argument('--mirror-root', required=True)
+@@ -129,19 +174,20 @@
+         if actual != set(mirror_names):
+             raise AssertionError('Published mirror file set changed')
+         verify_rows(mirror, published)
+-        metric = {}
+-        for name in METRIC_PATHS:
+-            committed = hashlib.sha256(git('show', 'HEAD:' + name)).hexdigest()
+-            if digest(repo / name) != committed:
+-                raise AssertionError('Native metric/ceiling differs from committed HEAD: ' + name)
+-            metric[name] = committed
++        metric = verify_native_reference(repo, git, native_reference, a.accepted_base)
++        if digest(reference_file) != reference_sha256:
++            raise AssertionError('Saved native reference receipt changed')
++        for name, row in native_reference['files'].items():
++            if digest(reference_root / name) != row['sha256']:
++                raise AssertionError('Saved immutable native reference bytes changed: ' + name)
+         status = git('status', '--porcelain=v1', '-z')
+         return {'HEAD': head, 'TREE': tree, 'APP': app,
+                 'git_status_sha256': hashlib.sha256(status).hexdigest(),
+                 'source_binding_sha256': expected_source_hash, 'pinned_source_paths': len(source_names),
+                 'mirror_manifest_sha256': expected_mirror_hash, 'mirror_files': len(mirror_names),
+                 'mirror_root': str(mirror), 'build': json.loads((mirror / 'build.json').read_text()),
+-                'native_metric_and_ceiling_sha256': metric, 'source_and_mirror_exact': True}
++                'native_metric_and_ceiling_sha256': metric, 'native_reference': native_reference,
++                'native_reference_receipt_sha256': reference_sha256, 'source_and_mirror_exact': True}
+ 
+     command = ['node', 'tools/measure_memory.mjs', '--gate', '--no-snapshot', '--year', '1904',
+                '--only', a.viewport, '--root', str(mirror), '--json', str(out / 'READING.json')]
+@@ -154,6 +200,18 @@
+               'browser_launch_attempted': False, 'state': 'PREPARING',
+               'native_spawn_png_support': False, 'PNG_note': 'Native PNGs require a different --walk --captures route; none requested.'}
+     try:
++        native_reference, native_payloads = read_native_reference(git, a.accepted_base)
++        reference_root = out / 'IMMUTABLE-NATIVE-REFERENCE'
++        reference_root.mkdir(exist_ok=False)
++        for name, data in native_payloads.items():
++            saved = reference_root / name
++            saved.parent.mkdir(parents=True, exist_ok=True)
++            saved.write_bytes(data)
++        reference_file = out / 'NATIVE-REFERENCE.json'
++        write(reference_file, native_reference)
++        reference_sha256 = digest(reference_file)
++        result['native_reference'] = native_reference
++        result['native_reference_receipt_sha256'] = reference_sha256
+         before = snapshot()
+         write(out / 'BEFORE.json', before)
+         scratch.mkdir(exist_ok=False)
+@@ -190,6 +248,9 @@
+         if result['valid_single_1904_viewport_reading']:
+             result['actual_totals_bytes'] = rows[0]['totals']
+             result['actual_page_errors'] = rows[0].get('errors', [])
++            result['actual_native_ceiling_bytes'] = native_reference['native_1904_ceilings_bytes'][a.viewport]
++            if a.viewport == 'desktop':
++                result['historical_1125_mib_comparison'] = historical_desktop_comparison(rows[0]['totals']['total'])
+         intact = result['before_after_exact'] and cleanup['cleanup_complete'] and not cleanup['remaining_owned_children']
+         complete = intact and not closed['timed_out'] and result['valid_single_1904_viewport_reading']
+         result['state'] = 'PASS' if complete and closed['returncode'] == 0 else 'NONPASS'

@@ -1,0 +1,78 @@
+{
+  "review_utc": "2026-10-26T22:14:47.409807+00:00",
+  "verdict": "NO_CONCRETE_BLOCKER_IN_REVISED_OBSERVER_SCOPE",
+  "scope": "Independent read-only review of five runtime pins, native flight datum and manual renderer stepping additions; no browser/test execution or source edit.",
+  "observer_pins": [
+    {
+      "original_path": "/tmp/T3173-FIVE-RUNTIME-MANUAL-STEP-OBSERVER-20261026/observe-lifecycle.mjs",
+      "bytes": 28108,
+      "sha256": "af6546a34ae9b99ca3e961dd2a7f64f35f28ff06ae52c9fd0dc80ffc7ec478f8"
+    },
+    {
+      "original_path": "/tmp/T3173-FIVE-RUNTIME-MANUAL-STEP-OBSERVER-20261026/OBSERVER-DIFF-FROM-1cadb53a.patch",
+      "bytes": 5364,
+      "sha256": "0d08cdc2f77652daac4c7315f5b3a344968bd3fc7382a145cbbe2721d599ec17"
+    },
+    {
+      "original_path": "/tmp/T3173-FIVE-RUNTIME-MANUAL-STEP-OBSERVER-20261026/MANIFEST.json",
+      "bytes": 973,
+      "sha256": "2f012ae5aa9cbe3669c2ccffb4c3559106217569ca85cf877866a58d4621ddb9"
+    },
+    {
+      "original_path": "/tmp/T3173-FIVE-RUNTIME-MANUAL-STEP-OBSERVER-20261026/OBSERVER-CONTROLS-RESULT.json",
+      "bytes": 361,
+      "sha256": "43cec6e0264c2103a0445a6494d83a0e899c599efc8e943ae5e39c31b8ff93d7"
+    }
+  ],
+  "native_API_source_read_pins": [
+    {
+      "original_path": "/tmp/chicago-photo-worker-t2793-20261026/chicago/4d/renderers/web/js/walker.js",
+      "bytes": 25544,
+      "sha256": "30e0ef1b8ae69fe8834fe0749a0601e202de105e7c2be700f5976d19a6e9ab15"
+    },
+    {
+      "original_path": "/tmp/chicago-photo-worker-t2793-20261026/chicago/4d/renderers/web/js/travel-settings.js",
+      "bytes": 5894,
+      "sha256": "073ae9c25c680d1433e5bf640b776740dc55dfdde3d28da3df6eccc617c501fb"
+    },
+    {
+      "original_path": "/tmp/chicago-photo-worker-t2793-20261026/chicago/4d/renderers/web/js/main.js",
+      "bytes": 321606,
+      "sha256": "ce2dec0611c0819937b99c5ef7a6cb855993a277249825d4cf5bbcff4a0cc747"
+    },
+    {
+      "original_path": "/tmp/chicago-photo-worker-t2793-20261026/chicago/4d/renderers/web/js/frame-governor.js",
+      "bytes": 11585,
+      "sha256": "54b803933327e6ab2c096a2dc99fbfbd77df2a77658684ad60982f94fed7d2bb"
+    }
+  ],
+  "findings": [
+    {
+      "topic": "Flight datum and fields",
+      "evidence": "walker.teleport stores groundY plus requested relative altitude in eyeY; updateFly clamps eyeY with Math.max(surfaceAt+FLY.minClearance,Math.min(FLY.maxAltitude,eyeY)), then sets altitude=eyeY-groundY and applies camera. Native FLY maxAltitude900 is absolute datum; new checker uses actual served settings, actual groundY/eyeY/altitude/camera and rejects lowered native ceiling/nonfinite/nonflying/mismatches. The held no-input standing\u2192flight scenario keeps bob0; exact camera=eye requirement will fail rather than silently accept a changed path."
+    },
+    {
+      "topic": "Served settings resolution",
+      "evidence": "At /1904/?device=standard, new URL(../walk/js/travel-settings.js,location.href) resolves /walk/js/travel-settings.js, the native published module. Full mirror/source guards pin this dependency in addition to explicit runtime5 pins."
+    },
+    {
+      "topic": "Eviction strength",
+      "evidence": "Positive initial resident count, exact awayresident0, and evictiondelta==initialresident count are required in addition to native flying/absolute clamp. This corrects the prior wrong relative-altitude>=900 assumption without relaxing native caps or real eviction coverage."
+    },
+    {
+      "topic": "Manual held draw path",
+      "evidence": "setAnimationLoop(null) is called only after actual ready, welcome world and setAnimationHold(true). It stops Three implicit RAF callback; it does not stop window requestAnimationFrame. Original explicit api.step/RAF loops remain byte-exact. Native api.step calls governor.rest,applyGovernor and forced tick. rest sets scale1,pace1,shadowFreshtrue regardless of tier; real tick updates world, camera, residency and confidence renderer. No adaptive stale shadow scale follows from omitting implicit frameDrawn/setTier in this held mode."
+    },
+    {
+      "topic": "Context reload and async work",
+      "evidence": "Context loss/restore event policy and actual normal page reload remain untouched. Fresh page boots native loop before enterAndHold stops it again. Original independent windowRAF waits/explicit native steps, source/detail transactions, return/readPixels/GLerror/pixel checks, native WEBGLlose+restore/reload, page/request/console errors, source/vendor/mirror guards and actual cleanup remain unchanged."
+    },
+    {
+      "topic": "Claim boundaries",
+      "evidence": "Focused observer now explicitly records manual execution mode. It cannot establish automatic visitor pacing or watchSteps/blackbox tick behavior, which live in the omitted renderer callback. README explicitly excludes these and retains separate native memory/fullgate qualification. Old FAIL/stopped observers are preserved."
+    }
+  ],
+  "actual_runtime_result": "UNRUN_BY_REVIEWER",
+  "actual_tests": "Existing author29-control receipt read only; not rerun by reviewer.",
+  "qualified_claim": "Source-level observer review only; real V5 both-profile memory, actual both-profile lifecycle/pixels and required full release smoke remain separate."
+}
