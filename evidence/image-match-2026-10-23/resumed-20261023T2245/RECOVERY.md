@@ -1,5 +1,17 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- GREEN_TREE_CAUSAL_TREMONT_NATIVE_20261026_START -->
+## Green Tree matrix causes and authored repairs; Tremont native checkpoint
+
+Four closed packets preserve the old0c78 Green Tree matrix causal snapshot, authoredcb93 repairs and targeted-fixture v2 delta, plus Tremont actual native61/audit/package/publish. **The matrix snapshot has11 PASS and6 FAIL with desktop13 pending, not a complete PASS. Green Tree new runtime/whole code/published reruns are OWED. Tremont native app is RUNNING elsewhere and no completed app or full codegate PASS is claimed.** The v2 delta supersedes only source repair content; earlier baseline/driver bindings remain dependencies. No live folder is copied and no original picture signoff is claimed.
+
+- [GREENTREE-PR1328-FIRST-MATRIX-CAUSAL-11PASS6FAIL-DESKTOP13-PENDING-20261026](archives/GREENTREE-PR1328-FIRST-MATRIX-CAUSAL-11PASS6FAIL-DESKTOP13-PENDING-20261026.tar.gz) — Closed causal snapshot for exact old0c78 first published matrix:17 of18 groups terminal,11 PASS and6 FAIL, desktop13 still pending at this snapshot. Preserves six exact old-head red results, failed local240s diagnostic and cause proof. NO complete matrix PASS is claimed. Depends checked132 dispatch archive; later authoredcb93 repairs and future native/code/published reruns are separate and cannot relabel old failures.
+- [GREENTREE-PR1328-CB93-AUTHORED-REPAIRS-SOURCE-ONLY-20261026](archives/GREENTREE-PR1328-CB93-AUTHORED-REPAIRS-SOURCE-ONLY-20261026.tar.gz) — Closed authoredcb93 union/plan, baseline protection, strict smoke repair contract, source patch and prepared native driver. Source-fix and targeted-fixture evidence ONLY; new runtime, whole codegate and published reruns are OWED. Depends checked132 dispatch and first-matrix causal packets. Later source-only v2 supersedes the repair patch while retaining this packet baseline/driver dependencies; a fifth label path will belong to later final native proof, not this packet.
+- [GREENTREE-PR1328-CB93-AUTHORED-REPAIRS-V2-TARGETED3-NATIVE-OWED-20261026](archives/GREENTREE-PR1328-CB93-AUTHORED-REPAIRS-V2-TARGETED3-NATIVE-OWED-20261026.tar.gz) — Small v2 delta supersedes only prior source repair patch and contract, adding independent90-degree positive fixture to earlier offset-origin coverage with actual targeted3 PASS. Baselines/drivers remain dependencies in the earlier authored packet. New runtime/whole codegate/published reruns remain OWED; no matrix PASS, public code PR advancement, merge or original match claim. Later fifth label-path fix is not in this snapshot.
+- [TREMONT-T2385-ACTUAL-NATIVE61-132E-AUDIT-PACKAGE-PUBLISH-APP-PENDING-20261026](archives/TREMONT-T2385-ACTUAL-NATIVE61-132E-AUDIT-PACKAGE-PUBLISH-APP-PENDING-20261026.tar.gz) — Closed actual native61 on132e,44 audit records, package5/publish and renewed normal native claim. Depends earlier authored003/two-output/note-ID repair and light132e integration recovery. Native application is RUNNING elsewhere and excluded; no completed app, full codegate PASS, code PR, merge or original picture acceptance is claimed. Earlier failures and DIFFERS source comparison remain visible.
+<!-- GREEN_TREE_CAUSAL_TREMONT_NATIVE_20261026_END -->
+
+
 <!-- STMARY_TWO_CAUSAL_FIXES_20261026_START -->
 ## St Mary — two causal fixes and retained full-gate failure
 
