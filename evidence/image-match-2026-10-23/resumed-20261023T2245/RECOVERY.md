@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- WOLF_A575_NATIVE_CLOSURE_20261026_START -->
+## Wolf Point a575-integrated native recovery
+
+One frozen packet preserves the exact normal fast-forward/transplant and fresh owning-native closure on a575. **Application, whole gate, source commit, PR, match verdicts and all8-picture coverage remain pending.** The separate live app folder is excluded; prior production82 and pre-transplant recovery archives remain dependencies.
+
+- [WOLFPOINT-T2386-A575-INTEGRATED-NATIVE61-ALL44-PACKAGE5-RECOVERY-20261026](archives/WOLFPOINT-T2386-A575-INTEGRATED-NATIVE61-ALL44-PACKAGE5-RECOVERY-20261026.tar.gz) — Closed a575-integrated Wolf source/native recovery: actual a575 normal fast-forward, precise owned transplant and exact four6a61 tools retained. All82 actual master/web pairs preserved with fresh native recipe hashes; genuine owning61 fixed point in two laps, one actual-a575 all44 proof-equal restoration and package5/finalpublish PASS. Full binary current WIP patch, recovery entry/private object5b8e4a7 and bindings retained. Application, whole gate, source commit, PR, match verdicts and all8-picture coverage remain pending. The separate live final-app folder is excluded. Prior full recovery19/index357 and production82/index354 are dependencies, not duplicated; no original2386 completion or cross-tree app/matrix acceptance claimed.
+<!-- WOLF_A575_NATIVE_CLOSURE_20261026_END -->
+
+
 <!-- TREMONT_PRETRANSPLANT_COMPLETE_20261026_START -->
 ## Tremont complete recovery before a575 transplant
 
