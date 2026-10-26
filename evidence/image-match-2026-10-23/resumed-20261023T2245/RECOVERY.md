@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- DEV70A8_OBJECTS_ONLY_NOREF_1431_20261026_START -->
+## Current dev immutable objects staged with all source references unchanged
+
+One frozen packet preserves ROOTauthorized70a8 OBJECTS-ONLY actualPASS: ALL16,904tipblobs verified, fournewblobs4.39MB with1.47MBallocated. **ALLsourcecommonrefs androotHEAD/index/config stayedEXACT; cachedorigin/devSTILLa9. No update-ref/fetch exists incommonobjectimporter. LaterrefCAS requiresseparateRootACK afterWolfgateclosure. No actualnativeglobalhash/latestdevvalidation/mergeclaim.**
+
+- [CURRENTDEV-70A8-OBJECTS-ONLY-ACTUAL-PRESTAGE-ALL-REFS-UNCHANGED-20261026](archives/CURRENTDEV-70A8-OBJECTS-ONLY-ACTUAL-PRESTAGE-ALL-REFS-UNCHANGED-20261026.tar.gz) — Closed ROOTauthorized OBJECTS-ONLY actualPASS14:29:12: immutable70a8/tree6b136 locallypresent, ALL16,904tipblobs membership/sizes verified, fournewGitSHA-verifiedblobs4,385,687B and totalnewallocation1,466,368B. ALLsourcecommonrefs androotHEAD/index/config EXACTbefore/after unchanged; cachedorigin/devSTILLa9. Isolatedmetadata explicitSHA fetch no destination; importercontains NOupdate-ref/fetch. Originaltip-treepayload alreadydurable404 omittedasexactduplicate. LatercacheddevCAS requiresseparateRootACK afterWolfgateclosure. NO actualnativeglobalhash/latestdevvalidation/mergeclaim.
+<!-- DEV70A8_OBJECTS_ONLY_NOREF_1431_20261026_END -->
+
+
 <!-- ROOT_FRESHDEV_GT_CACHE_CLEAR_1427_20261026_START -->
 ## Root fresh dev reference and explicitly authorized exact GT cache cleanup
 
