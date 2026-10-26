@@ -1,0 +1,135 @@
+--- observe-lifecycle-FOUR-RUNTIME-V2-73948c0b.mjs
++++ observe-lifecycle.mjs
+@@ -156,11 +156,43 @@
+     const r = api.residency;
+     return { detail: api.detail, profile: api.device?.choice, welcome: api.welcome.state,
+       renderer_calls: api.renderer.info.render.calls, triangles: api.renderer.info.render.triangles,
+-      camera: api.camera.position.toArray(), camera_quaternion: api.camera.quaternion.toArray(),
++      camera: api.camera.position.toArray(), camera_quaternion: api.camera.quaternion.toArray(), banked_assets: api.bankedAssets,
+       walker: { e: api.walker.state.e, n: api.walker.state.n, altitude: api.walker.state.altitude,
+         flying: api.walker.state.flying }, upload_release: api.uploadRelease,
+       residency: r && { ...r, problems: [...r.problems] }, crash_guard: { ...api.crashGuard } };
+   }, waypoint);
++}
++async function structureState(page, remember = false) {
++  return page.evaluate(async (saveIdentity) => {
++    const api = window.__chicago4d, record = api.registry.get('glessner_house');
++    if (!record?.gltf?.scene) throw new Error('Actual Glessner source scene is missing');
++    if (saveIdentity) window.__t3173ObserverIdentity = { registry: api.registry, record, sidecar: record.sidecar };
++    const identity = window.__t3173ObserverIdentity;
++    const geometries = [], materials = new Set();
++    record.gltf.scene.traverse((node) => {
++      if (node.geometry) geometries.push({ name: node.name,
++        attributes: Object.entries(node.geometry.attributes).map(([key, attr]) => ({ key, count: attr.count,
++          itemSize: attr.itemSize, normalized: attr.normalized, array: (attr.data?.array || attr.array)?.constructor.name })),
++        index: node.geometry.index?.count || 0 });
++      for (const material of [].concat(node.material || [])) materials.add(material);
++    });
++    const materialState = [...materials].map((material) => ({ name: material.name, type: material.type,
++      color: material.color?.toArray(), roughness: material.roughness, metalness: material.metalness,
++      opacity: material.opacity, side: material.side, transparent: material.transparent, transmission: material.transmission,
++      textures: Object.entries(material).filter(([, value]) => value?.isTexture).map(([key, tex]) => ({ key,
++        format: tex.format, type: tex.type, wrapS: tex.wrapS, wrapT: tex.wrapT, minFilter: tex.minFilter,
++        magFilter: tex.magFilter, anisotropy: tex.anisotropy, channel: tex.channel, colorSpace: tex.colorSpace,
++        flipY: tex.flipY, offset: tex.offset.toArray(), repeat: tex.repeat.toArray(), rotation: tex.rotation,
++        image: [tex.image?.width, tex.image?.height], mips: tex.mipmaps?.map((m) => [m.width, m.height]) })) }));
++    const digest = async (value) => [...new Uint8Array(await crypto.subtle.digest('SHA-256',
++      new TextEncoder().encode(JSON.stringify(value))))].map((n) => n.toString(16).padStart(2, '0')).join('');
++    return { id: record.id, asset_url: record.assetUrl, asset_detail: record.assetDetail, version: record.version,
++      sidecar_sha256: await digest(record.sidecar), geometry_metadata_sha256: await digest(geometries),
++      material_sampler_sha256: await digest(materialState), mesh_count: geometries.length,
++      stable_references: !!identity && identity.registry === api.registry && identity.record === record
++        && identity.sidecar === record.sidecar, banked_assets: api.bankedAssets,
++      roll: { expected: api.roll?.expected, standing: api.roll?.standing, missing: api.roll?.missing } };
++  }, remember);
+ }
+ async function frame(page, name) {
+   const captured = await page.evaluate(async (key) => {
+@@ -236,7 +268,7 @@
+     const { name, detail, ...profile } = config;
+     const ctx = await browser.newContext(profile);
+     const row = { profile: name, target_detail: detail, errors: [], request_failures: [], console_errors: [],
+-      http_errors: [], warnings: [], captures: {} };
++      http_errors: [], warnings: [], captures: {}, glb_requests: [], phase: 'boot' };
+     result.rows.push(row); await save();
+     try {
+       await ctx.addInitScript((tier) => {
+@@ -245,6 +277,9 @@
+       const page = await ctx.newPage(); page.setDefaultTimeout(90000);
+       let loads = 0;
+       page.on('load', () => loads++);
++      page.on('request', (request) => {
++        if (new URL(request.url()).pathname.endsWith('.glb')) row.glb_requests.push({ url: request.url(), phase: row.phase });
++      });
+       page.on('pageerror', (error) => row.errors.push(String(error)));
+       page.on('requestfailed', (request) => row.request_failures.push({ url: request.url(), failure: request.failure() }));
+       page.on('response', (response) => {
+@@ -256,7 +291,7 @@
+       });
+       await page.goto(`http://127.0.0.1:${server.address().port}/1904/?device=standard`, { waitUntil: 'domcontentloaded' });
+       await enterAndHold(page); row.initial = await settle(page, stand);
+-      check(`${name}: actual requested detail and released compressed sources`, row.initial.detail === detail && row.initial.profile?.textures === (name === 'mobile' ? 'light' : 'full')
++      check(`${name}: actual requested detail and released compressed sources`, row.initial.banked_assets === 0 && row.initial.detail === detail && row.initial.profile?.textures === (name === 'mobile' ? 'light' : 'full')
+         && row.initial.upload_release.compressed > 0 && row.initial.residency?.released > 0
+         && row.initial.residency.pending === 0 && row.initial.residency.problems.length === 0, row.initial);
+       row.captures.before = await frame(page, `${name}-before`);
+@@ -269,7 +304,7 @@
+       row.returned = await settle(page, stand);
+       check(`${name}: actual return retranscodes and uploads`, row.returned.residency.retranscodes > row.initial.residency.retranscodes
+         && row.returned.residency.uploads > row.initial.residency.uploads && row.returned.residency.pending === 0
+-        && row.returned.residency.problems.length === 0, row.returned);
++        && row.returned.residency.problems.length === 0 && row.returned.banked_assets === 0, row.returned);
+       row.captures.returned = await frame(page, `${name}-returned`);
+       row.return_comparison = await compare(page, `${name}-before`, `${name}-returned`);
+       check(`${name}: return camera is exactly the original camera`, JSON.stringify(row.initial.camera) === JSON.stringify(row.returned.camera)
+@@ -279,6 +314,40 @@
+         { noise: row.held_noise, returned: row.return_comparison });
+       await save();
+       if (name === 'desktop') {
++        row.detail_cycle = { before: await structureState(page, true) };
++        row.phase = 'detail-balanced';
++        await page.evaluate(async () => { await window.__chicago4d.setDetail('balanced'); });
++        row.detail_cycle.balanced = await settle(page, stand);
++        row.detail_cycle.balanced_structure = await structureState(page);
++        check('desktop: real Balanced replacement refetches its declared lower asset without a raw bank',
++          row.detail_cycle.balanced.detail === 'balanced' && row.detail_cycle.balanced.banked_assets === 0
++          && row.detail_cycle.balanced_structure.asset_detail === 'balanced'
++          && row.detail_cycle.balanced_structure.asset_url !== row.detail_cycle.before.asset_url
++          && row.detail_cycle.balanced_structure.stable_references
++          && row.glb_requests.some((request) => request.phase === 'detail-balanced'
++            && request.url === row.detail_cycle.balanced_structure.asset_url), row.detail_cycle.balanced_structure);
++        row.phase = 'detail-full-return';
++        await page.evaluate(async () => { await window.__chicago4d.setDetail('full'); });
++        row.detail_cycle.returned = await settle(page, stand);
++        row.detail_cycle.returned_structure = await structureState(page);
++        const previous = row.detail_cycle.before, restored = row.detail_cycle.returned_structure;
++        check('desktop: real Full return refetches and preserves structure identity, geometry metadata and material/samplers',
++          row.detail_cycle.returned.detail === 'full' && row.detail_cycle.returned.banked_assets === 0
++          && restored.stable_references && restored.asset_detail === 'full' && restored.asset_url === previous.asset_url
++          && restored.sidecar_sha256 === previous.sidecar_sha256 && restored.mesh_count === previous.mesh_count
++          && restored.geometry_metadata_sha256 === previous.geometry_metadata_sha256
++          && restored.material_sampler_sha256 === previous.material_sampler_sha256
++          && JSON.stringify(restored.roll) === JSON.stringify(previous.roll)
++          && row.glb_requests.some((request) => request.phase === 'detail-full-return' && request.url === restored.asset_url), restored);
++        row.captures.detail_returned = await frame(page, 'desktop-detail-returned');
++        row.detail_cycle.pixel_comparison = await compare(page, 'desktop-returned', 'desktop-detail-returned');
++        check('desktop: Full detail cycle restores the exact camera',
++          JSON.stringify(row.detail_cycle.returned.camera) === JSON.stringify(row.returned.camera)
++          && JSON.stringify(row.detail_cycle.returned.camera_quaternion) === JSON.stringify(row.returned.camera_quaternion));
++        check('desktop: Full detail cycle adds no changed pixels beyond held baseline noise',
++          row.detail_cycle.pixel_comparison.changed_pixels_over_8 <= row.held_noise.changed_pixels_over_8,
++          { noise: row.held_noise, full_detail_cycle: row.detail_cycle.pixel_comparison });
++        row.phase = 'context-loss'; await save();
+         row.context_before = { loads, ...await page.evaluate(() => ({ guard: { ...window.__chicago4d.crashGuard },
+           compressed: window.__chicago4d.uploadRelease.compressed })) };
+         row.context_loss = await page.evaluate(async () => {
+@@ -304,7 +373,8 @@
+           && loads === row.context_before.loads + 1, { before: row.context_before, lost: row.context_loss,
+             after: row.context_reloaded.crash_guard, loads });
+         check('desktop: normal reload rebuilds Full compressed-source lifecycle', row.context_reloaded.detail === 'full'
+-          && row.context_reloaded.profile?.textures === 'full' && row.context_reloaded.upload_release.compressed > 0
++          && row.context_reloaded.profile?.textures === 'full' && row.context_reloaded.banked_assets === 0
++          && row.context_reloaded.upload_release.compressed > 0
+           && row.context_reloaded.residency?.pending === 0 && row.context_reloaded.residency.problems.length === 0, row.context_reloaded);
+         row.captures.reloaded = await frame(page, 'desktop-context-reloaded');
+       }

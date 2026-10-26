@@ -1,0 +1,745 @@
+diff --git a/chicago/4d/renderers/web/js/ktx2.js b/chicago/4d/renderers/web/js/ktx2.js
+index 98bdaa3f168052ce5b9bac87967c4c00f9d862f0..6da7a32fd38e138a3724892b0cc67fbb3ad96fc4 100644
+--- a/chicago/4d/renderers/web/js/ktx2.js
++++ b/chicago/4d/renderers/web/js/ktx2.js
+@@ -32,6 +32,7 @@ let loader = null;
+ let dropTopMip = false;
+ let rendererRef = null;
+ let glbLoader = null;
++const lightGlbVariants = new WeakMap();
+ /** What the boot found, for `__chicago4d.ktx2` and the memory meter's report. */
+ export const ktx2State = { enabled: false, reason: 'not initialised', dropTopMip: false, glb: 'shared',
+   formats: null, sheets: { ktx2: 0, fallback: 0, gpuBytes: 0, failed: [] } };
+@@ -95,10 +96,46 @@ export function initKTX2(renderer, { textures = 'full', disabled = false } = {})
+  */
+ export function registerKTX2(gltfLoader) {
+   const l = loader || rgbaGlbLoader();
+-  if (l) gltfLoader.setKTX2Loader(l);
++  if (l) gltfLoader.setKTX2Loader(glbTextureLoader(l, dropTopMip));
+   return gltfLoader;
+ }
+ 
++/** Isolate delivered mip descriptors from the transcoder cache on every profile.
++ * Light also drops mip0, matching library sheets; Full keeps every byte and size.
++ * Clone before trimming or release: the cached full texture must stay full.
++ * The encoded-image record keeps this adapter, so a residency refill gets the same
++ * mip layout as the original decode, never a full chain in half-sized slots.
++ */
++function glbTextureLoader(source, reduce) {
++  return {
++    load(url, onLoad, onProgress, onError) {
++      return source.load(url, (texture) => {
++        let variant = texture;
++        if (reduce) {
++          let light = lightGlbVariants.get(texture);
++          if (!light) {
++            light = texture.clone();
++            light.source = new THREE.Source(texture.source.data);
++            // Three clones the mip array, not its descriptors. Residency releases
++            // descriptor.data after upload; isolate that mutation from the full cache.
++            light.mipmaps = texture.mipmaps.map((level) => ({ ...level }));
++            dropTop(light);
++            light.needsUpdate = true;
++            lightGlbVariants.set(texture, light);
++          }
++          variant = light;
++        }
++        // Share the selected source for Three's GPU cache, while isolating each
++        // delivery's descriptors from the retained variant and other deliveries.
++        const delivered = variant.clone();
++        delivered.mipmaps = variant.mipmaps.map((level) => ({ ...level }));
++        forgetSettledTranscodes(source);
++        onLoad(delivered);
++      }, onProgress, onError);
++    },
++  };
++}
++
+ function rgbaGlbLoader() {
+   if (glbLoader || !rendererRef) return glbLoader;
+   try {
+diff --git a/chicago/4d/renderers/web/js/main.js b/chicago/4d/renderers/web/js/main.js
+index 5d55d38f071e04176638e8f2ee5e8e24f9851f78..a2218bd11de5b22ca725c14ad3884b2a4ecd157a 100644
+--- a/chicago/4d/renderers/web/js/main.js
++++ b/chicago/4d/renderers/web/js/main.js
+@@ -76,7 +76,7 @@ import { createFarMerge } from './far-merge.js';
+ import { releaseAfterUpload, uploadLayerNow, uploadReleaseState, releaseSources,
+   closeUploadedImages } from './upload-release.js';
+ import { compactStreams } from './compact-streams.js';
+-import { createTextureResidency } from './texture-residency.js';
++import { createTextureResidency, hasReleasedTextureLevels, hasRequiredSourceTextures } from './texture-residency.js';
+ import { createCrashGuard } from './crash-guard.js';
+ import { countDriverDraws } from './driver-draws.js';
+ import { createBlackbox, wasCut, summary as blackboxSummary, report as blackboxReport } from './blackbox.js';
+@@ -1782,6 +1782,7 @@ async function boot() {
+     // the reach alone would hold.
+     const budget = Number(params.get('residency-budget'));
+     residency = createTextureResidency({ group, renderer, tier: detailLevel, closeImages: coarse,
++      releaseCompressedLevels: true,
+       settings: budget > 0 ? { budgetBytes: budget * 1048576 } : null });
+     residency.prime(eye, options);
+     api.residency = residency.state;
+@@ -1944,11 +1945,13 @@ async function boot() {
+     onProgress: (done, total) => bootController.progress('scene', done, total),
+     version: VERSION_REQUEST,
+     detail: detailLevel,
+-    // T-2548: a phone re-fetches on a detail switch rather than banking the GLB.
+-    keepAssetBytes: !coarse,
+-    // T-2598: and keeps each house picture's encoded bytes, so one that went distant
+-    // and had its decoded copy closed can be decoded again (texture-residency.js).
+-    keepEncodedImages: coarse && RESIDENCY_ON,
++    // Re-fetch/revalidate through the normal HTTP path on a detail switch. Every
++    // device avoids retaining a complete raw GLB beside its parsed scene and GPU.
++    keepAssetBytes: false,
++    // A phone can release every decoded image; desktop releases compressed levels
++    // only, so keep encoded recovery bytes only for the images that can need them.
++    // Desktop regular images remain decoded and can be restored directly.
++    keepEncodedImages: RESIDENCY_ON ? (coarse ? true : 'compressed') : false,
+     // T-2597: every structure at once unless `?boot-pool=N` asks for a pool (BOOT_POOL).
+     pool: bootPoolFromSearch(location.search),
+   });
+@@ -2942,19 +2945,25 @@ async function boot() {
+     for (const gltf of next.reread ?? []) disposeLoadedAsset(gltf);
+   };
+   /**
+-   * T-2548: a phone let go of every building's source geometry once its batch
+-   * held a copy, so a rebuild re-reads the GLBs of the rows it released — the
+-   * HTTP cache answers — into the candidate registry. The gltfs those rows held
+-   * are retired at commit (`next.retired`), the ones read here at discard.
++   * Re-read source rows whose geometry or compressed texture payloads were
++   * released, using the normal HTTP refetch/revalidation path. A fresh candidate
++   * must prepare valid texture stand-ins before its next upload release. Old
++   * gltfs retire only at commit; new reads are disposed if preparation fails.
+    */
+   const rereadReleased = async (next, skipId) => {
+     next.reread = [];
+     next.retired = [];
+-    const rows = [...next.registry.values()].filter((row) => row.sourceReleased && row.id !== skipId);
++    const rows = [...next.registry.values()].filter((row) => row.id !== skipId
++      && (row.sourceReleased || hasReleasedTextureLevels(row.gltf)));
+     const got = await Promise.allSettled(rows.map((row) => loaded.loadDetailAsset(row, row.assetDetail)));
+     got.forEach((r) => { if (r.status === 'fulfilled') next.reread.push(r.value.gltf); });
+     const failed = got.find((r) => r.status === 'rejected');
+     if (failed) throw failed.reason;
++    rows.forEach((row, i) => {
++      if (!hasRequiredSourceTextures(row.gltf, got[i].value.gltf)) {
++        throw new Error(`${row.id}: reloaded source is missing a required texture`);
++      }
++    });
+     rows.forEach((row, i) => {
+       next.retired.push(row.gltf);
+       Object.assign(row, got[i].value, { node: null, instanceId: null, sourceReleased: false });
+diff --git a/chicago/4d/renderers/web/js/shared-images.js b/chicago/4d/renderers/web/js/shared-images.js
+index 5a5972afb31ad223f19b5802442c509b16dc52db..32712facf9fd04968998a0e40fe451d095f1d710 100644
+--- a/chicago/4d/renderers/web/js/shared-images.js
++++ b/chicago/4d/renderers/web/js/shared-images.js
+@@ -61,8 +61,9 @@ function entryFor(byKey, key) {
+ 
+ /**
+  * Teach `loader` (a GLTFLoader) to decode each distinct embedded image once for
+- * every file it parses. Returns `{ stats }`, which counts images decoded and
+- * images shared, for the tools that measure it.
++ * every file it parses. `keepEncoded` is true for all recovery bytes, false for
++ * none, or 'compressed' for only decoded compressed textures. Returns `{ stats }`,
++ * which counts images decoded and images shared, for the tools that measure it.
+  */
+ export function shareImageSources(loader, { keepEncoded = false } = {}) {
+   const byKey = new Map();
+@@ -96,7 +97,8 @@ export function shareImageSources(loader, { keepEncoded = false } = {}) {
+             // tenth of the levels it transcodes to.
+             // A texture with no `source` (never one of three's) has nothing to key on.
+             if (texture.source) {
+-              glbSources.set(texture.source, { encoded: keepEncoded
++              const retainEncoded = keepEncoded && (keepEncoded !== 'compressed' || texture.isCompressedTexture);
++              glbSources.set(texture.source, { encoded: retainEncoded
+                 ? { view, mimeType: def.mimeType, imageLoader } : null });
+             }
+             return texture;
+diff --git a/chicago/4d/renderers/web/js/texture-residency.js b/chicago/4d/renderers/web/js/texture-residency.js
+index 7a3c6e3502440d74ffc51df40c6af3ef6de3f773..f201f92f4f1e810dcdcab755fec348c6382c296f 100644
+--- a/chicago/4d/renderers/web/js/texture-residency.js
++++ b/chicago/4d/renderers/web/js/texture-residency.js
+@@ -149,18 +149,63 @@ function redecode(encoded) {
+   });
+ }
+ 
++/** A source GLTF needs a fresh parse before rebuilding if its uploaded compressed
++ * payloads were released. Inspect the actual arrays: a source texture clone can
++ * share released descriptors without carrying the batch texture's userData marker.
++ */
++export function hasReleasedTextureLevels(gltf) {
++  let released = false;
++  gltf?.scene?.traverse?.((node) => {
++    if (released) return;
++    for (const material of [].concat(node.material ?? [])) {
++      for (const value of Object.values(material ?? {})) {
++        if (value?.isCompressedTexture && value.mipmaps?.some((level) => level?.data?.byteLength === 0)) {
++          released = true;
++        }
++      }
++    }
++  });
++  return released;
++}
++
++/** Required texture-slot multiplicities for one unchanged source asset. Compare
++ * stable node/material ordinals, material names and slot keys, never runtime IDs
++ * or compressed format choices.
++ */
++export function hasRequiredSourceTextures(previous, replacement) {
++  const slots = (gltf) => {
++    const counts = new Map();
++    let ordinal = 0;
++    gltf?.scene?.traverse?.((node) => {
++      const nodeOrdinal = ordinal++;
++      for (const [materialIndex, material] of [].concat(node.material ?? []).entries()) {
++        for (const [slot, value] of Object.entries(material ?? {})) {
++          if (!value?.isTexture) continue;
++          const key = JSON.stringify([nodeOrdinal, materialIndex, material.name ?? '', slot]);
++          counts.set(key, (counts.get(key) ?? 0) + 1);
++        }
++      }
++    });
++    return counts;
++  };
++  const fresh = slots(replacement);
++  return [...slots(previous)].every(([key, count]) => (fresh.get(key) ?? 0) >= count);
++}
++
+ /**
+  * @param {object} o
+  * @param {THREE.Object3D} o.group       the structures group (buildings.js)
+  * @param {THREE.WebGLRenderer} o.renderer
+  * @param {string} o.tier                'full' | 'balanced' | 'light'
++ * @param {boolean} o.releaseCompressedLevels  release uploaded compressed source arrays
++ *                                       on any device; requires encoded bytes for refill.
+  * @param {boolean} o.closeImages        a phone: close a distant source's bitmap when
+  *                                       its encoded bytes were kept, and close a
+  *                                       re-decoded one once it is uploaded again; let
+  *                                       go of a KTX2's transcoded levels likewise
+  */
+ export function createTextureResidency({ group, renderer, tier = 'full', closeImages = false,
+-  settings = null } = {}) {
++  releaseCompressedLevels = closeImages, settings = null } = {}) {
+   const cfg = {};
+   const tierSettings = (t) => ({ ...(RESIDENCY[t] ?? RESIDENCY.full), ...(settings ?? {}) });
+   Object.assign(cfg, tierSettings(tier));
+@@ -246,15 +291,17 @@ export function createTextureResidency({ group, renderer, tier = 'full', closeIm
+     if (entry.encoded) state.encodedBytes += entry.encoded.view.byteLength;
+   }
+ 
+-  // A phone closes a resident picture's decoded copy once it is uploaded
+-  // (closeUploadedImages), and a stand-in cannot be drawn from a closed bitmap, so
+-  // there every stand-in is made now, while every picture is still open.
+-  if (closeImages) for (const entry of entries.values()) ensureStandIns(entry);
++  // Prepare a stand-in before releasing its source: every decoded image on a
++  // phone, or recoverable compressed levels on desktop. Regular desktop images
++  // stay decoded; their stand-ins can be made lazily if distance later evicts them.
++  for (const entry of entries.values()) {
++    if (closeImages || (releaseCompressedLevels && entry.compressed && entry.encoded)) ensureStandIns(entry);
++  }
+ 
+   // T-2828: the KTX2 sources whose transcoded levels a phone still holds, and can let
+   // go of because the file is kept to transcode them from again.
+   const holding = new Set();
+-  if (closeImages) {
++  if (releaseCompressedLevels) {
+     for (const entry of entries.values()) if (entry.compressed && entry.encoded) holding.add(entry);
+   }
+   const uploaded = (tex) => {
+diff --git a/chicago/4d/tools/test_shared_images.mjs b/chicago/4d/tools/test_shared_images.mjs
+index 2c9fe3ef48053e247e49394c4721af19bca7b25f..9047e4352159a3e607a14696b081a541fe3aa652 100644
+--- a/chicago/4d/tools/test_shared_images.mjs
++++ b/chicago/4d/tools/test_shared_images.mjs
+@@ -104,5 +104,8 @@ check('an image the module never shared may always be closed', releaseSharedImag
+   check('a texture with no source is shared, not a TypeError', threw === null, String(threw));
+ }
+ 
++// The same embedded-image owner also holds light mip policy and uploaded-level recovery.
++await import('./test_texture_residency.mjs');
++
+ console.log(`${failures} failure(s)`);
+ process.exit(failures ? 1 : 0);
+diff --git a/chicago/4d/tools/test_structure_versions.mjs b/chicago/4d/tools/test_structure_versions.mjs
+index c9ac6f0c09422453327f362bbb29f0c37217e605..3e696d88bda90980786a1c9cdeb3d405b8b9de69 100644
+--- a/chicago/4d/tools/test_structure_versions.mjs
++++ b/chicago/4d/tools/test_structure_versions.mjs
+@@ -264,6 +264,252 @@ try {
+     damagedRecord.gltf === null && /corrupt GLB fixture/.test(damagedRecord.loadFailed)
+     && !!repaired.gltf && repaired.assetUrl.endsWith('house.light.glb')
+     && requests.filter(x => x.endsWith('.glb')).length === beforeRetry + 2);
++
++  // T-3173: a no-bank application switch re-fetches through the existing HTTP
++  // path. Use the real pinned GLTF geometry/material/sampler parser here; only
++  // KTX2 image transcoding is a deterministic fixture (no GPU/browser claim).
++  const threeURL = pathToFileURL(path.join(ROOT, 'renderers/web/vendor/three-0.185.1/three.core.js')).href;
++  const realThree = await import(threeURL);
++  const asModule = text => `data:text/javascript;base64,${Buffer.from(text).toString('base64')}`;
++  const vendorPath = path.join(ROOT, 'renderers/web/vendor/three-0.185.1/addons');
++  const bufferUtils = asModule(fs.readFileSync(path.join(vendorPath, 'utils/BufferGeometryUtils.js'), 'utf8')
++    .replace("from 'three'", `from '${threeURL}'`));
++  const skeletonUtils = asModule(fs.readFileSync(path.join(vendorPath, 'utils/SkeletonUtils.js'), 'utf8')
++    .replace("from 'three'", `from '${threeURL}'`));
++  const realGLTFURL = asModule(fs.readFileSync(path.join(vendorPath, 'loaders/GLTFLoader.js'), 'utf8')
++    .replace("from 'three'", `from '${threeURL}'`)
++    .replace("from '../utils/BufferGeometryUtils.js'", `from '${bufferUtils}'`)
++    .replace("from '../utils/SkeletonUtils.js'", `from '${skeletonUtils}'`));
++  const hadSelf = Object.hasOwn(globalThis, 'self'), oldSelf = globalThis.self;
++  const hadFixture = Object.hasOwn(globalThis, '__T3173NoBankKtx2Fixture');
++  const oldFixture = globalThis.__T3173NoBankKtx2Fixture;
++  globalThis.self = globalThis;
++  globalThis.__T3173NoBankKtx2Fixture = { load(url, onLoad, onProgress, onError) {
++    // Read the real embedded/recovery Blob; byte255 is the explicit decoder-failure control.
++    savedFetch(url).then(response => response.arrayBuffer()).then(buffer => {
++      if (new Uint8Array(buffer)[0] === 255) throw new Error('controlled encoded KTX2 failure');
++      const mipmaps = Array.from({ length: 9 }, (_, i) => ({ width: 256 >> i, height: 256 >> i,
++        data: new Uint8Array(Math.max(16, (256 >> i) ** 2)).fill(i + 1) }));
++      onLoad(new realThree.CompressedTexture(mipmaps, 256, 256, realThree.RGBA_BPTC_Format));
++    }).catch(onError);
++  } };
++  try {
++    const actualLoaderSource = fs.readFileSync(loaderPath, 'utf8')
++      .replace("import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';", `import { GLTFLoader } from '${realGLTFURL}';`)
++      .replace("import { registerKTX2 } from './ktx2.js';", 'const registerKTX2 = l => { l.setKTX2Loader(globalThis.__T3173NoBankKtx2Fixture); return l; };')
++      .replace("'./structure-versions.js'", JSON.stringify(pathToFileURL(path.join(ROOT, 'renderers/web/js/structure-versions.js')).href))
++      .replace("'./shared-images.js'", JSON.stringify(pathToFileURL(path.join(ROOT, 'renderers/web/js/shared-images.js')).href));
++    const actualLoader = await import(asModule(actualLoaderSource));
++    const makeGLB = scale => {
++      const bin = Buffer.alloc(84);
++      new Float32Array(bin.buffer, bin.byteOffset, 9).set([0, 0, 0, scale, 0, 0, 0, scale, 0]);
++      new Float32Array(bin.buffer, bin.byteOffset + 36, 6).set([0, 0, 1, 0, 0, 1]);
++      new Uint16Array(bin.buffer, bin.byteOffset + 60, 3).set([0, 1, 2]);
++      const spec = { asset: { version: '2.0' }, buffers: [{ byteLength: 84 }],
++        bufferViews: [{ buffer: 0, byteOffset: 0, byteLength: 36 }, { buffer: 0, byteOffset: 36, byteLength: 24 },
++          { buffer: 0, byteOffset: 60, byteLength: 6 }, { buffer: 0, byteOffset: 68, byteLength: 16 }],
++        accessors: [{ bufferView: 0, componentType: 5126, count: 3, type: 'VEC3', min: [0, 0, 0], max: [scale, scale, 0] },
++          { bufferView: 1, componentType: 5126, count: 3, type: 'VEC2' }, { bufferView: 2, componentType: 5123, count: 3, type: 'SCALAR' }],
++        images: [{ bufferView: 3, mimeType: 'image/ktx2' }], samplers: [{ wrapS: 10497, wrapT: 33071, magFilter: 9729, minFilter: 9987 }],
++        textures: [{ sampler: 0, extensions: { KHR_texture_basisu: { source: 0 } } }],
++        materials: [{ pbrMetallicRoughness: { baseColorTexture: { index: 0 }, roughnessFactor: .63, metallicFactor: .2 } }],
++        meshes: [{ primitives: [{ attributes: { POSITION: 0, TEXCOORD_0: 1 }, indices: 2, material: 0 }] }],
++        nodes: [{ name: 'NoBankFixture', mesh: 0 }], scenes: [{ nodes: [0] }], scene: 0,
++        extensionsUsed: ['KHR_texture_basisu'], extensionsRequired: ['KHR_texture_basisu'] };
++      const text = JSON.stringify(spec), json = Buffer.from(text + ' '.repeat((4 - text.length % 4) % 4));
++      const bytes = Buffer.alloc(28 + json.length + bin.length);
++      bytes.writeUInt32LE(0x46546c67, 0); bytes.writeUInt32LE(2, 4); bytes.writeUInt32LE(bytes.length, 8);
++      bytes.writeUInt32LE(json.length, 12); bytes.writeUInt32LE(0x4e4f534a, 16); json.copy(bytes, 20);
++      bytes.writeUInt32LE(bin.length, 20 + json.length); bytes.writeUInt32LE(0x004e4942, 24 + json.length); bin.copy(bytes, 28 + json.length);
++      return bytes;
++    };
++    const fullBytes = makeGLB(1), lowerBytes = makeGLB(.5), noBankRequests = [], noBankHttpPolicies = [];
++    let damageNext = false;
++    globalThis.fetch = async (url, options = {}) => {
++      const key = new URL(url).href.slice(root.href.length); noBankRequests.push(key);
++      if (!key.endsWith('.glb')) return { ok: !!documents[key], status: 404, json: async () => documents[key] };
++      noBankHttpPolicies.push(options.cache);
++      const bytes = damageNext ? Buffer.from('damaged no-bank GLB') : key.endsWith('.light.glb') ? lowerBytes : fullBytes;
++      damageNext = false;
++      return { ok: true, arrayBuffer: async () => bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) };
++    };
++    const noBankScene = await actualLoader.loadScene('1904', { dataBase: root, assetBase: root }, {
++      version: { id: 'glessner_house', label: 'v4' }, detail: 'full', keepAssetBytes: false, keepEncodedImages: 'compressed',
++    });
++    const noBankRecord = noBankScene.registry.get('glessner_house');
++    const lower = await noBankScene.loadDetailAsset(noBankRecord, 'balanced');
++    const returned = await noBankScene.loadDetailAsset(noBankRecord, 'full');
++    const snapshot = gltf => {
++      const mesh = gltf.scene.children[0], material = mesh.material, map = material.map;
++      return { position: Array.from(mesh.geometry.attributes.position.array), uv: Array.from(mesh.geometry.attributes.uv.array),
++        index: Array.from(mesh.geometry.index.array), roughness: material.roughness, metalness: material.metalness,
++        wrapS: map.wrapS, wrapT: map.wrapT, minFilter: map.minFilter, magFilter: map.magFilter,
++        colorSpace: map.colorSpace, flipY: map.flipY, format: map.format,
++        image: [map.image.width, map.image.height], mips: map.mipmaps.map(m => [m.width, m.height, Buffer.from(m.data).toString('hex')]) };
++    };
++    const initialSnapshot = snapshot(noBankRecord.gltf), returnSnapshot = snapshot(returned.gltf);
++    check('no-bank Full to Balanced to Full re-fetches every raw GLB without retaining a bank',
++      noBankScene.bankedAssets === 0 && noBankRequests.filter(p => p.endsWith('.glb')).join(',')
++      === [sidecar.asset, sidecar.asset_lods.light, sidecar.asset].join(',')
++      && noBankScene.bytes === fullBytes.length * 2 + lowerBytes.length);
++    check('no-bank real GLTF parser preserves exact Full geometry, UVs, indices, material and sampler on return',
++      JSON.stringify(initialSnapshot) === JSON.stringify(returnSnapshot)
++      && snapshot(lower.gltf).position[3] === .5 && initialSnapshot.position[3] === 1
++      && initialSnapshot.wrapS === realThree.RepeatWrapping && initialSnapshot.wrapT === realThree.ClampToEdgeWrapping);
++    check('no-bank reparsing owns fresh geometry/material objects while retaining stable structure and sidecar identity',
++      noBankRecord.id === 'glessner_house' && noBankRecord.version.label === 'v4'
++      && noBankRecord.sidecar.asset === sidecar.asset && noBankRecord.assetDetail === 'full'
++      && noBankRecord.gltf !== returned.gltf && noBankRecord.gltf.scene.children[0].geometry !== returned.gltf.scene.children[0].geometry
++      && noBankRecord.gltf.scene.children[0].material !== returned.gltf.scene.children[0].material
++      && noBankRecord.gltf.parser === null && returned.gltf.parser === null && noBankScene.problems.length === 0);
++    damageNext = true; let noBankFailure = null;
++    try { await noBankScene.loadDetailAsset(noBankRecord, 'full'); } catch (error) { noBankFailure = error; }
++    const repairedNoBank = await noBankScene.loadDetailAsset(noBankRecord, 'full');
++    check('no-bank corrupt replacement reports its error and the next normal refetch restores exact Full without a bank',
++      !!noBankFailure && noBankScene.bankedAssets === 0 && noBankRequests.filter(p => p.endsWith('.glb')).length === 5
++      && JSON.stringify(snapshot(repairedNoBank.gltf)) === JSON.stringify(initialSnapshot)
++      && noBankRecord.gltf === noBankScene.registry.get('glessner_house').gltf);
++    check('no-bank refetch preserves the loader normal HTTP revalidation policy', noBankHttpPolicies.length === 5
++      && noBankHttpPolicies.every(policy => policy === 'no-cache'));
++    check('the public default bank still holds its two streams independently of the application no-bank choice', scene.bankedAssets === 2);
++    // T-3173: actual released source payloads, not a userData marker, select the
++    // established candidate reread/retire/discard path before the next manager.
++    const sharedURL = pathToFileURL(path.join(ROOT, 'renderers/web/js/shared-images.js')).href;
++    const residencySource = fs.readFileSync(path.join(ROOT, 'renderers/web/js/texture-residency.js'), 'utf8')
++      .replace("from 'three'", `from '${threeURL}'`)
++      .replace("from './shared-images.js'", `from '${sharedURL}'`)
++      .replace("import { noteReleasedLevels } from './upload-release.js';", 'const noteReleasedLevels = () => {};');
++    const { createTextureResidency, hasReleasedTextureLevels, hasRequiredSourceTextures } = await import(asModule(residencySource));
++    const groupWith = texture => ({ scene: new realThree.Group().add(new realThree.Mesh(
++      new realThree.BoxGeometry(1, 1, 1), new realThree.MeshBasicMaterial({ map: texture }))) });
++    const compressed = () => new realThree.CompressedTexture([
++      { width: 128, height: 128, data: new Uint8Array(16384) },
++      { width: 64, height: 64, data: new Uint8Array(4096) }], 128, 128, realThree.RGBA_BPTC_Format);
++    const markerless = compressed(), markerlessClone = markerless.clone(); markerless.mipmaps[0].data = new Uint8Array(0);
++    check('released source detector reads empty raw and cloned compressed payloads without userData markers',
++      !markerless.userData.releasedBytes && !markerlessClone.userData.releasedBytes
++      && hasReleasedTextureLevels(groupWith(markerless)) && hasReleasedTextureLevels(groupWith(markerlessClone)));
++    check('released source detector rejects regular, no-mip, live compressed and absent source cases',
++      !hasReleasedTextureLevels(groupWith(new realThree.Texture({ width: 1, height: 1 })))
++      && !hasReleasedTextureLevels(groupWith(new realThree.CompressedTexture([], 1, 1)))
++      && !hasReleasedTextureLevels(groupWith(compressed())) && !hasReleasedTextureLevels(null));
++    check('required source texture presence accepts compressed-to-RGBA fallback without relying on runtime IDs',
++      hasRequiredSourceTextures(groupWith(compressed()), groupWith(new realThree.DataTexture(new Uint8Array(4), 1, 1))));
++    const twoSlots = groupWith(compressed()); twoSlots.scene.add(twoSlots.scene.children[0].clone());
++    check('required source texture presence rejects a missing map and a dropped duplicate slot',
++      !hasRequiredSourceTextures(groupWith(compressed()), groupWith(null))
++      && !hasRequiredSourceTextures(twoSlots, groupWith(compressed())));
++    const movedBefore = groupWith(compressed()), movedAfter = groupWith(null);
++    movedBefore.scene.add(groupWith(null).scene.children[0]); movedAfter.scene.add(groupWith(compressed()).scene.children[0]);
++    for (const asset of [movedBefore, movedAfter]) for (const node of asset.scene.children) node.material.name = 'same';
++    check('a same-name texture on another node cannot compensate for a missing required slot',
++      !hasRequiredSourceTextures(movedBefore, movedAfter));
++    const arrayBefore = groupWith(null), arrayAfter = groupWith(null);
++    arrayBefore.scene.children[0].material = [new realThree.MeshBasicMaterial({ map: compressed() }), new realThree.MeshBasicMaterial()];
++    arrayAfter.scene.children[0].material = [new realThree.MeshBasicMaterial(), new realThree.MeshBasicMaterial({ map: compressed() })];
++    check('another material-array position cannot compensate for a missing required slot',
++      !hasRequiredSourceTextures(arrayBefore, arrayAfter));
++    const mainSource = fs.readFileSync(path.join(ROOT, 'renderers/web/js/main.js'), 'utf8');
++    const rereadStart = mainSource.indexOf('  const rereadReleased = async (next, skipId) => {');
++    const rereadEnd = mainSource.indexOf('  const inspectionSwitch =', rereadStart);
++    const discardStart = mainSource.indexOf('  const discardDetail = (next) => {');
++    const discardEnd = mainSource.indexOf('  /**', discardStart);
++    if ([rereadStart, rereadEnd, discardStart, discardEnd].some(n => n < 0)) throw new Error('Actual main reread/discard definitions absent');
++    const reread = new Function('loaded', 'hasReleasedTextureLevels', 'hasRequiredSourceTextures', `${mainSource.slice(rereadStart, rereadEnd)}; return rereadReleased;`)(
++      noBankScene, hasReleasedTextureLevels, hasRequiredSourceTextures);
++    const discard = new Function('disposeLoadedAsset', `${mainSource.slice(discardStart, discardEnd)}; return discardDetail;`)(actualLoader.disposeLoadedAsset);
++    const neighbor = { ...noBankRecord, id: 'neighbor_house', sidecar: { ...noBankRecord.sidecar, asset: 'gltf/neighbor_house.glb' } };
++    Object.assign(neighbor, await noBankScene.loadDetailAsset(neighbor, 'full'));
++    const props = new WeakMap(), get = key => { if (!props.has(key)) props.set(key, {}); return props.get(key); };
++    const renderer = { properties: { get }, initTexture(texture) { Object.assign(get(texture), { __webglTexture: {}, __version: texture.version }); } };
++    const oldNeighborGLTF = neighbor.gltf, oldMap = oldNeighborGLTF.scene.children[0].material.map;
++    const firstManager = createTextureResidency({ group: oldNeighborGLTF.scene, renderer, closeImages: false, releaseCompressedLevels: true });
++    renderer.initTexture(oldMap); firstManager.prime(new realThree.Vector3());
++    const firstTailBytes = firstManager.state.standInBytes;
++    check('handoff fixture performs a real first production residency payload release and cache retirement',
++      firstManager.state.released === 1 && firstTailBytes > 0 && oldMap.mipmaps.every(m => m.data.byteLength === 0)
++      && hasReleasedTextureLevels(oldNeighborGLTF));
++    firstManager.dispose();
++    const brokenManager = createTextureResidency({ group: oldNeighborGLTF.scene, renderer, closeImages: false, releaseCompressedLevels: true });
++    brokenManager.prime(new realThree.Vector3(1000, 0, 0));
++    check('negative control reproduces zero-byte second-manager tail when the required reread is omitted',
++      brokenManager.state.standInBytes === 0 && oldNeighborGLTF.scene.children[0].material.map.mipmaps.every(m => m.data.byteLength === 0));
++    brokenManager.dispose();
++    const phoneRow = { id: 'phone_released_house', sidecar: { asset: 'gltf/phone_released_house.glb' },
++      assetDetail: 'full', sourceReleased: true, gltf: groupWith(new realThree.Texture({ width: 1, height: 1 })) };
++    const regularRow = { id: 'regular_live_house', sidecar: { asset: 'gltf/regular_live_house.glb' },
++      assetDetail: 'full', sourceReleased: false, gltf: groupWith(new realThree.Texture({ width: 1, height: 1 })) };
++    const freshSkip = { ...noBankRecord, sourceReleased: true };
++    const next = { registry: new Map([[neighbor.id, { ...neighbor }], [phoneRow.id, { ...phoneRow }],
++      [regularRow.id, { ...regularRow }], [freshSkip.id, { ...freshSkip }]]) };
++    const beforeReread = noBankRequests.length;
++    await reread(next, freshSkip.id);
++    const replacement = next.registry.get(neighbor.id);
++    check('actual main reread extends old phone geometry selection, skips fresh Glessner and keeps regular live rows',
++      noBankRequests.slice(beforeReread).filter(p => p.endsWith('.glb')).sort().join(',')
++      === ['gltf/neighbor_house.glb', 'gltf/phone_released_house.glb'].sort().join(',')
++      && next.registry.get(freshSkip.id).gltf === freshSkip.gltf && next.registry.get(regularRow.id).gltf === regularRow.gltf);
++    check('actual main reread keeps new candidates and old retired owners separate before commit',
++      next.reread.length === 2 && next.retired.length === 2 && next.retired.includes(oldNeighborGLTF)
++      && replacement.gltf !== oldNeighborGLTF && neighbor.gltf === oldNeighborGLTF
++      && !replacement.sourceReleased && !hasReleasedTextureLevels(replacement.gltf));
++    const newMap = replacement.gltf.scene.children[0].material.map;
++    const secondManager = createTextureResidency({ group: replacement.gltf.scene, renderer, closeImages: false, releaseCompressedLevels: true });
++    renderer.initTexture(newMap); secondManager.prime(new realThree.Vector3());
++    secondManager.tick(new realThree.Vector3(1000, 0, 0));
++    const actualTail = replacement.gltf.scene.children[0].material.map;
++    check('required real refetch/reparse makes second-manager far tail populated at every mip',
++      secondManager.state.standInBytes === firstTailBytes && actualTail.mipmaps.length > 0
++      && actualTail.mipmaps.every(m => m.data.byteLength > 0));
++    secondManager.tick(new realThree.Vector3()); await new Promise(resolve => setTimeout(resolve, 0)); secondManager.tick(new realThree.Vector3());
++    check('reread second manager returns through the existing encoded refill path without errors or a raw bank',
++      replacement.gltf.scene.children[0].material.map === newMap && secondManager.state.retranscodes === 1
++      && secondManager.state.pending === 0 && secondManager.state.problems.length === 0 && noBankScene.bankedAssets === 0);
++    secondManager.dispose();
++    for (const failureMode of ['encoded', 'corrupt-glb', 'http']) {
++      const oldVisible = neighbor.gltf, failureEvents = [], failureCandidate = { registry: new Map([
++        ['neighbor_house', { ...neighbor }],
++        ['broken_house', { ...neighbor, id: 'broken_house', sidecar: { ...neighbor.sidecar, asset: 'gltf/broken_house.glb' } }],
++      ]) };
++      let oldDisposals = 0, candidateDisposals = 0, commits = 0, visible = oldVisible, badRequests = 0;
++      oldVisible.scene.children[0].geometry.addEventListener('dispose', () => oldDisposals++);
++      const previousFetch = globalThis.fetch;
++      globalThis.fetch = async (url, options) => {
++        if (!new URL(url).pathname.endsWith('/broken_house.glb')) return previousFetch(url, options);
++        badRequests++;
++        if (failureMode === 'http') return { ok: false, status: 404, statusText: 'controlled absent asset' };
++        const badImage = failureMode === 'encoded' ? Buffer.from(fullBytes) : Buffer.from('corrupt candidate GLB');
++        if (failureMode === 'encoded') badImage[badImage.length - 16] = 255;
++        return { ok: true, arrayBuffer: async () => badImage.buffer.slice(badImage.byteOffset, badImage.byteOffset + badImage.byteLength) };
++      };
++      const failureSwitch = actualLoader.createLatestDetailSwitch({ initial: 'full',
++        prepare: async () => {
++          try { await reread(failureCandidate, 'glessner_house'); }
++          catch (error) {
++            for (const gltf of failureCandidate.reread) gltf.scene.children[0].geometry.addEventListener('dispose', () => candidateDisposals++);
++            discard(failureCandidate); throw error;
++          }
++          return failureCandidate;
++        }, commit: candidate => { commits++; visible = candidate; }, discard,
++        onError: (error, wanted, kept) => failureEvents.push({ message: error.message, wanted, kept }) });
++      try { await failureSwitch.set('balanced'); } finally { globalThis.fetch = previousFetch; }
++      check(`failed actual ${failureMode} candidate preserves the visible world and discards successful partial rereads`,
++        failureSwitch.current === 'full' && visible === oldVisible && commits === 0 && oldDisposals === 0
++        && failureEvents.length === 1 && failureEvents[0].wanted === 'balanced' && failureEvents[0].kept === 'full'
++        && (failureMode !== 'encoded' || /missing a required texture/.test(failureEvents[0].message))
++        && (failureMode !== 'http' || badRequests === 2)
++        && failureCandidate.reread.length === (failureMode === 'encoded' ? 2 : 1)
++        && candidateDisposals === failureCandidate.reread.length && failureCandidate.retired.length === 0
++        && failureCandidate.registry.get('neighbor_house').gltf === oldVisible,
++        JSON.stringify({ current: failureSwitch.current, visibleOld: visible === oldVisible, commits, oldDisposals, failureEvents,
++          reads: failureCandidate.reread.length, candidateDisposals, retired: failureCandidate.retired.length, badRequests }));
++    }
++
++  } finally {
++    if (hadSelf) globalThis.self = oldSelf; else delete globalThis.self;
++    if (hadFixture) globalThis.__T3173NoBankKtx2Fixture = oldFixture; else delete globalThis.__T3173NoBankKtx2Fixture;
++  }
++
+ } finally { globalThis.fetch = savedFetch; }
+ 
+ console.log(`   self-test | ${failures.length} failure(s)`);
+diff --git a/chicago/4d/tools/test_texture_residency.mjs b/chicago/4d/tools/test_texture_residency.mjs
+new file mode 100644
+index 0000000000000000000000000000000000000000..9684946be494b0b6805794638ad00196598f5c7e
+--- /dev/null
++++ b/chicago/4d/tools/test_texture_residency.mjs
+@@ -0,0 +1,220 @@
++#!/usr/bin/env node
++// T-3173: real pinned Three/GLTFLoader image sharing and compressed source ownership.
++// Decoder and GPU-property doubles keep this in the existing shared-image native gate;
++// real decode, GPU memory, revisit images and context restore remain browser acceptance.
++import fs from 'node:fs/promises';
++import assert from 'node:assert/strict';
++import {pathToFileURL, fileURLToPath} from 'node:url';
++import path from 'node:path';
++const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
++const threeUrl=pathToFileURL(`${root}/renderers/web/vendor/three-0.185.1/three.core.js`).href;
++const THREE=await import(threeUrl);
++const sharedUrl=pathToFileURL(`${root}/renderers/web/js/shared-images.js`).href;
++const {shareImageSources, glbImageSource}=await import(sharedUrl);
++let tests=[];
++function check(label,fn){assert.ok(fn,label);tests.push(label);console.log('PASS '+label)}
++let current,loaderInstance;
++class FakeKTX2Loader{
++ constructor(){loaderInstance=this;this.workerConfig={dxtSupported:true};this.workerPool={workersResolve:[{retained:'task'}],workerStatus:0};}
++ detectSupport(){} dispose(){} load(url,onLoad,onProgress,onError){queueMicrotask(()=>url==='fail'?onError(new Error('decode failure')):onLoad(current));return 'request-handle';}
++ loadAsync(url){return new Promise((r,j)=>this.load(url,r,undefined,j));}
++}
++const hadLoader=Object.hasOwn(globalThis,'__T3173KTX2Loader');
++const previousLoader=globalThis.__T3173KTX2Loader;
++const hadSelf=Object.hasOwn(globalThis,'self');
++const previousSelf=globalThis.self;
++globalThis.__T3173KTX2Loader=FakeKTX2Loader;
++async function moduleFor(name){let src=await fs.readFile(`${root}/renderers/web/js/${name}`,'utf8');
++ src=src.replace("from 'three'",`from '${threeUrl}'`).replace("import { KTX2Loader } from 'three/addons/loaders/KTX2Loader.js';",'const KTX2Loader = globalThis.__T3173KTX2Loader;')
++ .replace("from './shared-images.js'",`from '${sharedUrl}'`).replace("import { noteReleasedLevels } from './upload-release.js';",'const noteReleasedLevels = () => {};');
++ return import(`data:text/javascript;base64,${Buffer.from(src).toString('base64')}`);}
++const kt=await moduleFor('ktx2.js');
++function texture(){const levels=Array.from({length:9},(_,i)=>{let width=256>>i;return{width,height:width,data:new Uint8Array(Math.max(16,width*width)).fill(i+1)}});let t=new THREE.CompressedTexture(levels,256,256,THREE.RGBA_BPTC_Format);t.wrapS=THREE.RepeatWrapping;t.anisotropy=4;t.colorSpace=THREE.SRGBColorSpace;return t;}
++current=texture();const original=current;const fullBytes=kt.sheetGpuBytes(current);
++kt.initKTX2({}, {textures:'light'});
++const holder={setKTX2Loader(l){this.l=l}};check('register returns original GLTF loader',kt.registerKTX2(holder)===holder);
++const load=(l,url='ok')=>new Promise((r,j)=>l.load(url,r,undefined,j));
++const light=await load(holder.l);
++check('embedded light GLB drops exactly mip0',light.mipmaps.length===8&&light.image.width===128&&light.mipmaps[0].data[0]===2);
++check('cached original texture/source/chain stay full',original.mipmaps.length===9&&original.image.width===256&&original.source!==light.source);
++check('sampler and color space survive',light.wrapS===original.wrapS&&light.anisotropy===4&&light.colorSpace===original.colorSpace);
++check('remaining mip payloads stay exact',light.mipmaps.every((m,i)=>m.data===original.mipmaps[i+1].data));
++check('light retained bytes equal exact existing tail sum',kt.sheetGpuBytes(light)===fullBytes-original.mipmaps[0].data.byteLength);
++check('idle transcode resolver no longer retains full reply',loaderInstance.workerPool.workersResolve[0]===null);
++const again=await load(holder.l);check('repeat decode never trims cached source twice',again.image.width===128&&original.image.width===256);
++check('repeat delivery shares reduced GPU source identity',again.source===light.source&&again!==light);
++check('full cache and reduced deliveries own their mip descriptors',light.mipmaps.every((m,i)=>m!==original.mipmaps[i+1]&&m!==again.mipmaps[i]));
++const originalPayloads=original.mipmaps.map(m=>Buffer.from(m.data));
++for(const m of light.mipmaps)m.data=new Uint8Array(0);
++check('releasing one delivery preserves all cached original payloads',original.mipmaps.every((m,i)=>Buffer.from(m.data).equals(originalPayloads[i])));
++check('releasing one delivery preserves another delivery payloads',again.mipmaps.every(m=>m.data.byteLength>0));
++const afterRelease=await load(holder.l);
++check('cached reduced variant still serves populated mips after release',afterRelease.source===again.source&&afterRelease.mipmaps.every(m=>m.data.byteLength>0));
++let failure;try{await load(holder.l,'fail')}catch(e){failure=e}check('decode rejection propagates',failure?.message==='decode failure');
++kt.initKTX2({}, {textures:'full'});const h2={setKTX2Loader(l){this.l=l}};kt.registerKTX2(h2);check('full profile uses an ownership-isolating adapter',h2.l!==loaderInstance);const fullDelivered=await load(h2.l);check('full GLB retains every mip byte and original GPU source identity',fullDelivered!==original&&fullDelivered.source===original.source&&fullDelivered.mipmaps.length===original.mipmaps.length&&fullDelivered.mipmaps.every((m,i)=>m.data===original.mipmaps[i].data&&m!==original.mipmaps[i]));
++current=new THREE.CompressedTexture([{width:1,height:1,data:new Uint8Array(16)}],1,1);kt.initKTX2({}, {textures:'light'});const h3={setKTX2Loader(l){this.l=l}};kt.registerKTX2(h3);const one=await load(h3.l);check('single-mip texture remains valid',one.image.width===1&&one.mipmaps.length===1&&one.mipmaps[0].data.byteLength===16);
++
++// Exercise the real pinned GLTFLoader image/sampler/shared-source integration.
++const dataModule=s=>`data:text/javascript;base64,${Buffer.from(s).toString('base64')}`;
++const vendor=`${root}/renderers/web/vendor/three-0.185.1/addons`;
++const buffersModule=dataModule((await fs.readFile(`${vendor}/utils/BufferGeometryUtils.js`,'utf8')).replace("from 'three'",`from '${threeUrl}'`));
++const skeletonModule=dataModule((await fs.readFile(`${vendor}/utils/SkeletonUtils.js`,'utf8')).replace("from 'three'",`from '${threeUrl}'`));
++const gltfModule=dataModule((await fs.readFile(`${vendor}/loaders/GLTFLoader.js`,'utf8')).replace("from 'three'",`from '${threeUrl}'`).replace("from '../utils/BufferGeometryUtils.js'",`from '${buffersModule}'`).replace("from '../utils/SkeletonUtils.js'",`from '${skeletonModule}'`));
++const {GLTFLoader}=await import(gltfModule);globalThis.self=globalThis;
++const bin=Buffer.alloc(60);new Float32Array(bin.buffer,bin.byteOffset,9).set([0,0,0,1,0,0,0,1,0]);new Uint16Array(bin.buffer,bin.byteOffset+36,3).set([0,1,2]);
++const spec={asset:{version:'2.0'},buffers:[{byteLength:60}],bufferViews:[{buffer:0,byteOffset:0,byteLength:36},{buffer:0,byteOffset:36,byteLength:6},{buffer:0,byteOffset:44,byteLength:16}],accessors:[{bufferView:0,componentType:5126,count:3,type:'VEC3',min:[0,0,0],max:[1,1,0]},{bufferView:1,componentType:5123,count:3,type:'SCALAR'}],images:[{bufferView:2,mimeType:'image/ktx2'}],samplers:[{wrapS:10497,wrapT:10497},{wrapS:33071,wrapT:33071}],textures:[{sampler:0,extensions:{KHR_texture_basisu:{source:0}}},{sampler:1,extensions:{KHR_texture_basisu:{source:0}}}],materials:[{pbrMetallicRoughness:{baseColorTexture:{index:0},metallicFactor:0,roughnessFactor:1},emissiveTexture:{index:1}}],meshes:[{primitives:[{attributes:{POSITION:0},indices:1,material:0}]}],nodes:[{mesh:0}],scenes:[{nodes:[0]}],scene:0,extensionsUsed:['KHR_texture_basisu'],extensionsRequired:['KHR_texture_basisu']};
++const jsonText=JSON.stringify(spec),json=Buffer.from(jsonText+' '.repeat((4-jsonText.length%4)%4));const glb=Buffer.alloc(28+json.length+bin.length);glb.writeUInt32LE(0x46546c67,0);glb.writeUInt32LE(2,4);glb.writeUInt32LE(glb.length,8);glb.writeUInt32LE(json.length,12);glb.writeUInt32LE(0x4e4f534a,16);json.copy(glb,20);glb.writeUInt32LE(bin.length,20+json.length);glb.writeUInt32LE(0x004e4942,24+json.length);bin.copy(glb,28+json.length);
++current=texture();kt.initKTX2({}, {textures:'light'});const gltfLoader=new GLTFLoader();kt.registerKTX2(gltfLoader);shareImageSources(gltfLoader,{keepEncoded:true});
++const parse=()=>new Promise((r,j)=>gltfLoader.parse(glb.buffer.slice(glb.byteOffset,glb.byteOffset+glb.byteLength),'',r,j));
++const realA=await parse(),realB=await parse();const matA=realA.scene.children[0].material,matB=realB.scene.children[0].material;
++check('real GLTFLoader receives reduced embedded basecolor and emissive images',matA.map.image.width===128&&matA.emissiveMap.image.width===128);
++check('real GLTFLoader preserves distinct sampler settings',matA.map.wrapS===THREE.RepeatWrapping&&matA.emissiveMap.wrapS===THREE.ClampToEdgeWrapping);
++check('two real GLTF parses share reduced image source identity',matA.map.source===matB.map.source&&matA.map!==matB.map);
++check('real GLTFLoader full transcoder cache remains unmodified',current.image.width===256&&current.mipmaps.length===9&&current.mipmaps.every(m=>m.data.byteLength>0));
++
++const {createTextureResidency}=await moduleFor('texture-residency.js');
++
++// Combined real-parser + adapter + release + cached reread + revisit lifecycle.
++async function combined(profile) {
++  current=texture();const cached=current;kt.initKTX2({}, {textures:profile});
++  const loader=new GLTFLoader();kt.registerKTX2(loader);shareImageSources(loader,{keepEncoded:true});
++  const parse=()=>new Promise((r,j)=>loader.parse(glb.buffer.slice(glb.byteOffset,glb.byteOffset+glb.byteLength),'',r,j));
++  const asset=await parse(),material=asset.scene.children[0].material;
++  const expected=material.map.mipmaps.map(m=>Buffer.from(m.data));
++  const originalPayload=cached.mipmaps.map(m=>Buffer.from(m.data));
++  const props=new WeakMap;const get=o=>{if(!props.has(o))props.set(o,{});return props.get(o)};
++  let uploads=[];const renderer={properties:{get},initTexture(t){uploads.push(t.mipmaps.map(m=>Buffer.from(m.data)));Object.assign(get(t),{__webglTexture:{},__version:t.version})}};
++  renderer.initTexture(material.map);renderer.initTexture(material.emissiveMap);
++  const r=createTextureResidency({group:asset.scene,renderer,tier:profile==='light'?'light':'full',closeImages:false,releaseCompressedLevels:true});
++  r.prime(new THREE.Vector3());
++  check(`${profile}: combined real parser delivery releases uploaded mip arrays`,material.map.mipmaps.every(m=>m.data.byteLength===0)&&r.state.released===1);
++  check(`${profile}: combined release keeps cached raw full payloads exact`,cached.mipmaps.every((m,i)=>Buffer.from(m.data).equals(originalPayload[i])));
++  const next=await parse(),nextMap=next.scene.children[0].material.map;
++  check(`${profile}: cached real GLTF reread after release gets populated exact selected mips`,nextMap.mipmaps.length===expected.length&&nextMap.mipmaps.every((m,i)=>Buffer.from(m.data).equals(expected[i])));
++  r.tick(new THREE.Vector3(1000,0,0));r.tick(new THREE.Vector3());await new Promise(r=>setTimeout(r,0));r.tick(new THREE.Vector3());
++  check(`${profile}: combined original GLTF residency revisit uploads exact selected bytes`,r.state.retranscodes===1&&r.state.pending===0&&uploads.at(-1).length===expected.length&&uploads.at(-1).every((m,i)=>m.equals(expected[i])));
++  check(`${profile}: combined refill preserves full cache and reports zero errors`,cached.mipmaps.every((m,i)=>Buffer.from(m.data).equals(originalPayload[i]))&&r.state.problems.length===0);
++}
++await combined('full');await combined('light');
++
++async function fixture({encoded=true,release=true,uploaded=true,failRefill=false}={}){
++ let full=texture();const payloads=full.mipmaps.map(m=>Buffer.from(m.data));let refills=0;let gpuPayloads=[];
++ const imageLoader={load(url,onLoad,onProgress,onError){refills++;queueMicrotask(()=>failRefill?onError(new Error('controlled refill failure')):onLoad(texture()))}};
++ class Parser{constructor(){this.json={images:[{bufferView:0,mimeType:'image/ktx2'}]};this.sourceCache={};}getDependency(){return Promise.resolve(new Uint8Array([1,2,3]).buffer)}loadImageSource(){return Promise.resolve(full)}}
++ const ll={plugins:[],register(f){this.plugins.push(f)}};shareImageSources(ll,{keepEncoded:encoded});const p=new Parser;for(const plug of ll.plugins)plug(p);const tex=await p.loadImageSource(0,imageLoader);
++ const group=new THREE.Group;const mat=new THREE.MeshBasicMaterial({map:tex});const mesh=new THREE.Mesh(new THREE.BoxGeometry(1,1,1),mat);group.add(mesh);
++ const cache=new WeakMap;const get=o=>{if(!cache.has(o))cache.set(o,{});return cache.get(o)};
++ const renderer={properties:{get},initTexture(t){gpuPayloads.push(t.mipmaps.map(m=>Buffer.from(m.data)));Object.assign(get(t),{__webglTexture:{},__version:t.version})}};
++ if(uploaded)renderer.initTexture(tex);
++ const residency=createTextureResidency({group,renderer,tier:'full',closeImages:false,releaseCompressedLevels:release});
++ return{tex,mat,residency,payloads,renderer,get,refills:()=>refills,gpuPayloads};}
++const f=await fixture();f.residency.prime(new THREE.Vector3());
++check('desktop uploaded compressed source levels are released',f.tex.mipmaps.every(m=>m.data.byteLength===0)&&f.residency.state.released===1);
++check('desktop original material and GPU handle remain unchanged',f.mat.map===f.tex&&f.get(f.tex).__webglTexture!==undefined);
++f.residency.tick(new THREE.Vector3(1000,0,0));check('released source can become a populated tail-mip stand-in',f.mat.map!==f.tex&&f.mat.map.mipmaps.length>0&&f.mat.map.mipmaps.every(m=>m.data.byteLength>0));
++f.residency.tick(new THREE.Vector3());await new Promise(r=>setTimeout(r,0));f.residency.tick(new THREE.Vector3());
++check('returning source is transcoded exactly once',f.refills()===1&&f.residency.state.retranscodes===1);
++check('restored desktop uploads every original mip byte exactly',f.gpuPayloads.at(-1).length===f.payloads.length&&f.payloads.every((b,i)=>b.equals(f.gpuPayloads.at(-1)[i])));
++check('restored desktop returns to original material slot',f.mat.map===f.tex&&f.residency.state.resident===1&&f.residency.state.pending===0);
++check('refilled arrays release again after upload',f.tex.mipmaps.every(m=>m.data.byteLength===0)&&f.residency.state.released===2);
++check('desktop roundtrip reports zero problems',f.residency.state.problems.length===0);
++const unencoded=await fixture({encoded:false});unencoded.residency.prime(new THREE.Vector3());check('source without encoded recovery is never released',unencoded.tex.mipmaps.every(m=>m.data.byteLength>0));
++const disabled=await fixture({release:false});disabled.residency.prime(new THREE.Vector3());check('legacy desktop option retains source levels',disabled.tex.mipmaps.every(m=>m.data.byteLength>0));
++const pending=await fixture({uploaded:false});pending.residency.prime(new THREE.Vector3());check('source awaiting GPU upload keeps every byte',pending.tex.mipmaps.every(m=>m.data.byteLength>0));
++const denied=await fixture({failRefill:true});denied.residency.prime(new THREE.Vector3());denied.residency.tick(new THREE.Vector3(1000,0,0));denied.residency.tick(new THREE.Vector3());await new Promise(r=>setTimeout(r,0));denied.residency.tick(new THREE.Vector3());
++check('failed encoded refill reports the real decoding failure',denied.residency.state.problems.some(p=>p.includes('controlled refill failure')));
++check('failed encoded refill keeps the valid stand-in without a pending upload',denied.mat.map!==denied.tex&&denied.residency.state.pending===0&&denied.mat.map.mipmaps.every(m=>m.data.byteLength>0));
++// Desktop keeps decoded regular images, so only compressed recovery copies are retained.
++const oldDocument = globalThis.document, oldBitmap = globalThis.ImageBitmap;
++const hadDocument = Object.hasOwn(globalThis, 'document'), hadBitmap = Object.hasOwn(globalThis, 'ImageBitmap');
++let canvasCreates = 0, canvasDraws = 0;
++class ImageBitmapDouble {
++  constructor(width = 1024, height = 512) { this.width = width; this.height = height; this.closed = false; }
++  close() { this.closed = true; this.width = 0; this.height = 0; }
++}
++globalThis.ImageBitmap = ImageBitmapDouble;
++globalThis.document = { createElement(kind) {
++  assert.equal(kind, 'canvas'); canvasCreates++;
++  return { width: 0, height: 0, getContext() { return { drawImage(image) {
++    assert(image.width > 0 && image.height > 0, 'Stand-in must be drawn from a live decoded image'); canvasDraws++;
++  } }; } };
++} };
++async function retainedSource(mode, compressed = false) {
++  const original = compressed ? texture() : new THREE.Texture(new ImageBitmapDouble());
++  let decodes = 0;
++  const imageLoader = { load(url, onLoad) {
++    decodes++; queueMicrotask(() => onLoad(compressed ? texture() : new ImageBitmapDouble()));
++  } };
++  class Parser {
++    constructor() { this.json = { images: [{ bufferView: 0, mimeType: compressed ? 'image/ktx2' : 'image/png' }] }; this.sourceCache = {}; }
++    getDependency() { return Promise.resolve(new TextEncoder().encode(`retention-${mode}-${compressed}`).buffer); }
++    loadImageSource() { return Promise.resolve(original); }
++  }
++  const loader = { plugins: [], register(fn) { this.plugins.push(fn); } };
++  shareImageSources(loader, { keepEncoded: mode });
++  const parser = new Parser(); for (const plugin of loader.plugins) plugin(parser);
++  const delivered = await parser.loadImageSource(0, imageLoader);
++  return { original, delivered, record: glbImageSource(delivered.source), decodes: () => decodes };
++}
++for (const [mode, expectRegular, expectCompressed] of [[false, false, false], [true, true, true], ['compressed', false, true]]) {
++  const regular = await retainedSource(mode, false), compressed = await retainedSource(mode, true);
++  check(`${mode}: regular image retains its source record`, regular.record !== null);
++  check(`${mode}: regular encoded retention matches the explicit mode`, !!regular.record.encoded === expectRegular);
++  check(`${mode}: compressed encoded retention matches the explicit mode`, !!compressed.record.encoded === expectCompressed);
++}
++const { closeUploadedImages } = await moduleFor('upload-release.js');
++async function lifecycleImage({ mode = 'compressed', compressed = false, close = false, uploaded = true } = {}) {
++  const item = await retainedSource(mode, compressed), material = new THREE.MeshBasicMaterial({ map: item.delivered });
++  const group = new THREE.Group(); group.add(new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), material));
++  const props = new WeakMap(); const get = (key) => { if (!props.has(key)) props.set(key, {}); return props.get(key); };
++  let uploads = 0;
++  const renderer = { properties: { get }, initTexture(tex) {
++    uploads++; Object.assign(get(tex), { __webglTexture: {}, __version: tex.version });
++    get(tex.source).__version = tex.source.version;
++  } };
++  const residency = createTextureResidency({ group, renderer, closeImages: close, releaseCompressedLevels: true });
++  // Native boot prepares stand-ins first, then uploads the selected original map.
++  if (uploaded) renderer.initTexture(item.delivered);
++  return { ...item, material, group, renderer, residency, uploads: () => uploads };
++}
++const canvasBeforeRegular = canvasCreates;
++const regularDesktop = await lifecycleImage(); regularDesktop.residency.prime(new THREE.Vector3());
++check('desktop regular source creates no eager stand-in canvas', canvasCreates === canvasBeforeRegular && regularDesktop.residency.state.standIns === 0);
++check('desktop regular source keeps decoded image open without encoded duplicate', !regularDesktop.delivered.image.closed && regularDesktop.record.encoded === null);
++const regularSource = regularDesktop.delivered.source;
++regularDesktop.residency.tick(new THREE.Vector3(1000, 0, 0));
++check('desktop regular source lazily creates valid stand-in on actual eviction', canvasCreates === canvasBeforeRegular + 1 && canvasDraws > 0
++  && regularDesktop.residency.state.evictions === 1 && regularDesktop.material.map !== regularDesktop.delivered);
++regularDesktop.residency.tick(new THREE.Vector3());
++check('desktop regular return reuses the live original image and Source', regularDesktop.material.map === regularDesktop.delivered
++  && regularDesktop.material.map.source === regularSource && !regularDesktop.delivered.image.closed);
++check('desktop regular return uploads without decoding or pending work', regularDesktop.decodes() === 0 && regularDesktop.uploads() === 2
++  && regularDesktop.residency.state.pending === 0 && regularDesktop.residency.state.problems.length === 0);
++const recoverableDesktop = await lifecycleImage({ compressed: true });
++check('desktop recoverable compressed source eagerly prepares its tail stand-in', recoverableDesktop.residency.state.standIns === 1 && !!recoverableDesktop.record.encoded);
++recoverableDesktop.residency.prime(new THREE.Vector3());
++check('desktop recoverable compressed source releases only after upload', recoverableDesktop.delivered.mipmaps.every((m) => m.data.byteLength === 0));
++recoverableDesktop.residency.tick(new THREE.Vector3(1000, 0, 0)); recoverableDesktop.residency.tick(new THREE.Vector3());
++await new Promise((resolve) => setTimeout(resolve, 0)); recoverableDesktop.residency.tick(new THREE.Vector3());
++check('desktop compressed-only mode recovers through actual encoded refill path', recoverableDesktop.decodes() === 1
++  && recoverableDesktop.material.map === recoverableDesktop.delivered && recoverableDesktop.residency.state.pending === 0
++  && recoverableDesktop.residency.state.problems.length === 0);
++const noRecovery = await lifecycleImage({ mode: false, compressed: true });
++check('compressed source without encoded recovery does not eagerly allocate a stand-in', noRecovery.residency.state.standIns === 0);
++noRecovery.residency.prime(new THREE.Vector3());
++check('compressed source without encoded recovery retains every original level', noRecovery.delivered.mipmaps.every((m) => m.data.byteLength > 0));
++const phone = await lifecycleImage({ mode: true, close: true });
++check('phone true/all mode still eagerly prepares regular bitmap stand-in', phone.residency.state.standIns === 1 && !!phone.record.encoded);
++phone.residency.prime(new THREE.Vector3()); closeUploadedImages(phone.group, phone.renderer);
++check('phone native uploaded-image release still closes its original bitmap', phone.delivered.image.closed);
++phone.residency.tick(new THREE.Vector3(1000, 0, 0)); phone.residency.tick(new THREE.Vector3());
++await new Promise((resolve) => setTimeout(resolve, 0)); phone.residency.tick(new THREE.Vector3());
++check('phone true/all mode decodes, uploads and closes returning image', phone.decodes() === 1 && phone.material.map === phone.delivered
++  && phone.delivered.image.closed && phone.residency.state.redecodes === 1 && phone.residency.state.pending === 0
++  && phone.residency.state.problems.length === 0);
++if (hadDocument) globalThis.document = oldDocument; else delete globalThis.document;
++if (hadBitmap) globalThis.ImageBitmap = oldBitmap; else delete globalThis.ImageBitmap;
++
++console.log(`${tests.length} controls PASS; NO actual-browser/GPU/memory/visual qualification claimed`);
++if(hadLoader)globalThis.__T3173KTX2Loader=previousLoader;else delete globalThis.__T3173KTX2Loader;
++if(hadSelf)globalThis.self=previousSelf;else delete globalThis.self;

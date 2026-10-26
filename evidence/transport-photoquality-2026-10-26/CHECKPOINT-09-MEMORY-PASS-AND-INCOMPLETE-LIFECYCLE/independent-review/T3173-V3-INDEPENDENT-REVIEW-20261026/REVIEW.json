@@ -1,0 +1,60 @@
+{
+  "state": "V3_CACHE_OPT_OUT_SUPPORTED; DESKTOP_DETAIL_LIFECYCLE_HANDOFF_BLOCKED",
+  "review_utc": "2026-10-26T20:52:48.128529+00:00",
+  "incremental_v3_patch_sha256": "c3c085525d5d5985445a7ecaaba0817d305ba6223565ffc2c2551ef0a70d16ee",
+  "v3_packet_manifest_sha256": "08c5a5002bc6b9ad7145704cf659d3d508ad6c5e9c47f9f69e4f0731b6dcf53e",
+  "scope": "Focused source/consumer review and tiny real-Three/GLTF parser/controller fixtures only; no application edit, browser, real decoder/native memory execution or ceiling change.",
+  "supported_v3_change": [
+    "Only production change is app keepAssetBytes:false; normal fetch/revalidation path unchanged. Public loadScene default true and byte-cache implementation remain exact.",
+    "Private assetBytes only feeds loadDetailAsset and bankedAssets telemetry; no picking/identity consumer reads the bank.",
+    "Independent existing StructureVersions owner26old+6new controls PASS0/0.140s, exact packet/reference files and WIP status before/after.",
+    "New false Full\u2192Balanced\u2192Full fixture uses actual pinned GLTF geometry/material/sampler parsing, deterministic KTX2-image decoding only, distinguishable lower geometry, exact returned Full payloads, zero bank,3normal requests, stable identity/fresh ownership, failure/refetch recovery and unchanged no-cache/default2bank paths."
+  ],
+  "confirmed_separate_lifecycle_blocker": {
+    "status": "REPRODUCED_WITH_TINY_PRODUCTION_TWO_CONTROLLER_FIXTURE",
+    "first_manager_valid_tail_bytes": 5488,
+    "new_manager_stand_in_bytes": 0,
+    "new_manager_switched_to_stand_in": true,
+    "new_stand_in_widths": [
+      64,
+      32,
+      16,
+      8,
+      4,
+      2,
+      1
+    ],
+    "new_stand_in_payload_bytes": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "reported_problems": [],
+    "repro_receipt_sha256": "7841e44b2699fcce49631e9862222232fa32b654a2ebd22222d337012862a472",
+    "source_path_explanation": "main inspectionSwitch rebuild clones materials but reuses non-Glessner source GLTF textures. Desktop prior compressed-level release empties those texture mip descriptors. Old residency.dispose discards its valid tail stand-ins. New residency starts entries as resident with no carried released flag and eagerly copies those empty tail arrays; far eviction switches materials to an empty stand-in. Phone rereadReleased handles sourceReleased geometry rows; desktop retained rows do not enter it.",
+    "inherited_from": "First desktop compressed-source release proposal (V1/V2), not newly caused by the V3 no-bank option.",
+    "minimal_scope_next": "Fix the released-texture/controller handoff before claiming actual desktop detail-cycle lifecycle acceptance. Reusing the existing rereadReleased path for rows with released compressed source levels is an option that avoids a new cache design; root/implementer decides. No fix was applied by reviewer.",
+    "actual_browser_status": "UNRUN; source and production fixture establish invalid zero-byte tail payload, without claiming an actual GPU/browser result."
+  },
+  "observer_v3_source": {
+    "path": "/tmp/T3173-ACTUAL-BROWSER-LIFECYCLE-OBSERVER-20261026/observe-lifecycle.mjs",
+    "reported_sha256": "1cadb53a3a967c8c017662b0ae2b2d31d1080628ddc4f9a1ee1cfa113f9441f4",
+    "source_diff_read": true,
+    "reported_prepared_new_checks": "bankedAssets0 and actual desktop Balanced/Full refetch, stable references, geometry metadata/material sampler/camera/roll fingerprints and pixel comparison",
+    "actual_entrypoint_launched": false,
+    "acceptance": "Must be run against the reviewed actual four-runtime source only after the lifecycle handoff is fixed."
+  },
+  "remaining": [
+    "Actual revised-source native memory at both widths, retaining all prior failures and unchanged metrics/ceilings.",
+    "Actual desktop Full\u2192Balanced\u2192Full transaction/resource/pixel/sampler/geometry cycle after handoff fix.",
+    "Native decoder, far/near revisit and context-loss/reloaded usable frame acceptance."
+  ],
+  "application_or_metric_or_cap_changes": false,
+  "CP08_modified": false,
+  "memory_ceiling_PASS_claim": false,
+  "whole_APP_DEV_or_photographic_acceptance": false
+}

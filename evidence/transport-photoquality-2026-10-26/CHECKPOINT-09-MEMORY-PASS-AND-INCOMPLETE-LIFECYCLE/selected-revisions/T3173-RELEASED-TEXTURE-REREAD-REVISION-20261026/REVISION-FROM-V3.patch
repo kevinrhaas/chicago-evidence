@@ -1,0 +1,264 @@
+--- a/renderers/web/js/main.js
++++ b/renderers/web/js/main.js
+@@ -76,7 +76,7 @@
+ import { releaseAfterUpload, uploadLayerNow, uploadReleaseState, releaseSources,
+   closeUploadedImages } from './upload-release.js';
+ import { compactStreams } from './compact-streams.js';
+-import { createTextureResidency } from './texture-residency.js';
++import { createTextureResidency, hasReleasedTextureLevels, hasRequiredSourceTextures } from './texture-residency.js';
+ import { createCrashGuard } from './crash-guard.js';
+ import { countDriverDraws } from './driver-draws.js';
+ import { createBlackbox, wasCut, summary as blackboxSummary, report as blackboxReport } from './blackbox.js';
+@@ -2945,19 +2945,25 @@
+     for (const gltf of next.reread ?? []) disposeLoadedAsset(gltf);
+   };
+   /**
+-   * T-2548: a phone let go of every building's source geometry once its batch
+-   * held a copy, so a rebuild re-reads the GLBs of the rows it released — the
+-   * HTTP cache answers — into the candidate registry. The gltfs those rows held
+-   * are retired at commit (`next.retired`), the ones read here at discard.
++   * Re-read source rows whose geometry or compressed texture payloads were
++   * released, using the normal HTTP refetch/revalidation path. A fresh candidate
++   * must prepare valid texture stand-ins before its next upload release. Old
++   * gltfs retire only at commit; new reads are disposed if preparation fails.
+    */
+   const rereadReleased = async (next, skipId) => {
+     next.reread = [];
+     next.retired = [];
+-    const rows = [...next.registry.values()].filter((row) => row.sourceReleased && row.id !== skipId);
++    const rows = [...next.registry.values()].filter((row) => row.id !== skipId
++      && (row.sourceReleased || hasReleasedTextureLevels(row.gltf)));
+     const got = await Promise.allSettled(rows.map((row) => loaded.loadDetailAsset(row, row.assetDetail)));
+     got.forEach((r) => { if (r.status === 'fulfilled') next.reread.push(r.value.gltf); });
+     const failed = got.find((r) => r.status === 'rejected');
+     if (failed) throw failed.reason;
++    rows.forEach((row, i) => {
++      if (!hasRequiredSourceTextures(row.gltf, got[i].value.gltf)) {
++        throw new Error(`${row.id}: reloaded source is missing a required texture`);
++      }
++    });
+     rows.forEach((row, i) => {
+       next.retired.push(row.gltf);
+       Object.assign(row, got[i].value, { node: null, instanceId: null, sourceReleased: false });
+--- a/renderers/web/js/texture-residency.js
++++ b/renderers/web/js/texture-residency.js
+@@ -147,6 +147,49 @@
+       : got?.isTexture ? got.image : got)),
+       undefined, done(reject));
+   });
++}
++
++/** A source GLTF needs a fresh parse before rebuilding if its uploaded compressed
++ * payloads were released. Inspect the actual arrays: a source texture clone can
++ * share released descriptors without carrying the batch texture's userData marker.
++ */
++export function hasReleasedTextureLevels(gltf) {
++  let released = false;
++  gltf?.scene?.traverse?.((node) => {
++    if (released) return;
++    for (const material of [].concat(node.material ?? [])) {
++      for (const value of Object.values(material ?? {})) {
++        if (value?.isCompressedTexture && value.mipmaps?.some((level) => level?.data?.byteLength === 0)) {
++          released = true;
++        }
++      }
++    }
++  });
++  return released;
++}
++
++/** Required texture-slot multiplicities for one unchanged source asset. Compare
++ * stable node/material ordinals, material names and slot keys, never runtime IDs
++ * or compressed format choices.
++ */
++export function hasRequiredSourceTextures(previous, replacement) {
++  const slots = (gltf) => {
++    const counts = new Map();
++    let ordinal = 0;
++    gltf?.scene?.traverse?.((node) => {
++      const nodeOrdinal = ordinal++;
++      for (const [materialIndex, material] of [].concat(node.material ?? []).entries()) {
++        for (const [slot, value] of Object.entries(material ?? {})) {
++          if (!value?.isTexture) continue;
++          const key = JSON.stringify([nodeOrdinal, materialIndex, material.name ?? '', slot]);
++          counts.set(key, (counts.get(key) ?? 0) + 1);
++        }
++      }
++    });
++    return counts;
++  };
++  const fresh = slots(replacement);
++  return [...slots(previous)].every(([key, count]) => (fresh.get(key) ?? 0) >= count);
+ }
+ 
+ /**
+--- a/tools/test_structure_versions.mjs
++++ b/tools/test_structure_versions.mjs
+@@ -284,10 +284,14 @@
+   const hadFixture = Object.hasOwn(globalThis, '__T3173NoBankKtx2Fixture');
+   const oldFixture = globalThis.__T3173NoBankKtx2Fixture;
+   globalThis.self = globalThis;
+-  globalThis.__T3173NoBankKtx2Fixture = { load(url, onLoad) {
+-    const mipmaps = Array.from({ length: 9 }, (_, i) => ({ width: 256 >> i, height: 256 >> i,
+-      data: new Uint8Array(Math.max(16, (256 >> i) ** 2)).fill(i + 1) }));
+-    queueMicrotask(() => onLoad(new realThree.CompressedTexture(mipmaps, 256, 256, realThree.RGBA_BPTC_Format)));
++  globalThis.__T3173NoBankKtx2Fixture = { load(url, onLoad, onProgress, onError) {
++    // Read the real embedded/recovery Blob; byte255 is the explicit decoder-failure control.
++    savedFetch(url).then(response => response.arrayBuffer()).then(buffer => {
++      if (new Uint8Array(buffer)[0] === 255) throw new Error('controlled encoded KTX2 failure');
++      const mipmaps = Array.from({ length: 9 }, (_, i) => ({ width: 256 >> i, height: 256 >> i,
++        data: new Uint8Array(Math.max(16, (256 >> i) ** 2)).fill(i + 1) }));
++      onLoad(new realThree.CompressedTexture(mipmaps, 256, 256, realThree.RGBA_BPTC_Format));
++    }).catch(onError);
+   } };
+   try {
+     const actualLoaderSource = fs.readFileSync(loaderPath, 'utf8')
+@@ -330,7 +334,7 @@
+       return { ok: true, arrayBuffer: async () => bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) };
+     };
+     const noBankScene = await actualLoader.loadScene('1904', { dataBase: root, assetBase: root }, {
+-      version: { id: 'glessner_house', label: 'v4' }, detail: 'full', keepAssetBytes: false,
++      version: { id: 'glessner_house', label: 'v4' }, detail: 'full', keepAssetBytes: false, keepEncodedImages: 'compressed',
+     });
+     const noBankRecord = noBankScene.registry.get('glessner_house');
+     const lower = await noBankScene.loadDetailAsset(noBankRecord, 'balanced');
+@@ -368,6 +372,139 @@
+     check('no-bank refetch preserves the loader normal HTTP revalidation policy', noBankHttpPolicies.length === 5
+       && noBankHttpPolicies.every(policy => policy === 'no-cache'));
+     check('the public default bank still holds its two streams independently of the application no-bank choice', scene.bankedAssets === 2);
++    // T-3173: actual released source payloads, not a userData marker, select the
++    // established candidate reread/retire/discard path before the next manager.
++    const sharedURL = pathToFileURL(path.join(ROOT, 'renderers/web/js/shared-images.js')).href;
++    const residencySource = fs.readFileSync(path.join(ROOT, 'renderers/web/js/texture-residency.js'), 'utf8')
++      .replace("from 'three'", `from '${threeURL}'`)
++      .replace("from './shared-images.js'", `from '${sharedURL}'`)
++      .replace("import { noteReleasedLevels } from './upload-release.js';", 'const noteReleasedLevels = () => {};');
++    const { createTextureResidency, hasReleasedTextureLevels, hasRequiredSourceTextures } = await import(asModule(residencySource));
++    const groupWith = texture => ({ scene: new realThree.Group().add(new realThree.Mesh(
++      new realThree.BoxGeometry(1, 1, 1), new realThree.MeshBasicMaterial({ map: texture }))) });
++    const compressed = () => new realThree.CompressedTexture([
++      { width: 128, height: 128, data: new Uint8Array(16384) },
++      { width: 64, height: 64, data: new Uint8Array(4096) }], 128, 128, realThree.RGBA_BPTC_Format);
++    const markerless = compressed(), markerlessClone = markerless.clone(); markerless.mipmaps[0].data = new Uint8Array(0);
++    check('released source detector reads empty raw and cloned compressed payloads without userData markers',
++      !markerless.userData.releasedBytes && !markerlessClone.userData.releasedBytes
++      && hasReleasedTextureLevels(groupWith(markerless)) && hasReleasedTextureLevels(groupWith(markerlessClone)));
++    check('released source detector rejects regular, no-mip, live compressed and absent source cases',
++      !hasReleasedTextureLevels(groupWith(new realThree.Texture({ width: 1, height: 1 })))
++      && !hasReleasedTextureLevels(groupWith(new realThree.CompressedTexture([], 1, 1)))
++      && !hasReleasedTextureLevels(groupWith(compressed())) && !hasReleasedTextureLevels(null));
++    check('required source texture presence accepts compressed-to-RGBA fallback without relying on runtime IDs',
++      hasRequiredSourceTextures(groupWith(compressed()), groupWith(new realThree.DataTexture(new Uint8Array(4), 1, 1))));
++    const twoSlots = groupWith(compressed()); twoSlots.scene.add(twoSlots.scene.children[0].clone());
++    check('required source texture presence rejects a missing map and a dropped duplicate slot',
++      !hasRequiredSourceTextures(groupWith(compressed()), groupWith(null))
++      && !hasRequiredSourceTextures(twoSlots, groupWith(compressed())));
++    const movedBefore = groupWith(compressed()), movedAfter = groupWith(null);
++    movedBefore.scene.add(groupWith(null).scene.children[0]); movedAfter.scene.add(groupWith(compressed()).scene.children[0]);
++    for (const asset of [movedBefore, movedAfter]) for (const node of asset.scene.children) node.material.name = 'same';
++    check('a same-name texture on another node cannot compensate for a missing required slot',
++      !hasRequiredSourceTextures(movedBefore, movedAfter));
++    const arrayBefore = groupWith(null), arrayAfter = groupWith(null);
++    arrayBefore.scene.children[0].material = [new realThree.MeshBasicMaterial({ map: compressed() }), new realThree.MeshBasicMaterial()];
++    arrayAfter.scene.children[0].material = [new realThree.MeshBasicMaterial(), new realThree.MeshBasicMaterial({ map: compressed() })];
++    check('another material-array position cannot compensate for a missing required slot',
++      !hasRequiredSourceTextures(arrayBefore, arrayAfter));
++    const mainSource = fs.readFileSync(path.join(ROOT, 'renderers/web/js/main.js'), 'utf8');
++    const rereadStart = mainSource.indexOf('  const rereadReleased = async (next, skipId) => {');
++    const rereadEnd = mainSource.indexOf('  const inspectionSwitch =', rereadStart);
++    const discardStart = mainSource.indexOf('  const discardDetail = (next) => {');
++    const discardEnd = mainSource.indexOf('  /**', discardStart);
++    if ([rereadStart, rereadEnd, discardStart, discardEnd].some(n => n < 0)) throw new Error('Actual main reread/discard definitions absent');
++    const reread = new Function('loaded', 'hasReleasedTextureLevels', 'hasRequiredSourceTextures', `${mainSource.slice(rereadStart, rereadEnd)}; return rereadReleased;`)(
++      noBankScene, hasReleasedTextureLevels, hasRequiredSourceTextures);
++    const discard = new Function('disposeLoadedAsset', `${mainSource.slice(discardStart, discardEnd)}; return discardDetail;`)(actualLoader.disposeLoadedAsset);
++    const neighbor = { ...noBankRecord, id: 'neighbor_house', sidecar: { ...noBankRecord.sidecar, asset: 'gltf/neighbor_house.glb' } };
++    Object.assign(neighbor, await noBankScene.loadDetailAsset(neighbor, 'full'));
++    const props = new WeakMap(), get = key => { if (!props.has(key)) props.set(key, {}); return props.get(key); };
++    const renderer = { properties: { get }, initTexture(texture) { Object.assign(get(texture), { __webglTexture: {}, __version: texture.version }); } };
++    const oldNeighborGLTF = neighbor.gltf, oldMap = oldNeighborGLTF.scene.children[0].material.map;
++    const firstManager = createTextureResidency({ group: oldNeighborGLTF.scene, renderer, closeImages: false, releaseCompressedLevels: true });
++    renderer.initTexture(oldMap); firstManager.prime(new realThree.Vector3());
++    const firstTailBytes = firstManager.state.standInBytes;
++    check('handoff fixture performs a real first production residency payload release and cache retirement',
++      firstManager.state.released === 1 && firstTailBytes > 0 && oldMap.mipmaps.every(m => m.data.byteLength === 0)
++      && hasReleasedTextureLevels(oldNeighborGLTF));
++    firstManager.dispose();
++    const brokenManager = createTextureResidency({ group: oldNeighborGLTF.scene, renderer, closeImages: false, releaseCompressedLevels: true });
++    brokenManager.prime(new realThree.Vector3(1000, 0, 0));
++    check('negative control reproduces zero-byte second-manager tail when the required reread is omitted',
++      brokenManager.state.standInBytes === 0 && oldNeighborGLTF.scene.children[0].material.map.mipmaps.every(m => m.data.byteLength === 0));
++    brokenManager.dispose();
++    const phoneRow = { id: 'phone_released_house', sidecar: { asset: 'gltf/phone_released_house.glb' },
++      assetDetail: 'full', sourceReleased: true, gltf: groupWith(new realThree.Texture({ width: 1, height: 1 })) };
++    const regularRow = { id: 'regular_live_house', sidecar: { asset: 'gltf/regular_live_house.glb' },
++      assetDetail: 'full', sourceReleased: false, gltf: groupWith(new realThree.Texture({ width: 1, height: 1 })) };
++    const freshSkip = { ...noBankRecord, sourceReleased: true };
++    const next = { registry: new Map([[neighbor.id, { ...neighbor }], [phoneRow.id, { ...phoneRow }],
++      [regularRow.id, { ...regularRow }], [freshSkip.id, { ...freshSkip }]]) };
++    const beforeReread = noBankRequests.length;
++    await reread(next, freshSkip.id);
++    const replacement = next.registry.get(neighbor.id);
++    check('actual main reread extends old phone geometry selection, skips fresh Glessner and keeps regular live rows',
++      noBankRequests.slice(beforeReread).filter(p => p.endsWith('.glb')).sort().join(',')
++      === ['gltf/neighbor_house.glb', 'gltf/phone_released_house.glb'].sort().join(',')
++      && next.registry.get(freshSkip.id).gltf === freshSkip.gltf && next.registry.get(regularRow.id).gltf === regularRow.gltf);
++    check('actual main reread keeps new candidates and old retired owners separate before commit',
++      next.reread.length === 2 && next.retired.length === 2 && next.retired.includes(oldNeighborGLTF)
++      && replacement.gltf !== oldNeighborGLTF && neighbor.gltf === oldNeighborGLTF
++      && !replacement.sourceReleased && !hasReleasedTextureLevels(replacement.gltf));
++    const newMap = replacement.gltf.scene.children[0].material.map;
++    const secondManager = createTextureResidency({ group: replacement.gltf.scene, renderer, closeImages: false, releaseCompressedLevels: true });
++    renderer.initTexture(newMap); secondManager.prime(new realThree.Vector3());
++    secondManager.tick(new realThree.Vector3(1000, 0, 0));
++    const actualTail = replacement.gltf.scene.children[0].material.map;
++    check('required real refetch/reparse makes second-manager far tail populated at every mip',
++      secondManager.state.standInBytes === firstTailBytes && actualTail.mipmaps.length > 0
++      && actualTail.mipmaps.every(m => m.data.byteLength > 0));
++    secondManager.tick(new realThree.Vector3()); await new Promise(resolve => setTimeout(resolve, 0)); secondManager.tick(new realThree.Vector3());
++    check('reread second manager returns through the existing encoded refill path without errors or a raw bank',
++      replacement.gltf.scene.children[0].material.map === newMap && secondManager.state.retranscodes === 1
++      && secondManager.state.pending === 0 && secondManager.state.problems.length === 0 && noBankScene.bankedAssets === 0);
++    secondManager.dispose();
++    for (const failureMode of ['encoded', 'corrupt-glb', 'http']) {
++      const oldVisible = neighbor.gltf, failureEvents = [], failureCandidate = { registry: new Map([
++        ['neighbor_house', { ...neighbor }],
++        ['broken_house', { ...neighbor, id: 'broken_house', sidecar: { ...neighbor.sidecar, asset: 'gltf/broken_house.glb' } }],
++      ]) };
++      let oldDisposals = 0, candidateDisposals = 0, commits = 0, visible = oldVisible, badRequests = 0;
++      oldVisible.scene.children[0].geometry.addEventListener('dispose', () => oldDisposals++);
++      const previousFetch = globalThis.fetch;
++      globalThis.fetch = async (url, options) => {
++        if (!new URL(url).pathname.endsWith('/broken_house.glb')) return previousFetch(url, options);
++        badRequests++;
++        if (failureMode === 'http') return { ok: false, status: 404, statusText: 'controlled absent asset' };
++        const badImage = failureMode === 'encoded' ? Buffer.from(fullBytes) : Buffer.from('corrupt candidate GLB');
++        if (failureMode === 'encoded') badImage[badImage.length - 16] = 255;
++        return { ok: true, arrayBuffer: async () => badImage.buffer.slice(badImage.byteOffset, badImage.byteOffset + badImage.byteLength) };
++      };
++      const failureSwitch = actualLoader.createLatestDetailSwitch({ initial: 'full',
++        prepare: async () => {
++          try { await reread(failureCandidate, 'glessner_house'); }
++          catch (error) {
++            for (const gltf of failureCandidate.reread) gltf.scene.children[0].geometry.addEventListener('dispose', () => candidateDisposals++);
++            discard(failureCandidate); throw error;
++          }
++          return failureCandidate;
++        }, commit: candidate => { commits++; visible = candidate; }, discard,
++        onError: (error, wanted, kept) => failureEvents.push({ message: error.message, wanted, kept }) });
++      try { await failureSwitch.set('balanced'); } finally { globalThis.fetch = previousFetch; }
++      check(`failed actual ${failureMode} candidate preserves the visible world and discards successful partial rereads`,
++        failureSwitch.current === 'full' && visible === oldVisible && commits === 0 && oldDisposals === 0
++        && failureEvents.length === 1 && failureEvents[0].wanted === 'balanced' && failureEvents[0].kept === 'full'
++        && (failureMode !== 'encoded' || /missing a required texture/.test(failureEvents[0].message))
++        && (failureMode !== 'http' || badRequests === 2)
++        && failureCandidate.reread.length === (failureMode === 'encoded' ? 2 : 1)
++        && candidateDisposals === failureCandidate.reread.length && failureCandidate.retired.length === 0
++        && failureCandidate.registry.get('neighbor_house').gltf === oldVisible,
++        JSON.stringify({ current: failureSwitch.current, visibleOld: visible === oldVisible, commits, oldDisposals, failureEvents,
++          reads: failureCandidate.reread.length, candidateDisposals, retired: failureCandidate.retired.length, badRequests }));
++    }
++
+   } finally {
+     if (hadSelf) globalThis.self = oldSelf; else delete globalThis.self;
+     if (hadFixture) globalThis.__T3173NoBankKtx2Fixture = oldFixture; else delete globalThis.__T3173NoBankKtx2Fixture;

@@ -1,0 +1,44 @@
+# PREPARED ONLY. No dispatch has been performed. Do not execute against current HEAD35.
+# After real required native gates, an actual checked commit, and ordinary feature push:
+SMOKE_REF='steward/t2793-wagon-photoquality-20261026'
+# Set this to the actual NEW fully checked, pushed source commit. No value exists yet.
+EXPECTED_HEAD='<fresh fully checked and pushed 40-hex commit>'
+# Confirm local commit tree/app are the final approved source. If source has changed,
+# regenerate metadata binding/plan first. The original planned values are:
+# TREE a12bde3638a91372081561024690e4976072a592
+# APP  7588a262443e1d32b78c44dd73b5b89bcc8b75af
+# Confirm remote feature ref equals EXPECTED_HEAD immediately before dispatch.
+git ls-remote origin "refs/heads/$SMOKE_REF"
+# Verify workflow registered/active; this read-only query does not dispatch.
+gh workflow view chicago-4d-smoke.yml --repo kevinrhaas/chicago --ref "$SMOKE_REF" --yaml
+# Source workflow inputs accept branch/tag refs; keep the feature ref frozen.
+# Dispatch each unique leg once. Desktop13 may be launched first to expose long-leg cost.
+gh workflow run chicago-4d-smoke.yml --repo kevinrhaas/chicago --ref "$SMOKE_REF" -f viewport=desktop -f stage=1-2
+gh workflow run chicago-4d-smoke.yml --repo kevinrhaas/chicago --ref "$SMOKE_REF" -f viewport=desktop -f stage=3-4
+gh workflow run chicago-4d-smoke.yml --repo kevinrhaas/chicago --ref "$SMOKE_REF" -f viewport=desktop -f stage=5
+gh workflow run chicago-4d-smoke.yml --repo kevinrhaas/chicago --ref "$SMOKE_REF" -f viewport=desktop -f stage=6-7
+gh workflow run chicago-4d-smoke.yml --repo kevinrhaas/chicago --ref "$SMOKE_REF" -f viewport=desktop -f stage=8
+gh workflow run chicago-4d-smoke.yml --repo kevinrhaas/chicago --ref "$SMOKE_REF" -f viewport=desktop -f stage=9-12
+gh workflow run chicago-4d-smoke.yml --repo kevinrhaas/chicago --ref "$SMOKE_REF" -f viewport=desktop -f stage=13
+gh workflow run chicago-4d-smoke.yml --repo kevinrhaas/chicago --ref "$SMOKE_REF" -f viewport=desktop -f stage=14
+gh workflow run chicago-4d-smoke.yml --repo kevinrhaas/chicago --ref "$SMOKE_REF" -f viewport=desktop -f stage=15
+gh workflow run chicago-4d-smoke.yml --repo kevinrhaas/chicago --ref "$SMOKE_REF" -f viewport=mobile -f stage=1-2
+gh workflow run chicago-4d-smoke.yml --repo kevinrhaas/chicago --ref "$SMOKE_REF" -f viewport=mobile -f stage=3-4
+gh workflow run chicago-4d-smoke.yml --repo kevinrhaas/chicago --ref "$SMOKE_REF" -f viewport=mobile -f stage=5
+gh workflow run chicago-4d-smoke.yml --repo kevinrhaas/chicago --ref "$SMOKE_REF" -f viewport=mobile -f stage=6-7
+gh workflow run chicago-4d-smoke.yml --repo kevinrhaas/chicago --ref "$SMOKE_REF" -f viewport=mobile -f stage=8
+gh workflow run chicago-4d-smoke.yml --repo kevinrhaas/chicago --ref "$SMOKE_REF" -f viewport=mobile -f stage=9-12
+gh workflow run chicago-4d-smoke.yml --repo kevinrhaas/chicago --ref "$SMOKE_REF" -f viewport=mobile -f stage=13
+gh workflow run chicago-4d-smoke.yml --repo kevinrhaas/chicago --ref "$SMOKE_REF" -f viewport=mobile -f stage=14
+gh workflow run chicago-4d-smoke.yml --repo kevinrhaas/chicago --ref "$SMOKE_REF" -f viewport=mobile -f stage=15
+
+# For EACH returned/identified new run ID: verify workflow, event, headSha == EXPECTED_HEAD,
+# correct unique (viewport,stage) input, source checkout SHA, publish0, real smoke final0,
+# all selected staged-section checks, and always-on page-error/vendor/boot checks.
+# No blanket acceptance from the workflow conclusion without its actual stage log.
+# RUN_ID must identify this dispatch (not merely the latest branch run).
+gh run view "$RUN_ID" --repo kevinrhaas/chicago --json databaseId,workflowName,event,headSha,headBranch,status,conclusion,url,jobs
+gh run view "$RUN_ID" --repo kevinrhaas/chicago --log > "/tmp/smoke-run-$RUN_ID.log"
+# Then use the existing native record writer, only after root opts to file actual results:
+# node tools/dev-smoke-state.mjs ci "$RUN_ID"
+# ci mutates the standing JSON and is NOT executed by this planning task.
