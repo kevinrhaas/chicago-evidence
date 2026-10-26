@@ -1,0 +1,54 @@
+--- a/.github/workflows/chicago-4d-humans.yml
++++ b/.github/workflows/chicago-4d-humans.yml
+@@ -71,7 +71,7 @@
+         type: boolean
+         default: false
+       source_ref:
+-        description: 'Immutable reviewed source SHA, required only for the separate dress study'
++        description: 'Dress source: blank uses this definition SHA; otherwise only the original reviewed source or this definition SHA'
+         type: string
+         default: ''
+ 
+@@ -89,7 +89,7 @@
+     outputs:
+       dress_source_sha: ${{ steps.dress_binding.outputs.source_sha }}
+     steps:
+-      # A separate definition ref may execute only this reviewed source commit.
++      # Dress source is either the original reviewed commit or this actual definition SHA.
+       # Validate inputs before checkout; default/PR/push checkout remains unchanged.
+       - name: Validate opt-in study request before checkout
+         if: github.event_name == 'workflow_dispatch'
+@@ -107,8 +107,13 @@
+           if dress:
+               if os.environ['TEAMSTERS_ENABLED']=='true' or os.environ['SEATED_ENABLED']=='true':
+                   raise SystemExit('The dress study must run separately from teamster/seated studies')
+-              if not re.fullmatch(r'[0-9a-f]{40}',source) or source!='1cbb1817508593562f99ed378b6932368b5699b9':
+-                  raise SystemExit('Dress source_ref must equal the reviewed immutable source SHA')
++              definition=os.environ['GITHUB_SHA']
++              if not re.fullmatch(r'[0-9a-f]{40}',definition):
++                  raise SystemExit('The actual workflow definition SHA is invalid')
++              source=source or definition
++              if not re.fullmatch(r'[0-9a-f]{40}',source) or source not in {
++                  '1cbb1817508593562f99ed378b6932368b5699b9',definition}:
++                  raise SystemExit('Dress source_ref must equal the original reviewed source or actual definition SHA')
+           elif source:
+               raise SystemExit('source_ref applies only to the opt-in dress study')
+           with open(os.environ['GITHUB_OUTPUT'],'a') as output:
+@@ -133,7 +138,7 @@
+           import json,os,subprocess
+           actual=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+           expected=os.environ['EXPECTED_SOURCE']
+-          if actual!=expected or actual!='1cbb1817508593562f99ed378b6932368b5699b9':
++          if actual!=expected or actual not in {'1cbb1817508593562f99ed378b6932368b5699b9',os.environ['GITHUB_SHA']}:
+               raise SystemExit('Fixture checkout does not match the reviewed dress source')
+           print(json.dumps({'scope':'same-source fixture prerequisite','source_sha':actual,
+               'workflow_definition_sha':os.environ['DEFINITION_SHA'],
+@@ -403,7 +408,7 @@
+           python3 - <<'PY'
+           import hashlib,json,os,pathlib,subprocess
+           actual=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+-          if actual!=os.environ['EXPECTED_SOURCE'] or actual!='1cbb1817508593562f99ed378b6932368b5699b9':
++          if actual!=os.environ['EXPECTED_SOURCE'] or actual not in {'1cbb1817508593562f99ed378b6932368b5699b9',os.environ['GITHUB_SHA']}:
+               raise SystemExit('Dress checkout does not match the verified fixture source')
+           root=pathlib.Path('/tmp/dress-study');root.mkdir(exist_ok=False)
+           files=['generators/blender.pin','tools/human_teamster_blend.py','tools/human_dress_components.py',

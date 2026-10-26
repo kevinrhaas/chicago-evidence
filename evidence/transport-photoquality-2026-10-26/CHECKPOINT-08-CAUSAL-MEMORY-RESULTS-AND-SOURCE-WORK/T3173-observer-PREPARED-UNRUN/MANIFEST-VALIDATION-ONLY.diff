@@ -1,0 +1,51 @@
+--- observe-lifecycle-BEFORE-be66de6f.mjs
++++ observe-lifecycle.mjs
+@@ -15,7 +15,30 @@
+ const appRoot = path.resolve(arg('--app-root'));
+ const mirror = path.resolve(arg('--published-root'));
+ const out = path.resolve(arg('--out'));
+-const expectedManifest = JSON.parse(await fs.readFile(arg('--runtime-manifest'), 'utf8'));
++function validateRuntimeManifest(bytes) {
++  const rows = JSON.parse(bytes.toString('utf8'));
++  const required = new Set([
++    'renderers/web/js/ktx2.js',
++    'renderers/web/js/texture-residency.js',
++    'renderers/web/js/main.js',
++  ]);
++  if (!Array.isArray(rows) || rows.length !== required.size) {
++    throw new Error('Runtime manifest must contain exactly the three reviewed runtime paths');
++  }
++  const seen = new Set();
++  for (const row of rows) {
++    if (!row || !required.has(row.path)) throw new Error(`Unknown runtime manifest path ${row?.path}`);
++    if (seen.has(row.path)) throw new Error(`Duplicate runtime manifest path ${row.path}`);
++    if (typeof row.proposed_sha256 !== 'string' || !/^[a-f0-9]{64}$/i.test(row.proposed_sha256)) {
++      throw new Error(`Invalid runtime manifest SHA-256 for ${row.path}`);
++    }
++    seen.add(row.path);
++  }
++  return rows.map((row) => ({ ...row, proposed_sha256: row.proposed_sha256.toLowerCase() }));
++}
++const manifestBytes = await fs.readFile(arg('--runtime-manifest'));
++const expectedManifest = validateRuntimeManifest(manifestBytes);
++const runtimeManifestSha256 = crypto.createHash('sha256').update(manifestBytes).digest('hex');
+ if ([appRoot, mirror].some((root) => out === root || out.startsWith(`${root}/`))) {
+   throw new Error('Observer outputs must stay outside source and published mirror');
+ }
+@@ -26,6 +49,7 @@
+ const started = Date.now();
+ const result = { scope: 'T3173 actual published 1904 lifecycle observer', started_utc: new Date().toISOString(),
+   app_root: appRoot, published_root: mirror, runtime_manifest: path.resolve(arg('--runtime-manifest')),
++  runtime_manifest_sha256: runtimeManifestSha256,
+   status: 'RUNNING', rows: [], failures: [], visual_acceptance: 'UNRUN', memory_acceptance: 'SEPARATE_NATIVE_TOOL',
+   browser_closed: false, server_closed: false };
+ const save = async () => fs.writeFile(path.join(out, 'ACTUAL-STATE.json'), `${JSON.stringify(result, null, 2)}\n`);
+@@ -70,7 +94,7 @@
+   const published = await inventory(mirror);
+   const vendorRows = source.rows.filter((row) => row.path.startsWith('renderers/web/vendor/'));
+   const vendor = crypto.createHash('sha256').update(JSON.stringify(vendorRows)).digest('hex');
+-  for (const row of expectedManifest.filter((row) => row.path.startsWith('renderers/web/js/'))) {
++  for (const row of expectedManifest) {
+     const actual = source.rows.find((entry) => entry.path === row.path);
+     if (!actual || actual.sha256 !== row.proposed_sha256) throw new Error(`Runtime pin mismatch ${row.path}`);
+     const mirrorPath = row.path.replace('renderers/web/', 'walk/');

@@ -1,0 +1,55 @@
+{
+  "state": "NO_REMAINING_IMPLEMENTATION_BLOCKER_FOUND_FOR_NATIVE_MEASUREMENT",
+  "reviewed_utc": "2026-10-26T19:37:42.196346+00:00",
+  "scope": "Read-only code/ownership/lifecycle review with tiny existing native-owner/state-machine checks. No app source, renderer, actual KTX2 decode, browser, native memory meter or whole gate run.",
+  "packet": "/tmp/T3173-GLB-TEXTURE-RESIDENCY-PROPOSAL-20261026",
+  "packet_manifest_sha256": "915a3e9eeca93c26cb26a19105a96da1a97b461e23264cea03af6136d6a18f44",
+  "patch_sha256": "9dd04568be8f8ac8c256fef723b1630f1fc088d0fe80a761f2653d9ecadefcee",
+  "checked_baseline": {
+    "HEAD": "5b658e7e3267be14d81296a89a1eef9459c21afc",
+    "TREE": "8b2d31ac79a12e1fd21e64e57b94f2c219626596",
+    "APP": "2138f28f07e987d19c9fa078bf168fb77184ef3d",
+    "original_source_manifest": "/tmp/T3173-GLB-TEXTURE-RESIDENCY-PROPOSAL-20261026/SOURCE-MANIFEST.json",
+    "clean_source_after_native_controls": true
+  },
+  "concrete_initial_blocker_and_minimal_fix": {
+    "blocker": "Full registerKTX2 originally retained raw-loader delivery. GLTF/shared-image clones shallow-copy mip level descriptors, so newly enabled desktop release could empty a raw cached Full decode. Initial Full-loader identity test and separate residency fixture did not combine these operations.",
+    "resolved_in_reviewed_revision": true,
+    "minimal_fix": "Profile-independent GLB delivery adapter clones each delivered mip descriptor. Full preserves original Source identity, dimensions and every byte; Light additionally selects stable reduced Source. Raw and reduced cached variants stay populated after a delivery release.",
+    "regression_controls": "Ten combined controls use real pinned GLTF binary parser, two distinct samplers, actual production adapter/residency logic, release, second cached GLTF read and near/far/revisit for both Full and Light."
+  },
+  "focused_results": {
+    "existing_shared_image_assertions": 15,
+    "new_texture_ownership_controls": 44,
+    "native_owner_returncode": 0,
+    "existing_context_state_machine_returncode": 0,
+    "packet_files_verified_before_and_after": 15,
+    "read_only_external_symlinks": 2,
+    "stderr_empty": true
+  },
+  "supported_findings": [
+    "Per-delivery descriptor copies prevent level.data release from mutating another adapter delivery or raw cached mip payloads. Stable Light WeakMap Source preserves shared GPU-source identity while reducing exactly mip0.",
+    "Desktop retains encoded recovery inputs whenever residency is enabled; stand-ins are built before source level release; release still waits for all texture/sampler owners to have current GPU versions, and refuses release without encoded recovery.",
+    "Actual parser controls preserve different sampler settings and selected payloads; failed refill preserves populated stand-in and reports the actual decoding error.",
+    "Encoded recovery stores the delivery adapter, not a parser/raw Texture. Existing loader task cache is weak-keyed by input buffers; adapter forgets settled worker resolvers. Actual GC savings remain a measurement question.",
+    "Desktop ImageBitmap closing remains disabled. Full geometry/shaders/source GLBs/mip bytes and all memory/detail ceilings are unchanged."
+  ],
+  "context_scope": {
+    "existing_main_needs_reload_predicate": "uploadReleaseState attributes/images/compressed > 0",
+    "actual_existing_policy": "First restored loss may reload once; later losses offer tier reduction/manual Reload.",
+    "seamless_in_place_texture_context_restoration_claim": false,
+    "current_native_context_control": "Existing crash-guard event state machine passed; this is not a real GPU/browser context test.",
+    "required_next": "Actual desktop WEBGL_lose_context loss/restoration/reloaded usable frame with real released compressed sources; existing phone smoke does not substitute."
+  },
+  "remaining_acceptance_requirements": [
+    "Actual same-source before/after /1904 memory at both desktop and mobile widths under unchanged 1125/400MiB ceilings; preserve original failures and exact source/build/profile bindings.",
+    "Actual KTX2 decoder/native GL errors/source integrity, near/far/return retranscode/reupload and exact mip-chain/layout checks.",
+    "Actual Light appearance comparison for the existing mip policy and desktop unchanged-image lifecycle, including usable context-restored/reloaded frame.",
+    "Required full source preflight and normal checked-head delivery after native evidence supports adoption; no cap raises or ticket/APP/DEV/photo acceptance inferred here."
+  ],
+  "implementation_blockers": [],
+  "memory_ceiling_PASS_claim": false,
+  "render_or_photo_acceptance": false,
+  "source_adoption": false,
+  "app_source_changes": false
+}
