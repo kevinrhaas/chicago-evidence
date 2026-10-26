@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- MARY_3F74_PARTIAL17_DESKTOP13_PENDING_20261026_START -->
+## St Mary seventeen actual legs with desktop13 pending
+
+One frozen packet preserves strict raw-log verification for17 actual successful legs on immutable3f74/tree76532. **Desktop13/run40282555852 remains unverified; FULL18 is explicitly NOT PASS, draft status and originalDIF remain, and no ready/merge claim is made.** Live observers are excluded; checked-dispatch index367 and native source index360 remain dependencies.
+
+- [ST-MARY-T2384-3F74-PARTIAL17-OF18-RAW-VERIFIED-DESKTOP13-PENDING-20261026](archives/ST-MARY-T2384-3F74-PARTIAL17-OF18-RAW-VERIFIED-DESKTOP13-PENDING-20261026.tar.gz) — Closed St Mary partial17 matrix packet: raw terminal logs, run/job metadata/SHA and strict per-attempt verification for17 actual successful legs on immutable3f74/tree76532; BOUND18 dispatch receipt and historical partial snapshot retained. ONLY desktop13/run40282555852 remains unverified at closure, so FULL18 is explicitly NOT PASS. DRAFT, originalT2384 DIF and no readiness/merge claim retained. No active observer folders or mutable files included. Checked-dispatch ef327d58/index367 and native source27378d88/index360 remain separate dependencies. A later final eighteenth leg requires its own actual terminal verification; this snapshot does not predict that result.
+<!-- MARY_3F74_PARTIAL17_DESKTOP13_PENDING_20261026_END -->
+
+
 <!-- TREMONT_EXACT_TWO_LEAF_FULL3_PENDING_20261026_START -->
 ## Tremont exact two-leaf correction with new whole gate pending
 
