@@ -1,5 +1,18 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- GT_LOSSLESS_WOLF_MARY_1243_20261026_START -->
+## Green Tree lossless historical baseline and Wolf/StMary recovery metadata
+
+Five frozen packets preserve the exact historical4340-member generated baseline text archive, qualified GT raw app outcomes, StMary/Wolf PR body and lap metadata, and unfinished Wolf integration preparation. **GT desktop ByGrade capture FAIL and Wolf derivedU unresolved are preserved; no currentdev integrated validation, original image-match completion or merge acceptance is claimed.** The largearchive uses ordered at-most8MiBraw chunks after actualGitHubHTTP422; transportmanifest links carry exact reconstruction instructions. Both concatenated outerarchive and inner4340payload members are independently verified after immutable remote readback.
+
+- [GREENTREE-T2376-EXACT-HISTORICAL-BEFORE-TEXT-LOSSLESS-4340-MEMBERS-20261026](archives/GREENTREE-T2376-EXACT-HISTORICAL-BEFORE-TEXT-LOSSLESS-4340-MEMBERS-20261026.tar.gz.parts.json) — Closed exact historical generated baseline text archive: all4340 frozen nonbinary members SHA/size/mode verified versus full5662inventory; separate1322immutablebinaryfallback SHAinventory preserved without duplicatingpayloads. Raw actual desktopAFTER normal/runtime/caps/servedWEBPASS and ByGrade10sFAIL preserved; desktopwholeapp NOTPASS. Originalassets/source/currentnativepublishedworld untouched. Loosegeneratedcache mayonly be removed after this durablepublication and rootACK.
+- [ST-MARY-T2384-FULL18-PRBODY-EXACT-READBACK-20261026](archives/ST-MARY-T2384-FULL18-PRBODY-EXACT-READBACK-20261026.tar.gz) — Closed PR1334 body update and exact readback stating3f74 oldbase full18PASS and latestdev integrationpending. Metadata checkpoint only; no new validation or merge claim.
+- [WOLFPOINT-T2386-4FE7-FULL18-PRBODY-NATIVE-OWNLAP-20261026](archives/WOLFPOINT-T2386-4FE7-FULL18-PRBODY-NATIVE-OWNLAP-20261026.tar.gz) — Closed exact PR1336 body RESTreadback and same-actor native76f6lap expiry15:28:56. Existing full18PASS only at4fe7/a575; ordinaryhostedcheck notfound is NOTPASS. No latestdevvalidation or originalDONE.
+- [WOLFPOINT-T2386-A9C5-UNFINISHED-MERGE-PREPARATION-RECOVERY-20261026](archives/WOLFPOINT-T2386-A9C5-UNFINISHED-MERGE-PREPARATION-RECOVERY-20261026.tar.gz) — Closed unfinished normal-a9c5 integration preparation recovery: two authored resolutions/82freshhashes with THREE derivedU unresolved. NOTnativePASS, not codecommit. Planned rootstackintegration may replace this unfinishedattempt; public4fe oldhead remains independentlyavailable. No originalDONE.
+- [GREENTREE-T2376-A9C5-PREPARED-WAIT-STACK-RECOVERY-20261026](archives/GREENTREE-T2376-A9C5-PREPARED-WAIT-STACK-RECOVERY-20261026.tar.gz) — Closed exacta9c5patch/changelog and fourteen ownedsourcehashes/privateGit/static283IDs while waitingTremontdependency. Candidatepreparationonly; no actualnative/currentdevgate/PRPASS or originalDONE.
+<!-- GT_LOSSLESS_WOLF_MARY_1243_20261026_END -->
+
+
 <!-- ROOT_GT_TREMONT_PREINTEGRATION_1236_20261026_START -->
 ## Root coordination, Green Tree qualified apps and Tremont probe repairs
 
