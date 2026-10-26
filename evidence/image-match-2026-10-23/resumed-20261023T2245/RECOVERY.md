@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- A575_REPAIR_PREIMAGES_20261026_START -->
+## Actual Green Tree merge tree and missing tested repair preimages
+
+A closed bounded-import packet verifies actual merged dev and the unchanged original preimages of the five tested gate repairs. **The repairs are absent from the actual merged tree and await the visible St Mary carrier; no new app/matrix/image PASS or source patch is claimed.** The actual merge equals external eb1; its mechanism is not inferred.
+
+- [CURRENT-DEVA575-GT1328-MERGE-TREE-FIVE-REPAIR-PREIMAGE-IMPORT-20261026](archives/CURRENT-DEVA575-GT1328-MERGE-TREE-FIVE-REPAIR-PREIMAGE-IMPORT-20261026.tar.gz) — Closed bounded source-object refresh ce892 to actual merged-dev/fold a575. Actual merge b4731 whole tree exactly equals external eb1 tree7d2059; fold changes only pending T2376 entry deletion and changelog. Only one missing folded-changelog blob3.90MB,1.26MB allocated, verified GitSHA1/SHA256/size before origin/dev CAS. Primary Wolf HEAD/index/config unchanged after ACK/CLEAR while its healthy native61 and private-index immutable object creation continued; no active worktree/source/index changes. ALL FIVE strict-glass/census/ranges repair paths on actual dev remain byte-identical to old0c78 baseline and differ from checked public6a61 repairs; selective visible StMary carrier is pending, not applied by importer. No new application/matrix/image PASS, no actor/mechanism attribution, no original picture signoff.
+<!-- A575_REPAIR_PREIMAGES_20261026_END -->
+
+
 <!-- CHECKED_GT_WOLF82_20261026_START -->
 ## Checked Green Tree cb93 recovery and Wolf Point deep-brown native cohort
 
