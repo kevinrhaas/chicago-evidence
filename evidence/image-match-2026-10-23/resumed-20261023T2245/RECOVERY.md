@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- JAIL_GUARDED_FINISHER_1310_20261026_START -->
+## Jail prepared guarded finisher code while full3 remains pending
+
+One frozen CODEONLY packet preserves the prepared guarded finisher and source gate/commit/push/dispatch commands. **Current state is WAITONLY; live outputs excluded. No full3PASS, codecommit, dispatch, original image-match or merge acceptance is claimed.** Inspect actual reapers, FINISH-STEPS and publichead before any recovery command; never duplicate a worker.
+
+- [JAIL-T2380-GUARDED-FINISHER-CODEONLY-WAITING-FULL3-20261026](archives/JAIL-T2380-GUARDED-FINISHER-CODEONLY-WAITING-FULL3-20261026.tar.gz) — Closed six-file CODEONLY resilience packet: exactpreparedsource full3/commit-nativehash/normalFFpushREST/one18dispatcher and guardedfinisher. CURRENTWAITONLY, no full3PASS, codecommit, dispatch, ready or merge acceptance. All liveoutputs excluded. A recovery MUSTinspect existingreapers/FINISH-STEPS/publichead before resuming; no duplicateworkers. Original2380 remainsOPEN/DIF.
+<!-- JAIL_GUARDED_FINISHER_1310_20261026_END -->
+
+
 <!-- MARY_OLD_NATIVE_HASH_1257_20261026_START -->
 ## St Mary old-source native input hash before integration
 
