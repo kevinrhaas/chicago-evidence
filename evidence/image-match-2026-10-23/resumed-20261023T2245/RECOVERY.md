@@ -1,5 +1,15 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- IMMUTABLE_EB1_JAIL_LAP_20261026_START -->
+## Immutable external PR1328 merge and Jail PR1333 lease recovery
+
+Two closed packets preserve the exact eb1 external merge object import without changing cached dev or active worktrees, and the native own Jail PR1333 lap renewal. **No source merge, application/image gate PASS, code merge or cross-tree smoke-result reuse is claimed. The lease expiry is a dated reading and must be reread before action.**
+
+- [PR1328-EXTERNAL-EB1-IMMUTABLE-OBJECT-IMPORT-ORIGIN-DEV-PRESERVED-20261026](archives/PR1328-EXTERNAL-EB1-IMMUTABLE-OBJECT-IMPORT-ORIGIN-DEV-PRESERVED-20261026.tar.gz) — Exact external PR1328 merge eb1cb6 imported as verified immutable objects with ordered parents 0c78 and ce892. Only new local refs/codex/verified-pr1328-eb1 created; cached origin/dev stayed ce892, current primary Wolf HEAD/index/config remained unchanged under explicit writer ACK/CLEAR, and active GT source/index/HEAD were not changed. Eight missing metadata blobs, 8.37 MB raw, 2.91 MB allocated. External liberty count 783 and 25 selected first-parent active source/record/GT model blob IDs verified. No working-tree merge, commit, application/image gate PASS or smoke-result reuse; local five smoke repairs are not claimed to be in eb1.
+- [JAIL-T2380-PR1333-OWN-LAP-RENEWAL-CHECKPOINT-20261026](archives/JAIL-T2380-PR1333-OWN-LAP-RENEWAL-CHECKPOINT-20261026.tar.gz) — Closed native own PR1333 lap renewal only, public marker 9bcd0080e74a4aa3a51054739e35a6b58fe49b9c, recorded expiry 2026-10-26T08:05:56Z and all owned children reaped. Before/after, native command/status logs and driver preserved. This is a dated coordination receipt, not a permanent live-lock assertion, source change, code/app/full-gate PASS, merge or original T2380 image acceptance.
+<!-- IMMUTABLE_EB1_JAIL_LAP_20261026_END -->
+
+
 <!-- WOLF_MOBILE_MARY_PUBLIC1334_20261026_START -->
 ## Wolf Point qualified mobile result and St Mary checked public PR1334
 
