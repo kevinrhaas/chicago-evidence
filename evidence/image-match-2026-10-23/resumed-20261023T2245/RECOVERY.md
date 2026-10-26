@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- MARY_BFFC_CHECKED_ONE18_BOUND_1406_20261026_START -->
+## St Mary checked public bffc and one bound full18 dispatch
+
+One frozen packet preserves actual1072/384/all3 checked and normally pushed publicStMarybffc, exactinputhashes and exactlyone bound18batch. **Dispatch is NOTRESULTS, liveobservers excluded, and latestdevintegration/inputhashproof/revalidation remains mandatorybeforeREADY.** Testedbasea9 and dependencyJail8cd remain distinct from freshdev70a8. PriorREST401 recoveredwithout authchanges; no originalDONE/mergeclaim.
+
+- [ST-MARY-T2384-BFFC-CHECKED-PUBLIC-ONE18-BOUND-NOTRESULTS-20261026](archives/ST-MARY-T2384-BFFC-CHECKED-PUBLIC-ONE18-BOUND-NOTRESULTS-20261026.tar.gz) — Closed ACTUAL1072/384/all3/committedCLIDs/historyPASS, normalFF+RESTverifiedDRAFT1334 publicbffc4cff33670bde34e718751ea8712e087eef8b/treeafeed86 withcheckedJail8cddependency/testeddevbasea9 separatefreshdev70a8. Clean nativeglobal6e3fa5d30a64bec1/changelog663440aae881bf6f. ExactlyONE18alluniqueboundDISPATCHED_NOT_RESULTS; two liveREADONLYobservers excluded. Latestdevintegration/globalhashproof/revalidation remains ROOTmandatorybeforeREADY. No originalDONE/READY/mergeclaim. RESTrecoveredstandardpipelineclosed0; prior401wastransientreadfailure notproductFAIL.
+<!-- MARY_BFFC_CHECKED_ONE18_BOUND_1406_20261026_END -->
+
+
 <!-- READONLY_DEV70A8_PRICE_1348_20261026_START -->
 ## Latest dev 70a8 read-only four-path price without import
 
