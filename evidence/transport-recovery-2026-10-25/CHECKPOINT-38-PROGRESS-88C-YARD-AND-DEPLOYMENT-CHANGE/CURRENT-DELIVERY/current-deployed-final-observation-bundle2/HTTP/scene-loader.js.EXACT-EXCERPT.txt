@@ -1,0 +1,22 @@
+      problems.push(`sidecar ${id}: declares id '${sidecar.id}' — index and file disagree`);
+    }
+    if (sidecar.review_required) {
+      // AGENTS.md, owner ruling 2026-10-16: retain the review annotation;
+      // it does not block scene release and must not pass unremarked.
+      problems.push(`${id}: review_required is set — review annotation retained; this flag does not block scene release`);
+    }
+
+    /**
+     * A sidecar with NO asset is not a bake that failed to arrive — it is a
+     * record whose geometry is drawn by another layer, and `drawn_by` names
+     * which. The estray pen is the first: a pound is a fence, and it is drawn
+     * by `enclosures.js` out of `data/enclosures/estray_pen.json` (T-0051,
+     * docs/LIBERTIES.md L60). The record still loads, because the card a
+     * visitor opens is still compiled from it; what it does not do is fetch a
+     * GLB that does not exist and report the 404 as a problem.
+     */
+    if (!sidecar.asset) {
+      registry.set(id, {
+        id,
+        sidecar,
+        gltf: null,

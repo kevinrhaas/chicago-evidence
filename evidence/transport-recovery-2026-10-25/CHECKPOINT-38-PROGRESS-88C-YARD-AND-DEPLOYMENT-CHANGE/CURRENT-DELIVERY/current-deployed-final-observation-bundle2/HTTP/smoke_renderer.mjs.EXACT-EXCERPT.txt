@@ -1,0 +1,22 @@
+    const problems = await page.evaluate(() => window.__chicago4d.problems);
+    // Provisional placement and placeholder-asset notes are expected findings,
+    // not defects. `review_required` is a retained review annotation, so
+    // pin its exact records before excluding it so a new annotation cannot hide in
+    // the general integration-problem list.
+    const reviews = problems.filter((p) => /review_required is set/.test(p));
+    const expectedReviews = await page.evaluate(() => [...window.__chicago4d.registry.values()]
+      .filter((r) => r.sidecar?.review_required)
+      .map((r) => r.sidecar.id)
+      .sort());
+    const reportedReviews = reviews.map((p) => p.split(':', 1)[0]).sort();
+    check(`${label}: the scene declares its exact review annotations`,
+      expectedReviews.length > 0
+      && JSON.stringify(reportedReviews) === JSON.stringify(expectedReviews),
+      `reported ${JSON.stringify(reportedReviews)}, expected ${JSON.stringify(expectedReviews)}`);
+    const hard = problems.filter((p) => !/provisional|PLACEHOLDER|placeholder|review_required is set/i.test(p));
+    check(`${label}: no unexpected loader problems`, hard.length === 0, hard.slice(0, 3).join(' | '));
+
+    const structures = await page.evaluate(() => window.__chicago4d.registry.size);
+    check(`${label}: scene has structures`, structures > 0, `${structures} loaded`);
+
+    // The portable human scene-year gate follows the authored scene and exact index.

@@ -1,0 +1,13 @@
+--- FROZEN-V4-4b3
++++ PREPARED-V5-native-Balanced-precondition
+@@ -138,6 +138,10 @@
+    check(label+': healthy normal1835 entry with annotations retained',boot.ready&&boot.scene==='1835'&&!boot.error&&boot.hard_problems.length===0&&boot.frame>0,boot);
+    const open=async tab=>{if(touch&&await page.evaluate(()=>window.__chicago4d.navigator?.level===0))await tap(page,'#nav-grip',touch);await tap(page,'#nav-rail [data-app="settings"]',touch);await page.waitForFunction(()=>{const r=document.getElementById('navigator')?.getBoundingClientRect();return r&&(innerWidth>620?r.width>=380:r.height>=innerHeight*.4);});await page.waitForFunction(()=>{const p=document.getElementById('panel');return p&&!p.hidden&&!!p.closest('.nav-screen:not([hidden])');});if(await page.evaluate(()=>window.__chicago4d.hud.tab)!==tab)await tap(page,'.panel-tab[data-tab="'+tab+'"]',touch);};
+    await open('settings');
++   v.observationDetailProfile={requested:'balanced',control:'#s-detail',method:'ordinary native Settings selectOption; no API state setter',before:await page.evaluate(()=>({runtime:window.__chicago4d?.detail,nativeChoice:window.__chicago4d?.hud?.settings?.detail,control:document.getElementById('s-detail')?.value}))};save();
++   await tap(page,'#s-detail',touch,false);await page.selectOption('#s-detail','balanced');v.actions.push({selector:'#s-detail',action:'normal-select-input-change',value:'balanced'});save();
++   await page.waitForFunction(()=>window.__chicago4d?.detail==='balanced'&&window.__chicago4d?.hud?.settings?.detail==='balanced'&&document.getElementById('s-detail')?.value==='balanced'&&JSON.parse(localStorage.getItem('chicago4d.settings')||'{}').detail==='balanced',null,{timeout:180000,polling:500});
++   v.observationDetailProfile.after=await page.evaluate(()=>({runtime:window.__chicago4d?.detail,nativeChoice:window.__chicago4d?.hud?.settings?.detail,storedChoice:JSON.parse(localStorage.getItem('chicago4d.settings')||'{}').detail,control:document.getElementById('s-detail')?.value}));save();
+    check(label+': native About contains its news link',await page.evaluate(()=>!!document.getElementById('s-open-whatsnew')?.closest('#s-about')));
+    await tap(page,'#s-open-whatsnew',touch);
+    const waitTarget=()=>page.waitForFunction(title=>[...document.querySelectorAll('#whatsnew .wn-entry .wn-title')].some(e=>e.textContent===title),TARGET.title,{timeout:90000,polling:250});

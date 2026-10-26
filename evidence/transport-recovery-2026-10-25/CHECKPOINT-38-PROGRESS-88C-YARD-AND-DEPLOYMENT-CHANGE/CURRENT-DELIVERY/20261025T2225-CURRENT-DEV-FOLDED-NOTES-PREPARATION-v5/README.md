@@ -1,0 +1,9 @@
+# Notes observer V5 — Balanced-detail contingency, PREPARED ONLY
+
+Helper SHA `b94229dfa419dee1e27330f08f65700abd2eb3e95bbeac22a066279ed404dd0a`. FrozenV4 `4b3cdb40…` and its current outcome remain untouched. The minimal diff only inserts an ordinary native Settings scene-detail selection immediately after the first open(settings), before the existing About/news path. At both390×780 and1280×800 it hit-testsselect#s-detail, uses normal selectOption("balanced"), waits until the ordinary preference takes effect and records native/runtime/stored before/after values. No app-state setter or background browser action runs during preparation.
+
+All existing deployed-D/input/native14/source/HTTP/TLS/build guards, nativeAbout/news path,100%/140% text checks, per-field visibility/screenshots and final zero-error/body-task/closure requirements remain byte-identical. No unrelated horse/yard/detail acceptance is added to the notes tests. The result schema remains the existing targeted observation schema; helper hash and recorded profile identify the contingency. Native source facts and exact diff are included.
+
+ROOT MUST NOT EXECUTE this unless the current attempt actually closes with a diagnosed cap/failure and clean owned cleanup. First read TIMEOUT-ALTERNATIVE-ASSESSMENT.md: for an overall timeout without functional failure, an unchanged4b3 observer with NEW3600s operational cap is the cleaner option; V5 is useful for a renderer-contention or individual-action bottleneck. Do not stop the current run to select either. If the current run passes, use that actual result and do not run this fallback.
+
+V5 retains all V4 required CLI pins and accepts the same official deployed snapshot only while it remains actual. Use NEWprefix/output, never overwrite prior receipts, and keep browser jobs sequential. No execution, browser, test, primaryGit/source/index/tickets, q or evidence-repository mutation occurred during this contingency preparation.
