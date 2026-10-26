@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- GREENTREE_CURRENT_WIP_20261026_START -->
+## Green Tree — current staged source and closed app review
+
+This PUBLIC snapshot preserves exact staged tree651c12ac/29 changed paths and the closed actual mobile/desktop published app/current-web/ground-contact PASS receipts. It also preserves prior whole-gate FAIL1/1070 and the focused corrected-test PASS. **The unchanged full rerun was LIVE elsewhere at snapshot closure: it is not copied or claimed PASS. No code commit, PR or original image acceptance is asserted by this archive.** The original dictionary-format manifest is unchanged; all payload SHA256, sizes and declared modes were verified.
+
+- [GREENTREE-T2376-CURRENT-STAGED-WIP-APP-PASS-GATE-RETRY-PENDING-20261026](archives/GREENTREE-T2376-CURRENT-STAGED-WIP-APP-PASS-GATE-RETRY-PENDING-20261026.tar.gz) — Closed recoverable staged tree651c12ac with29 changed paths. Actual both-viewport published app, current web asset and grounded contacts PASS. Prior whole gate FAIL1/1070 due GIT_NO_LAZY_FETCH fixture environment is retained together with exact focused corrected-test PASS. The unchanged complete rerun remains LIVE elsewhere at snapshot closure and is NOT archived or claimed PASS. No code commit, PR or original image acceptance is implied. All62 bound payloads and the original dictionary-format author manifest are preserved byte-for-byte with declared sizes, SHA256 and modes verified.
+<!-- GREENTREE_CURRENT_WIP_20261026_END -->
+
+
 <!-- RECOVERY_BATCH_20261026_START -->
 ## Closed implementation recovery batch — 26 October 2026
 
