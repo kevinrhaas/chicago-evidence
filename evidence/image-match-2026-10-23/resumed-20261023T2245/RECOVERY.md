@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- WOLF_APP_PARTIAL_CORRECTED_20261026_START -->
+## Wolf Point mobile pass and corrected desktop partial checkpoint
+
+One frozen packet preserves mobile targeted PASS and the honestly incomplete desktop run. **Desktop is partial, not PASS: the agent mistakenly terminated a slow progressing browser and explicitly corrected the diagnosis.** Desktop Sources/Lib/ground, whole gate, PR and all8-picture coverage remain pending; no retry or source change is claimed.
+
+- [WOLFPOINT-T2386-A575-MOBILE-PASS-DESKTOP-PARTIAL-TERMINATION-CORRECTED-20261026](archives/WOLFPOINT-T2386-A575-MOBILE-PASS-DESKTOP-PARTIAL-TERMINATION-CORRECTED-20261026.tar.gz) — Closed honest partial final-app checkpoint on a575: mobile full targeted PASS342.663s; desktop normal/ByGrade/Photos partial only. Agent mistakenly terminated a slow progressing desktop after a coarse phase seemed stalled; timestamps06:13:42 and06:14:44 prove progress before06:18:31 stop. STOP-DIAGNOSIS-CORRECTION acknowledges the mistake; browser-closed failure is termination-induced, not an application assertion. All12 children reaped. No retry or source change in this packet. Desktop Sources/Lib/ground, whole gate, source commit/PR and all8-picture coverage remain pending; desktop PASS and original match completion are expressly NOT claimed. Native a575 closure index359 is a separate dependency.
+<!-- WOLF_APP_PARTIAL_CORRECTED_20261026_END -->
+
+
 <!-- MARY_A575_NATIVE_CANDIDATE_20261026_START -->
 ## St Mary a575-native uncommitted candidate recovery
 
