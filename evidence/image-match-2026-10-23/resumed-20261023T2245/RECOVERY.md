@@ -1,5 +1,16 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- ROOT_GT_TREMONT_PREINTEGRATION_1236_20261026_START -->
+## Root coordination, Green Tree qualified apps and Tremont probe repairs
+
+Three frozen packets preserve current coordination/resource receipts, Green Tree actual native/source and qualified app evidence, and two narrow Tremont probe repairs. **Baseline desktop capture FAILs remain preserved; candidate repairs are uncommitted and currentdev integration plus fresh full validation remain pending. No original image-match or merge acceptance is claimed.** Prior recovery dependencies remain separate.
+
+- [ROOT-COORDINATION-LATESTDEV-RESOURCE-RECEIPTS-1235-20261026](archives/ROOT-COORDINATION-LATESTDEV-RESOURCE-RECEIPTS-1235-20261026.tar.gz) — Closed coordination snapshot, not task completion: latestdev a9c5 verified boundedimport receipt, only disposable NPM HTTP cache cleanup with installed packages retained, seventh closed-proof atomic relocation receipts, current author ownership and validation plan. No currentdev integrated matrix or merge acceptance.
+- [GREENTREE-T2376-WAGONBAY-RESUMED-CLOSED-SOURCE-QUALIFIED-APPS-20261026](archives/GREENTREE-T2376-WAGONBAY-RESUMED-CLOSED-SOURCE-QUALIFIED-APPS-20261026.tar.gz) — Closed fourteen-path source/native proof and qualified ordinary app components: actual native202+7+57,44audit,2059physical/79protected, L134 nativefield repair and mobile BEFORE/AFTER PASS retained. TWO actual baseline desktop ByGrade capture10s FAILs preserved, not whole-app PASS; remaining desktopAFTER, full3, PR/full18/merge stillpending. Future live worker logs excluded. Original2376 remains OPEN/DIF.
+- [TREMONT-T2385-TWO-NARROW-PROBES-REPAIR-PREINTEGRATION-20261026](archives/TREMONT-T2385-TWO-NARROW-PROBES-REPAIR-PREINTEGRATION-20261026.tar.gz) — Closed preintegration repair to two diagnosed stale browser probes plus native own-lap receipt and source guard. Candidate-only, NOT checked or committed, no new full18PASS. Actual earlier c87816PASS/2FAIL retained separately; currentdev integration and whole native/renderer validation remain pending. No assertion weakening or original image-match completion.
+<!-- ROOT_GT_TREMONT_PREINTEGRATION_1236_20261026_END -->
+
+
 <!-- FINAL_MATRICES_CURRENTDEV_1230_20261026_START -->
 ## Final matrix records and bounded current-dev import
 
