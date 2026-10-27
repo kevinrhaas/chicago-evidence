@@ -1,5 +1,18 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- VERIFIED_REDUNDANT_CLOSED_TMP_CAPSULE_RETIREMENT_20261027_START -->
+## Optional tmp headroom recovered from an already archived capsule
+
+The Tremont owner confirmed that its old CLOSED b5c5 capsule has no active or future dependency on its local duplicate payloads. The current Wolf owner permitted a CPU1nice19 verification while the sole native producer uses CPU3, with no timed/all-four reservation. The original checkpoint472 nine-part archive was freshly downloaded from immutable commit15a1acca, reassembled with its exact wholearchive SHA and checked against **every137 source member/hash/size/mode**. The complete local duplicate set was independently checked byte-for-byte and for stable metadata before retirement; readable process command/FD/map checks and their visibility limits are recorded.
+
+Only136 redundant local payload copies were removed from the exact external capsule folder. **Original MANIFEST plus the complete immutable nine-part restoration locator remain at that original path.** The source worktree, native holders, models, caches, originals and source Git were untouched. The precheck allocated footprint was103,043,072B; observed tmp free-space gain was103,034,880B, to2,165,534,720B. A native producer was active, so the receipt explicitly qualifies global df changes for concurrent allocation rather than equating logical bytes with guaranteed gain.
+
+All verification work closed0 with all children reaped at00:53:28. Native resource guards remain unchanged; this adds optional headroom and does not imply a source gate retry, new qualification or original ticket completion. This checkpoint preserves only the small proof and restoration metadata; the original472 full source archive remains immutable and recoverable. Its members were not rewritten or deduplicated remotely.
+
+- [TREMONT-DURABLE472-REDUNDANT-TMP-CAPSULE-RECOVERABLE-RETIREMENT-20261027](archives/TREMONT-DURABLE472-REDUNDANT-TMP-CAPSULE-RECOVERABLE-RETIREMENT-20261027.tar.gz) — Optional capacity maintenance after explicit source-owner confirmation: ONLY136 redundant CLOSED local payload copies from b5c5 Tremontcapsule durable472 retired00:53:28. Fresh immutableoriginalcommit15a1acca9-part reassembly/wholearchive3551c6hash and every137 archivedmember/hash/size/mode verified, exact local equality/stable metadata and readableproc reader checks; procvisibility limits explicit, no globalzeroFDclaim. Original author MANIFEST and exact immutable9-part PAYLOADS-RESTORE locator retained at originalpath. Allocated precheck103,043,072B, observed TMPdfgain103,034,880B, TMP2,165,534,720B; sole nativeCPU3 active so concurrentdfqualification retained. Owner confirms no current/future localcapsulehelper dependency; source worktree/holder/native/model/cache/original/sourceGit untouched. Native guards unchanged; optionalmargin only, no producer wait/retry/acceptance inferred. VerificationCPU1nice19/wrapper0/allreaped. Only tiny proof+locator published here; original472 source archive remains immutably available.
+<!-- VERIFIED_REDUNDANT_CLOSED_TMP_CAPSULE_RETIREMENT_20261027_END -->
+
+
 <!-- CURRENT_DEV_PULLMAN_ED250_SEPARATELY_PRICED_BOUNDED_IMPORT_20261027_START -->
 ## Shared dev metadata now includes the separately inspected Pullman1904 landing
 
