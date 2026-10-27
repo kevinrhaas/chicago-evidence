@@ -1,0 +1,389 @@
+# PIPELINE — how 4D Chicago ships
+
+**Two tiers: `dev` → `main`. Production moves only when the owner dispatches it.**
+
+Adapted from the fleet pilot, `kevinrhaas/jobtracker.polecat.live` → `docs/PIPELINE.md`,
+which is the canonical runbook and worth reading for the reasoning behind the shape. This
+document records what is different here and why, so nobody has to diff two repos to find out.
+
+Activated 2026-08-14 on the owner's instruction: *overnight work must not ship straight to
+production.*
+
+---
+
+
+> **2026-09-23: this project moved to its own repository, kevinrhaas/chicago,** served
+> at chicago.polecat.live (landing `/`, app `/4d/`, dev preview `/4d/dev/`). The
+> pipeline below is unchanged; where it says "this monorepo" or "other tenants", read
+> it as the history of how it was built inside kevinrhaas/custom. Tickets moved to
+> kevinrhaas/chicago-tickets — see AGENTS.md § THE QUEUE.
+## The two tiers
+
+| tier | branch | URL | who moves it |
+|---|---|---|---|
+| production | `main` | `chicago.polecat.live/4d/` (year doors `/4d/1835/`) | the owner, by dispatch |
+| integration | `dev` | `chicago.polecat.live/4d/dev/` (year doors `/4d/dev/1835/`) | any green PR into `dev` |
+
+There is **no stage tier and no scheduled promotion**. The pilot has three tiers because it
+promotes on a nightly cron; this app promotes on a human asking, so the middle tier would be
+a queue with nobody in it.
+
+**Merging into `dev` is stage, not ship.** It publishes the preview and nothing else.
+
+---
+
+## What each piece does
+
+| file | job |
+|---|---|
+| `.github/workflows/chicago-4d-pipeline-setup.yml` | one-button: creates `dev` from `main` if absent, then dispatches a deploy. Idempotent. |
+| `.github/workflows/deploy.yml` | the single deploy authority. Assembles ONE Pages artifact: `main` at the root, plus the `dev` branch's `site/4d/` folded in at `site/4d/dev/`. Since T-0938 it PUBLISHES both trees first — `site/4d/` is generated, not committed — and it triggers on `chicago/4d/**` rather than only `site/**`, because a 4D change no longer touches `site/`. |
+| `.github/chicago-4d-dev-preview.mjs` | assembles that preview — copy, `noindex`, banner, dev build stamp, `build.json`, robots disallow. |
+| `.github/workflows/chicago-4d-check.yml` | **the dev gate.** Runs on PRs into `dev` and on pushes to `dev` and `main`. The push trigger was unfiltered until T-1288 measured what that cost: a steward branch with an open PR satisfies BOTH triggers, so every push started the suite twice on one commit and the PR waited on the slower of the pair. |
+| `.github/workflows/chicago-4d-promote-to-prod.yml` | **dispatch-only.** Back-merges `main`→`dev`, merges `dev`→`main` `--no-ff`, tags `release-vNNN`, then dispatches the deploy. |
+| `.github/workflows/chicago-4d-bake.yml` | the content bake. **Builds the ref it was started on, and PRs into that same ref** — `tools/bake_ref.py` decides, and `check.sh` asserts it. The nightly and any run whose ref is `main` build `dev` and PR into `dev`, because the schedule has no tree of its own to speak for and nothing may PR into production. A bake dispatched against a branch builds THAT branch: until T-0454 it silently rebuilt `dev` instead, which is how the staleness gate and the bake came to disagree about one asset while both were right. **A branch bake is a REMEDY, not a proof** (T-1668): `tools/bake_warranted.py` decides whether one is worth starting, and it skips when the branch's own tree is FRESH. The path filter can only say a branch might have staled a mesh; the freshness register — the same one `check.sh` refuses a tree with — says whether it did, in half a second. Until T-1668 every PR touching `generators/` became a `resume` PR by arithmetic: a full bake is 25 minutes and two `pr-automerge` laps are 18, so a green, foreground-gated PR could never merge inside its own run (measured on T-1652/PR #104, whose three files could not move a vertex and whose staleness gate said so). "A rebake proves the generator still runs" is a real claim and a DIFFERENT one — the NIGHTLY on `dev` makes it, daily, on the authoritative tree. Everything unanswerable still bakes. |
+| `.github/workflows/chicago-4d-pr-lap.yml` | **the un-sticker.** On every push to `dev`, merges `dev` into every open non-draft, non-`hold` PR using this repo's merge drivers, regenerates what a tool owns, and pushes — except a PR whose `lap/pr-<N>` lock a live run holds, read before it starts and again at the push (T-2929). It does not gate and it does not merge the PR. It exists because GitHub's server-side merge never runs a custom merge driver (T-0857), so a branch that merges `dev` with zero conflicts in a clone is reported CONFLICTING by the platform. |
+| `.github/workflows/chicago-4d-merge-ready.yml` | **the merger.** On every push to `dev`, merges every open PR GitHub itself calls `clean` — the branch merges AND every required check passed — unless a live run holds its `lap/pr-<N>` lock (T-2929). Nothing else in this repository merges a finished pull request. |
+| `.github/workflows/chicago-4d-pr-stuck.yml` | **the reporter** (T-1368). Labels and comments on a PR that none of the three above can move. It merges, pushes and resolves nothing. See below. |
+| `.github/pipeline.json` | the manifest. Declares the shape — tiers, publish paths, workflow names — to anything that reads it. A **data file**: editing it is a sanctioned direct commit to `main`, same as the pilot's. |
+
+`pipeline.json` earns its keep on the fleet console. Manager's Pipeline view
+(`manager.polecat.live/app/#pipeline`) probes every fleet repo for that file and
+draws a release card for each one it finds, so **adopting the pipeline is what
+lights up the tile** — there is no per-repo entry to add on the Manager side.
+The card then reads its shape from the manifest instead of assuming the pilot's:
+two tiers rather than three, a publish path under `/chicago/4d/` rather than a
+domain root, `chicago-4d-`-prefixed workflow names (this monorepo's
+`.github/workflows/` is shared with every other tenant, so the bare
+`promote-to-prod.yml` name was never available), and a `null` for each verb this
+repo does not have, which draws no button rather than one that 404s.
+It is `main` that gets probed, so a manifest that only ever exists on `dev` shows
+nothing.
+
+---
+
+## dev's standing smoke result (T-0216)
+
+**The dev gate is `check.sh` and nothing else.** `chicago-4d-check.yml` runs the fast half
+of the two-speed build; `chicago-4d-smoke.yml` is dispatch-plus-one-path on purpose (a
+~25-minute-per-viewport Playwright crawl on every push would be a queue, not a gate). So
+`dev` has had **no standing smoke result of its own**, and the question every branch asks —
+*"is this red mine, or did I inherit it?"* — was answered by cutting a clean `origin/dev`
+worktree and paying ten minutes for the stage again.
+
+On **2026-08-27 four separate runs paid that price on two reds**, and one of the two belonged
+to neither branch nor `dev`: it was the machine. T-0215 has the frame timings — the same tree
+drew twenty times slower on a loaded box than a quiet one, and `page.click` starved into a
+90-second timeout that reads exactly like a broken control.
+
+**`tools/dev-smoke-state.json` is the record, and `tools/dev-smoke-state.mjs` reads it.**
+
+```
+node tools/dev-smoke-state.mjs ask --viewport desktop --stage 8   # answer, running nothing
+node tools/dev-smoke-state.mjs record run.log                     # file a smoke you ran anyway
+node tools/dev-smoke-state.mjs ci 32689397335                     # fold a chicago-4d-smoke.yml run in
+node tools/dev-smoke-state.mjs hash                               # the smoke-relevant tree hash
+```
+
+Three things about it are the whole design:
+
+- **It is fed by the two routes a run already has**, because `.github/workflows/` is outside a
+  steward run's scope (§ How work ships in `AGENTS.md`) and this could not be a new scheduled
+  job. A local smoke log and a `chicago-4d-smoke.yml` run's log go through **one parser**. If
+  the owner later schedules that workflow on `dev`, `ci <id>` is what folds its result in and
+  nothing in the tool changes.
+- **Every reading carries its conditions** — host, CPU count, load average, wall clock, and any
+  animation-frame cost the smoke reported. A CI pass on a quiet runner **dates** a
+  steward-runner red; it does not overrule it. A verdict without its conditions is what sent
+  three runs chasing a machine.
+- **Every reading carries a tree hash**, digesting exactly what the smoke exercises. Match it
+  and the reading is a reading *of your tree* — the red is inherited, provably, with nothing
+  re-run. The three files every branch changes by construction are handled rather than
+  ignored: `tickets.json` is dropped (nothing reads it), the changelog is hashed **apart**
+  (only part 8 reads it), and `publish.sh`'s build stamp is **normalised out** of the gate page.
+
+**It is a record, never a bar.** Nothing in it fails a gate, refuses a merge or excuses a red.
+
+---
+
+## Five things that are easy to get wrong
+
+**1. A Pages deploy job on a dev ref is REJECTED, silently.** The `github-pages` environment
+carries a deployment-branch policy, so a `deploy` job running on `dev` fails in about a second
+with no steps and no logs. It reads as "nothing ran" while the preview stays frozen at the last
+main deploy. The fix, inherited verbatim from the pilot: a push to `dev` does not deploy
+itself — the `refresh-previews` job re-dispatches `deploy.yml` **on main**, which rebuilds the
+whole artifact from both refs.
+
+**2. The preview needs no path rewriting, and that is a measured fact.** The pilot rewrites
+every root-absolute `/x` URL because its app is served from the domain root. This app has
+**zero** root-absolute URLs: `walk/index.html` uses `./css/…` and `./js/…`, and `scene-loader.js`
+resolves data by page path (`walk/` → `../data/`). Mirroring the whole published
+`site/4d/` tree under `dev/` therefore preserves every path by construction — which is
+exactly why the whole tree is mirrored and not just `walk/`. If a root-absolute URL is ever
+introduced, this stops being true and the preview script needs the pilot's rewriting.
+
+**3. The service worker keeps the two tiers apart by scope, not by a stub** (T-2561; until
+then there was none). The pilot replaces `sw.js` with a self-unregistering stub so a preview
+never installs offline caching. This app registers its worker only when a visitor downloads the
+welcome's "Offline copy" (T-2947), and the mirrored tree carries its own copy, so the two tiers stay
+separate by construction:
+
+- **the packs are listed again after every rewrite** (T-2947). A pack lists each file's hash,
+  and deploy.yml's stamp and the preview script both rewrite the pages and `build.json` after
+  publish.sh listed them; until the re-list, every download stopped at the year's own door.
+
+- production's worker is `/4d/sw.js` (scope `/4d/`); the preview's is `/4d/dev/sw.js` (scope
+  `/4d/dev/`), and the browser gives a page to the narrower scope that has one;
+- each names its caches for its own scope (`c4d-pack /4d/dev/ 1835`), and production's worker
+  answers only files listed in its own packs, so a `/4d/dev/` request passes through it to the
+  network (`tools/smoke_year_pack.mjs --part keep` asserts this);
+- **the kill switch** is a file: commit `chicago/4d/offline/sw-off` and publish ships
+  `sw.js` with `KILL = true` and `"sw_off": true` in `build.json`. The next visit unregisters
+  the worker and deletes its packs (`--part update` asserts it). It acts on the tier whose tree
+  carries the file: merged to `dev` it clears the preview, and only a promotion clears
+  production.
+
+**4. Scope is `chicago/4d` alone.** `kevinrhaas/custom` is a monorepo of unrelated tenants —
+CAD, print models, the Joliet game, a landing site. The dev tier covers the 4D app and nothing
+else; every other tenant stays main-only. The artifact path stays `site`, so the ~2 GB of CAD
+source can never enter it.
+
+**5. Promotion is gated; deploy is not.** `deploy.yml` has no `needs: test` and must never get
+one — a hard test gate on deploy once froze a fleet site for about 21 hours. The gate lives on
+the *promotion*. The **hotfix exception** stands: a production emergency PRs straight into
+`main`, and the next promotion's back-merge folds it into `dev` (which is why the promotion
+back-merges main into dev *first* — otherwise it would silently revert the hotfix).
+
+---
+
+## Merging into `dev`: auto-merge is OFF here, so the merge reads the gate itself
+
+**`allow_auto_merge` is not enabled on `kevinrhaas/chicago`.** That one repository setting
+changes what `bash "$GHREST" pr-automerge kevinrhaas/chicago <N> squash "<title>"` does, and
+the steward's own description of that call — *"it ARMS GitHub's auto-merge and returns, so the
+PR lands the moment its required checks go green"* — is **false here**. A run had no way to
+find that out except by merging.
+
+**Measured 2026-09-25 on PR #43** (chicago-tickets T-1572). The call printed
+
+```
+gh-rest: pr-automerge: could not arm ({"errors":[{"type":"UNPROCESSABLE",
+  "message":"Auto merge is not allowed for this repository"}]}) — merging directly instead
+7107fcaac32ca7271f9cde7e3a76da2a1d212f9e
+```
+
+and the PR was merged into `dev` in that same call, about one second after it was opened —
+onto a `dev` whose four research steps were already red for a reason #43 neither caused nor
+touched. The arming mutation comes back `UNPROCESSABLE` **every** time on this repo, so the
+documented fallback was not a fallback: it was the only path the call ever took, and every
+slice reaching for it merged with no gate consulted at all.
+
+**What it does now** (polecat-platform `.github/steward/gh-rest.sh`, same date). When it
+cannot arm, it does by hand what arming would have done:
+
+| the PR's check runs | what happens |
+|---|---|
+| all green (or `neutral` / `skipped`) | merged |
+| any `failure`, `timed_out`, `cancelled`, `action_required` | **refused** |
+| still `queued` / `in_progress` | waited on, up to `GH_REST_GATE_WAIT_SECONDS` (420), then **refused** |
+| none at all | merged — a PR with no gate is not a red one |
+| unreadable (a REST blip) | merged — one guarded merge is not worth stalling the fleet |
+
+A refusal prints `refused`, **exits 3**, labels the PR `hold` and comments which check it
+refused on. That is already the outcome the steward rules ask for when a run cannot merge
+safely, so **exit 3 finishes your unit cleanly** — say so in the summary and stop. Do not
+re-merge past it.
+
+**Three consequences for a run working here.**
+
+1. **Budget one foreground call of up to ~7 minutes for the merge.** You cannot arm and walk
+   away on this repo; the wait is yours to make. It is bounded on purpose — a slice is
+   capped, and an unbounded wait would spend the cap on watching.
+2. **Merge as the LAST thing you do, on a `dev` you have just rebased onto.** The gate you
+   are about to read belongs to your head commit; anything you push after it starts is not in
+   it.
+3. **`GH_REST_MERGE_BLIND=1` restores the old unconditional merge.** Reach for it only when
+   you have gated the merge yourself and know the red check is irrelevant — and say in the PR
+   why you did.
+
+**This is a workaround, not the fix.** Enabling auto-merge on the repository (with a required
+check on `dev`) would let a slice genuinely arm and return, and that is a repository setting
+and the owner's call. Until he makes it, the table above is the behaviour.
+
+---
+
+## The changelog, folded in after the merge
+
+**A PR adds one entry file, `changelog.d/<ticket>.json`, and leaves `changelog.js` alone**
+(owner, 2026-10-10). It holds `title`, `kind` and `items` only; `node
+tools/changelog-entries.mjs --check` holds it to the contract and the What's-New budget.
+When the file reaches `dev`, `.github/workflows/chicago-4d-changelog-fold.yml` prepends it
+to `renderers/web/js/changelog.js`, stamps it, deletes the file and pushes one commit,
+which starts the dev deploy. Two PRs never write the same entry file, so they stop
+conflicting on the changelog's top line, which used to cost every open PR a lap per landing.
+
+**A group PR still adds ONE file** (T-2938; AGENTS.md § A RUN MAY TAKE A GROUP). A run that
+claims one to five related tickets with `ticket.mjs claim T-A T-B T-C` ships them on one
+branch as one PR titled `T-A, T-B, T-C: …` and closes them with `done T-A T-B T-C --pr N`.
+Its entry is `changelog.d/<anchor>.json` with one item per ticket: one entry per PR keeps
+the visible-progress count in runs, and the gate here asks for at least one entry file, not
+one per ticket. A member the run could not finish is `release`d, never shipped half-done.
+
+The older way still passes the gate, and the notes below are about it: prepend one entry
+to `renderers/web/js/changelog.js` with all three authored fields blank — `v: null, ts: '',
+date: ''` — then run `node tools/stamp-changelog.mjs` before merging.
+
+`date: ''` must be *present*: the stamper fills an empty `ts` but only *regenerates* a `date`
+that already exists. `v: null` because the number is not yours to guess — two branches that
+each compute "top + 1" both ship the same number.
+
+**Re-run `node tools/check-changelog.mjs` AFTER any merge that touches this file, not only
+before.** `.gitattributes` sets `merge=union`, which runs during the merge, so both parents can
+be green and the result broken. That is exactly how `main` once shipped an unparseable
+changelog and killed the What's-new tab and this project's release feed to Manager and the
+launcher. The promotion workflow runs the contract check after both of its merges for this
+reason.
+
+---
+
+## Where the releases are
+
+**A release is a promotion, and nothing else makes one.** The loop merging into `dev` writes
+changelog entries, but those entries are not released — they are queued. Everything that
+displays this project's releases (the walkthrough's What's-new tab, Manager's ingest, the
+polecat.live launcher) reads the **deployed** copy, which is `main`. So while `dev` runs
+ahead, the release feed sits still at whatever was last promoted, and that is the design
+working, not a fault: *overnight work must not ship straight to production.*
+
+The cost is worth stating plainly, because it surprised the owner once already: **a day of
+green, productive loop output looks like a dead release feed** until the promotion is
+dispatched. `dev` ahead of `main` by N commits is the number to watch — Manager's Pipeline
+card shows it, and `git rev-list --count origin/main..origin/dev` is the same answer.
+
+Each promotion tags **`release-vNNN`**, where `NNN` is the changelog's top version — the same
+number the What's-new tab shows, deliberately, so a tag names something a reader can find. A
+promotion that carries no new changelog entry reuses the existing number and is left untagged
+with a notice rather than inventing a second sequence. Tagging failures never fail the
+promotion: by then the ship has already landed, and a missing label is not a bad deploy.
+
+---
+
+## When a pull request will not move
+
+A PR can reach a state where **nothing in this repository can advance it**, and until
+T-1368 nothing said so. The cycle:
+
+1. The PR is `dirty`, so GitHub cannot compute a merge ref for it.
+2. The gate runs on `pull_request`, which needs that merge ref — so no gate ever starts
+   and the PR carries **zero check runs**.
+3. `gate` is a required check on `dev`, so GitHub never calls the PR `clean`.
+4. `merge-ready.sh` merges only on `clean`, so it passes over it every time.
+5. `pr-lap.sh` prints `REAL CONFLICT — left alone` and stops, which is correct: it will
+   not hand-merge a file no tool owns.
+
+Six pull requests hit this in two days — #1495 and #1497 (2026-09-19), #1587, #1585, #1584
+and #1590 (2026-09-20). Each needed a person, and the first two merged themselves within
+minutes of a human pushing the merge. The rest of the automation was sound; nobody was
+being told.
+
+**`chicago-4d-pr-stuck.yml` is the telling.** It sweeps the queue on every push to a
+`steward/**` branch — the loop's own heartbeat, and the one trigger that still fires when
+the queue has stopped and nothing is pushing to `dev` — labels such a PR `stuck`, and
+comments once per stuck head with the recipe below. It takes the label back off when
+something moves the PR. Its concurrency group is scoped per branch (T-2069): a newer push
+cancels only the older sweep on the SAME branch, never the `report` check on another PR's
+live head, which `pr-automerge` would read as red.
+
+A sweep that cannot SEE the queue fails the job on `dev` and on a dispatch, and only
+annotates on a steward-branch push — because a run started by a push creates a check run on
+that head sha, which there is an open PR's head, and a failing non-required check makes that
+PR `unstable`, which `merge-ready.sh` will never merge. A reporter built to stop pull requests
+rotting must not be the thing that rots one.
+
+It reports and does nothing else. In particular it never touches:
+
+* **a `hold` PR.** That is the owner's park switch, and from outside a held PR is `dirty`
+  with zero checks, i.e. identical. #1533 and #1576 were both mistaken for this deadlock
+  on 2026-09-20.
+* **a PR whose own run is still alive.** #1499 looked exactly like the deadlock and then
+  rebased twice, re-derived, pushed and cleared itself. The branch's `claim/t-nnnn` marker
+  names its run; the reporter asks GitHub whether that run is still going, and anything it
+  cannot read it calls alive.
+* **a PR that is merely `unknown`.** #1518 read `unknown` indefinitely and merged fine.
+* **a PR pushed in the last 45 minutes.** Every open PR goes `dirty` the moment anything
+  merges into `dev` (T-0857). That is the normal state of this queue and the lap is what
+  clears it.
+
+### Clearing one by hand
+
+The hand path stays available and is the second half of the reporter's comment. Some
+conflicts genuinely need a person — #1497 carried 118 resident household cards with drawn
+values on them — and the goal is that such a PR is VISIBLE, never that no PR needs hands.
+
+```bash
+# first, let the lap try: it resolves everything a tool owns
+gh workflow run chicago-4d-pr-lap.yml -f only=<PR number>
+
+# if it printed REAL CONFLICT, the disagreement is about content and wants you
+git fetch origin dev <branch>
+git checkout -B <branch> origin/<branch>
+chicago/4d/tools/setup-merge-drivers.sh      # or the generated files will not resolve
+git merge origin/dev
+#   … resolve the real conflicts …
+( cd chicago/4d \
+  && node tools/rederive.mjs --run \
+  && node tools/ticket.mjs reconcile --base origin/dev \
+  && node tools/rederive.mjs --tail tools/compile_scene.py \
+  && ./tools/publish.sh )
+git add -A && git commit && git push origin HEAD:<branch>
+```
+
+The `--tail` line is not optional and it is not a second `--run` (T-1661). `--run` ends
+with its second pass, which rewrites the resident cards `compile_scene.py` is compiled
+from, so the scene the sequence built is stale by the time the sequence ends. `--tail`
+re-runs that step and **every step the manifest places below it** — 38 of them, about
+100 s — which is the part that was missing: the very next one is
+`compile_source_use.py`, and it exports "current-scene membership" out of the two files
+compile_scene writes. Re-running the scene ALONE is what the lap did for a year, and it
+pushed trees whose source-use had been derived against the pre-merge scene: 38 claims of
+`owner_chicago_1835_reconstruction_spec_2026` silently absent on PR #105's lap commit,
+three steps of `check.sh` red, and the branch reported by GitHub as merged and up to
+date. `node tools/rederive.mjs --callers <script>` is the gate that holds it, and
+`check.sh` runs it against `pr-lap.sh`.
+
+The push is what produces a merge ref, which produces a gate, which produces `clean`,
+which `merge-ready` takes from there.
+
+## Running it
+
+```bash
+# once, to create the branch and light up the preview
+gh workflow run chicago-4d-pipeline-setup.yml
+
+# ordinary work
+git switch dev && git pull
+git switch -c steward/<topic>
+#   … one coherent unit of work …
+./tools/check.sh && node tools/smoke_renderer.mjs      # both, foreground
+./tools/preflight.sh                                   # the questions CI asks only on the PR
+bash "$GHREST" pr-create  kevinrhaas/chicago steward/<topic> dev "<title>" body.md
+bash "$GHREST" pr-automerge kevinrhaas/chicago <N> squash "<title>"
+#   auto-merge is OFF on this repo, so that call READS the gate and blocks for up to
+#   ~7 min; exit 3 means it refused on a red or pending check and labelled the PR
+#   `hold` — see § Merging into dev above. Green → merged → /4d/dev/ updates.
+
+# production, owner only
+gh workflow run chicago-4d-promote-to-prod.yml -f dry_run=true   # what would move
+gh workflow run chicago-4d-promote-to-prod.yml                   # move it
+```
+
+---
+
+## Proof of life
+
+**2026-08-14** — this line was added on `dev` and nowhere else, as the pipeline's first
+end-to-end proof: it must appear at `/4d/dev/` while production at
+`/4d/` is byte-for-byte unchanged. If you are reading it in a file that
+also exists on `main`, the first promotion has since carried it across, which is the other
+half of the proof.
