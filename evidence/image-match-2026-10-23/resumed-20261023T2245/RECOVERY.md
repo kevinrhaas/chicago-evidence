@@ -1,5 +1,19 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- WOLF407_BOTH_APP_COMBINED_TREMONT_GT_WIP_20261027_START -->
+## Actual Wolf app review and complete combined work recovery
+
+Wolf's407 candidate has now passed the actual published target app review in BOTH viewports. Its checked head isa5de30c2 andtree2a3d0649. The45-file finite author manifest includes source bindings, expected inputs, harness, screenshots, results and closed reapers. The published407 mirror stayed immutable throughout the review; separate preparation of incoming80dd is not relabelled as app qualification. Profiles and cookies are excluded. These are targeted app receipts, not a current whole18 or a merge claim.
+
+The complete current combined Tremont and Green Tree working state is independently recoverable:70 files,82,105,052B, including a40,194,426B binary patch from public1290 to exact workingtree8d42512a. The author reconstructed every path, byte and mode in private indexes/objects and retained the actual staged3a8 and genuine pendingb3 merge metadata. The archive contains exact selected authored inputs, genuine canonical/Gale/Green Tree assets and proofs, with no profile or cookie data. The final80dd/Wolf/Carpenter batch is not yet adopted, and current combined native products/whole3 are NOT qualified. No new public commit, merge or original ticket completion is inferred; the actual Green Tree enclosed-annex gap remains open. Restore only in an isolated worktree/private index, preserving the original complete patch.
+
+Both archives are built in RAM during an author-approved CPU1nice19 quiet slot while the single native producer usesCPU3. The publisher must close and reap before the next timed phone measurement. Every source member, size and mode is independently verified after immutable remote readback; large archive transport uses ordered lossless chunks with complete restoration metadata.
+
+- [WOLF407-A5DE-ACTUAL-BOTH-VIEWPORT-TARGET-APP-CLOSED-20261027](archives/WOLF407-A5DE-ACTUAL-BOTH-VIEWPORT-TARGET-APP-CLOSED-20261027.tar.gz.parts.json) — Exact45CLOSEDfiles9,445,622B actual407BOTHviewportpublishedtargetappPASS forcheckedheada5de/tree2a3d. Sourcebindings/expectedinputs/harness/screenshots/results/allreapersclosed, immutable407publishedmirrorneverrepublishedduringreview; 80ddsourcepreparationkeptseparate. Profiles/cookiesexcluded. Actualtargetedappqualificationonly, notwhole18/new80ddappqualification ormerge/originalDONE.
+- [COMPLETE-COMBINED-TREMONT-GT-AUTHORED-WIP-RECOVERY-20261027](archives/COMPLETE-COMBINED-TREMONT-GT-AUTHORED-WIP-RECOVERY-20261027.tar.gz.parts.json) — Complete70file82,105,052BcurrentcombinedTremont+GreenTreeWIP recovery: full40,194,426Bbinarypatch public1290toexactcompleteworkingtree8d42512a29f26df5f30c98dda1b2efdd8ac1d0df independentlyreconstructedALLpaths/bytes/modes inprivateindexes/privateobjects. Includes actualsourceindex3a8/genuineMERGEb3 metadata, changedfileinventory, explicitselectedauthoredinputs+canonicalthree-storey/Gale2/GTgenuinemastersWEBs/nativeproofs. Source/index/statusstable, no commonobject/ref/sourceindexwrites; no profile/cookies. ThisCURRENTcombinedworkingtreehasNOTadoptedfinal80dd/Wolf/Carpenterbatch; currentcombinednativeproducts/whole3notqualified, no currentcodecommit/push/Ready/merge/originalDONE. PreserveallrightsandactualGTenclosedannexgapOPEN. Fulloriginalpatch andeverymemberarchivedexact; restoreinISOLATEDworktree/privateindexonly, neverblindapplyoveractivewriter.
+<!-- WOLF407_BOTH_APP_COMBINED_TREMONT_GT_WIP_20261027_END -->
+
+
 <!-- DENT80DD_WOLF407_CLOSED_GT_MILLER_REVISION_20261027_START -->
 ## Closed Wolf checkpoint and exact current-dev import
 
