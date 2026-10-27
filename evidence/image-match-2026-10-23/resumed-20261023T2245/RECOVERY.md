@@ -1,5 +1,18 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- C6_CURRENT_SOURCE_NATIVE_CLOSED_MILESTONE_20261027_START -->
+## Carpenter current source and native milestone saved before full checks
+
+The current Carpenter working tree is recoverable before its final three-question gate. The author's42 closed members include a complete1,232,429B binary patch from actualpublice5b9, independently reconstructed to exact17,498-entrytree03094a09eb9e7f0d802f02deb4a92bb525549b6f. Actual normal upstream ancestry, authored conflict resolution, native202+7+settled57, all44 audits, package and publish passed with source guards and reapers. The raw first image-ownership refusal is retained alongside the subsequent actual owning build_images.py success.
+
+Current full3, target cards, new source commit, public push and dev merge are still pending. Olderf311 qualification is not relabelled. The packet includes only the bounded current alias/metadata/source/native work; profiles, cookies, environment data, caches and baseline payloads are excluded. OriginalT2382 remains OPEN/DIFFERS.
+
+The source owner requested this very small closed checkpoint immediately before its full four-CPU reservation. Compression and input hashing finish first onCPU1nice19; only REST upload and immutable readback remain while the source owner proceeds. No source query, write or cached-ref change is performed. Every archived source member is verified by hash, size and mode after immutable readback.
+
+- [CARPENTER-CURRENT-E5B9-COMPLETE-SOURCE-NATIVE-MILESTONE-20261027](archives/CARPENTER-CURRENT-E5B9-COMPLETE-SOURCE-NATIVE-MILESTONE-20261027.tar.gz) — Exactauthor42closedmembers5.64MB currentCarpenterauthored/source/nativeoutputmilestoneBEFOREfull3: complete1,232,429Bbinarypatch frompublice5b9 independentlyrebuildsexactALL17,498-entrytree03094a09eb9e7f0d802f02deb4a92bb525549b6f. Actualnormal130dd/e5b9ancestryadoption/authoredresolution/native202+7+settled57/all44/package/publishPASSwithsourceguardsandreapers. Rawfirstexternalimageownershiprefusalretainedthenactualowningbuild_images.pyPASS. Sourcebasepublicf311plusactualcurrente5b9exceptboundedcanonicalalias/metadataWIP. Currentthree-question/full3/cards/newcodecommit/publicpush/DEVmergeNOTYET; oldf311gatesnotrelabeled. No profiles/cookies/env/caches/baselinepayloads; originalT2382OPEN/DIFFERS. Publicationrequestedbysourceownerimmediatelybeforereservedfull4; no sourcequery/write/CAS.
+<!-- C6_CURRENT_SOURCE_NATIVE_CLOSED_MILESTONE_20261027_END -->
+
+
 <!-- MILLER_CHIMNEY_ONLY_HISTORY_PREVIEW_TREMONT_TOOLS_20261027_START -->
 ## Historical Miller chimney state and continuation tools
 
