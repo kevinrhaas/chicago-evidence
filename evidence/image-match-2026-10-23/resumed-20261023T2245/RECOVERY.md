@@ -1,5 +1,22 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- CURRENT_DEV_PULLMAN_ED250_SEPARATELY_PRICED_BOUNDED_IMPORT_20261027_START -->
+## Shared dev metadata now includes the separately inspected Pullman1904 landing
+
+After actualMaryd210, dev advanced through genuine Mary changelog fold31c867 and then **foreign T3161 Pullman1904 PR1350 ed250192e95420f20d810b5a012fe351c553815c**. This is a feature change, not a fold-only update. Its24 net paths include Pullman master/WEB/record/sidecar, a new Albertype sourceJPEG/camera/matches/docs,1904 Prairie jaunt/catalog,Liberties/researchledger/dev-smoke-state and canonical changelog. No generator or other renderer source code changed.
+
+The foreign scope and object price were inspected separately using only local pack-index binary searches and exact loose paths, avoiding missing-object probes that can trigger lazy fetch. The active Mary source owner authorized this necessary exact integration under Root's delegated resource planning, with a40MiB canonical raw ceiling and512MiB postimport workspace reserve. **Actual new canonical objects total31,145,046B, also below32MiB;21 tip blobs were imported and all16974 unique tip blob sizes verified.**
+
+At00:49:01, normal expected-old CAS moved only cached `origin/dev`d210→exactfresh ed250/tree004438d8. Primary HEAD373, index/config/merge state/status and all other refs stayed unchanged. Metadata fetch occurred only in the bounded isolated promisor; no common-source fetch, lazy availability probe, GC, repack or checkout occurred. The actual reaper closed0 with all children reaped.
+
+New allocation was13,180,928B, leaving workspace978,595,840B and tmp2,063,904,768B. A hypothetical400MiB primary generated mirror would leave~533MiB; that is finite planning headroom, not a waiver of any future native guard. The source owners now control current integration and affected consumer coverage. **This metadata import certifies neither their new native/app/phone/full3/whole18/global equality nor READY/merge/original ticket completion.** Mary's actual partial PR landing remains documented in492; its original picture case remains OPEN/DIFFERS.
+
+This closed certificate contains metadata, exact prices, immutable source references and receipts; source assets are already public ated250 and are not duplicated here. Every archive member, mode, size and hash is checked before publication and again after immutable readback. CPU1nice19 publication adds no all-four timed reading or source Git writes.
+
+- [CURRENT-DEV-PULLMAN-T3161-ED250-MARY-FOLD31-EXACT-BOUNDED-IMPORT-20261027](archives/CURRENT-DEV-PULLMAN-T3161-ED250-MARY-FOLD31-EXACT-BOUNDED-IMPORT-20261027.tar.gz) — Closed exact necessary foreignfeature import00:49:01, lineage actualMaryd210→genuineMaryfold31c867→foreignT3161 Pullman1904 PR1350 ed250192e95420f20d810b5a012fe351c553815c/tree004438d8a15cfb10de265c74a78ce68d1a253c53.24net paths, no generator/renderer source change except canonicalchangelog; Pullman master/WEB/record/sidecar/newAlbertype JPEG/camera/matches/docs and1904Prairie jaunt/catalog/Liberties/researchledger/dev-smoke-state differ. Separate localpack-index-only read-only impact/price preceded activeMary source-owner necessary-integration authorization under Root delegation40MiB canonicalraw/postimportWS512MiB reserve. Actual21missing tipblobs/canonical31,145,046B also<32MiB; all16974 unique tipblob sizes verified, exact freshremote and normal expected-old cacheddevd210→ed250. SourceHEAD373/index/config/MERGE/status/allotherrefs unchanged; isolatedfilteredmetadatafetch only, no commonfetch/lazyavailabilityprobe/GC/repack/checkout. Actualallocation13,180,928B,WS978,595,840B/tmp2,063,904,768B; hypothetical400MiB primarymirror leaves~533MiB finiteheadroom, no futureguard waiver. Wrapper0/allreaped. Metadataonly certificate references fullypublicsource; no duplicate sourceassets. No currentWolf/Carpenter/Tremont native/app/memory/full3/whole18/globalEQ/READY/merge/originalDONE claim from objectimport.
+<!-- CURRENT_DEV_PULLMAN_ED250_SEPARATELY_PRICED_BOUNDED_IMPORT_20261027_END -->
+
+
 <!-- MARY1334_REAL_D210_MERGE_CURRENT6C10_AND_LANDING_IMPORT_20261027_START -->
 ## Mary PR1334 has actually merged into dev; the original picture case remains open
 
