@@ -1,0 +1,1090 @@
+diff --git a/.github/workflows/chicago-4d-humans.yml b/.github/workflows/chicago-4d-humans.yml
+index 9c279d998..8259f7b6f 100644
+--- a/.github/workflows/chicago-4d-humans.yml
++++ b/.github/workflows/chicago-4d-humans.yml
+@@ -70,6 +70,10 @@ on:
+         description: 'Build the reviewed reconstructed Mary Flynn dress SOURCE study; no production/photo approval'
+         type: boolean
+         default: false
++      deliver_generated_assets:
++        description: 'Optional: verify and commit this run’s fixed canonical family to the owned people PR branch only'
++        type: boolean
++        default: false
+       source_ref:
+         description: 'Dress source: blank uses this definition SHA; otherwise only the original reviewed source or this definition SHA'
+         type: string
+@@ -99,11 +103,26 @@ jobs:
+           TEAMSTERS_ENABLED: ${{ inputs.build_teamsters }}
+           SEATED_ENABLED: ${{ inputs.build_seated_driver_study }}
+           SOURCE_REF: ${{ inputs.source_ref }}
++          DELIVERY_ENABLED: ${{ inputs.deliver_generated_assets }}
++          DEFINITION_SHA: ${{ github.workflow_sha }}
++          DEFINITION_REF: ${{ github.workflow_ref }}
+         run: |
+           python3 - <<'PY'
+           import os,re
+           source=os.environ['SOURCE_REF']
+           dress=os.environ['DRESS_ENABLED']=='true'
++          if os.environ['DELIVERY_ENABLED']=='true':
++              owned='refs/heads/steward/t1789-people-photoquality-20261026'
++              repo='kevinrhaas/chicago'
++              definition=os.environ['GITHUB_SHA']
++              if (os.environ['GITHUB_REPOSITORY']!=repo or os.environ['GITHUB_REF']!=owned
++                  or os.environ['DEFINITION_REF']!=repo+'/.github/workflows/chicago-4d-humans.yml@'+owned
++                  or os.environ['DEFINITION_SHA']!=definition
++                  or definition=='1cbb1817508593562f99ed378b6932368b5699b9'
++                  or source not in ('',definition)
++                  or (os.environ['TEAMSTERS_ENABLED']=='true')==dress
++                  or os.environ['SEATED_ENABLED']=='true'):
++                  raise SystemExit('Delivery requires this trusted definition, exact owned repository/branch and one unseated family')
+           if dress:
+               if os.environ['TEAMSTERS_ENABLED']=='true' or os.environ['SEATED_ENABLED']=='true':
+                   raise SystemExit('The dress study must run separately from teamster/seated studies')
+@@ -193,18 +212,27 @@ jobs:
+         working-directory: chicago/4d
+         run: NODE_PATH="$(npm root -g)" node tools/human_actor.mjs
+ 
+-  # Explicit dispatch on the owner-visible authoring PR. No branch writes, scene
+-  # placements or production promotion: canonical masters and measurements are
+-  # reviewable artifacts. Existing fixture verification must pass first.
++  # Default dispatch remains artifact-only. An additional explicit opt-in can
++  # deliver a fixed family through the separately gated feature-only job below.
++  # No new world placements or photographic/production promotion.
+   teamster-studies:
+     if: github.event_name == 'workflow_dispatch' && (inputs.build_teamsters || inputs.build_seated_driver_study)
+     needs: humans
++    outputs:
++      artifact_id: ${{ steps.delivery_upload.outputs.artifact-id }}
++      manifest_sha256: ${{ steps.delivery_bundle.outputs.manifest_sha256 }}
++    env:
++      DEFINITION_SHA: ${{ github.workflow_sha }}
++      DEFINITION_REF: ${{ github.workflow_ref }}
+     # T-3169: pinned — Playwright 1.56.1 cannot install chromium on ubuntu-26.04,
+     # which `ubuntu-latest` became on 2026-10-26 (tools/check_runner_images.py).
+     runs-on: ubuntu-24.04
+     timeout-minutes: 30
+     steps:
+       - uses: actions/checkout@v4
++      - name: Require equivalent completed female delivery before optional male write mode
++        if: inputs.deliver_generated_assets
++        run: python3 chicago/4d/tools/human_delivery.py guard
+       - uses: actions/setup-python@v5
+         with:
+           python-version: '3.11'
+@@ -389,6 +417,20 @@ jobs:
+           path: |
+             /tmp/teamster-blender-stills/
+             /tmp/teamster-blender-stills.log
++      - name: Prepare the fixed same-run male delivery bundle
++        if: inputs.deliver_generated_assets
++        id: delivery_bundle
++        run: python3 chicago/4d/tools/human_delivery.py bundle
++      - name: Preserve optional male delivery bundle by exact artifact ID
++        if: inputs.deliver_generated_assets
++        id: delivery_upload
++        uses: actions/upload-artifact@v4
++        with:
++          name: human-delivery-teamsters-${{ github.run_id }}-${{ github.run_attempt }}
++          if-no-files-found: error
++          compression-level: 0
++          retention-days: 30
++          path: /tmp/human-delivery-bundle/
+       - name: Preserve masters, exports and inspection evidence
+         if: always()
+         uses: actions/upload-artifact@v4
+@@ -411,6 +453,12 @@ jobs:
+   dress-study:
+     if: github.event_name == 'workflow_dispatch' && inputs.build_dress_study
+     needs: humans
++    outputs:
++      artifact_id: ${{ steps.delivery_upload.outputs.artifact-id }}
++      manifest_sha256: ${{ steps.delivery_bundle.outputs.manifest_sha256 }}
++    env:
++      DEFINITION_SHA: ${{ github.workflow_sha }}
++      DEFINITION_REF: ${{ github.workflow_ref }}
+     runs-on: ubuntu-24.04
+     timeout-minutes: 30
+     steps:
+@@ -590,6 +638,20 @@ jobs:
+                 for p in files if p.is_file()]
+           (root/'actual-output-manifest.json').write_text(json.dumps({'scope':'actual output bytes; partial files are not acceptance','files':rows},indent=2)+'\n')
+           PY
++      - name: Prepare the fixed same-run female delivery bundle
++        if: inputs.deliver_generated_assets
++        id: delivery_bundle
++        run: python3 chicago/4d/tools/human_delivery.py bundle
++      - name: Preserve optional female delivery bundle by exact artifact ID
++        if: inputs.deliver_generated_assets
++        id: delivery_upload
++        uses: actions/upload-artifact@v4
++        with:
++          name: human-delivery-dress-${{ github.run_id }}-${{ github.run_attempt }}
++          if-no-files-found: error
++          compression-level: 0
++          retention-days: 30
++          path: /tmp/human-delivery-bundle/
+       - name: Preserve actual dress source binding, master, exports, failures and images
+         if: always()
+         uses: actions/upload-artifact@v4
+@@ -602,3 +664,89 @@ jobs:
+             chicago/4d/assets/humans/flynn_mary_1835_dress_study.lod[0-3].glb
+             chicago/4d/assets/humans/web/flynn_mary_1835_dress_study.lod[0-3].glb
+             /tmp/dress-study/
++
++
++  # Sole writer. No pull_request, forks, legacy source, main/dev, arbitrary refs,
++  # downloaded code, external artifact hosts or automatic merge/ready operation.
++  # GITHUB_TOKEN pushes do NOT trigger ordinary PR checks: root must independently
++  # verify GATED-TREE/ACTUAL-PUSH then make a normal-authenticated same-tree followup.
++  deliver-canonical-family:
++    if: >-
++      always() && github.event_name == 'workflow_dispatch' && inputs.deliver_generated_assets &&
++      github.repository == 'kevinrhaas/chicago' && !github.event.repository.fork &&
++      github.ref == 'refs/heads/steward/t1789-people-photoquality-20261026' &&
++      github.workflow_sha == github.sha && github.sha != '1cbb1817508593562f99ed378b6932368b5699b9' &&
++      (inputs.source_ref == '' || inputs.source_ref == github.sha) && !inputs.build_seated_driver_study &&
++      inputs.build_dress_study != inputs.build_teamsters && needs.humans.result == 'success' &&
++      ((inputs.build_dress_study && needs.dress-study.result == 'success' && needs.teamster-studies.result == 'skipped') ||
++       (inputs.build_teamsters && needs.teamster-studies.result == 'success' && needs.dress-study.result == 'skipped'))
++    needs: [humans, teamster-studies, dress-study]
++    runs-on: ubuntu-24.04
++    timeout-minutes: 45
++    permissions:
++      contents: write
++      actions: read
++    env:
++      DEFINITION_SHA: ${{ github.workflow_sha }}
++      DEFINITION_REF: ${{ github.workflow_ref }}
++      DELIVERY_ARTIFACT_ID: ${{ needs.dress-study.outputs.artifact_id || needs.teamster-studies.outputs.artifact_id }}
++      EXPECTED_MANIFEST_SHA256: ${{ needs.dress-study.outputs.manifest_sha256 || needs.teamster-studies.outputs.manifest_sha256 }}
++      FIXTURE_RESULT: ${{ needs.humans.result }}
++      PRODUCER_RESULT: ${{ inputs.build_dress_study && needs.dress-study.result || needs.teamster-studies.result }}
++    steps:
++      - uses: actions/checkout@v4
++        with:
++          ref: ${{ github.sha }}
++          fetch-depth: 0
++          filter: blob:none
++      - uses: actions/setup-python@v5
++        with:
++          python-version: '3.11'
++      - uses: actions/setup-node@v4
++        with:
++          node-version: '22'
++      - name: Verify exact trusted source and current-run artifact identity
++        env:
++          GH_TOKEN: ${{ github.token }}
++        run: |
++          set -euo pipefail
++          python3 chicago/4d/tools/human_delivery.py guard
++          python3 chicago/4d/tools/test_human_delivery.py
++          python3 chicago/4d/tools/human_delivery.py artifact
++      - name: Download only this run’s exact producer artifact ID
++        uses: actions/download-artifact@v4
++        with:
++          artifact-ids: ${{ env.DELIVERY_ARTIFACT_ID }}
++          merge-multiple: true
++          path: /tmp/human-delivery-download
++      - name: Verify all fixed members and install only the canonical family
++        run: python3 chicago/4d/tools/human_delivery.py install
++      - name: Install native validator and browser dependencies
++        run: |
++          set -euo pipefail
++          pip install --quiet jsonschema pyproj openpyxl pypdf numpy scipy Pillow
++          npm install -g playwright@1.56.1
++          node "$(npm root -g)/playwright/cli.js" install --with-deps chromium
++      - name: Measure every actual human asset and refresh truthful rights/provenance
++        working-directory: chicago/4d
++        run: |
++          set -euo pipefail
++          NODE_PATH="$(npm root -g)" node tools/human_fixture.mjs --write
++          node tools/human_fixture.mjs --check
++          python3 tools/human_delivery.py metadata
++      - name: Complete required-reader native preflight and seal the staged/source tree
++        run: python3 chicago/4d/tools/human_delivery.py gate
++      - name: Recheck actual gated tree and remote head, then normal feature-only push
++        run: python3 chicago/4d/tools/human_delivery.py commit
++      - name: Preserve actual delivery, native-gate and push receipts for independent review
++        if: always()
++        uses: actions/upload-artifact@v4
++        with:
++          name: human-delivery-closure-${{ github.run_id }}-${{ github.run_attempt }}
++          if-no-files-found: warn
++          retention-days: 30
++          path: |
++            /tmp/human-delivery-state/
++            /tmp/preflight-check.log
++            /tmp/preflight-cl.log
++            /tmp/preflight-ids.log
+diff --git a/chicago/4d/docs/ROADMAP.md b/chicago/4d/docs/ROADMAP.md
+index f4bfb0b52..ddfd61cd9 100644
+--- a/chicago/4d/docs/ROADMAP.md
++++ b/chicago/4d/docs/ROADMAP.md
+@@ -5953,3 +5953,6 @@ The prior verified external dress/male canonical studies provide actual diagnost
+ 
+ 
+ T-1789 evidence-path update (26 October2026): the reviewed native Blender CPU still helper and separate small-artifact step now target the existing three male test assemblies. Actual native execution/stills remain UNRUN and must pass after the source gates; no new identity, world placement, photographic or production acceptance is supplied. This is the bounded library's literal Blender-proof requirement, not actor/gait/tack work.
++
++
++T-1789 delivery path: review/check/push the bounded optional source first, then complete fresh female delivery before male delivery on the same equivalent authoring sources. Verify the four actual masters and32 raw/web LODs, regenerate the complete human measurement registry, preserve exact input rights and qualify the current standing Otis appearance. Keep the other three models as unplaced library assets. Optional automation remains off until explicit manual execution; actual generated/published proof, native Blender stills, cap/LOD checks and ordinary post-delivery PR CI remain required.
+diff --git a/chicago/4d/docs/STATUS.md b/chicago/4d/docs/STATUS.md
+index 67d932e8a..83d2c3dc2 100644
+--- a/chicago/4d/docs/STATUS.md
++++ b/chicago/4d/docs/STATUS.md
+@@ -25088,3 +25088,6 @@ The existing manual teamster workflow now has a bounded proof step for three640p
+ The existing two hatted male study profiles now explicitly select rounded_felt_v1; the third remains bareheaded. Source geometry rounds the old cylinder/disc transitions and adds a shallow roof/band, with deterministic Non-Color scalar roughness on the existing hat material. Colors, actual-hair seating/brim extents, all bodies/rig/hair/identity fields and the female bonnet/dress/dye/still-helper paths are preserved. Cleared Wild1835 is only a bounded silhouette cross-check; dimensions, felt and individual wardrobe are reconstructed.
+ 
+ Existing focused CPU controls support closed source meshes/UVs/skin, old unopted arrays and exact female finishing preservation. Actual new canonical triangle/byte/memory cost, packed/exported roughness, images,3native Blender stills, rendered fit and photographic acceptance remain UNRUN. This source does not qualify budgets or production. Fresh canonical generation/visual review must follow the current-source native gates.
++
++
++T-1789 optional canonical delivery is implemented for source review, default off. A manual same-run fixed-family bundle can reach only the owned people feature branch after exact source/run/artifact/member verification, all-asset browser remeasurement and complete required-reader native preflight. Male write mode requires the completed equivalent-source female delivery first. Otis retains his existing reconstructed standing selection; the other models receive no world placements. The generated-asset write job, fresh female finish/rounded hats, three actual native Blender stills, delivered-model budgets and published appearance remain UNRUN. A GITHUB_TOKEN push leaves ordinary PR CI pending; root must verify the exact gated tree and use a normal authenticated same-tree followup. No photo/production or ticket closure is claimed.
+diff --git a/chicago/4d/tools/human_delivery.py b/chicago/4d/tools/human_delivery.py
+new file mode 100644
+index 000000000..8723f4783
+--- /dev/null
++++ b/chicago/4d/tools/human_delivery.py
+@@ -0,0 +1,514 @@
++#!/usr/bin/env python3
++# SPDX-License-Identifier: GPL-3.0-or-later
++"""Optional same-run canonical human delivery, restricted to one owned PR branch.
++
++No network download implementation: GitHub's artifact action transfers the exact
++producer artifact ID. This helper verifies the fixed member set before writing
++fixed app targets. Only `gate` runs the complete native preflight; only `commit`
++can commit/push, after the actual gated tree and remote head are rechecked.
++"""
++from __future__ import annotations
++
++import argparse
++import hashlib
++import json
++import os
++from pathlib import Path, PurePosixPath
++import re
++import shutil
++import stat
++import struct
++import subprocess
++import time
++
++APP = Path(__file__).resolve().parent.parent
++REPO = APP.parent.parent
++REPOSITORY = 'kevinrhaas/chicago'
++BRANCH = 'steward/t1789-people-photoquality-20261026'
++REF = 'refs/heads/' + BRANCH
++WORKFLOW = REPOSITORY + '/.github/workflows/chicago-4d-humans.yml@' + REF
++LEGACY = '1cbb1817508593562f99ed378b6932368b5699b9'
++MALES = ('bardwell_otis_1835', 'dufresne_joseph_1835', 'flynn_martin_1835')
++FEMALE = 'flynn_mary_1835_dress_study'
++PROOF = 'docs/RESEARCH/human-library-1789/delivery'
++BUNDLE = Path('/tmp/human-delivery-bundle')
++DOWNLOAD = Path('/tmp/human-delivery-download')
++STATE = Path('/tmp/human-delivery-state')
++SOURCE_FILES = (
++    '../../.github/workflows/chicago-4d-humans.yml', 'generators/blender.pin',
++    'tools/human_delivery.py', 'tools/test_human_delivery.py',
++    'tools/human_teamster_blend.py', 'tools/human_dress_components.py',
++    'tools/human_period_wardrobe.py', 'tools/render_human_assembly_stills.py',
++    'tools/human_export.sh', 'tools/human_export.py', 'tools/human_skin_canonicalize.py',
++    'tools/human_fixture.mjs', 'tools/human_teamster.mjs',
++    'data/humans/recipes/worker_1835.json', 'data/humans/recipes/adult_dress_1835.json',
++    'assets/authored/humans/makehuman_hm08/SOURCE.json',
++    'assets/authored/humans/makehuman_hm08/SOURCE-female.json',
++)
++
++
++def need(value, message):
++    if not value:
++        raise ValueError(message)
++
++
++def digest(path):
++    h = hashlib.sha256()
++    with path.open('rb') as stream:
++        while chunk := stream.read(1024 * 1024):
++            h.update(chunk)
++    return h.hexdigest()
++
++
++def dump(path, value):
++    path.parent.mkdir(parents=True, exist_ok=True)
++    path.write_text(json.dumps(value, indent=2) + '\n')
++
++
++def git(*args):
++    return subprocess.check_output(['git', *args], cwd=REPO, text=True).strip()
++
++
++def validate_context(c):
++    need(c['event'] == 'workflow_dispatch' and c['repository'] == REPOSITORY,
++         'delivery requires a manual run in the canonical repository')
++    need(c['ref'] == REF and c['workflow_ref'] == WORKFLOW, 'not the exact owned workflow/branch')
++    need(re.fullmatch(r'[0-9a-f]{40}', c['source']) and c['source'] != LEGACY,
++         'invalid source or read-only legacy reproduction')
++    need(c['definition'] == c['source'], 'source must equal actual trusted definition SHA')
++    need(c['deliver'] is True and c['seated'] is False, 'delivery is opt-in and unseated only')
++    need(c['dress'] != c['teamsters'], 'exactly one fixed family per delivery')
++    need(c['source_ref'] in ('', c['source']), 'delivery forbids a separate source ref')
++    need(all(re.fullmatch(r'[1-9][0-9]*', c[k]) for k in ('run_id', 'attempt')),
++         'invalid current run identity')
++    return 'dress' if c['dress'] else 'teamsters'
++
++
++def context():
++    event = json.loads(Path(os.environ['GITHUB_EVENT_PATH']).read_text())
++    inputs = event['inputs']
++    need(event['repository']['full_name'] == REPOSITORY and
++         event['repository'].get('fork') is False, 'fork or event repository mismatch')
++    c = dict(event=os.environ['GITHUB_EVENT_NAME'], repository=os.environ['GITHUB_REPOSITORY'],
++             ref=os.environ['GITHUB_REF'], workflow_ref=os.environ['DEFINITION_REF'],
++             source=os.environ['GITHUB_SHA'], definition=os.environ['DEFINITION_SHA'],
++             run_id=os.environ['GITHUB_RUN_ID'], attempt=os.environ['GITHUB_RUN_ATTEMPT'],
++             deliver=inputs.get('deliver_generated_assets') == 'true',
++             seated=inputs.get('build_seated_driver_study', 'false') == 'true',
++             dress=inputs.get('build_dress_study', 'false') == 'true',
++             teamsters=inputs.get('build_teamsters', 'false') == 'true',
++             source_ref=inputs.get('source_ref', ''))
++    c['family'] = validate_context(c)
++    need(git('rev-parse', 'HEAD') == c['source'], 'checkout is not the exact run source')
++    return c
++
++
++def assets(family):
++    need(family in ('dress', 'teamsters'), 'unknown family')
++    return (FEMALE,) if family == 'dress' else MALES
++
++
++def master(asset):
++    group = 'dress' if asset == FEMALE else 'teamsters'
++    return f'assets/authored/humans/{group}/{asset}/canonical.blend'
++
++
++def spec(family):
++    """Pairs (producer file, fixed app destination); no manifest-directed paths."""
++    root = Path('/tmp/dress-study' if family == 'dress' else '/tmp/teamster-studies')
++    rows = [(APP / master(a), master(a)) for a in assets(family)]
++    for a in assets(family):
++        rows += [(APP / f'assets/humans/{web}{a}.lod{lod}.glb',
++                  f'assets/humans/{web}{a}.lod{lod}.glb')
++                 for web in ('', 'web/') for lod in range(4)]
++    proof = f'{PROOF}/{family}'
++    rows += [(root / mode / 'inspection.json', f'{proof}/{mode}-inspection.json')
++             for mode in ('source', 'web')]
++    for a in assets(family):
++        for web in ('', 'web-'):
++            for lod in range(4):
++                name = f'{web}lod{lod}.validation.json' if family == 'dress' else f'{web}{a}.lod{lod}.glb.validation.json'
++                rows.append((root / name, f'{proof}/validators/{name}'))
++    if family == 'dress':
++        rows.append((root / 'source-binding.json', f'{proof}/source-binding.json'))
++    else:
++        stills = Path('/tmp/teamster-blender-stills')
++        names = ['manifest.json']
++        names += [a + suffix for a in MALES for suffix in ('-assembly-threequarter.png', '-receipt.json')]
++        rows += [(stills / n, f'{proof}/blender-stills/{n}') for n in names]
++    return rows
++
++
++def regular_under(root, relative):
++    p = PurePosixPath(relative)
++    need(relative == p.as_posix() and not p.is_absolute() and
++         all(x not in ('', '.', '..') for x in p.parts) and '\\' not in relative,
++         'unsafe relative member path')
++    need(not root.is_symlink(), 'symlink root')
++    current = root
++    for part in p.parts:
++        current /= part
++        need(not current.is_symlink(), 'symlink in file path')
++    need(current.resolve().is_relative_to(root.resolve()), 'path escaped fixed root')
++    need(stat.S_ISREG(current.stat().st_mode) and current.stat().st_nlink == 1,
++         'member is not an independent regular file')
++    return current
++
++
++def source_binding(c):
++    bound = {}
++    for name in SOURCE_FILES:
++        p = (APP / name).resolve()
++        rel = p.relative_to(REPO).as_posix()
++        expected = subprocess.check_output(['git', 'show', f"{c['source']}:{rel}"], cwd=REPO)
++        need(hashlib.sha256(expected).hexdigest() == digest(p), 'source file changed: ' + rel)
++        bound[rel] = digest(p)
++    return bound
++
++
++def glb_container(path, asset):
++    with path.open('rb') as stream:
++        header = stream.read(20)
++        need(len(header) == 20, 'short GLB')
++        magic, version, total, length, kind = struct.unpack('<5I', header)
++        need(magic == 0x46546C67 and version == 2 and total == path.stat().st_size and
++             kind == 0x4E4F534A and 0 < length <= min(total - 20, 16 * 1024 * 1024), 'invalid GLB container')
++        data = json.loads(stream.read(length))
++    need(all('uri' not in row for key in ('buffers', 'images') for row in data.get(key, [])),
++         'external or data URI is forbidden in delivered GLBs')
++    human = data['scenes'][0]['extras']['chicago4d_human']
++    need(human['asset_id'] == asset and human['grade'] == 'reconstructed', 'GLB identity/grade mismatch')
++
++
++def verify_reports(c, root):
++    family = c['family']; proof = root / PROOF / family
++    for mode in ('source', 'web'):
++        j = json.loads((proof / f'{mode}-inspection.json').read_text())
++        need(j['mechanical_passed'] is True and j['failures'] == [], 'native inspection failed/incomplete')
++        expected = {f'assets/humans/{"web/" if mode == "web" else ""}{a}.lod{l}.glb'
++                    for a in assets(family) for l in range(4)}
++        pairs = {(row['file'], row['viewport_name']) for row in j['runs']}
++        need(pairs == {(p, vp) for p in expected for vp in ('desktop', 'mobile')} and
++             len(j['runs']) == len(pairs), 'inspection does not cover the exact family/LODs/viewports')
++        for row in j['runs']:
++            need(row['sha256'] == digest(root / row['file']) and row['checks'] and
++                 all(v is True for v in row['checks'].values()) and
++                 row['page_errors'] == [] and row['failed_requests'] == [], 'inspection hash/check mismatch')
++    for path in (proof / 'validators').iterdir():
++        j = json.loads(path.read_text())
++        need(j['issues']['numErrors'] == 0 and not j['issues'].get('truncated'), 'container validator failure')
++    if family == 'dress':
++        j = json.loads((proof / 'source-binding.json').read_text())
++        need(j['source_sha'] == c['source'] and j['workflow_definition_sha'] == c['definition'] and
++             str(j['run_id']) == c['run_id'] and str(j['run_attempt']) == c['attempt'], 'dress source binding mismatch')
++    else:
++        j = json.loads((proof / 'blender-stills/manifest.json').read_text())
++        need(j['status'] == 'actual_three_native_Blender_stills_completed' and
++             j['source_sha'] == c['source'] and j['definition_sha'] == c['definition'] and
++             str(j['run_id']) == c['run_id'] and str(j['run_attempt']) == c['attempt'] and
++             j['fixed_assets'] == list(MALES) and re.fullmatch(r'4\.5\.3(?: LTS)?', j['blender_version']) and
++             len(j['renders']) == 3, 'incomplete or wrong-source native Blender stills')
++        for a, row in zip(MALES, j['renders']):
++            receipt = json.loads((proof / f'blender-stills/{a}-receipt.json').read_text())
++            need(receipt == row and row['asset_id'] == a and row['source_protection_verified'] is True and
++                 row['status'] == 'actual_native_render_completed' and
++                 row['master_sha256_before'] == row['master_sha256_after'] == digest(root / master(a)) and
++                 row['source_body_rig_geometry_state_before'] == row['source_body_rig_geometry_state_after'],
++                 'native Blender master/body/rig protection mismatch')
++            image = proof / f'blender-stills/{a}-assembly-threequarter.png'
++            need(row['PNG']['sha256'] == digest(image) and image.read_bytes()[:8] == b'\x89PNG\r\n\x1a\n',
++                 'native still PNG mismatch')
++
++
++def bundle(c):
++    need(not BUNDLE.exists(), 'fresh bundle directory required')
++    binding = source_binding(c)
++    BUNDLE.mkdir()
++    rows = []
++    for source, target in spec(c['family']):
++        need(not source.is_symlink() and source.is_file(), 'missing/symlink producer output')
++        # Parent directories are trusted fixed producer paths, still refuse symlinks.
++        regular_under(APP if source.is_relative_to(APP) else Path('/tmp'),
++                      source.relative_to(APP if source.is_relative_to(APP) else Path('/tmp')).as_posix())
++        dest = BUNDLE / target; dest.parent.mkdir(parents=True, exist_ok=True)
++        shutil.copyfile(source, dest)
++        rows.append(dict(path=target, bytes=dest.stat().st_size, sha256=digest(dest)))
++    verify_reports(c, BUNDLE)
++    j = dict(format='canonical_human_delivery_v1', repository=REPOSITORY, branch=BRANCH,
++             source_sha=c['source'], definition_sha=c['definition'], source_tree=git('rev-parse', 'HEAD^{tree}'),
++             run_id=c['run_id'], run_attempt=c['attempt'], family=c['family'], source_files=binding,
++             photographic_accepted=False, production_eligibility_changed=False, files=rows)
++    dump(BUNDLE / 'delivery-manifest.json', j)
++    with Path(os.environ['GITHUB_OUTPUT']).open('a') as stream:
++        stream.write('manifest_sha256=' + digest(BUNDLE / 'delivery-manifest.json') + '\n')
++
++
++def verify_bundle(c):
++    mf = regular_under(DOWNLOAD, 'delivery-manifest.json')
++    need(digest(mf) == os.environ['EXPECTED_MANIFEST_SHA256'], 'producer manifest digest mismatch')
++    j = json.loads(mf.read_text())
++    expected = {target for _, target in spec(c['family'])}
++    actual = set()
++    for path in DOWNLOAD.rglob('*'):
++        need(not path.is_symlink(), 'symlink in artifact')
++        if not path.is_dir():
++            actual.add(path.relative_to(DOWNLOAD).as_posix())
++    need(actual == expected | {'delivery-manifest.json'}, 'unexpected/missing artifact members')
++    need(j['format'] == 'canonical_human_delivery_v1' and j['repository'] == REPOSITORY and
++         j['branch'] == BRANCH and j['source_sha'] == c['source'] and j['definition_sha'] == c['definition'] and
++         j['source_tree'] == git('rev-parse', 'HEAD^{tree}') and j['family'] == c['family'] and
++         j['run_id'] == c['run_id'] and j['run_attempt'] == c['attempt'] and
++         j['source_files'] == source_binding(c) and j['photographic_accepted'] is False and
++         j['production_eligibility_changed'] is False, 'bundle source/run/family mismatch')
++    need(len(j['files']) == len(expected) and {v['path'] for v in j['files']} == expected,
++         'manifest rows do not equal fixed full family')
++    for row in j['files']:
++        p = regular_under(DOWNLOAD, row['path'])
++        need(p.stat().st_size == row['bytes'] and digest(p) == row['sha256'], 'member SHA/size mismatch')
++    for a in assets(c['family']):
++        for web in ('', 'web/'):
++            for lod in range(4):
++                glb_container(DOWNLOAD / f'assets/humans/{web}{a}.lod{lod}.glb', a)
++    verify_reports(c, DOWNLOAD)
++    return j
++
++
++def remote_source(c):
++    urls = ('https://github.com/kevinrhaas/chicago', 'https://github.com/kevinrhaas/chicago.git')
++    need(git('remote', 'get-url', 'origin') in urls and
++         git('remote', 'get-url', '--push', '--all', 'origin') in urls, 'unexpected fetch/push remote')
++    result = git('ls-remote', '--exit-code', 'origin', REF).split()
++    need(result == [c['source'], REF], 'feature branch advanced; refusing delivery')
++
++
++def require_female_delivery(c):
++    """Male write mode starts only after the complete prior female delivery.
++
++    The later male definition commit differs because the female files were
++    committed. Its authoring source must remain byte-identical to the reviewed
++    female recipe/helpers, and the actual installed female members must match.
++    """
++    p = APP / 'data/humans/canonical-deliveries/dress.json'
++    need(p.is_file() and not p.is_symlink(), 'finish female delivery before male delivery')
++    j = json.loads(p.read_text())
++    need(j['family'] == 'dress' and j['repository'] == REPOSITORY and j['branch'] == BRANCH and
++         re.fullmatch(r'[0-9a-f]{40}', j['source_sha']) and j['source_sha'] == j['definition_sha'] and
++         j['source_files'] == source_binding(c) and j['photographic_accepted'] is False,
++         'male source is not equivalent to the previously delivered female source')
++    subprocess.run(['git', 'merge-base', '--is-ancestor', j['source_sha'], c['source']], cwd=REPO, check=True)
++    changed = set(git('diff', '--name-only', j['source_sha'], c['source']).splitlines())
++    need(changed <= allowed({'family': 'dress'}),
++         'authoring/shared input changed after female generation; only fixed female delivery paths may differ')
++    expected = {target for _, target in spec('dress')}
++    need(len(j['files']) == len(expected) and {row['path'] for row in j['files']} == expected,
++         'prior female delivery member set incomplete')
++    for row in j['files']:
++        path = regular_under(APP, row['path'])
++        need(path.stat().st_size == row['bytes'] and digest(path) == row['sha256'], 'prior female delivery bytes changed')
++
++
++def artifact(c):
++    artifact_id = os.environ['DELIVERY_ARTIFACT_ID']
++    need(re.fullmatch(r'[1-9][0-9]*', artifact_id), 'invalid producer artifact ID')
++    j = json.loads(subprocess.check_output(['gh', 'api', f'repos/{REPOSITORY}/actions/artifacts/{artifact_id}'], text=True))
++    w = j['workflow_run']
++    event = json.loads(Path(os.environ['GITHUB_EVENT_PATH']).read_text())
++    repository_id = event['repository']['id']
++    need(str(j['id']) == artifact_id and not j['expired'] and
++         j['name'] == f"human-delivery-{c['family']}-{c['run_id']}-{c['attempt']}" and
++         str(w['id']) == c['run_id'] and w['head_sha'] == c['source'] and w['head_branch'] == BRANCH and
++         w['repository_id'] == repository_id and w['head_repository_id'] == repository_id and
++         re.fullmatch(r'sha256:[0-9a-f]{64}', j['digest']), 'not the exact current-run producer artifact')
++    need(os.environ['FIXTURE_RESULT'] == 'success' and os.environ['PRODUCER_RESULT'] == 'success',
++         'native prerequisite/generation job did not succeed')
++    STATE.mkdir(exist_ok=True)
++    dump(STATE / 'artifact.json', {k: j[k] for k in ('id', 'name', 'digest', 'size_in_bytes', 'workflow_run')})
++    remote_source(c)
++
++
++def install(c):
++    j = verify_bundle(c); remote_source(c)
++    need(not git('status', '--porcelain', '--untracked-files=all'), 'delivery checkout must be clean')
++    need(shutil.disk_usage(APP).free >= sum(row['bytes'] for row in j['files']) + 2 * 1024**3,
++         'insufficient delivery/native-gate scratch capacity')
++    for row in j['files']:
++        dest = APP / row['path']
++        # Existing file or nearest existing parent must remain inside the checkout.
++        parent = dest
++        while not parent.exists():
++            need(not parent.is_symlink(), 'symlink target'); parent = parent.parent
++        need(parent.resolve().is_relative_to(APP) and not parent.is_symlink(), 'target escapes app')
++        for p in (dest, *dest.parents):
++            if p == APP:
++                break
++            need(not p.is_symlink(), 'symlink target ancestor')
++        if dest.exists():
++            need(stat.S_ISREG(dest.stat().st_mode) and dest.stat().st_nlink == 1, 'unsafe existing target')
++        dest.parent.mkdir(parents=True, exist_ok=True)
++        shutil.copyfile(DOWNLOAD / row['path'], dest)
++    dump(STATE / 'installed-manifest.json', j)
++
++
++def metadata(c):
++    j = verify_bundle(c); art = json.loads((STATE / 'artifact.json').read_text())
++    measure = json.loads((APP / 'data/humans/fixture.measure.json').read_text())
++    files = {row['file']: row for row in measure['files']}
++    actual = {p.relative_to(APP).as_posix() for d in ('assets/humans', 'assets/humans/web')
++              for p in (APP / d).glob('*.glb')}
++    need(set(files) == actual and len(files) == len(measure['files']), 'ALL-asset measurement census mismatch')
++    for name, row in files.items():
++        need(row['sha256'] == digest(APP / name) and row['verdicts'] and
++             all(v['ok'] is True for v in row['verdicts']), 'unqualified/stale combined measurement')
++    receipt = dict(j, artifact_id=art['id'], artifact_zip_sha256=art['digest'].split(':')[1],
++                   delivery_manifest_sha256=os.environ['EXPECTED_MANIFEST_SHA256'],
++                   mechanical_scope='Same-source canonical generation and ALL-asset browser/LOD qualification; '
++                   'published scene/photo/occupied acceptance remain open')
++    dump(APP / f"data/humans/canonical-deliveries/{c['family']}.json", receipt)
++    lines = [f"\n\n### Actual optional {c['family']} canonical delivery — run{c['run_id']} attempt{c['attempt']}\n",
++             f"Source `{c['source']}`, definition `{c['definition']}`, artifact{art['id']}, "
++             f"official ZIP SHA256 `{receipt['artifact_zip_sha256']}`, manifestSHA256 `{receipt['delivery_manifest_sha256']}`. "
++             'CC0-1.0 graphical derivatives retain all existing MakeHuman body/hair/skin source notices above; '
++             'original garment/bonnet/closure/hat geometry and generated material values are CC0-1.0. '
++             'Generator code remains GPL-3.0-or-later. Dress finishing and rounded felt dimensions/colors are '
++             'reconstructed, bounded by the existing cleared period sources; no new likeness or historical outfit '
++             'is asserted. Mechanical pipeline qualification does not establish photographic/production acceptance.\n',
++             '\n|Path under assets/|License|Bytes|SHA256|\n|---|---|---:|---|\n']
++    for row in j['files']:
++        if row['path'].startswith('assets/'):
++            lines.append(f"|{row['path'][7:]}|CC0-1.0, original notices retained|{row['bytes']}|{row['sha256']}|\n")
++    with (APP / 'assets/LICENSES.md').open('a') as stream:
++        stream.write(''.join(lines))
++    if c['family'] == 'teamsters':
++        old = json.loads((APP / 'data/humans/bardwell_otis_1835.measure.json').read_text())
++        old.update(canonical_source_sha=c['source'], canonical_run_id=int(c['run_id']),
++                   canonical_artifact_id=art['id'], canonical_artifact_zip_sha256=receipt['artifact_zip_sha256'],
++                   mechanical_qualified=True, photographic_accepted=False,
++                   scope=receipt['mechanical_scope'], assets=[])
++        proof = APP / PROOF / c['family']
++        for mode in ('source', 'web'):
++            report = json.loads((proof / f'{mode}-inspection.json').read_text())
++            for row in report['runs']:
++                if row['viewport_name'] != 'desktop' or not Path(row['file']).name.startswith(MALES[0] + '.'):
++                    continue
++                m = files[row['file']]
++                old['assets'].append(dict(file=row['file'], lod=m['lod'], sha256=m['sha256'],
++                    bytes=m['bytes'], triangles=row['triangles'], skinned_meshes=row['skinned_meshes'],
++                    bone_count=row['bone_count'], standing_frame=row['standing_frame'],
++                    footwear_min_y_m=row['footwear_min_y_m'], draw_material_slots=m['draw_calls'],
++                    decoded_images=[{'material': x['name'], 'textures': x['textures']} for x in row['materials']]))
++        need(len(old['assets']) == 8, 'actual Bardwell eight-file cost receipt incomplete')
++        dump(APP / 'data/humans/bardwell_otis_1835.measure.json', old)
++        p = APP / 'data/humans/instances/1835/hi_rc_bardwell_otis_1835.json'
++        instance = json.loads(p.read_text())
++        need(instance['appearance']['asset_id'] == MALES[0] and instance['behaviour']['state'] == 'standing' and
++             instance['animation']['clip'] == 'idle', 'existing standing Otis selection changed')
++        instance['provenance']['basis'] = (
++            f"Reconstructed standing depiction of existing reconstructed resident Otis Bardwell; canonical "
++            f"source{c['source']}, run{c['run_id']}, artifact{art['id']}. Existing invented Wolf Point Tavern-yard "
++            'stand, placement and identity are preserved. Name, age band and teamster role are model records, '
++            'not documentary identity, likeness, tavern employment, wagon ownership or an observed action. '
++            'The current workwear/rounded felt hat is reconstructed within the existing cleared source bounds. '
++            'Mechanical source/export qualification does not establish photographic period fidelity, continuous '
++            'animated fit, occupied interfaces or scene performance. Those remain open.')
++        dump(p, instance)
++        change = json.loads((APP / 'changelog.d/T-1789.json').read_text())
++        change['title'] = 'Refine the standing resident and reusable wardrobe'
++        change['items'] = ['Otis Bardwell’s standing model uses the rebuilt workwear and rounded hat. '
++                           'Three additional resident-reference models form part of the reusable library; '
++                           'they have no new town placements. All appearances remain reconstructions.']
++        dump(APP / 'changelog.d/T-1789.json', change)
++
++
++def allowed(c):
++    names = {target for _, target in spec(c['family'])}
++    names |= {'assets/LICENSES.md', 'data/humans/fixture.measure.json',
++              f"data/humans/canonical-deliveries/{c['family']}.json"}
++    if c['family'] == 'teamsters':
++        names |= {'data/humans/bardwell_otis_1835.measure.json',
++                  'data/humans/instances/1835/hi_rc_bardwell_otis_1835.json', 'changelog.d/T-1789.json'}
++    return {'chicago/4d/' + name for name in names}
++
++
++def sealed_tree(c):
++    source_binding(c)
++    names = set(git('diff', '--cached', '--name-only', c['source']).splitlines())
++    need(names and names <= allowed(c), 'unexpected/empty staged delivery paths')
++    need(not git('diff', '--name-only') and not git('ls-files', '--others', '--exclude-standard'),
++         'unstaged/untracked source changes after delivery')
++    need(not git('ls-files', '-u'), 'unmerged delivery index')
++    # No symlink modes are acceptable, even if a later step replaced an installed file.
++    for name in names:
++        need(git('ls-files', '-s', '--', name).startswith('100644 '), 'unexpected staged file mode')
++    for row in verify_bundle(c)['files']:
++        need(digest(APP / row['path']) == row['sha256'], 'installed output changed since verified bundle')
++    return git('write-tree')
++
++
++def gate(c):
++    remote_source(c)
++    subprocess.run(['git', 'add', '--', *sorted(allowed(c))], cwd=REPO, check=True)
++    before = sealed_tree(c)
++    env = dict(os.environ, C4D_GATE_REQUIRE_READERS='1', C4D_GATE_REQUIRE_BASE='1',
++               CHECK_JOBS='4', OMP_NUM_THREADS='1', OPENBLAS_NUM_THREADS='1', MKL_NUM_THREADS='1')
++    env.pop('GIT_NO_LAZY_FETCH', None)
++    start = time.monotonic()
++    with (STATE / 'native-preflight.log').open('w') as stream:
++        result = subprocess.run(['bash', 'tools/preflight.sh'], cwd=APP, env=env,
++                                stdout=stream, stderr=subprocess.STDOUT, timeout=1800)
++    need(result.returncode == 0, 'complete required-reader native preflight failed; no commit')
++    need(sealed_tree(c) == before, 'staged/source tree changed during native preflight')
++    remote_source(c)
++    dump(STATE / 'GATED-TREE.json', dict(source=c['source'], tree=before,
++         manifest_sha256=os.environ['EXPECTED_MANIFEST_SHA256'], artifact_id=os.environ['DELIVERY_ARTIFACT_ID'],
++         run_id=c['run_id'], attempt=c['attempt'], family=c['family'], returncode=result.returncode,
++         seconds=time.monotonic()-start, required_readers=True, required_base=True,
++         origin_dev=git('rev-parse', 'origin/dev'), preflight_log_sha256=digest(STATE / 'native-preflight.log')))
++
++
++def commit(c):
++    seal = json.loads((STATE / 'GATED-TREE.json').read_text())
++    need(seal['returncode'] == 0 and seal['required_readers'] is True and seal['required_base'] is True and
++         seal['source'] == c['source'] and seal['run_id'] == c['run_id'] and seal['attempt'] == c['attempt'] and
++         seal['family'] == c['family'] and seal['tree'] == sealed_tree(c) and
++         seal['manifest_sha256'] == os.environ['EXPECTED_MANIFEST_SHA256'] and
++         seal['artifact_id'] == os.environ['DELIVERY_ARTIFACT_ID'] and
++         seal['preflight_log_sha256'] == digest(STATE / 'native-preflight.log'), 'gated-tree/source receipt mismatch')
++    remote_source(c)
++    git('config', 'user.name', 'github-actions[bot]')
++    git('config', 'user.email', 'github-actions[bot]@users.noreply.github.com')
++    git('commit', '-m', f"feat: deliver canonical {c['family']} human assets (T-1789)",
++        '-m', f"Same-run generated models from {c['source']}; run {c['run_id']} attempt {c['attempt']}. "
++        f"Complete required-reader preflight sealed tree {seal['tree']}. Photographic/production acceptance remains open.")
++    head = git('rev-parse', 'HEAD')
++    need(git('rev-parse', 'HEAD^') == c['source'] and git('rev-parse', 'HEAD^{tree}') == seal['tree'],
++         'actual commit parent/tree does not match the gated delivery')
++    subprocess.run(['git', 'diff', '--check', 'HEAD^', 'HEAD'], cwd=REPO, check=True)
++    base = git('merge-base', 'origin/dev', 'HEAD')
++    subprocess.run(['node', 'tools/check-changelog-entry.mjs', base, head], cwd=APP, check=True)
++    subprocess.run(['node', 'tools/resolve_id_collisions.mjs', '--base', 'origin/dev', '--check'],
++                   cwd=APP, check=True)
++    need(not git('status', '--porcelain', '--untracked-files=all'), 'actual new HEAD is not clean')
++    # Immediately before a NORMAL non-force push. A race after this check is still
++    # refused by Git's fast-forward rule; there is no force/update-ref/API bypass.
++    remote_source(c)
++    git('push', 'origin', 'HEAD:' + REF)
++    need(git('ls-remote', '--exit-code', 'origin', REF).split() == [head, REF], 'pushed remote head mismatch')
++    dump(STATE / 'ACTUAL-PUSH.json', dict(source=c['source'], HEAD=head, TREE=seal['tree'],
++         branch=BRANCH, ordinary_PR_CI='PENDING: GITHUB_TOKEN push does not trigger normal PR checks; '
++         'root must verify this exact gated tree and use normal authenticated same-tree followup',
++         auto_ready=False, auto_merge=False, photographic_accepted=False))
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('command', choices=('guard', 'bundle', 'artifact', 'install', 'metadata', 'gate', 'commit'))
++    command = parser.parse_args().command
++    c = context()
++    if c['family'] == 'teamsters':
++        require_female_delivery(c)
++    if command != 'guard':
++        globals()[command](c)
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/chicago/4d/tools/test_human_delivery.py b/chicago/4d/tools/test_human_delivery.py
+new file mode 100644
+index 000000000..acb228122
+--- /dev/null
++++ b/chicago/4d/tools/test_human_delivery.py
+@@ -0,0 +1,324 @@
++#!/usr/bin/env python3
++# SPDX-License-Identifier: GPL-3.0-or-later
++"""Small negative/positive trust-boundary tests; no native asset generation.
++
++Synthetic files exercise only path/container/manifest rejection. They are not
++Blender, visual, fit, export or full-preflight evidence.
++"""
++import copy
++import hashlib
++import json
++import os
++from pathlib import Path
++import struct
++import tempfile
++import unittest
++from unittest.mock import patch
++
++import human_delivery as delivery
++
++
++def trusted():
++    return dict(event='workflow_dispatch', repository=delivery.REPOSITORY,
++                ref=delivery.REF, workflow_ref=delivery.WORKFLOW,
++                source='a' * 40, definition='a' * 40, run_id='123', attempt='2',
++                deliver=True, seated=False, dress=True, teamsters=False, source_ref='', family='dress')
++
++
++class TrustTests(unittest.TestCase):
++    def test_manual_owned_source_only(self):
++        c = trusted()
++        self.assertEqual(delivery.validate_context(c), 'dress')
++        c.update(dress=False, teamsters=True)
++        self.assertEqual(delivery.validate_context(c), 'teamsters')
++        for field, values in {
++            'event': ['push', 'pull_request', 'workflow_run'],
++            'repository': ['other/chicago', 'kevinrhaas/chicago-fork'],
++            'ref': ['refs/heads/main', 'refs/heads/dev', 'refs/tags/' + delivery.BRANCH, 'refs/heads/other'],
++            'workflow_ref': [delivery.WORKFLOW + '-other'],
++            'definition': ['b' * 40, 'main'], 'source': ['main', delivery.LEGACY, 'A' * 40],
++            'source_ref': [delivery.LEGACY, 'refs/heads/dev', 'b' * 40],
++            'deliver': [False], 'seated': [True], 'run_id': ['0', '../1', '1;echo bad'], 'attempt': ['0', '01'],
++        }.items():
++            for value in values:
++                with self.subTest(field=field, value=value), self.assertRaises(ValueError):
++                    candidate = trusted(); candidate[field] = value
++                    delivery.validate_context(candidate)
++        for dress, teamsters in [(False, False), (True, True)]:
++            with self.assertRaises(ValueError):
++                candidate = trusted(); candidate.update(dress=dress, teamsters=teamsters)
++                delivery.validate_context(candidate)
++
++    def test_fixed_family_has_exact_masters_lods_and_three_male_stills(self):
++        for family, count in [('dress', 1), ('teamsters', 3)]:
++            targets = [target for _, target in delivery.spec(family)]
++            self.assertEqual(len(targets), len(set(targets)))
++            self.assertEqual(sum(x.endswith('.blend') for x in targets), count)
++            self.assertEqual(sum(x.endswith('.glb') for x in targets), count * 8)
++            self.assertEqual(sum(x.endswith('.png') for x in targets), 0 if family == 'dress' else 3)
++            self.assertTrue(all('..' not in Path(x).parts and not x.startswith('/') for x in targets))
++        with self.assertRaises(ValueError):
++            delivery.assets('other')
++
++    def test_paths_symlinks_and_hardlinks(self):
++        with tempfile.TemporaryDirectory(prefix='human-delivery-path-test-') as directory:
++            root = Path(directory); (root / 'good').write_bytes(b'proof')
++            self.assertEqual(delivery.regular_under(root, 'good'), root / 'good')
++            for value in ['/etc/passwd', '../good', 'a/../good', 'a//b', 'a\\b', './good']:
++                with self.subTest(value=value), self.assertRaises(ValueError):
++                    delivery.regular_under(root, value)
++            (root / 'link').symlink_to(root / 'good')
++            with self.assertRaises(ValueError):
++                delivery.regular_under(root, 'link')
++            (root / 'parent').symlink_to(root, target_is_directory=True)
++            with self.assertRaises(ValueError):
++                delivery.regular_under(root, 'parent/good')
++            os.link(root / 'good', root / 'hardlink')
++            with self.assertRaises(ValueError):
++                delivery.regular_under(root, 'hardlink')
++
++    def test_glb_rejects_external_or_data_uri_and_wrong_identity(self):
++        with tempfile.TemporaryDirectory(prefix='human-delivery-container-test-') as directory:
++            path = Path(directory) / 'synthetic-security-fixture.glb'
++            document = dict(scenes=[dict(extras=dict(chicago4d_human=dict(asset_id=delivery.FEMALE,
++                             grade='reconstructed')))], buffers=[dict(byteLength=0)], images=[])
++            def write(value):
++                raw = json.dumps(value).encode(); raw += b' ' * (-len(raw) % 4)
++                path.write_bytes(struct.pack('<5I', 0x46546C67, 2, 20 + len(raw), len(raw), 0x4E4F534A) + raw)
++            write(document); delivery.glb_container(path, delivery.FEMALE)
++            for uri in ['https://example.invalid/image.png', 'file:///tmp/file', '../image.png', 'data:image/png;base64,AA==']:
++                for key in ['images', 'buffers']:
++                    candidate = copy.deepcopy(document); candidate[key] = [dict(uri=uri)]
++                    write(candidate)
++                    with self.subTest(uri=uri, key=key), self.assertRaises(ValueError):
++                        delivery.glb_container(path, delivery.FEMALE)
++            write(document)
++            with self.assertRaises(ValueError):
++                delivery.glb_container(path, delivery.MALES[0])
++            path.write_bytes(b'not a GLB')
++            with self.assertRaises(ValueError):
++                delivery.glb_container(path, delivery.FEMALE)
++
++    def test_remote_branch_race_and_wrong_origin_refused(self):
++        for url, head in [('https://github.com/kevinrhaas/chicago', 'a' * 40),
++                          ('https://github.com/kevinrhaas/chicago.git', 'a' * 40)]:
++            with patch.object(delivery, 'git', side_effect=[url, url, head + '\t' + delivery.REF]):
++                delivery.remote_source(trusted())
++        for output in ['b' * 40 + '\t' + delivery.REF, 'a' * 40 + '\trefs/heads/dev', '']:
++            with patch.object(delivery, 'git', side_effect=['https://github.com/kevinrhaas/chicago',
++                 'https://github.com/kevinrhaas/chicago', output]), self.assertRaises(ValueError):
++                delivery.remote_source(trusted())
++        with patch.object(delivery, 'git', return_value='https://other.invalid/kevinrhaas/chicago'), self.assertRaises(ValueError):
++            delivery.remote_source(trusted())
++        for push in ['https://other.invalid/repo', 'https://github.com/kevinrhaas/chicago\nhttps://other.invalid/repo']:
++            with patch.object(delivery, 'git', side_effect=['https://github.com/kevinrhaas/chicago', push]), self.assertRaises(ValueError):
++                delivery.remote_source(trusted())
++
++    def test_male_write_requires_prior_equivalent_verified_female_delivery(self):
++        with tempfile.TemporaryDirectory(prefix='human-delivery-sequence-test-') as directory:
++            root = Path(directory); p = root / 'data/humans/canonical-deliveries/dress.json'
++            with patch.object(delivery, 'APP', root), self.assertRaises(ValueError):
++                delivery.require_female_delivery(trusted())
++            record = dict(family='dress', repository=delivery.REPOSITORY, branch=delivery.BRANCH,
++                          source_sha='b' * 40, definition_sha='b' * 40,
++                          source_files={'recipe': 'unchanged'}, photographic_accepted=False, files=[])
++            delivery.dump(p, record)
++            with patch.object(delivery, 'APP', root), patch.object(delivery, 'source_binding', return_value={'recipe': 'changed'}), self.assertRaises(ValueError):
++                delivery.require_female_delivery(trusted())
++            with patch.object(delivery, 'APP', root), patch.object(delivery, 'source_binding', return_value={'recipe': 'unchanged'}), \
++                 patch.object(delivery, 'git', return_value=''), patch.object(delivery.subprocess, 'run'), self.assertRaises(ValueError):
++                delivery.require_female_delivery(trusted())
++            with patch.object(delivery, 'APP', root):
++                for _, target in delivery.spec('dress'):
++                    path = root / target; path.parent.mkdir(parents=True, exist_ok=True)
++                    path.write_bytes(b'SYNTHETIC prior female member for source-path guard')
++                    record['files'].append(dict(path=target, bytes=path.stat().st_size, sha256=delivery.digest(path)))
++            delivery.dump(p, record)
++            # These real shared inputs were intentionally outside SOURCE_FILES;
++            # the native Git path guard must still refuse their changed bytes.
++            changed_paths = ['chicago/4d/tools/human_hair_short04.py',
++                             'chicago/4d/tools/human_source_normals.py',
++                             'chicago/4d/assets/authored/humans/makehuman_hm08/prepared.json',
++                             'chicago/4d/data/humans/contract.json']
++            for changed in changed_paths:
++                with self.subTest(changed=changed), patch.object(delivery, 'APP', root), \
++                     patch.object(delivery, 'source_binding', return_value={'recipe': 'unchanged'}), \
++                     patch.object(delivery, 'git', return_value=changed), \
++                     patch.object(delivery.subprocess, 'run'), self.assertRaises(ValueError):
++                    delivery.require_female_delivery(trusted())
++            with patch.object(delivery, 'APP', root), patch.object(delivery, 'source_binding', return_value={'recipe': 'unchanged'}), \
++                 patch.object(delivery, 'git', return_value='\n'.join(sorted(delivery.allowed({'family': 'dress'})))), \
++                 patch.object(delivery.subprocess, 'run'):
++                delivery.require_female_delivery(trusted())
++
++    def test_same_run_artifact_id_attempt_source_and_success_required(self):
++        with tempfile.TemporaryDirectory(prefix='human-delivery-artifact-test-') as directory:
++            root = Path(directory); event = root / 'event.json'
++            event.write_text(json.dumps(dict(repository=dict(id=7))))
++            record = dict(id=99, name='human-delivery-dress-123-2', expired=False,
++                          digest='sha256:' + 'c' * 64, size_in_bytes=100,
++                          workflow_run=dict(id=123, head_sha='a' * 40, head_branch=delivery.BRANCH,
++                                            repository_id=7, head_repository_id=7))
++            env = dict(DELIVERY_ARTIFACT_ID='99', FIXTURE_RESULT='success', PRODUCER_RESULT='success',
++                       GITHUB_EVENT_PATH=str(event))
++            def run(candidate, changes=None):
++                with patch.dict(os.environ, dict(env, **(changes or {}))), patch.object(delivery, 'STATE', root), \
++                     patch.object(delivery.subprocess, 'check_output', return_value=json.dumps(candidate)), \
++                     patch.object(delivery, 'remote_source'):
++                    delivery.artifact(trusted())
++            run(record)
++            for key, value in [('id', 100), ('name', 'human-delivery-dress-123-1'), ('expired', True), ('digest', '')]:
++                candidate = copy.deepcopy(record); candidate[key] = value
++                with self.subTest(key=key), self.assertRaises(ValueError):
++                    run(candidate)
++            for key, value in [('id', 124), ('head_sha', 'b' * 40), ('head_branch', 'dev'),
++                               ('repository_id', 8), ('head_repository_id', 8)]:
++                candidate = copy.deepcopy(record); candidate['workflow_run'][key] = value
++                with self.subTest(key=key), self.assertRaises(ValueError):
++                    run(candidate)
++            for key in ['FIXTURE_RESULT', 'PRODUCER_RESULT']:
++                for value in ['failure', 'cancelled', 'skipped']:
++                    with self.subTest(key=key, value=value), self.assertRaises(ValueError):
++                        run(record, {key: value})
++
++    def test_manifest_member_source_hash_and_fixed_family_rejections(self):
++        with tempfile.TemporaryDirectory(prefix='human-delivery-manifest-test-') as directory:
++            root = Path(directory); c = trusted(); rows = []
++            for _, target in delivery.spec('dress'):
++                path = root / target; path.parent.mkdir(parents=True, exist_ok=True); path.write_bytes(b'synthetic boundary test')
++                rows.append(dict(path=target, bytes=path.stat().st_size, sha256=delivery.digest(path)))
++            original = dict(format='canonical_human_delivery_v1', repository=delivery.REPOSITORY,
++                branch=delivery.BRANCH, source_sha=c['source'], definition_sha=c['definition'], source_tree='d' * 40,
++                family='dress', run_id='123', run_attempt='2', source_files={'bound': 'value'},
++                photographic_accepted=False, production_eligibility_changed=False, files=rows)
++            def run(candidate):
++                delivery.dump(root / 'delivery-manifest.json', candidate)
++                with patch.object(delivery, 'DOWNLOAD', root), patch.object(delivery, 'git', return_value='d' * 40), \
++                     patch.object(delivery, 'source_binding', return_value={'bound': 'value'}), \
++                     patch.object(delivery, 'glb_container'), patch.object(delivery, 'verify_reports'), \
++                     patch.dict(os.environ, EXPECTED_MANIFEST_SHA256=delivery.digest(root / 'delivery-manifest.json')):
++                    delivery.verify_bundle(c)
++            run(original)
++            for key, value in [('source_sha', 'b' * 40), ('definition_sha', 'b' * 40), ('run_id', '124'),
++                ('run_attempt', '1'), ('family', 'teamsters'), ('source_tree', 'e' * 40),
++                ('branch', 'dev'), ('source_files', {}), ('photographic_accepted', True),
++                ('production_eligibility_changed', True)]:
++                candidate = copy.deepcopy(original); candidate[key] = value
++                with self.subTest(key=key), self.assertRaises(ValueError):
++                    run(candidate)
++            for mutation in ['missing', 'duplicate', 'escape', 'sha', 'size']:
++                candidate = copy.deepcopy(original)
++                if mutation == 'missing': candidate['files'].pop()
++                if mutation == 'duplicate': candidate['files'].append(candidate['files'][0])
++                if mutation == 'escape': candidate['files'][0]['path'] = '../untrusted'
++                if mutation == 'sha': candidate['files'][0]['sha256'] = '0' * 64
++                if mutation == 'size': candidate['files'][0]['bytes'] += 1
++                with self.subTest(mutation=mutation), self.assertRaises(ValueError): run(candidate)
++            (root / 'unexpected').write_bytes(b'x')
++            with self.assertRaises(ValueError): run(original)
++            (root / 'unexpected').unlink(); (root / 'unexpected').symlink_to(root / rows[0]['path'])
++            with self.assertRaises(ValueError): run(original)
++
++    def test_unsealed_or_changed_tree_cannot_reach_commit(self):
++        with tempfile.TemporaryDirectory(prefix='human-delivery-seal-test-') as directory:
++            root = Path(directory); delivery.dump(root / 'GATED-TREE.json', {'returncode': 1})
++            with patch.object(delivery, 'STATE', root), patch.object(delivery, 'git') as git, self.assertRaises(ValueError):
++                delivery.commit(trusted())
++            git.assert_not_called()
++
++    def test_metadata_uses_existing_native_schema_and_only_fixed_allowed_paths(self):
++        """Actual current schema shapes, tiny SYNTHETIC bytes; no asset qualification.
++
++        The retained cost record provides exactly the fields emitted by the
++        native human_teamster inspection. The combined registry retains the
++        current human_fixture schema. This catches execution-time key mistakes
++        without pretending to rebuild or measure a model.
++        """
++        original_app = delivery.APP
++        fixture = json.loads((original_app / 'data/humans/fixture.measure.json').read_text())
++        costs = json.loads((original_app / 'data/humans/bardwell_otis_1835.measure.json').read_text())
++        instance = json.loads((original_app / 'data/humans/instances/1835/hi_rc_bardwell_otis_1835.json').read_text())
++        change = json.loads((original_app / 'changelog.d/T-1789.json').read_text())
++        for family in ('dress', 'teamsters'):
++            with self.subTest(family=family), tempfile.TemporaryDirectory(prefix='human-delivery-native-schema-test-') as directory:
++                root = Path(directory); state = root / '.unit-state'; state.mkdir()
++                c = trusted(); c.update(family=family, dress=family == 'dress', teamsters=family == 'teamsters')
++                delivery.dump(state / 'artifact.json', dict(id=99, digest='sha256:' + 'c' * 64))
++                ids = ('c4d_fixture', delivery.MALES[0], delivery.FEMALE)
++                if family == 'teamsters': ids += delivery.MALES[1:]
++                measured = copy.deepcopy(fixture); measured['files'] = []
++                for asset in ids:
++                    for web in ('', 'web/'):
++                        for lod in range(4):
++                            name = f'assets/humans/{web}{asset}.lod{lod}.glb'; path = root / name
++                            path.parent.mkdir(parents=True, exist_ok=True)
++                            path.write_bytes(('SYNTHETIC schema test ' + name).encode())
++                            row = copy.deepcopy(fixture['files'][0])
++                            row.update(file=name, lod=lod, sha256=delivery.digest(path), bytes=path.stat().st_size)
++                            measured['files'].append(row)
++                delivery.dump(root / 'data/humans/fixture.measure.json', measured)
++                delivery.dump(root / 'data/humans/bardwell_otis_1835.measure.json', costs)
++                ipath = root / 'data/humans/instances/1835/hi_rc_bardwell_otis_1835.json'
++                delivery.dump(ipath, instance)
++                delivery.dump(root / 'changelog.d/T-1789.json', change)
++                (root / 'assets/LICENSES.md').write_text('Original rights notices retained.\n')
++                rows = []
++                with patch.object(delivery, 'APP', root):
++                    for _, target in delivery.spec(family):
++                        p = root / target
++                        if not p.exists():
++                            p.parent.mkdir(parents=True, exist_ok=True); p.write_bytes(b'SYNTHETIC schema fixture')
++                        rows.append(dict(path=target, bytes=p.stat().st_size, sha256=delivery.digest(p)))
++                # Shape is the native report's material/name/textures and desktop
++                # fields, translated from the actual retained native cost record.
++                for mode in ('source', 'web'):
++                    reports = []
++                    for old in costs['assets']:
++                        if ('/web/' in old['file']) != (mode == 'web'): continue
++                        row = {k: copy.deepcopy(old[k]) for k in ('file', 'triangles', 'skinned_meshes',
++                               'bone_count', 'standing_frame', 'footwear_min_y_m')}
++                        row.update(viewport_name='desktop', materials=[dict(name=m['material'], textures=m['textures'])
++                                                                      for m in old['decoded_images']])
++                        reports.append(row)
++                    delivery.dump(root / delivery.PROOF / family / f'{mode}-inspection.json', dict(runs=reports))
++                manifest = dict(family=family, source_sha=c['source'], definition_sha=c['definition'],
++                                files=rows, photographic_accepted=False, production_eligibility_changed=False)
++                before = {p.relative_to(root).as_posix(): delivery.digest(p) for p in root.rglob('*') if p.is_file()}
++                with patch.object(delivery, 'APP', root), patch.object(delivery, 'STATE', state), \
++                     patch.object(delivery, 'verify_bundle', return_value=manifest), \
++                     patch.dict(os.environ, EXPECTED_MANIFEST_SHA256='d' * 64):
++                    delivery.metadata(c)
++                after = {p.relative_to(root).as_posix(): delivery.digest(p) for p in root.rglob('*') if p.is_file()}
++                changed = {'chicago/4d/' + p for p, h in after.items() if before.get(p) != h}
++                self.assertTrue(changed <= delivery.allowed(c), changed - delivery.allowed(c))
++                self.assertEqual(len(measured['files']), 24 if family == 'dress' else 40)
++                self.assertTrue((root / 'assets/LICENSES.md').read_text().startswith('Original rights notices retained.\n'))
++                self.assertFalse(any('role_profiles/' in p or 'instances/1835/index.json' in p for p in delivery.allowed(c)))
++                updated = json.loads(ipath.read_text())
++                if family == 'dress':
++                    self.assertEqual(updated, instance)
++                    self.assertEqual(json.loads((root / 'changelog.d/T-1789.json').read_text()), change)
++                else:
++                    before_basis = copy.deepcopy(instance); after_basis = copy.deepcopy(updated)
++                    del before_basis['provenance']['basis']; del after_basis['provenance']['basis']
++                    self.assertEqual(before_basis, after_basis)
++                    qualified = json.loads((root / 'data/humans/bardwell_otis_1835.measure.json').read_text())
++                    self.assertEqual(set(qualified), set(costs))
++                    self.assertEqual(len(qualified['assets']), 8)
++                    for row in qualified['assets']:
++                        self.assertEqual(set(row), set(costs['assets'][0]))
++                        self.assertEqual(row['sha256'], delivery.digest(root / row['file']))
++                    self.assertFalse(qualified['photographic_accepted'])
++                    self.assertIn('published scene/photo/occupied acceptance remain open', qualified['scope'])
++                # A stale ALL-asset registry must fail before rights/provenance writes.
++                measured['files'][0]['sha256'] = '0' * 64
++                delivery.dump(root / 'data/humans/fixture.measure.json', measured)
++                license_before = (root / 'assets/LICENSES.md').read_bytes()
++                with patch.object(delivery, 'APP', root), patch.object(delivery, 'STATE', state), \
++                     patch.object(delivery, 'verify_bundle', return_value=manifest), self.assertRaises(ValueError):
++                    delivery.metadata(c)
++                self.assertEqual((root / 'assets/LICENSES.md').read_bytes(), license_before)
++
++
++if __name__ == '__main__':
++    unittest.main(verbosity=2)

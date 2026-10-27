@@ -1,0 +1,15 @@
+# Independent review of corrected desktop lifecycle pixels
+
+I inspected the actual 1280 × 800 before, eviction-return and Full-detail-return images, read the unchanged observer and T-3173 acceptance, and independently decoded the PNGs. No visitor-visible material or texture change is apparent.
+
+Exactly three of 1,024,000 pixels differ in RGB; all alpha bytes match. The two pixels exceeding eight levels are (83, 463), delta (11, 7, 10), and (665, 467), delta (13, 9, 13). Both appear on walk or grass below Glessner’s stone footing. The third, at (682, 106), delta (2, 6, 0), lies in the canopy/roof area. Screen position does not prove object ownership or cause. All other pixels match exactly. Before, eviction-return and final context-reload decoded RGBA are byte-identical.
+
+The auxiliary observer correctly remains NONPASS: return 1 in 1228.509 seconds, cleanup complete. Its unchanged predicate requires the number of pixels with any RGB channel delta greater than eight to stay at or below held noise. Held noise is zero; two pixels therefore fail. This whole-frame invariant is stricter than a visible material-regression assessment. No shader, shadow, numerical or asset-texture cause has been established. Do not change thresholds, mask regions, rerun unchanged work to seek green, or relabel this failure.
+
+T-3173 requires actual native 1904 memory below the original 400/1125 MiB goals, preserved Full textures and samplers, consistent Light texture policy, real eviction/refill and context recovery without browser errors, the complete source gate and current ordinary CI. Current memory meets both original goals. The closed browser study restored the Full asset URL, 31 meshes, geometry and sampler hashes, all 283 structures and actual refetch; exercised 61-source eviction/refill and a genuine context loss followed by one normal reload; and recorded five GL error readings of zero and no page, request, HTTP or console errors. These findings support bounded texture and lifecycle acceptance. Required native checks and complete current published smoke at both widths must still pass normally.
+
+The external observer has no reference in the inspected native check, published-smoke or frame-time workflow entrypoints. Its diagnostic failure remains useful evidence. The AGENTS house photo-stopping rule directly covers house image discrepancies and pixel offsets. Applying its visitor-impact principle here is reviewer judgment, not an automatic exception for this memory ticket or permission to bypass a required gate.
+
+Once the required current gates genuinely pass, these isolated imperceptible pixels alone do not demonstrate a visitor-visible regression that warrants indefinitely withholding the bounded renderer delivery. Root retains merge and ticket judgment. This review performs no source edit, gate waiver, ticket closure or DEV merge, and claims no broader photographic completion.
+
+The JSON receipt binds the exact images, observer and ticket by SHA256 and records all independent pixel coordinates. No images were edited or copied into this small packet.

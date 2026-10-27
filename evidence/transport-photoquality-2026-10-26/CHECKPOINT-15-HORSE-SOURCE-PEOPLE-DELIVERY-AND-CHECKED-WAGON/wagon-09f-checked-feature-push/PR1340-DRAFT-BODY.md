@@ -1,0 +1,11 @@
+This delivers one reusable articulated farm-box wagon master (T-2793) and the T-3173 texture memory/lifecycle repairs. Existing static wagons remain unchanged. Covered variants, occupied teams, riders and gait are outside this PR.
+
+The master includes independent body/wheels/front gear/kingbolt/reach/pole, proposed hitch interfaces, three compressed LODs and licensed construction sources with explicit reconstruction limits. The renderer changes isolate texture ownership, release uploaded compressed copies, avoid duplicate raw-model banking, recover released sources transactionally and pair each live colour material with its shadow owner. The People HEAD probe consumes its response body.
+
+Normally merged pinned DEV `e5b9a0fbb145545c95079ccc7e7a3e08ffa050a5` preserves all incoming St Mary's, Pullman, Dent and Wolf Point source/geometry/photo/rights work. All ten performance/test files retain the previous checked bytes. Native Lib799 preserves all798 incoming entries and the one original farm entry. The supported53-step SourceUse owner reached a true fixed point in2 laps. Native publishing, mirror/yearpack checks and the complete required-reader preflight passed on this exact candidate within the unchanged416MiB publication budget.
+
+Validation binds checked `09f75fb667fe34421daf9f614648f615cf1f7841`, tree `0daa516cf9f99c577b527d56053dd12bcb3138c2`, app `7d1ce86c5b5b1382a5901dbf781f4e8eb8bb4ae7`: full native preflight PASS in752.016s; actual new-HEAD changelog, ID, folded format and shipped-history checks PASS; normal feature push verified. The34-frame wagon study remains dated evidence with exact widget/vendor inputs. Prior failed readings, resource guards and strict auxiliary pixel NONPASS receipts remain retained; independent visual review found no noticeable regression. Those earlier-head results do not certify this new world.
+
+The PR remains **draft**. Fresh-head ordinary CI, required published smoke at390×780 and1280×800, and current-world browser/memory qualification must complete before DEV merge. No assertion, memory ceiling, source/publication cap or pixel threshold was weakened. No broad transport, historical-specimen, photographic-town or ticket-completion claim is made.
+
+The preflight exceeded its unchanged600-second target; the actual elapsed time is retained above.
