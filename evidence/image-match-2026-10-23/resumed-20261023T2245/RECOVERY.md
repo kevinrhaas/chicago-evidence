@@ -1,5 +1,21 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- FOLD407_INVALID_ORPHAN_RECOVERY_20261027_START -->
+## Exact current-dev fold import and orphan scratch recovery
+
+The genuine T3161 fold was inspected separately from its preceding Pullman feature. Its three new blobs total8,485,201B, beyond the routine5MiB envelope; Root authorized the exact10MiB canonical import after reviewing its semantics. A first attempt stopped at the unchanged capacity guard before any source fetch/write/CAS because workspace availability had fallen to0. That raw failure remains preserved.
+
+Only the newly abandoned unindexed tmp_pack_YjpEeR was retired after a full-stream invalid checksum, stable metadata, absent companion index and readable process/open-FD checks. Visibility limits are explicit. Canonical objects and source metadata were untouched. The file allocation was2,235,703,296B; the actual df gain was538,931,200B.
+
+The bounded retry closed0 with all children reaped at01:12:21: canonical8,507,631B below10MiB, actualallocation3,395,584B, all16,973 tip blob sizes verified. A fresh exact remote407 allowed expected-old cached origin/dev CAS fromed250to407. HEAD/index/MERGE/config/status and every other ref stayed exact. This is source availability, not current native/app/memory qualification or original-ticket completion.
+
+- [FOLD407-EXACT-SEMANTIC-PRICE-20261027](archives/FOLD407-EXACT-SEMANTIC-PRICE-20261027.tar.gz) — Genuine T3161 fold4paths: only796to797 rootLiberty count/coverage and changelog sixline insert, allother885Libertyrows and changelogtail exact. Three missingblobraw8,485,201B exceedsroutine5MiB; Root inspected then authorizedexact10MiB. Readonly price, no sourcequalification.
+- [INVALID-ORPHAN-YjpEeR-EXACT-PROOF-RECOVERY-20261027](archives/INVALID-ORPHAN-YjpEeR-EXACT-PROOF-RECOVERY-20261027.tar.gz) — Exact inactive unindexed tmp_pack_YjpEeR2,235,564,032B failedfullstreamSHA1, stableinode/size/mtime, noindex/readablegitwriter/openFD; visibilitylimits recorded. Rootauthorizedonlyexactinvalidscratchretirement; actualdfgain538,931,200B, allocation2,235,703,296B distinguished. Canonicalobjects/packs/oldertemp/allsourceHEAD/index/MERGE/config/refs exact. Bothreadonly and finalproof wrappers0/allreaped.
+- [FOLD407-FIRST-FLOOR-STOP-NO-SOURCE-WRITES-20261027](archives/FOLD407-FIRST-FLOOR-STOP-NO-SOURCE-WRITES-20261027.tar.gz) — First exact407import attempt stoppedfloorcheckWS0 BEFOREmetadatafetch/sourcewrites/CAS; rawreaperexit1 retained. New2.235GBinvalidorphan causedcapacityfailure, notcodefailure and notPASS.
+- [FOLD407-EXACT-BOUNDED-IMPORT-CAS-20261027](archives/FOLD407-EXACT-BOUNDED-IMPORT-CAS-20261027.tar.gz) — Exact genuinefold407import/CAS actualPASS01:12:21 afterorphanrepair: canonical8,507,631B including22,430Bmetadata<10MiB, actualallocation3,395,584B; all16,973tipblobs sizeverified. Cachedorigin/dev normalexpectedolded250to407 withfreshremote407; allsourceHEAD/index/MERGE/config/status/otherrefs unchanged. WS535,531,520B/tmp2,150,518,784B. Sourceavailability only, no native/app/memory/originalDONEclaim.
+<!-- FOLD407_INVALID_ORPHAN_RECOVERY_20261027_END -->
+
+
 <!-- VERIFIED_REDUNDANT_CLOSED_TMP_CAPSULE_RETIREMENT_20261027_START -->
 ## Optional tmp headroom recovered from an already archived capsule
 
