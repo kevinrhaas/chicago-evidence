@@ -1,5 +1,23 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- OCT29_GT_AUTHORED_REVIEW_CARPENTER_TRIALS_LAP_CONFLICT_START -->
+## GreenTree authored edits and reviewed models are recoverable; PR1456 needs one authored append merge
+
+ActualGT36authoredadoption/postimages and25pre-nativeMASTER/recorddefaults areclosedwithcurrentforeignprose/metadata preserved. Rootdirectlyviewedthethreeactualnativecomparisons; allthreebodyverdictsMATCHESretainpicture/cameraconflicts, andactualmatchPOSTIMAGES/sidebys/imagegatearepreserved. Feet/app/currentglobal/fullsource/PR/originalclosure remainowed; newKurzfinitecameraworkisliveandexcluded.
+
+ActualCarpenter2-controlnative/WEB/fourcompositions andadditionalexistinggable-coursecontrolnative/WEB/onecapture passedandreaped, withinitialbrowserTMPsocketfailure retainedbeforeactualsuccessfulshortTMPDIRretry. OriginalisNOTMATCHES. Actualticketcacheb92d→178normalFFkeeps2929officialclaimandnewforeignmetadata withall3221filesfullyverified; no app/index/ref/mirror operations.
+
+Actualnativeonly1456run40953916787finishedgreenbutpushedZERO: docsLIBERTIESEOFappendconflictblockedthethreegeneratedconflicts too. A greenjobisnotagreengate. FiniteimmutablethreewayprovesemptyBASEbetween4ownappendentriesandoneforeigncolourentry; candidatefullEC16docprefix+own8593BappendpreservesallbothandisUNAPPLIED. Rootmustfinishnativeauthoredmerge/checks/currentCIbeforePRmerge; no neworiginalDONEisclaimed.
+
+- [GREENTREE2376-ACTUAL-AUTHORED36-ADOPTION-AND-PRE25-DEFAULTS-20261029](archives/GREENTREE2376-ACTUAL-AUTHORED36-ADOPTION-AND-PRE25-DEFAULTS-20261029.tar.gz) — Actual36sourceadoptionliteralpostimages+entrywiseunion/adoptionreceipt/current25MASTER+25recordpredefaults; all4earlyfamilyproducers/currentforeignlibprefix/grade/STORE/namepool preserved. Historicalsourcebeforeseparateroot3MATCHESoverlay, native109already681. No liveprimaryreads/global/app/fullgate/PR/originalDONE.
+- [GREENTREE2376-ACTUAL-ROOT-THREE-VIEWS-MATCHES-WITH-POSTIMAGES-20261029](archives/GREENTREE2376-ACTUAL-ROOT-THREE-VIEWS-MATCHES-WITH-POSTIMAGES-20261029.tar.gz) — Actualrootdirectlyviewed3freshnativecomparisons, bodyMATCHESwithexplicitopen/closedpictureconflict/nohistoricalcamera.11members1.23MB actual3matchPOSTIMAGES+3ownedsidebys+priorrecords/hashbindings/imagegatePASS. CurrentoptionalMASTER0b53binding corrected. Feet/app/globaldev/fullgate/originalDONE remainpending; newKurzfinitecamera isliveandexcluded.
+- [CARPENTER2382-ACTUAL-TWO-CONTROL-NATIVE-WEB-FOUR-COMPOSITIONS-20261029](archives/CARPENTER2382-ACTUAL-TWO-CONTROL-NATIVE-WEB-FOUR-COMPOSITIONS-20261029.tar.gz) — ActualnativebaselineMASTERexact,2-controlnative/WEB/fourgroupcapturesPASSallreaped, parsedmeshdelta/source/date/provenance/directvisualreview.811members14.13MB includes573OWNEDNodecompilecachefiles(noprofiles/certdb). RawinitialbrowserlongTMPsocketfailretained, actualshortTMPDIRretryseparate. OriginalNOTMATCHES/canonicaladoption/app/PR/DONE unclaimed; primary706models353rows unchanged.
+- [CARPENTER2382-ACTUAL-NATIVE-GABLE-COURSES-ONE-CAMERA-ADDON-20261029](archives/CARPENTER2382-ACTUAL-NATIVE-GABLE-COURSES-ONE-CAMERA-ADDON-20261029.tar.gz) — Actualrootauthorizedexistingdata-only+Xgable-coursecontrol atopprior2controls; nativeMASTER/WEB/onesame-camera groupcapturePASS/allreaped, parsedmeshdelta+directreview.53files4.56MB, prior811immutable. No canonicalsource/model/MATCHES/currentapp/originalclosure.
+- [CARPENTER2382-ACTUAL-PRIMARY-CACHE-FF-178-FOREIGN-PRESERVED-20261029](archives/CARPENTER2382-ACTUAL-PRIMARY-CACHE-FF-178-FOREIGN-PRESERVED-20261029.tar.gz) — Actualprimaryticketcacheb92d→178normalFFincludesofficial2929+freshforeignmetadata,8knownobjects62157B/3221tipfilesfullbytesSHA256Gitblob. No appsource/ref/index/config operations/snapshots orboard/publish/mirrorwrites; allreaped. No app/geometry/PR/DONE.
+- [FOURCASE-ACTUAL-NATIVE-LAP-PUSHED0-LIBERTIES-APPEND-CONFLICT-CANDIDATE-20261029](archives/FOURCASE-ACTUAL-NATIVE-LAP-PUSHED0-LIBERTIES-APPEND-CONFLICT-CANDIDATE-20261029.tar.gz) — Actualonly1456run40953916787 greenJOBbutpushed0/leftalone1; docsLIBERTIES authoredEOFappendconflict and3derivedconflicts. No requiredgate/merge. Finiteremoteonlycandidate keepsfullEC16docbyteprefix+own4entry8593Bappendexactonce; no substantivecontentchoice. UNAPPLIED/unqualified/no primaryreads ormutations; actualnativeowners/fullcheck/currentCI required.
+<!-- OCT29_GT_AUTHORED_REVIEW_CARPENTER_TRIALS_LAP_CONFLICT_END -->
+
+
 <!-- OCT29_GT_NATIVE_CARPENTER_CLAIM_REMOTE_PENDING_START -->
 ## GreenTree native production and three views are saved; Carpenter claim is official
 
