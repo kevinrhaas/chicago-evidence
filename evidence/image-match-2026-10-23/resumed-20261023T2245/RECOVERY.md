@@ -1,5 +1,16 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- OCT29_PRESERVED_PRIMARY3115_PUBLIC_ARCHIVE_START -->
+## A second inactive public ticket runtime is saved before bounded space recovery
+
+Exact clean inactive preserved-primary ticket runtime HEADa0580843:3,115 present public regular files10,446,080logical/16,764,928allocated, every indexGitblob/hash/mode/nlink verified.103 sparse-absent entries preserved as-is. Archive/readback precedes retirement; .git/allobjects/config/index/refs/alternates/sparseconfig/untrackedfiles/privateprofiles/source/checkpoints/livecache/GTcache untouched. This archive alone is not a retirement result or ticketclosure.
+
+Root approved retiring only these exact present files after full immutable allmember/mode readback. The actual retirement receipt will follow; publication does not pretend the deletion has happened. No live primary cache or preserved GT cache is changed. The PR1456 exact2e53 gate remained genuinely IN_PROGRESS at22:58:44; newer dev2b makes its PR dirty and requires native integration. No CI PASS, PRmerge, originalDONE or currentGTapp/fullgate is inferred.
+
+- [PRESERVED-PRIMARY-TICKET-RUNTIME-EXACT3115-PUBLIC-WORKFILES-BEFORE-RETIREMENT-20261029](archives/PRESERVED-PRIMARY-TICKET-RUNTIME-EXACT3115-PUBLIC-WORKFILES-BEFORE-RETIREMENT-20261029.tar.gz) — Exact clean inactive preserved-primary ticket runtime HEADa0580843:3,115 present public regular files10,446,080logical/16,764,928allocated, every indexGitblob/hash/mode/nlink verified.103 sparse-absent entries preserved as-is. Archive/readback precedes retirement; .git/allobjects/config/index/refs/alternates/sparseconfig/untrackedfiles/privateprofiles/source/checkpoints/livecache/GTcache untouched. This archive alone is not a retirement result or ticketclosure.
+<!-- OCT29_PRESERVED_PRIMARY3115_PUBLIC_ARCHIVE_END -->
+
+
 <!-- OCT29_NATIVE2E53_ORPHAN_GUARD_START -->
 ## The four-building native lap pushed2e53; required CI is running; orphan temporary-pack space is recovered
 
