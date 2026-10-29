@@ -1,0 +1,13 @@
+NATIVE-COMMAND ['python', 'tools/compile_source_use.py', '--check']
+SOURCE USE PASS — 493 sources; 203485 index bytes; all source IDs resolve
+NATIVE-COMMAND ['python', 'tools/report_research_signoff.py', '--check']
+OK: the research sign-off re-derives, and still says GO
+NATIVE-COMMAND ['python', 'tools/audit_check_gates.py', '--gate', '--quiet']
+BAD: tools/human_natural_idle.py has a --check mode that tools/check.sh never runs, and it is not in data/research/check_gate_baseline.json. Gate it, or record why not.
+Traceback (most recent call last):
+  File "/workspace/.cloud-setup/logs/transport-recovery/HUMAN-NATIVE-OWNERS-20261029/run_phase.py", line 17, in <module>
+    print('NATIVE-COMMAND '+repr(cmd),flush=True);subprocess.run(cmd,cwd=APP,check=True)
+                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/.cloud-setup/uv-python/cpython-3.11.17-linux-x86_64-gnu/lib/python3.11/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['python', 'tools/audit_check_gates.py', '--gate', '--quiet']' returned non-zero exit status 1.

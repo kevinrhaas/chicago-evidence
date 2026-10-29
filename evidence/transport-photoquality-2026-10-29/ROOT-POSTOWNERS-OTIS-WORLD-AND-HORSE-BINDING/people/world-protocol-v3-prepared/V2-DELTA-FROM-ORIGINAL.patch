@@ -1,0 +1,58 @@
+--- original/observe-human-world.cjs
++++ v2/observe-human-world.cjs
+@@ -33,18 +33,18 @@
+  await page.evaluate(async()=>{for(let i=0;i<3;i++)await new Promise(requestAnimationFrame);});
+ }
+ function assertView(r,lod){
+- assert.equal(r.year,1835);assert.equal(r.ready,true);assert.equal(r.error,null);assert.equal(r.welcome,'world');assert.equal(r.detail,profile==='desktop'?'full':'light');assert.equal(r.pixelRatio,1);assert.equal(r.lod,lod);assert.equal(r.pending,false);assert.equal(r.clip,'idle_natural_v1');assert.equal(r.actionClip,'idle_natural_v1');assert.equal(r.actionPaused,false);assert.equal(r.actionEnabled,true);assert.equal(r.state,'standing');assert.equal(r.personId,'rc_bardwell_otis');assert.equal(r.glError,0);assert.ok(r.costs.drawn&&r.costs.animates);assert.ok(r.draw.calls>0&&r.draw.triangles>0);
++ assert.equal(r.year,'1835');assert.equal(r.ready,true);assert.equal(r.error,null);assert.equal(r.welcome,'world');assert.equal(r.detail,profile==='desktop'?'full':'light');assert.equal(r.pixelRatio,1);assert.equal(r.lod,lod);assert.equal(r.pending,false);assert.equal(r.clip,'idle_natural_v1');assert.equal(r.actionClip,'idle_natural_v1');assert.equal(r.actionPaused,false);assert.equal(r.actionEnabled,true);assert.equal(r.state,'standing');assert.equal(r.personId,'rc_bardwell_otis');assert.equal(r.glError,0);assert.ok(r.costs.drawn&&r.costs.animates);assert.ok(r.draw.calls>0&&r.draw.triangles>0);
+  assert.ok(r.projectedBounds.min[0]>-.98&&r.projectedBounds.max[0]<.98&&r.projectedBounds.min[1]>-.98&&r.projectedBounds.max[1]<.98,'Actual posed full figure fits camera');assert.ok(r.projectedBounds.min[2]>-1&&r.projectedBounds.max[2]<1);assert.ok(Math.abs(r.targetNDC[0])<.025&&Math.abs(r.targetNDC[1])<.025,'Actual figure center in native camera');assert.equal(r.readOnlyPick,'rc_bardwell_otis');
+ }
+ async function stand(label,e,pitch,lod){
+  await page.evaluate(({e,pitch})=>window.__chicago4d.walker.teleport({local_e:e,local_n:-36.5,yaw_deg:270,pitch_deg:pitch}),{e,pitch});await settle(lod);await closeNativePanel();
+- let r=await page.evaluate(inspectActor);
++ let r=await page.evaluate(inspectActor);write(`${label}-initial-camera-readback.json`,r);
+  // Only the native walker authors camera orientation. Aim at the actual posed-body center.
+  const de=r.target[0]-r.camera[0],dn=-r.target[2]+r.camera[2],dy=r.target[1]-r.camera[1],yaw=Math.atan2(de,dn)*180/Math.PI,aimPitch=Math.atan2(dy,Math.hypot(de,dn))*180/Math.PI;
+- await page.evaluate(({e,yaw,aimPitch})=>window.__chicago4d.walker.teleport({local_e:e,local_n:-36.5,yaw_deg:yaw,pitch_deg:aimPitch}),{e,yaw,aimPitch});await settle(lod);r=await page.evaluate(inspectActor);assertView(r,lod);write(`${label}-camera.json`,{requested_e:e,requested_n:-36.5,derived_yaw:yaw,derived_pitch:aimPitch,actual:r});return r;
++ await page.evaluate(({e,yaw,aimPitch})=>window.__chicago4d.walker.teleport({local_e:e,local_n:-36.5,yaw_deg:yaw,pitch_deg:aimPitch}),{e,yaw,aimPitch});await settle(lod);r=await page.evaluate(inspectActor);write(`${label}-camera.json`,{requested_e:e,requested_n:-36.5,derived_yaw:yaw,derived_pitch:aimPitch,actual:r});assertView(r,lod);return r;
+ }
+ async function motion(label,lod){
+- const before=await page.evaluate(inspectActor);assertView(before,lod);await page.screenshot({path:path.join(out,`${label}-before.png`),timeout:90000});mediaCheck();
++ const before=await page.evaluate(inspectActor);write(`${label}-before-readback.json`,before);assertView(before,lod);await page.screenshot({path:path.join(out,`${label}-before.png`),timeout:90000});mediaCheck();
+  const observed=await page.evaluate(async()=>{
+   const a=window.__chicago4d,h=a.humans.get('rc_bardwell_otis'),body=h.body,V=a.camera.position.constructor,names=['head','neck_01','spine_01','spine_02','spine_03'],bones=Object.fromEntries(names.map(n=>[n,body.scene.getObjectByName(n)]));if(Object.values(bones).some(b=>!b))throw Error('Expected native bones missing');
+   const shoes=body.meshes.filter(m=>(Array.isArray(m.material)?m.material:[m.material]).some(x=>x?.name==='footwear__closed_leather_shoes'));if(shoes.length!==1)throw Error('Expected one exact native footwear mesh');
+@@ -57,13 +57,13 @@
+  assert.ok(observed.frames.every(x=>x.lod===lod&&x.clip==='idle_natural_v1'));assert.ok(observed.frames.every(x=>x.camera.every((v,i)=>Math.abs(v-observed.initialCamera[i])<1e-6)),'Native observer camera remained standing');
+  const angles={};for(const name of ['head','neck_01','spine_02']){const q=f.bones[name];angles[name]=Math.max(...observed.frames.map(x=>2*Math.acos(Math.min(1,Math.abs(q.reduce((s,v,i)=>s+v*x.bones[name][i],0))))));assert.ok(angles[name]>1e-7,`Native ${name} quaternion changed`);}
+  let drift=0;for(let m=0;m<observed.firstShoes.length;m++){assert.equal(observed.firstShoes[m].count,observed.lastShoes[m].count);for(let i=0;i<observed.firstShoes[m].count;i++)drift=Math.max(drift,Math.hypot(...observed.firstShoes[m].positions[i].map((v,k)=>v-observed.lastShoes[m].positions[i][k])));}assert.ok(drift<=1e-5,'All full footwear vertices remain planted within10micrometre numerical bound');
+- const slow=observed.frames.slice(1).map((x,i)=>x.performance_ms-observed.frames[i].performance_ms).filter(x=>x>50),after=await page.evaluate(inspectActor);assertView(after,lod);await page.screenshot({path:path.join(out,`${label}-after.png`),timeout:90000});mediaCheck();
++ const slow=observed.frames.slice(1).map((x,i)=>x.performance_ms-observed.frames[i].performance_ms).filter(x=>x>50),after=await page.evaluate(inspectActor);write(`${label}-after-readback.json`,after);assertView(after,lod);await page.screenshot({path:path.join(out,`${label}-after.png`),timeout:90000});mediaCheck();
+  const row={label,lod,realElapsedMs:observed.elapsed_ms,observedFrames:observed.frames.length,mixerDelta:last.mixer_time-f.mixer_time,animatedDelta:last.animated-f.animated,slowFrameIntervalsOver50ms:slow,maximumObservedFrameMs:Math.max(0,...observed.frames.slice(1).map((x,i)=>x.performance_ms-observed.frames[i].performance_ms)),boneMaximumAngularChangeRadians:angles,fullFootwearVertexMaximumDriftM:drift,before,after};rows.push(row);write('MOTION-SUMMARY.json',{rows,scope:'Actual native unheld real-time windows; quarter-second native frame cap retained, no assertion of8simseconds per8real seconds'});
+ }
+ async function realInteraction(){
+  await stand('interaction',-91.2,-10,profile==='desktop'?0:2);await closeNativePanel();
+  await page.evaluate(()=>{const a=window.__chicago4d;window.__humanWorldObservedSelects=[];window.__humanWorldSelectListener=e=>window.__humanWorldObservedSelects.push({personId:e.detail.personId,instanceId:e.detail.instanceId,at:performance.now()});a.humans.events.addEventListener('select',window.__humanWorldSelectListener);});
+- const frame=await page.evaluate(inspectActor),size=page.viewportSize(),canvas=page.locator('canvas').first();assert.equal(frame.readOnlyPick,'rc_bardwell_otis');
++ const frame=await page.evaluate(inspectActor),size=page.viewportSize(),canvas=page.locator('canvas').first();write('REAL-POINTER-FRAME.json',frame);assert.equal(frame.readOnlyPick,'rc_bardwell_otis');
+  if(profile==='desktop'){
+   // Native desktop inspection uses its locked crosshair; no direct select/pick action.
+   await page.mouse.click(size.width/2,size.height/2);await page.waitForFunction(()=>!!document.pointerLockElement,null,{timeout:10000});await page.mouse.click(size.width/2,size.height/2);
+@@ -80,7 +80,15 @@
+   page.on('pageerror',e=>errors.page.push(String(e)));page.on('console',m=>{if(m.type()==='error')errors.console.push(m.text());});page.on('requestfailed',r=>errors.requests.push({url:r.url(),failure:r.failure()}));
+   page.on('response',response=>{const pathname=new URL(response.url()).pathname;if(response.status()>=400)errors.http.push({url:response.url(),status:response.status()});if(!pathname.includes('/humans/')||!pathname.endsWith('.glb'))return;responseJobs.push((async()=>{try{const expected=expectedAssets.get(pathname);assert.ok(expected,'Actual human HTTP URL has pinned published bytes');assert.equal(response.status(),200);const bytes=await response.body(),row={url:response.url(),status:response.status(),bytes:bytes.length,sha256:sha(bytes),expectedSha256:expected.sha256};assetResponses.push(row);assert.equal(bytes.length,expected.bytes);assert.equal(row.sha256,expected.sha256);}catch(e){errors.body.push({url:response.url(),error:String(e)});}})());});
+   timer=setInterval(()=>{try{mediaCheck();}catch(e){if(!mediaFailure){mediaFailure=String(e);context.close().catch(e=>errors.closure.push(String(e)));}}},1000);
+-  await page.goto(address.href,{waitUntil:'load'});await page.waitForFunction(()=>window.__chicago4d?.ready===true,null,{timeout:300000});await page.evaluate(async()=>{const a=window.__chicago4d;if(a.welcome.state!=='world')await a.welcome.enter('spawn');});await page.waitForFunction(()=>window.__chicago4d.welcome.state==='world',null,{timeout:30000});
++  await page.goto(address.href,{waitUntil:'load'});await page.waitForFunction(()=>window.__chicago4d?.ready===true,null,{timeout:300000});
++  const boot=await page.evaluate(()=>{const a=window.__chicago4d;return {year:a.year,yearType:typeof a.year,ready:a.ready,error:a.error,detail:a.detail,welcome:a.welcome.state,gateHidden:document.getElementById('gate').hasAttribute('hidden'),camera:a.camera?.position.toArray(),cameraQuaternion:a.camera?.quaternion.toArray(),pixelRatio:a.renderer.getPixelRatio(),performance_ms:performance.now()};});write('BOOT-NATIVE-BEFORE-ENTRY.json',boot);
++  // Native smoke_renderer.mjs T2186 enterTown semantics: ready is not enterable.
++  // Keep real draws and native animation running; never use neighboring holdDraws helper.
++  const entry=await page.evaluate(async()=>{const a=window.__chicago4d,gate=document.getElementById('gate'),states=[],started=Date.now(),deadline=started+90000;let attempts=0;
++   if(!gate.hasAttribute('hidden')){const welcome=a.welcome;if(welcome){while(welcome.state!=='world'&&Date.now()<deadline){if(states.at(-1)?.state!==welcome.state)states.push({state:welcome.state,at:Date.now()});if(welcome.state==='welcome'){attempts++;welcome.enter('spawn');}if(welcome.state!=='world')await new Promise(r=>setTimeout(r,100));}}else document.getElementById('home-roam')?.click();await new Promise(r=>setTimeout(r,150));document.exitPointerLock?.();}
++   return {started_ms:started,ended_ms:Date.now(),deadline_ms:deadline,attempts,states,finalState:a.welcome.state,gateHidden:gate.hasAttribute('hidden'),native_entry_budget_ms:90000,rendererHeld:false};});write('NATIVE-ENTRY-T2186.json',entry);assert.equal(entry.finalState,'world');assert.equal(entry.gateHidden,true);
++  const help=page.locator('#control-help');if(await help.isVisible()){const gotit=page.locator('#control-help-gotit');if(profile==='mobile')await gotit.tap({timeout:90000});else await gotit.click({timeout:90000});}
++
+   for(const [label,e,pitch,lod] of [['near',-91.2,-10,profile==='desktop'?0:2],['mid',-84,-4,profile==='desktop'?1:2]]){await stand(label,e,pitch,lod);await motion(label,lod);}
+   await realInteraction();await page.waitForFunction(()=>(window.__chicago4d.residency?.pending??0)===0,null,{timeout:60000});await page.waitForLoadState('networkidle',{timeout:30000});await Promise.all(responseJobs);
+   const required=profile==='desktop'?[0,1]:[2];for(const lod of required)assert.ok(assetResponses.some(r=>new URL(r.url).pathname.endsWith(`/humans/web/bardwell_otis_1835.lod${lod}.glb`)),'Actual selected webLOD HTTP bytes verified');assert.equal(mediaFailure,null);assert.ok(Object.values(errors).every(xs=>xs.length===0),JSON.stringify(errors));rc=0;

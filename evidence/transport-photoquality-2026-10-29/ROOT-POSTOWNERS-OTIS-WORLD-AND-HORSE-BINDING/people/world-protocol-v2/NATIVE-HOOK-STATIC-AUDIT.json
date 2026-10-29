@@ -1,0 +1,189 @@
+{
+  "created_utc": "2026-10-29T21:03:59.854653+00:00",
+  "scope": "Static source/type audit only. Native execution and real output remain unrun forV2. No application edits.",
+  "source_files": [
+    {
+      "path": "renderers/web/js/main.js",
+      "bytes": 324855,
+      "sha256": "ddedb71579609134a9e6674dc5b597b6c42d2645dd38bbb3f1e7a1a67319979c"
+    },
+    {
+      "path": "renderers/web/js/humans.js",
+      "bytes": 28744,
+      "sha256": "9b8dec415115977d4a36906e73a7e3dfafee6b6872b90486e06009fe625c7145"
+    },
+    {
+      "path": "renderers/web/js/people.js",
+      "bytes": 53626,
+      "sha256": "15af42163f44b74b0ee1c16ccdf20463efbf572d01bfcbdcd3cefc62f42ae8ba"
+    },
+    {
+      "path": "renderers/web/js/welcome.js",
+      "bytes": 16469,
+      "sha256": "5a223d99243873db34dfec3b321c3898f3e01b036c0d01e0fc5a2c110cb9e7a3"
+    },
+    {
+      "path": "renderers/web/js/hud.js",
+      "bytes": 42138,
+      "sha256": "2e96e5778c3c4e3250859475221cc7902e33d24f7a3743e54cbd378a73ad9978"
+    },
+    {
+      "path": "renderers/web/js/navigator.js",
+      "bytes": 22540,
+      "sha256": "7170f2170be0c1a10c67b56a5063ba2bb66d8d881fecd58f8ddc88c22818ba82"
+    },
+    {
+      "path": "renderers/web/js/controls/pointerlock.js",
+      "bytes": 7560,
+      "sha256": "a1ac57e29d79d12f42dbbd3fe91227a47689a77f170ebf54fad144c76fe83884"
+    },
+    {
+      "path": "renderers/web/js/controls/touch.js",
+      "bytes": 10549,
+      "sha256": "fe12076fdf29fe4490244810d87fbdc3146cfc4442c9d929afab541a509adf85"
+    },
+    {
+      "path": "renderers/web/index.html",
+      "bytes": 76002,
+      "sha256": "eb08021e8ed05817d0a27fcacf1a3e1f0c7ee48167bc9ca13efdcf1766bd2aba"
+    },
+    {
+      "path": "data/humans/instances/1835/hi_rc_bardwell_otis_1835.json",
+      "bytes": 2117,
+      "sha256": "154bc9195253af1d009e4682ac98891ec7a05fd25312e8265f0af7f8af7b40ee"
+    },
+    {
+      "path": "tools/smoke_renderer.mjs",
+      "bytes": 1344059,
+      "sha256": "46fec7ecf0bfb96ffdf8b0e24989d125593e04a95068aa0b57ed45a9bf3a14ea"
+    }
+  ],
+  "native_contracts": [
+    {
+      "hook": "api.year",
+      "type": "string",
+      "required": "1835",
+      "source": "main.js YEAR sanitized path/query/default string; api.year: YEAR"
+    },
+    {
+      "hook": "api.ready/error",
+      "type": "boolean/null initially",
+      "required": "ready===true,error===null",
+      "source": "main.js native api initialization and ready closure"
+    },
+    {
+      "hook": "api.detail",
+      "type": "getter returns string",
+      "required": "full desktop/light touch",
+      "source": "main.js detail getter and prefersTouch fallback; no override"
+    },
+    {
+      "hook": "api.welcome.state/enter",
+      "type": "state string;enter choose function",
+      "required": "world; enter(spawn) through native arrival",
+      "source": "welcome.js returns get state and enter:choose"
+    },
+    {
+      "hook": "api.humans.get",
+      "type": "function by instance or personID",
+      "required": "rc_bardwell_otis",
+      "source": "humans.js layer.get; native instance person_id"
+    },
+    {
+      "hook": "actor.body",
+      "type": "object",
+      "required": "scene,meshes,mixer,action from native build and play",
+      "source": "humans.js HumanActor.build/play"
+    },
+    {
+      "hook": "actor.lod/pending/clipName/state",
+      "type": "number/null|string|string",
+      "required": "desktop0/1,phone2; pendingnull; idle_natural_v1;standing",
+      "source": "humans.js native actor setters/update and instance animation"
+    },
+    {
+      "hook": "actor.counters.animated/updates",
+      "type": "monotonic integer counters",
+      "required": "increase under native unheld frameDt",
+      "source": "humans.js update increments around body.mixer.update(dt); main.js passes frameDt"
+    },
+    {
+      "hook": "actor.costsNow",
+      "type": "getter object",
+      "required": "drawn true,animates true,distance numeric",
+      "source": "humans.js getter uses root.visible, distance<70; phone minLOD2 does not disable animation"
+    },
+    {
+      "hook": "actor distance and LOD",
+      "type": "3D camera/root distance; integerLOD",
+      "required": "2.8m ground near\u2192LOD0 desktop;10m mid\u2192LOD1; Light clamps2",
+      "source": "humans.js chooseHumanLod bands8/20/45 hysteresis12%, Light allowed2/3"
+    },
+    {
+      "hook": "body bone names",
+      "type": "native scene Object3D names",
+      "required": [
+        "head",
+        "neck_01",
+        "spine_01",
+        "spine_02",
+        "spine_03"
+      ],
+      "source": "actual GLB nodes; generator targets spine_02/neck_01/head"
+    },
+    {
+      "hook": "footwear mesh",
+      "type": "native SkinnedMesh and material name",
+      "required": "footwear__closed_leather_shoes; exact all vertices",
+      "source": "actual exported webLOD0 material5 and mesh5; skin readback uses getVertexPosition"
+    },
+    {
+      "hook": "api.navigator.level / close buttons",
+      "type": "integer getter / native DOM buttons",
+      "required": "level0 before observations; #nav-close or #panel-close",
+      "source": "navigator.js level getter and buttonclick close; hud.js panel-close; actual index.html IDs"
+    },
+    {
+      "hook": "api.people.state.open",
+      "type": "getter copy object,open personID string",
+      "required": "rc_bardwell_otis after real pointer NEW select",
+      "source": "people.js state/open; humans.js native events; main.js open route"
+    },
+    {
+      "hook": "#people-card heading and provenance",
+      "type": "native visible DOM",
+      "required": "Otis Bardwell heading,reconstructed/invented identity copy",
+      "source": "people.js card HTML and reconstructed terms; resident bound record"
+    },
+    {
+      "hook": "people card body ready",
+      "type": "aria-busy attribute removed in finally",
+      "required": "not true",
+      "source": "people.js open async household/join render removes aria-busy"
+    },
+    {
+      "hook": "native desktop click",
+      "type": "pointer lock then mousedown interact at crosshair",
+      "required": "two real mouse clicks; no direct select/open",
+      "source": "pointerlock.js onMouseDown; main.js canvas click locks"
+    },
+    {
+      "hook": "native phone tap",
+      "type": "touch right-half look-role quicktap sets interactPoint",
+      "required": "actual projectedNDC target in right half",
+      "source": "touch.js onPointerDown x>=width/2; onPointerUp quicktap"
+    },
+    {
+      "hook": "interaction radius",
+      "type": "numeric metres, native approach auto-open",
+      "required": 3,
+      "source": "instance radius_m3 and humans.js mount/update opens resident_card"
+    },
+    {
+      "hook": "arrival ready versus enterable",
+      "type": "ready boolean does not imply welcome state; enter rejects arrival",
+      "required": "Bounded native90s T2186 enterTown loop calls enter(spawn) only when statewelcome and retries until world; noholdDraws",
+      "source": "tools/smoke_renderer.mjs1563-1602 and welcome.js222 choose refusal outsidewelcome/world"
+    }
+  ]
+}
