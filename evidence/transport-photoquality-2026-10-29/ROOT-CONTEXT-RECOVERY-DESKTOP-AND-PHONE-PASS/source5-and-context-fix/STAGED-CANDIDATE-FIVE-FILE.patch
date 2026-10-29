@@ -1,0 +1,113 @@
+diff --git a/chicago/4d/changelog.d/T-2793.json b/chicago/4d/changelog.d/T-2793.json
+index 81a0d647e..b978be261 100644
+--- a/chicago/4d/changelog.d/T-2793.json
++++ b/chicago/4d/changelog.d/T-2793.json
+@@ -2,6 +2,7 @@
+   "title": "A more detailed farm-box wagon",
+   "kind": "change",
+   "items": [
+-    "The wagon collection has a reconstructed farm-box model with weathered boards, shaped wheel hubs, iron fittings and a separately articulated front axle and pole. Its modern source artist is credited; the wagon's historical maker and owner remain unknown."
++    "The wagon collection has a reconstructed farm-box model with weathered boards, shaped wheel hubs, iron fittings and a separately articulated front axle and pole. Its modern source artist is credited; the wagon's historical maker and owner remain unknown.",
++    "Desktop railway rendering releases its uploaded geometry from page memory while keeping the same rail detail. A reset graphics context pauses rendering until retained resources can recover or the normal page reload completes."
+   ]
+ }
+diff --git a/chicago/4d/docs/ROADMAP.md b/chicago/4d/docs/ROADMAP.md
+index 78cf8a382..1e008cc5f 100644
+--- a/chicago/4d/docs/ROADMAP.md
++++ b/chicago/4d/docs/ROADMAP.md
+@@ -5974,3 +5974,9 @@ Concrete separate source now preserves the licensed Old Cart's weathered boards,
+ T-2793: finish current-source publisher/full-gate and world/photo release checks for the licensed articulated master. Current isolated desktop/mobile WebP appearance/control proof is separate; retain the four explicit source-only publication omissions without cap changes. No broad photographic or ticket completion is recorded here.
+ 
+ T-2793 final-source qualification must use the separately owned actual reach/kingbolt candidate (8,465,076-bytewebset); old pre-reach captures do not qualify the added member. Preserve current80staticwagons/3finewoodstands until explicitworld-selection qualification.
++
++
++T-2793 desktop memory follow-up (2026-10-29): qualify the existing railway upload-release path at desktop detail without removing geometry or changing caps. Compare the same native 1904 meter against public 9e14c1388, then verify real rail picks, near/far rebuilds, confidence/season/detail changes and ordinary context recovery. Savings and the historical T-3173 memory goal remain unverified; T-3173 stays OPEN. Complete current-source canonical/preflight and every mapped published smoke before release.
++
++
++T-2793 / T-3173 context-recovery correction (2026-10-29): the desktop railway upload-release candidate measured 1,156,132,447 bytes (1102.57 MiB), inside the original 1125 MiB goal, with the phone at 411,883,801 bytes (392.80 MiB), inside 400 MiB. Its native lifecycle nevertheless failed during graphics-context restoration. A separate actual default-Full desktop diagnostic reproduced a main-loop draw of a released null attribute between context restoration and ordinary reload (403.829 s NONPASS; the restored world and pick worked, but its pageerror was not waived). The main frame loop now stops on context loss and resumes only if retained upload resources permit recovery without a reload; the existing once-per-session reload cap and repeated-loss notice remain. This correction has not yet passed its fresh native context run, full preflight, mobile/far lifecycle or all applicable published smoke. Prior memory measurements and the earlier partial lifecycle do not qualify this changed source; photographic/world acceptance and T-3173 completion remain open.
+diff --git a/chicago/4d/docs/STATUS.md b/chicago/4d/docs/STATUS.md
+index 14d1ab566..91973f082 100644
+--- a/chicago/4d/docs/STATUS.md
++++ b/chicago/4d/docs/STATUS.md
+@@ -25321,3 +25321,9 @@ A separately versioned wagon master now adapts the recovered licensed Old Cart g
+ T-2793 source increment now has actual current WebP LODs8,433,236bytes total and desktop/mobile isolated captures with zero errors; full repository/published-world qualification remains pending. Continuous actual front-wheel/body envelopes and explicit detached/moved-geometry controls pass; artist pin/rim fit limits remain disclosed. Source-only publication exclusions preserve originals and live consumers; actual final publisher budget still pending.
+ 
+ T-2793 required portable structural nodes now own actual reach/kingbolt geometry: one44-triangle reconstructed coupling reach and the original28-triangle pin split from front details. Current near/mid/far total8,465,076bytes,12materialbatches; prior8,433,236-byte views remain historical. Final current-source rendering, canonical tail, full publisher/preflight and photographic/world acceptance remain pending.
++
++
++T-2793 memory follow-up candidate (2026-10-29): railway upload release now also marks desktop static geometry, preserving profiles, materials, reaches and analytic picking. Public baseline 9e14c1388 passed current 1904 native memory caps; its desktop 1,184,409,779-byte estimate exceeded the historical 1125 MiB goal by 4,761,779 bytes. Candidate savings, current-source memory, rendered railway lifecycle/picking/context recovery, full preflight and all applicable published smoke remain unverified. No threshold changes or T-3173 completion; T-2793 photographic/world acceptance remains open.
++
++
++T-2793 / T-3173 context-recovery correction (2026-10-29): the desktop railway upload-release candidate measured 1,156,132,447 bytes (1102.57 MiB), inside the original 1125 MiB goal, with the phone at 411,883,801 bytes (392.80 MiB), inside 400 MiB. Its native lifecycle nevertheless failed during graphics-context restoration. A separate actual default-Full desktop diagnostic reproduced a main-loop draw of a released null attribute between context restoration and ordinary reload (403.829 s NONPASS; the restored world and pick worked, but its pageerror was not waived). The main frame loop now stops on context loss and resumes only if retained upload resources permit recovery without a reload; the existing once-per-session reload cap and repeated-loss notice remain. This correction has not yet passed its fresh native context run, full preflight, mobile/far lifecycle or all applicable published smoke. Prior memory measurements and the earlier partial lifecycle do not qualify this changed source; photographic/world acceptance and T-3173 completion remain open.
+diff --git a/chicago/4d/renderers/web/js/main.js b/chicago/4d/renderers/web/js/main.js
+index df6b96e72..1a94db408 100644
+--- a/chicago/4d/renderers/web/js/main.js
++++ b/chicago/4d/renderers/web/js/main.js
+@@ -1920,10 +1920,24 @@ async function boot() {
+   // T-2547: a lost context is preventDefault'ed, said on a card, and reloads at most
+   // once a session — only when the page has let go of what a restore would need.
+   // T-2548: a closed building image is gone from the page as a released array is.
+-  crashGuard.watchContext(renderer.domElement, { needsReload: () => {
++  const contextNeedsReload = () => {
+     const released = uploadReleaseState();
+     return released.attributes > 0 || released.images > 0 || released.compressed > 0;
+-  } });
++  };
++  let frameLoop = null;
++  let contextPaused = false;
++  // An ordinary reload is asynchronous. Never submit released arrays in the
++  // old document between context restoration and that navigation, or after a
++  // repeated loss which deliberately waits for the visitor's Reload choice.
++  renderer.domElement.addEventListener('webglcontextlost', () => {
++    contextPaused = true;
++    renderer.setAnimationLoop(null);
++  });
++  renderer.domElement.addEventListener('webglcontextrestored', () => {
++    contextPaused = contextNeedsReload();
++    if (!contextPaused && frameLoop) renderer.setAnimationLoop(frameLoop);
++  });
++  crashGuard.watchContext(renderer.domElement, { needsReload: contextNeedsReload });
+   renderer.domElement.addEventListener('webglcontextlost', () => blackbox.log('lost'));
+   renderer.domElement.addEventListener('webglcontextrestored', () => blackbox.log('restored'));
+   setPickLog((kind, data) => blackbox.log(kind, data));
+@@ -2319,7 +2333,7 @@ async function boot() {
+     terrain, confidence, problems: layerProblems('railway'), ...detailOpts(),
+     // Newly reached rail zones are marked before their next draw. This only
+     // installs upload callbacks; it does not render from inside update().
+-    onGeometry: coarse ? (group) => releaseAfterUpload(group) : undefined,
++    onGeometry: (group) => releaseAfterUpload(group),
+   });
+   scene3d.add(railway.group);
+   api.railway = railway;
+@@ -5229,7 +5243,8 @@ async function boot() {
+     if (nav !== seenNav) { if (seenNav !== null || nav !== '0:home') blackbox.log('nav', { level: navigatorUi?.level, app: navigatorUi?.app ?? null }); seenNav = nav; }
+     blackbox.tick();
+   }
+-  renderer.setAnimationLoop((t) => {
++  frameLoop = (t) => {
++    if (contextPaused) return;
+     try {
+       watchSteps();
+       governor.setTier(detailLevel);
+@@ -5245,7 +5260,8 @@ async function boot() {
+       if (bootController.readyAt === null) rejectFirstFrame(err);
+       else throw err;
+     }
+-  });
++  };
++  if (!contextPaused) renderer.setAnimationLoop(frameLoop);
+ 
+   // ---- harness ---------------------------------------------------------- //
+ 
+diff --git a/chicago/4d/tools/test_rail_geometry_lifecycle.mjs b/chicago/4d/tools/test_rail_geometry_lifecycle.mjs
+index 5b4f4ea36..fb68d6e0e 100644
+--- a/chicago/4d/tools/test_rail_geometry_lifecycle.mjs
++++ b/chicago/4d/tools/test_rail_geometry_lifecycle.mjs
+@@ -43,6 +43,6 @@ const eye=n=>({position:new THREE.Vector3(0,1,-n)});
+  f.dispose();assert.equal(f.group.children.length,0);assert.equal(f.zone.railsNear,null);assert.equal(f.zone.railsFar,null);checks+=3;
+ }
+ assert.ok(!proposed.includes('z0.railFar'));assert.ok(!proposed.includes('geometries.push(z.railsFar.geometry)'));checks+=2;
+-const main=await fs.readFile(`${root}/renderers/web/js/main.js`,'utf8');assert.ok(main.includes('onGeometry: coarse ? (group) => releaseAfterUpload(group) : undefined'));checks++;
++const main=await fs.readFile(`${root}/renderers/web/js/main.js`,'utf8');assert.ok(main.includes('onGeometry: (group) => releaseAfterUpload(group)'));assert.ok(!main.includes('onGeometry: coarse ? (group) => releaseAfterUpload(group) : undefined'));checks+=2;
+ console.log(JSON.stringify({geometrySHA256:expectedHash,fixtureFarBytes:[...Object.values(expected.geometry.attributes),expected.geometry.index].reduce((s,a)=>s+a.array.byteLength,0),goldenFixtureGeometryByteExact:true,nearFarVisibilityAcrossTiers:true,dropRebuildGeometryByteExact:true,markedBeforeDraw:true,noDisposedReferenceInGroup:true}));
+ console.log(`PASS ${checks} bounded actual-producer geometry/lifecycle/upload-mark/visibility checks. Browser memory, pixels, complete walk and timing still required.`);
