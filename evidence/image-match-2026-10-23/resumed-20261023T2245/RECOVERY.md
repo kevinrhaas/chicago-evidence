@@ -1,5 +1,21 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- OCT29_EC9_IMPORT_QUALIFIED_CODE1448_MILESTONE_START -->
+## Passed native gate and public qualified-code checkpoint
+
+TGT's actualv2wholecheck passed1104/395 on exacttree1c26, with unchangedsourceguards and reapedchildren. The qualifiedtwo-ticket codehead was committed and pushed as draftPR1448; those closedreceipts are saved. This is a durablefeaturecheckpoint, not a devmerge. Itsfullgate is explicitly dated before the incomingec9feature/foldpairs.
+
+The exactec9batch was separatelyinspected/priced and imported under64MiB:36,854,797canonicalbytes,17,391,616B exactallocation, alltipIDs/sizes and newblobSHA1verified. Fresh2d2f→ec9cachedCAS preservedbothauthorstates. ChangedK11/prairie_draftdefaults,1904yard/metadata/phone requireactualboundedqualification;454rendererconsumers exceptchangelog and all31earlytargetbindings remain exact. The initialidle-advisory-lock filename refusal is retained alongside its correctnonblockingflock fix; no lock was removed.
+
+A smallgroupedmetadata/orchestration increment preserves nativeobsoleteMiller-debtretirement andhistoricalwording, with no modelchanges and preparedharnessesexplicitlyunrun. No live source or activequietoutput is archived, and no currentec9fullglobalpass/devmerge/originalDONE is inferred.
+
+- [DEVEC9-TWO-PRICED-PAIRS-EXACT-CONSUMER-DEFAULT-SCOPE-20261029](archives/DEVEC9-TWO-PRICED-PAIRS-EXACT-CONSUMER-DEFAULT-SCOPE-20261029.tar.gz) — Exactread-onlyPullmanlodge1446+18thStwall1435 feature/foldpairs,4commits49paths/46missingtipblobs36173291B beforemetadata. prairie_draftdefaultoffbow/columns/balcony; K11side_returnoptionalrear/sweeps withflatwallfacerefactor, nativeflatdefaultproofrequired. 1904frontyardschanges2lots (Pullman1729/Hibbard1701). All454rendererconsumers exceptchangelog/6earlyfamilyproducers/31earlytargetasset-record-camera paths exact. ExactIDs/changedpaths/pairpricing retained. Scope/availabilityonly, not a native/appgate result; no automaticglobalreplaysolelyhashdifference.
+- [DEVEC9-EXACT-64MIB-BOUND-IMPORT-FRESH-CAS-CLOSED-20261029](archives/DEVEC9-EXACT-64MIB-BOUND-IMPORT-FRESH-CAS-CLOSED-20261029.tar.gz) — Actual16:51:26boundedimportfreshCAS2d2f→ec9 PASS/reaped. Canonical36854797B<64MiB, exactencodedallocation17391616B equaledactualsourceallocation. All18023tipentries/17508IDs+sizesverified;46tip+2pending fullcanonicalSHA1. PrimaryandGTauthorHEAD/index/MERGE/status/commonconfig/allotherrefsunchanged. Firstgenericlockguard refusedBEFOREwrites onpersistentidlecodexadvisorylock; correctedbynonblockingflock withoutremovinglock, rawrefusalretained. No broadsourcefetch/GC/repack. Availabilityonly; new1904producer/default/yard/metadata/currentphonequalification separate.
+- [TGT-ACTUAL1104-395-PASS-QUALIFIED-CODE-DRAFT1448-CLOSED-20261029](archives/TGT-ACTUAL1104-395-PASS-QUALIFIED-CODE-DRAFT1448-CLOSED-20261029.tar.gz) — Closed20-file3.897MB actualv2wholecheckPASS1104/395, immutablecheckedTREE1c26d94c0fdc64469a06f650c2bf1f13ff0a2c2f, sourceguardsunchanged/allchildrenreaped16:43:45. Actualcommittedending/nativePRquestions/two-ticketcommit/push/draftPR1448/headf263/lap/resume receipts. Durablequalifiedfeaturecodecheckpoint, NOTactualDEVmerge. ItsfullpassisDATEDbeforeincomingec9; preserveexactunchangedconsumerproof and qualifycurrentchangeddefaults/yard/metadata/phone ratherthanrelabelwholeglobalpass. No newsourcecapsule/profiles/cookies/currentquietoutputs. OriginalT2376annexOPEN; no prematureoriginalDONE.
+- [FOUR-CASE-SMALL-LATEST-METADATA-ORCHESTRATION-INCREMENT-20261029](archives/FOUR-CASE-SMALL-LATEST-METADATA-ORCHESTRATION-INCREMENT-20261029.tar.gz) — Frozen23-member348410B exactsmallsourceincrement atopfinalfour9a8e: nativeMillerONEobsolete-debtrowdelete+historicalLibertywording, no physicalmodel/producerchanges. Initialred/nativeupdate/finalgreenrightsproof andpreparedentrywiseadopter/combinedappharnesses, unrunexplicit. Refreshedprivate1c26union a03cbb retains BOTHdistinctGT/Millerdeletions. Native/globalowningclosure/app/full3/codePRmerge remainpending; thispacket doesnotclaimtheiractualexecution.
+<!-- OCT29_EC9_IMPORT_QUALIFIED_CODE1448_MILESTONE_END -->
+
+
 <!-- OCT29_SMALL_FINAL_IMAGEPASS_AND_FIRST_GATE_RAW_START -->
 ## Final four image passes and the first whole-check result
 
