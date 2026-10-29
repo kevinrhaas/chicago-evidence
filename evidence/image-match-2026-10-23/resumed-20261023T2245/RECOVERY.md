@@ -1,5 +1,16 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- OCT29_INACTIVE_GT3218_PUBLIC_ARCHIVE_START -->
+## The inactive old Green Tree ticket runtime is saved before bounded space recovery
+
+Exact clean inactive oldGT ticket runtime HEADc9c8:3,218 present regular public files42,489,581logical/49,090,560allocated; all indexGitblob/hash/mode/nlink verified. Complete RAM manifest/sourcearchive and immutable allmember/mode readback precede retirement. Preserve directory/oldGTsymlinktarget location,.git/objects/config/index/refs/untracked/privateprofiles/source/checkpoints/livecache. Metadata manifest is RAMgenerated, no localtar/Gitcopy; actualretirement follows separately.
+
+The prior3,115file retirement actually reclaimed16,764,928B. This archive precedes the newly approved3,218file retirement and does not claim it has happened. Alloriginalpaths andprivate/Git/livecache/source/checkpoint material remain. PR1456 exact2e53 requiredgate failedoneof1104: generatedLibertyJSON differs fromitsmarkdown; externaldiagnosis isread-only, no retry andcurrent2b integration remains ahead.
+
+- [INACTIVE-OLDGT-TICKET-RUNTIME-EXACT3218-PUBLIC-WORKFILES-BEFORE-RETIREMENT-20261029](archives/INACTIVE-OLDGT-TICKET-RUNTIME-EXACT3218-PUBLIC-WORKFILES-BEFORE-RETIREMENT-20261029.tar.gz.parts.json) — Exact clean inactive oldGT ticket runtime HEADc9c8:3,218 present regular public files42,489,581logical/49,090,560allocated; all indexGitblob/hash/mode/nlink verified. Complete RAM manifest/sourcearchive and immutable allmember/mode readback precede retirement. Preserve directory/oldGTsymlinktarget location,.git/objects/config/index/refs/untracked/privateprofiles/source/checkpoints/livecache. Metadata manifest is RAMgenerated, no localtar/Gitcopy; actualretirement follows separately.
+<!-- OCT29_INACTIVE_GT3218_PUBLIC_ARCHIVE_END -->
+
+
 <!-- OCT29_PRESERVED_PRIMARY3115_PUBLIC_ARCHIVE_START -->
 ## A second inactive public ticket runtime is saved before bounded space recovery
 
