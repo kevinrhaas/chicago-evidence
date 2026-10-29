@@ -1,5 +1,20 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- OCT29_CURRENT_C093_AND_GROUP_SOURCE_START -->
+## Current c093 source availability and group recovery
+
+The current175-commit incoming batch plus its genuinefold is now locally available after an exact bounded import. All945 newly downloadedblobs passed fullcanonicalSHA1 verification; all18,010tipentries and17,495uniqueblobIDs/sizes were checked. Actualcommonallocation398,372,864B stayed below620MiB, with512MiBworkspacefloor. Freshc093/expectedold00a cachedrefCAS passed, preserving sourceHEAD/index/MERGE/config/status/allotherrefs. This supplies current source availability only; authors must qualify the changedruntime, currentAGENTS and actualapp behavior. The first03b race refusal is preserved. ExpandedMiller claims/WIP, finiteHogan externalcandidate and rootdeltas are also saved. No originalticketDONE or currentapp/nativefullgate is inferred.
+
+- [CURRENT-C093-GENUINE-FOLD-EXACT-READONLY-PRICE-20261029](archives/CURRENT-C093-GENUINE-FOLD-EXACT-READONLY-PRICE-20261029.tar.gz) — Fresh current c093 is the genuine child fold of priced03b, only deleting pendingT3238 and inserting changelog. Complete18010-entry tree and pack-index pricing show945 missingtipblobs598002105B, no truncatedcompare assumption. Underlying175commit scope explicitly includesruntime/transport/human/1904 and oldTremont merge. Availability only.
+- [CURRENT-C093-EXACT-620MIB-BOUND-IMPORT-CAS-20261029](archives/CURRENT-C093-EXACT-620MIB-BOUND-IMPORT-CAS-20261029.tar.gz) — Actual14:37:44 PASS/reaped:945newtip blobs canonical SHA1verified; all18010entries/17495uniqueblobIDs+sizes verified. Canonical628994946B incl30992841metadata; actualcommonallocation398372864B<620MiB cap, WS3360206848B and512MiBfloor. Isolatedmetadata18535351Bpeak<32MiB. Freshc093/expectedold00a cachedrefCAS passed; sourceHEAD130dd/index/MERGE/config/status/allotherrefs unchanged. No sourcefetch/GC/repack. AvailabilityONLY, no current runtime/app/gate qualification.
+- [CURRENT03B-IMPORT-FRESH-REMOTE-RACE-SAFE-REFUSAL-20261029](archives/CURRENT03B-IMPORT-FRESH-REMOTE-RACE-SAFE-REFUSAL-20261029.tar.gz) — Raw first importer refused before metadatafetch orsourceobject writes because fresh dev had advanced03b to genuinefoldc093. All reaped. Superseded by exactrepriced c093 successfulimport; no stalecachedref advanced.
+- [MILLER-GROUP-EXPANDED-26MEMBER-RESUME-SNAPSHOT-20261029](archives/MILLER-GROUP-EXPANDED-26MEMBER-RESUME-SNAPSHOT-20261029.tar.gz) — Expanded26-member frozen currentMiller WIP/claims/preparedharness packet. Earlier11-member snapshot remainsdurable541 and unchanged. Nativeclaims actuallyrenewed; harnesssyntax only, not appreview PASS. Primarysource tree remainsownedgroup lead; current integration/native/full3/PR/merge pending. OriginalMillerOPEN/DIFFERS.
+- [HOGAN-FINITE-READONLY-REVIEW-EXTERNAL-CANDIDATE-20261029](archives/HOGAN-FINITE-READONLY-REVIEW-EXTERNAL-CANDIDATE-20261029.tar.gz) — Finite originalT2377 review and EXTERNALONLY three-path default-offcourses/cap candidate. All82defaultparams and actualroofridgefunction capturesexact,11badoptinsrefused. NoBlender/modelbake/sourcewrite/nativeenrollment/newmatch/appacceptance. Preparedcanonicaldiagnosticcamera preservesoldnumericrays and oldactualDIFFERS/imagebindings. Possible relatedgroupunit after genuinepilot; originalremainsOPEN/DIFFERS.
+- [ROOT-OCT29-RESUME-HANDOFF](archives/ROOT-OCT29-RESUME-HANDOFF.tar.gz) — Finite root resumption handoff. It is a dated coordination record, not additional source qualification.
+- [ROOT-C6-TO-CURRENT-TARGET-INPUT-AUDIT-20261029](archives/ROOT-C6-TO-CURRENT-TARGET-INPUT-AUDIT-20261029.tar.gz) — Read-only deliveredCarpenter to current targetinput audit; dated evidence, no originalticket completion inferred.
+<!-- OCT29_CURRENT_C093_AND_GROUP_SOURCE_END -->
+
+
 <!-- OCT29_SAFE_RESOURCE_AND_FINITE_REVIEW_START -->
 ## Safe workspace recovery and independent Miller review
 
