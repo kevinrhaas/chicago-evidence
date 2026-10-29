@@ -1,5 +1,19 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- OCT29_GT_NATIVE_CARPENTER_CLAIM_REMOTE_PENDING_START -->
+## GreenTree native production and three views are saved; Carpenter claim is official
+
+ActualGT25controls/23IDproduction/WEB/threefreshcaptures allpassedandreaped onqualifiedlocal24e4. All2068foreigntrackedmodels andprotectedsource/index/refs stayedexact. This isactualnativework, stillowingfeet/app/currentdev/globalqualificationandoriginalclosure. OfficialnativeCarpenterclaim2929 followsconcretereviewofstaletwoownbranchesandactualprior1348merge; initialrefusal/indexstatrefreshhistoryremainraw.
+
+PR1456body nowlinkscheckpoint677andstatesactualdatedBE5011104/394.9MiB/536source/706models/353freshrecipes/305publishedbindings/fourREVIEW. Originalpendingonly1456runwascancelledbynewdevE413push; authorizedsingleredispatch40953916787isPENDINGonec16at21:03freeze. CurrentPRheadstill24e4/dirty, requiredgateabsent; no PRmerge orneworiginalDONE. Runningforeignnativeworkflowwasnotcancelled; activepartiallogsAPI404so actualcurrentPR/skip/ETAarenotinvented. RootGTprimarysourcephaseisliveandnotreadbyremoteobserver.
+
+- [GREENTREE2376-ACTUAL-CURRENT-FOUR-NATIVE-PRODUCTION-THREE-VIEWS-20261029](archives/GREENTREE2376-ACTUAL-CURRENT-FOUR-NATIVE-PRODUCTION-THREE-VIEWS-20261029.tar.gz) — Actual109members11.64MB native25controls+23IDproduction/official4pathWEB/threefreshcaptures allzeroexit/reaped.2070trackedGLBmaterialized/2068foreignbytesexact,4protectedproducers/34nonmatchsource/index/refs exact. Qualifiedlocal24e4 sourceonly; rootvisualreview/feet/app/globalcurrentdev/fullgate/PRoriginalDONE stillowed, no falsecurrentglobalqualification.
+- [CARPENTER2382-ACTUAL-INITIAL-STALE-OWN-BRANCH-CLAIM-REFUSAL-20261029](archives/CARPENTER2382-ACTUAL-INITIAL-STALE-OWN-BRANCH-CLAIM-REFUSAL-20261029.tar.gz) — Actualnativeclaimpreflightrefusedtwooldbranchesbeforeticketmutation;8members476KBrawexit1/reaper. Nativeobservedindexstatrefreshmismatch retainedexplicitly; do notclaiminitialindexbytesunchanged. Currentownwork/existingmergedPRreadreviewcorrectlyrequired before--force.
+- [CARPENTER2382-ACTUAL-OFFICIAL-REVIEWED-OWN-CLAIM-2929-20261029](archives/CARPENTER2382-ACTUAL-OFFICIAL-REVIEWED-OWN-CLAIM-2929-20261029.tar.gz) — ActualrootreviewedstaleOWNguardoverride onlyafterbothbranchesZEROOPEN/pr1348mergedd3a1. Nativeclaim2929parentb92d strictremotemain/immutableticketbytes/readback/allforeignoriginalsinclGT/fourREVIEW exact, allsourceHEAD/index/stagedentries/status/refsTRUE/allreaped.9members4.82MB. Isolatedcacheleasefree; primarycacheoldb92dneedsfinite2929blobFFbeforefuturepublish. No newcanonicalmodel/app/PR/DONE.
+- [FOURCASE-ACTUAL-PR-BODY-677-REMOTE-PENDING-CANCELLATION-REDISPATCH-20261029](archives/FOURCASE-ACTUAL-PR-BODY-677-REMOTE-PENDING-CANCELLATION-REDISPATCH-20261029.tar.gz) — Frozenactualremote-onlyPRbodystructuredPATCHPASS/checkpoint677+E413scope+twoCarpenteroldbranchesZEROOPEN+pendingnativeonly1456cancelledbydevpushthenredispatched20440953916787pendingec16at21:03. Maxoneourpending, no runningforeigncancel/protectionchange/primaryreads/mutations. CurrentrequiredCI/PRmerge/neworiginalDONE NOTCLAIMED; activejobpartiallogs404/noETAinvented.
+<!-- OCT29_GT_NATIVE_CARPENTER_CLAIM_REMOTE_PENDING_END -->
+
+
 <!-- OCT29_FOUR_BRANCH_PUBLISHED_REVIEW_CACHE_NEXT_START -->
 ## PR1456 branch published after combined checks; four originals are in official review
 
