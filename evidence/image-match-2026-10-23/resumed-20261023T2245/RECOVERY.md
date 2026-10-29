@@ -1,5 +1,16 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- OCT29_SAFE_RESOURCE_AND_FINITE_REVIEW_START -->
+## Safe workspace recovery and independent Miller review
+
+The obsolete privatepublisher Gitdir was retired only after exactremoteancestry and completeobjectclosure checks; every workingfile and fullnonobjectGitmetadata were preserved. Actualworkspacegain was3,042,680,832B. The currentRAMpublisher is independent. A single genuineMilleroppositequarterdiagnostic corrects the earliercamera observation, while the broadpicturedlowwing gap stillkeeps originalT2381 OPEN/DIFFERS. The fresh progressprose supplements the alreadydurable raw17ticket/13PRaudit. No appsource changes or newpasses are inferred.
+
+- [OBSOLETE-PRIVATE-PUBLISHER-GIT-RECOVERABLE-RETIREMENT-20261029](archives/OBSOLETE-PRIVATE-PUBLISHER-GIT-RECOVERABLE-RETIREMENT-20261029.tar.gz) — Exact obsoletepublisher.gitONLY safelyretired afterall156reflogcommits and157otherwiseunreachablecommitgraph tips provenremoteMainancestors. Every1456unreachableobjectcovered,cleanindex/954workingfilesretained/zeroFD/statguards. Allnonobjectmetadata/index/refs/tree/fsck/recoveryproof included. ActualWSdfgain3042680832B; no appsource/assets/caches/priorarchivepayloads retired. CurrentRAMpublisherindependent.
+- [MILLER-FINITE-INDEPENDENT-OPPOSITE-QUARTER-REVIEW-20261029](archives/MILLER-FINITE-INDEPENDENT-OPPOSITE-QUARTER-REVIEW-20261029.tar.gz) — ONEgenuine4.1s read-onlyoppositequarterMiller diagnostic, native0/all4reaped; directreviewcorrects priorbehindvsbesidecameraobservation, but broadlowwing/frontagemassing stillDIFFERS substantivepicturedgap. Noprimarywrites/geometrychanges/blanketmatch. All8heldfilehashes andexactinputbindings retained.
+- [ORIGINAL17-OCT29-PROGRESS-PROSE-DELTA](archives/ORIGINAL17-OCT29-PROGRESS-PROSE-DELTA.tar.gz) — Rootconciseprose supplementtoexactraworiginal17audit durable540. Actual13documentedappPRsmerged,0originalDONE; oldTremontdefaultregression andremainingwork explicitlylisted. No oldmanifest rewritten.
+<!-- OCT29_SAFE_RESOURCE_AND_FINITE_REVIEW_END -->
+
+
 <!-- RESUME_OCT29_C6_MERGE_CLOSED_CHECKPOINT_START -->
 ## October29 recovery: Carpenter merged, current source state preserved
 
