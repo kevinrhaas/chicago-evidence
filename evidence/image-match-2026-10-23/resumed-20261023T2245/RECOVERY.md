@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- OCT29_TGT_COMPLETE_CURRENT_SOURCE_NATIVE_START -->
+## Complete corrected Tremont and Green Tree source/native recovery
+
+The entire current corrective source state is preserved before quiet app, phone and full3 checks. Its binarypatch was independently reconstructed into the exact full worktree, with all modes and entries checked. Actual two-lap native metadata closure, owningbusiness/lodging follow-up, all44 audit, selectedassets and two fresh native picturecaptures are recorded alongside raw failures and their bounded fixes. The pictured three-storey Tremontdefault is restored, Gale's contrary two-storey text stays an optionalversion, and GreenTree keeps its enclosed-annex gap OPEN. This is a private recovery archive. Actual bothviewportapp, phone, finalfull3, codecommit, newPRmerge and originalticketDONE remain pending unless separately and actually recorded later.
+
+- [TREMONT-GREEN-TREE-CURRENT-COMPLETE-SOURCE-NATIVE-20261029](archives/TREMONT-GREEN-TREE-CURRENT-COMPLETE-SOURCE-NATIVE-20261029.tar.gz) — Complete165-member24,039,726B current corrected Tremont/GreenTree WIP and actualnative milestone. Full11MB binarypatch c093 to exactworktreeac080a5e6b69c25681f88e75ebf9691bde390935 privatelyreconstructed allentries/modesexact; realHEAD/index/workbytes unchanged. Actual61-step currentnative fixpoint2laps, owninglodging/seater/business/staff follow-up, all44 audit, selectedmodels/WEB,2genuinepicturecaptures, exactrootdirectreview and allrawrefusals preserved. Currentpicturedthree-storeydefault restored; Gale2storeyoptional withoutinventedchronology. GT7sash/wagonbayincrement butannexOPEN/DIFFERS. ActualBOTHapp/currentphone/finalfull3/codecommit/newPRmerge/originalDONE PENDING. Noignoredmirror/scratch/browserprofiles/cookies.
+<!-- OCT29_TGT_COMPLETE_CURRENT_SOURCE_NATIVE_END -->
+
+
 <!-- OCT29_COMPLETE_FOUR_CASE_TGT_HOSTING9_MILESTONE_START -->
 ## Complete four-case source recovery and current Tremont milestone
 
