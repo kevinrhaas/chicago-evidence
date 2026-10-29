@@ -1,5 +1,21 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- OCT29_GT_NATIVEOWNERS_LIBRARY_SMOKEPREP_72PRICE_START -->
+## Green Tree native owners settled; image-library ownership is corrected; full smoke and integration remain ahead
+
+The actual204+7+two57tail owner sequence settled with2075models and48authored/44derived audits. The first app freeze stopped before a browser because a sibling library cache was missing; the official native library owner rebuilt955records, preserving old952 and the site plan, and supplied all3GTpictures. Corrected publication/app work is live and excluded. A fresh Kurz metadata-bound native capture is saved; its root review is separate.
+
+The actual native smoke budget requires all15parts in both viewports. The prepared exact-head Draft-only dispatcher uses the existing150-minute standard-runner workflow, with unique204→run-ID mapping, safe resume and completion-log input proof. It has NOT dispatched a job; its qualification template is allfalse. Read-only current72c03 pricing verified20blobs15,181,281raw need5,087,232physical bytes; the bounded canonical import/CAS remains unexecuted until GT app guards freeze at a root-approved phase boundary. PR1456 b20f remains pushed while existing native bot jobs run; final CI/merge/four original settlement remain pending.
+
+- [GREENTREE2376-ACTUAL-B20F204-7-TWOSETTLED57TAILS-2075MODEL44AUDIT-20261029](archives/GREENTREE2376-ACTUAL-B20F204-7-TWOSETTLED57TAILS-2075MODEL44AUDIT-20261029.tar.gz.parts.json) — Closed53members10.47MB: actual204+7+two57tail native owners settled,2075model/48authored/44derived guards. App/fullsourcegate/current72composition remain separate and pending. No livev2publication/browser outputs included.
+- [GREENTREE2376-ACTUAL-THREEPICTURE-LIBRARY955-OWNER-CORRECTION-20261029](archives/GREENTREE2376-ACTUAL-THREEPICTURE-LIBRARY955-OWNER-CORRECTION-20261029.tar.gz) — Closed9members3.03MB: official sibling library owner supplies all3GTpictures/955records; old952/siteplan exact, native allscene/sourceusechecks PASS. Firstfreeze correctly stopped on missing librarycache before any browser; no fake app result. Currentv2pub/app live excluded.
+- [GREENTREE2376-ACTUAL-ALL15-BOTH-SMOKE-BUDGET-REQUIREMENT-20261029](archives/GREENTREE2376-ACTUAL-ALL15-BOTH-SMOKE-BUDGET-REQUIREMENT-20261029.tar.gz) — Closed3members18KB: actual native budget requires every15rendererpart at BOTHviewports for shared walking/main changes. Dated67m19s partialcost plus17unmeasured slots is not a completed broad smoke. Plan uses existing native GitHub workflow only after actual checked pushed Draft GT head.
+- [GREENTREE2376-ACTUAL-B20F-KURZ-METADATA-BOUND-CAPTURE-20261029](archives/GREENTREE2376-ACTUAL-B20F-KURZ-METADATA-BOUND-CAPTURE-20261029.tar.gz) — Closed8members115825B: native metadata-bound Kurz camera/photo/reaper/guard/sideby. Raw generated match remains unreviewed; separate root acceptance is in prior65member GT rebind archive. No private browser/profile/certDB/runtime inputs.
+- [GREENTREE2376-NATIVE30-EXACTHEAD-DRAFT-DISPATCH-OBSERVER-PREPARATION-20261029](archives/GREENTREE2376-NATIVE30-EXACTHEAD-DRAFT-DISPATCH-OBSERVER-PREPARATION-20261029.tar.gz) — Closed5members22KB: existing native workflow unmodified; default plan only and qualification allfalse/PENDING. Exact Draft head, slow13first, sequential unique before/after run-ID mapping and log-based30actualverdicts; uncertain POST stops and guarded resume avoids duplication. No smoke dispatched, no broad PASS or ready/merge.
+- [CURRENT72C03-ACTUAL20BLOB-COMPRESSED-PRICE-AND-BOUNDED-IMPORT-PREPARATION-20261029](archives/CURRENT72C03-ACTUAL20BLOB-COMPRESSED-PRICE-AND-BOUNDED-IMPORT-PREPARATION-20261029.tar.gz) — Actual readonly immutable20blob15,181,281raw price/5,087,232allocated; rawpayloads RAM/discarded. Exact filtered metadata+singlecopy canonical import+EC16→72CAS code is preparation only, guarded by512MiB+16MiB reserve/1.8GB floors and phase boundary. No source/index/refs/object import yet. Dated remote status records b20f PR1456 still awaiting native bot and finalCI, not a current composite PASS.
+<!-- OCT29_GT_NATIVEOWNERS_LIBRARY_SMOKEPREP_72PRICE_END -->
+
+
 <!-- OCT29_GTB20F_CARPENTER_PUBLICRETIRE_START -->
 ## Green Tree adoption is saved; Carpenter controls are prepared; duplicate runtime space is recovered
 
