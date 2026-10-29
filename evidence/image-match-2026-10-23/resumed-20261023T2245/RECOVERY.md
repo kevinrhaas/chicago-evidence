@@ -1,5 +1,16 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- OCT29_ENTIRE_GT_WIP_SAFE_FOUR_REPAIR_START -->
+## Complete GreenTree WIP is recoverable before the four-building PR repair
+
+ThispriorityarchivepreservesALL48currentGTchangedfiles:33modified+15new, includingKurznewcamera/sourcepair, fourmodeloutputs, authoredhelpers/runtime/source/librarychanges androotreviewsidebys. All33exactHEADpreimages, binarytrackedpatch, untrackedpostimages andactualstableHEAD/branch/indexbindingsareincluded:83members16.3MB. No liveprimaryreadsbythispublisher. RootmayrestoreONLYmanifest-listedownedpaths/switchbacktofour24e4afteractualstrictimmutableallmemberreadback. Unrelatedfiles/caches/refsarenotcleanupscope.
+
+GTnativeproductionandthreebodyreviewsareactual; app/feet/global/fullsource/PR/originalclosurearenotimplied. PR1456latestnativejobpushedzeroononeauthoredLIBERTIESEOFappendconflict, so thefour-PRfinisherwillperformconcretemanualappendordering/nativeowners/fullcheck/currentCIrepairafterthissave. No neworiginalDONEorPRmergeisclaimed. Priorfailurehistoryandallpriorremotepathsremainpreserved.
+
+- [GREENTREE2376-ENTIRE-PRIMARY-WIP83-OWN48-RESTORABLE-BEFORE-FOUR-REPAIR-20261029](archives/GREENTREE2376-ENTIRE-PRIMARY-WIP83-OWN48-RESTORABLE-BEFORE-FOUR-REPAIR-20261029.tar.gz) — PRIORITY completeactualcurrentGTuncommittedWIP checkpoint:83members16.3MB withall48GTchangedfilepostimages(33modified+15new inclKurz2/model4/rootreviewsidebys), all33exactHEADpreimages, binarytrackedpatch, untrackedpostimages, sourceHEADbranch/indexbindings andallstableguards. No liveprimaryreads bypublisher. CanonicalGTbody3reviewMATCHES retainedwithpicture/date/cameraconflicts, Kurznewcaptureseparate; originalglobal/app/fullcheck/PR/DONE unqualified. This exactfullWIP allowsROOTrestoreONLYlistedownedpaths/switchfour24e4 afteractualimmutableeverymemberreadback; no unrelatedsourcecleanup/deletion/ref rewrite authorizedbyarchive.
+<!-- OCT29_ENTIRE_GT_WIP_SAFE_FOUR_REPAIR_END -->
+
+
 <!-- OCT29_GT_AUTHORED_REVIEW_CARPENTER_TRIALS_LAP_CONFLICT_START -->
 ## GreenTree authored edits and reviewed models are recoverable; PR1456 needs one authored append merge
 
