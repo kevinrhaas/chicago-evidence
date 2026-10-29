@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- OCT29_FINAL67_PR1456_FIX_START -->
+## Final Green Tree source and PR repair are saved before composition
+
+All67 final Green Tree WIP postimages plus source inventory are preserved before current-dev/four-PR repair. Canonical Full mobile actual PASS; canonical Full desktop is explicitly a two-invocation composite with original exit130 unchanged; optional Andreas mobile actual PASS. Optional desktop is still LIVE and deliberately excluded, no result inferred. Four-original PR1456 head009 remains stale LibertyJSON; fix source/controller regression oldred/patchedgreen is root reviewed but not yet applied. Normal currentdev merge plus official compiler, fullgate and CI are required before merge. No original completion claimed.
+
+- [GREENTREE2376-ALL67-FINAL-WIP-AND-CLOSED-APP-PR1456-FIX-HANDOFF-20261029](archives/GREENTREE2376-ALL67-FINAL-WIP-AND-CLOSED-APP-PR1456-FIX-HANDOFF-20261029.tar.gz.parts.json) — All67 final Green Tree WIP postimages plus source inventory are preserved before current-dev/four-PR repair. Canonical Full mobile actual PASS; canonical Full desktop is explicitly a two-invocation composite with original exit130 unchanged; optional Andreas mobile actual PASS. Optional desktop is still LIVE and deliberately excluded, no result inferred. Four-original PR1456 head009 remains stale LibertyJSON; fix source/controller regression oldred/patchedgreen is root reviewed but not yet applied. Normal currentdev merge plus official compiler, fullgate and CI are required before merge. No original completion claimed.
+<!-- OCT29_FINAL67_PR1456_FIX_END -->
+
+
 <!-- OCT29_INACTIVE_GT3218_PUBLIC_ARCHIVE_START -->
 ## The inactive old Green Tree ticket runtime is saved before bounded space recovery
 
