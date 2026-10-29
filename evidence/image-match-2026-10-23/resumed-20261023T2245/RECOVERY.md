@@ -1,5 +1,19 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- OCT29_SMALL_FINAL_IMAGEPASS_AND_FIRST_GATE_RAW_START -->
+## Final four image passes and the first whole-check result
+
+The small frozen group increment now records the genuinelyproduced final25Miller geometry and four actual scopedimagegatepasses. Applied directly to BASE40fa0da971 (durable564), it reconstructs exact9a8e048c; it supersedes the earlierUNRUNf739 increment. Closed final82production and independentMiller expertpicture review are preserved separately. Those image results do not complete the finalglobalclosure, app/full3 or codePR/merge requirements.
+
+The closed firstTGTwholecheck recorded1103PASS and ONEratchetFAIL; that failure is retained verbatim. Exactnative retirement of one existing stale rights-debt row is saved alongside it. The currentv2 wholecheck on tree1c26d94c remains RUNNING in this checkpoint. No v2 output or live source is read, and no eventual pass, commit, merge or originalticketDONE is inferred. These tiny frozen archives provide recovery during the active check.
+
+- [FOUR-CASE-FINAL-ACTUAL-FOUR-IMAGE-PASSES-COMPACT-SOURCE-20261029](archives/FOUR-CASE-FINAL-ACTUAL-FOUR-IMAGE-PASSES-COMPACT-SOURCE-20261029.tar.gz) — Frozen5-member1.529MB completefinal four-image-pass sourceincrement. ApplyDIRECTLYTO BASE40fa0da971/da4 baseline durable564, NOTontopofoldUNRUNf739increment; patch+2newdossiers reconstructexact9a8e048cf7855d6d4db28e423102f09708a83f89 and ALLprimaryWIPpaths. SupersedesUNRUNf739 authoredincrement withgenuinelyproducedfinal25MillerMASTER2da830/WEB/SBS/currentMATCHES, all353freshrecipebindings, sourceprose/conditionalRroofconfidence. Actual4scopedimagegatesPASS; globalclosure/app/full3/codePRmerge/originalDONE pending. No liveprimary archive.
+- [FOUR-CASE-FINAL-NATIVE82-AND-FOUR-IMAGE-GATES-CLOSED-20261029](archives/FOUR-CASE-FINAL-NATIVE82-AND-FOUR-IMAGE-GATES-CLOSED-20261029.tar.gz) — Closed20-member1.112MB finalMiller actualnative82MASTER production and actual4scopedimagegatePASS proof. Final25geometry genuinely produced; doesnotrelabel earlier38prototype or oldUNRUNsourcepacket. Allrawproofs/reapers/bindings retained asdeclared. Globalowningclosure/publishedBOTHapp/nativefull3/codePRmerge/originalDONE NOTRUN bythispacket.
+- [MILLER-FINAL25-ACTUAL-NATIVE-EXPERT-IMAGE-MATCHES-20261029](archives/MILLER-FINAL25-ACTUAL-NATIVE-EXPERT-IMAGE-MATCHES-20261029.tar.gz) — Closed7-member557027B expert directreview of ACTUALfinal25MillerJPEG, master2da830/camerab86193b/photo hashesverified. RawUNREVIEWED keptseparate fromreviewedMATCHESd9b34433, all8picturedispositionsqualifiedunderT3153. Proposedextra upperwindowgapwithdrawn afteractualHammonpictureconflictconfirmed BEFOREedit. Nativeimagegate bysourceowner isseparate; no wholeapp/full3/merge/originalDONE inferred. Reviewerperformedno newnative/sourcewrite.
+- [TGT-FIRST-WHOLECHECK1103-ONE-RATCHET-FAIL-NATIVE-DEBT-RETIRE-20261029](archives/TGT-FIRST-WHOLECHECK1103-ONE-RATCHET-FAIL-NATIVE-DEBT-RETIRE-20261029.tar.gz) — Closed14-member1.662MB actualfirstwholecheck result:1103PASS/ONEratchetFAIL, allsourceguardsunchanged/allchildrenreaped. RawFAILpreserved andNEVERrelabeledPASS. ExactnativeONEexistingrights-debtentryretirement proof included; no manualwholebaseline rewrite or waivedfailedstage inferred. Currentv2TREE1c26d94c0fdc64469a06f650c2bf1f13ff0a2c2f isRUNNING inthisdatedpacket, notPASS. Source558+remote2d2f+recordedone-rowdelta remainrecoverable. No liveactivev2outputs/source/browser profiles/cookiescaptured. No codecommit/PRmerge/originalDONE inferred.
+<!-- OCT29_SMALL_FINAL_IMAGEPASS_AND_FIRST_GATE_RAW_END -->
+
+
 <!-- OCT29_DEV2D2F_DATED_C093_APP_COMPLETE_GROUP_SOURCE_START -->
 ## Fresh dev availability, dated app proof and exact grouped source recovery
 
