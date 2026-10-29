@@ -1,0 +1,7 @@
+# Current PR1340 bound-fix and quiet horse V6 recovery
+
+Prepared only; root must perform a normal verified public push. Public app HEAD is dce67562, whose exact cd76/APP336 full gate passed 1105 checks and five real HEAD checks. The newer smoke-only ownership bound fix is uncommitted TREEbac0441/APPee782. Its native target was running at this snapshot; no running transcript is copied and no new target/fullgate PASS is asserted. Complete pending smoke source, exact binary Git patch from public dce67562, full 281-source/index binding and reviewed wrappers are recoverable here. Original wagon geometry/material/runtime metadata remain exact dce67562.
+
+Horse V6 is outside-app source-only prototype. Both exact GLBs, recipe, exporter, controls and actual129 Mixer diagnostic are included. Source export18 controls passed and actual original-limit129 diagnostic passed, including fresh old13 parity, quiet head/neck motion and zero tail difference. Canonical/socket925/posed/world/adoption remain UNRUN; failed broader17 motion is not a runtime fallback.
+
+Every payload is gzip with mtime0, SHA256/length checked against the original. Equal-byte originals share a payload. Decode each referenced payload to its original_path using the manifest. GENERATED files are real saved /tmp originals, including the read-only Git binary patch; they are not pseudo-paths. Preserve prior public a7d79bd5 recovery for failedV4/V5 and older source lineage. No source or original evidence was removed.
