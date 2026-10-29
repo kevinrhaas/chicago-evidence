@@ -1,5 +1,20 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- OCT29_623E_ACTUAL_ADOPTION_MILLER_DELTA_BRIDGE_V4_START -->
+## Currentdev adopted without losing the four cases; narrow repair and bridge evidence preserved
+
+The primary normallyadvanced to623e with59ownsourceunions checked before any stash/ref action. All353currentlog/frame recipes were fresh, and the exact oldstash and ownsource preimages remain recoverable. Native generatedclosure and a newly frozen sourcegate stillfollow this datedadoption; the oldccbbsourcegate remains FAIL9, never passed.
+
+The Miller10mm stacktoprepair is independentlybounded by actualbinary geometry proof; UVrepacking prevents byteidentityclaims. The narrow Nodefixture wrapper preserves lazyfetchguard outside that actualexplicit fixture. Exactnative transportV5 controls are syntheticpreparation only. Bridgev4 has actualnative/default/WEB/photo proof and preservedrails, but rootreview/wholeacceptance remain pending atfreeze. No codePRmerge or originalticketclosure is inferred.
+
+- [FOURCASE-ACTUAL-623E-FF-WIP-ADOPTION-59-PREIMAGES-353-RECIPES-FRESH-20261029](archives/FOURCASE-ACTUAL-623E-FF-WIP-ADOPTION-59-PREIMAGES-353-RECIPES-FRESH-20261029.tar.gz.parts.json) — Actual normalFF2cb3to623e and59authoredunions:54disjoint,2entrywiseregistries,2incomingownedoutputsqueuednative,1appendLIBERTIESsuffix. Exact retainedstashf70cf33... neverdrop;59ownsourcepreimages+patch+353currentlog/frame recipes fresh+outerreaperPASS. Currentglobalnative/package/phone/fullgate stillowed atthisdatedsnapshot; no codecommits/PRmerge/DONE.
+- [FOURCASE-NODE-SPARSE-FIXTURE-NARROW-LAZY-FETCH-SCOPE-PREP-20261029](archives/FOURCASE-NODE-SPARSE-FIXTURE-NARROW-LAZY-FETCH-SCOPE-PREP-20261029.tar.gz) — Narrow external Node wrapper lets actual sparsecommit smokeoracle fixture fetch its explicit smalloracle while unrelatedNodecalls retain lazyfetchprotection. Actual focusedfixturePASS; false3libertycoveragepointers removed onsource/regenerated data withnativecompilercheckPASS. Whole newsourcegate stillpending; no codepublication.
+- [FOURCASE-MILLER-10MM-STACK-TOP-ACTUAL-BINARY-DELTA-PROOF-20261029](archives/FOURCASE-MILLER-10MM-STACK-TOP-ACTUAL-BINARY-DELTA-PROOF-20261029.tar.gz) — Actual before/afterMASTER meshpositions:only12chimneytopvertices upward10.00023mm; allotherpositions/normals/indices/materials/nodes exact. UVsrepacked so doNOTclaimfullattribute orWEBbyteidentity. Binaryparser/results/masters/frozenruntime included; no wholeapp/fullgatePASS inferred.
+- [FOURCASE-TRANSPORT-V5-SYNTHETIC-PATH-SCHEMA-AGGREGATE-REFUSALS-20261029](archives/FOURCASE-TRANSPORT-V5-SYNTHETIC-PATH-SCHEMA-AGGREGATE-REFUSALS-20261029.tar.gz) — Synthetic-only59path exactschemafixture and9negativecontrolsPASS, including failedreceipt/outsideownedpath/incompletenativeaggregate refusal. Notactualgateverdict, fixturesnevertransported, no source/remote codewrites.
+- [DEARBORN2375-V4-ACTUAL-NATIVE-DEFAULT-WEB-PHOTO-REVIEW-PENDING-20261029](archives/DEARBORN2375-V4-ACTUAL-NATIVE-DEFAULT-WEB-PHOTO-REVIEW-PENDING-20261029.tar.gz) — Actual6freshdefaultMASTERbyteparity, native1.658s/WEB3.363s/photo3.275s allreaped. SelectedMASTER41b0...1078360B/WEB723162...133592B. Frozenproducers/sourcecamera/sourcephoto/render/rawunreviewedmatch and actualboardrailpreservation binaryproof. Rootdirectreviewpending atfreeze; no wholeacceptance, canonicalclaim/adoption/app/fullgate/originalclosure.
+<!-- OCT29_623E_ACTUAL_ADOPTION_MILLER_DELTA_BRIDGE_V4_END -->
+
+
 <!-- OCT29_ACTUAL_GATE_FAIL9_623E_RECOVERY_START -->
 ## Actual source-gate failure retained; currentdev imported and next preparations saved
 
