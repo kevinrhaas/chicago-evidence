@@ -1,0 +1,11 @@
+--- actual-NONPASS-b089-observer.mjs
++++ proposed-capture-timeout90-only.mjs
+@@ -48,7 +48,7 @@
+         pixelRatio:a.renderer.getPixelRatio(),camera:a.camera.position.toArray(),pose,targetNDC:p,near,far,
+         draw:{...a.renderer.info.render},pending:a.residency?.pending??0,glError:a.renderer.getContext().getError()};},{plan,pose});
+     rows.push({label,...row});await fs.writeFile(`${outputDir}/FAR-CAMERA.json`,JSON.stringify({sourcePlanSha256:crypto.createHash('sha256').update(planBytes).digest('hex'),plan,rows,errors,consoleErrors},null,2));
+-    await page.screenshot({path:`${outputDir}/${label}.png`});
++    await page.screenshot({path:`${outputDir}/${label}.png`,timeout:90000});
+     assert.equal(row.error,null);assert.equal(row.glError,0);assert.equal(row.pending,0);assert.equal(row.welcome,'world');assert.equal(row.detail,nativeDetail);assert.equal(row.pixelRatio,1);assert.ok(row.camera[1]<=30);assert.ok(Math.abs(row.camera[0]-plan.targets.track.e)<1e-6);assert.ok(Math.abs(row.camera[2]+plan.nHi+farOffset)<1e-6);
+     assert.equal(row.near,null);assert.ok(row.far?.visible);assert.ok(row.far.positionCount>0&&row.far.indexCount>0);assert.ok(row.far.markedForUploadRelease);assert.equal(row.far.keptBytes,0,'Actually drawn selected far rails released CPU arrays');
+     assert.ok(Object.values(row.targetNDC).every(Number.isFinite));assert.ok(Math.abs(row.targetNDC.x)<0.05&&Math.abs(row.targetNDC.y)<0.05&&row.targetNDC.z>-1&&row.targetNDC.z<1,'Selected source track centered in actual camera view');
