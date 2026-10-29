@@ -1,5 +1,16 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- OCT29_PUBLIC_TICKET_RUNTIME_DUPLICATES_START -->
+## Exact duplicate public ticket runtime is saved before freeing workingfiles
+
+Exact clean isolated GT/Carpenter claim runtime HEAD2929:3,221 public regular tracked files42,512,628 logicalbytes/49,123,328 allocated, full standalone indexed Gitblob/sha/mode binding plus HEAD/index/config/alternates digests. RAM archive and full immutable source-member/mode verification precede any retirement. No .git metadata/objects/config/alternates, untracked files, private profiles or checkpoints are retired. Primary app/ticket cache untouched.
+
+This is resource recovery only; it does not close a building ticket or qualify a model. Retirement result is a later local closed receipt, never inferred merely from archive publication. The isolated runtime must not be used for new CLI commands after retirement. PR1456 native b20f remains pushed with full1104/currentphone395.68MiB proof in checkpoint695; current integration checks and merge remain pending.
+
+- [GT-CARPENTER-ISOLATED-TICKET-RUNTIME-EXACT-PUBLIC-WORKFILES-BEFORE-RETIREMENT-20261029](archives/GT-CARPENTER-ISOLATED-TICKET-RUNTIME-EXACT-PUBLIC-WORKFILES-BEFORE-RETIREMENT-20261029.tar.gz.parts.json) — Exact clean isolated GT/Carpenter claim runtime HEAD2929:3,221 public regular tracked files42,512,628 logicalbytes/49,123,328 allocated, full standalone indexed Gitblob/sha/mode binding plus HEAD/index/config/alternates digests. RAM archive and full immutable source-member/mode verification precede any retirement. No .git metadata/objects/config/alternates, untracked files, private profiles or checkpoints are retired. Primary app/ticket cache untouched.
+<!-- OCT29_PUBLIC_TICKET_RUNTIME_DUPLICATES_END -->
+
+
 <!-- OCT29_EC16_ACTUAL_NATIVE_FULLPASS_PUBLISHED_START -->
 ## Four-building native repair passed and is pushed; PR1456 awaits current integration checks
 
