@@ -1,5 +1,21 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- RESUME_OCT29_C6_MERGE_CLOSED_CHECKPOINT_START -->
+## October29 recovery: Carpenter merged, current source state preserved
+
+Carpenter PR1348 actually merged into dev onOctober27 with its exact checkedtree. OriginalT2382 remainsOPEN/DIFFERS. The finite qualification, independent mergeproof, datedShipmanavailability, Lighthouseentrywisealias and groupedsourceadopter are preserved here. FreshOctober29 audit records13documentedappPRsmerged and0of17originalticketsDONE. The oldTremont1290head was unexpectedlymerged separately; its two-storeydefault needs correction from the preserved three-storeyWIP. Currentdev03b0 is175commits ahead ofcached00a0; read-onlyprice records946missingblobs598002025canonicalbytes, with no import or qualification claimed. CurrentMiller WIP is saved alongside the alreadydurable532–534 productionunits.
+
+- [CARPENTER1348-ACTUAL-MERGED-CLOSED-QUALIFICATION-20261027](archives/CARPENTER1348-ACTUAL-MERGED-CLOSED-QUALIFICATION-20261027.tar.gz) — Actual PR1348 standardexpectedhead MERGE d3a1f4db/tree3ef34a2d onOct27 04:05:22. Closed152-file full3 dated1077/388, actualcurrentnative/phone389.4of400/cards/merge/laprelease and inactiveignoredmirrorcleanup receipts. OriginalT2382 remainsOPEN/DIFFERS. No appmain promotion or currentwhole18 claim.
+- [CARPENTER1348-ROOT-INDEPENDENT-MERGE-VERIFICATION-20261027](archives/CARPENTER1348-ROOT-INDEPENDENT-MERGE-VERIFICATION-20261027.tar.gz) — Root independent RESTverification actualPR1348 merge and exactcheckedtree/parents. OriginalT2382 remainsOPEN/DIFFERS.
+- [SHIPMAN05C4-GENUINE-FOLD00A0-EXACT-BOUNDED-IMPORT-20261027](archives/SHIPMAN05C4-GENUINE-FOLD00A0-EXACT-BOUNDED-IMPORT-20261027.tar.gz) — DatedOct27 actualboundedavailabilityimport C6d3a1+Shipman05c4+fold00a0. Canonical25828050B/all17009tipblobs verified, sourceguards preserved and expectedoldCAS passed. Availabilityonly. SupersededbyOct29 actualdev03b0; no currentqualification inferred.
+- [LIGHTHOUSE-SINGULAR-GRADE-ALIAS-ENTRYWISE-PREPARATION-20261027](archives/LIGHTHOUSE-SINGULAR-GRADE-ALIAS-ENTRYWISE-PREPARATION-20261027.tar.gz) — Exactold/new single existingCastelnau rulingalias correction and in-memory gradeproof to avoid countingonepicturetwice. Preparation only, source notchanged inthispacket. Combinedappqualification/merge pending.
+- [EARLY-THREE-CASE-GROUP-ADOPTER-AND-CAMERA-PREPARATION-20261027](archives/EARLY-THREE-CASE-GROUP-ADOPTER-AND-CAMERA-PREPARATION-20261027.tar.gz) — Four-file exactboundedfieldwise sourceadopter/plan/portableMillercamera preparation. NOT execution or finalgroupqualification. OriginalMillerOPEN/DIFFERS; Mary/LH unitimagegatesPASS but finalapp/merge pending.
+- [ORIGINAL17-LIVE-PROGRESS-AND-MERGED13-AUDIT-20261029](archives/ORIGINAL17-LIVE-PROGRESS-AND-MERGED13-AUDIT-20261029.tar.gz) — FreshOct29 exact17originalticketfiles and RESTaudit:13documentedappPRs merged including oldTremont1337; zerooriginalticketsDONE. Old1290Tremontdefault2storey unexpectedlymergedOct27; corrected3storeyWIP retained and requires correctivecurrentPR. Thisaudit isdatedactualstate, not broad completion.
+- [MILLER-GROUP-PRIMARY-WIP-RESUME-SNAPSHOT-20261029](archives/MILLER-GROUP-PRIMARY-WIP-RESUME-SNAPSHOT-20261029.tar.gz) — Frozen11-member primaryMiller WIP snapshot onHEAD130dd beforeOct29groupintegration:trackedbinarypatch and exactuntrackedownedinputs/asset/metadata. Existing revisedMiller/Mary/LHunitsdurable532-534. No finalgroupqualificationorPRmerge inferred.
+- [CURRENT-DEV03B0-EXACT-READONLY-AVAILABILITY-PRICE-20261029](archives/CURRENT-DEV03B0-EXACT-READONLY-AVAILABILITY-PRICE-20261029.tar.gz) — Read-only full18011-entry currentdev03b0/tree4b01 availabilityaudit:175incomingcommits,1020changedpaths,946missinguniquetipblobs598002025canonicalbytes. Completefulltree/packindexmembership used; compareAPI300-filetruncationretained. No sourcewrites/import/CAS or qualification. Exceedsstanding64MiBsinglefeatureauthority; concretecompressedpricing pending.
+<!-- RESUME_OCT29_C6_MERGE_CLOSED_CHECKPOINT_END -->
+
+
 <!-- JONES4030_AVAILABILITY_THREE_CASE_CLOSED_PRODUCTION_20261027_START -->
 ## Exact Jones availability and the next three-case source batch
 
