@@ -1,0 +1,14 @@
+# Canonical implementation must qualify itself
+
+Root reviewed the external preparation and identified this integration requirement: the fresh external native129 result binds14 exact external implementation/input pins. Porting the adapter, qualifier, producer or driver into app-relative first-class paths changes executing bytes and their hashes. The external certificate cannot silently certify rewritten canonical implementations.
+
+After current external posed129 actually passes, the smallest honest integration sequence is:
+
+1. Add first-class portable canonical child asset/generator/immutable prototype input recipe, explicit source adapter and actual native producer/driver/qualifier. Preserve all existing exact e49/5a/925 source masters, recorded proofs and immutable prototype. Keep active runtime e49 selected while preparing the new source mode.
+2. Independently review and freeze the FINAL canonical14 qualifying executable/input pins. Canonical source modules must resolve their app data/generator/recipe/parent sources from their own app-relative paths and never import `/workspace` preparation. Their driver binds actual staged source/index and mirror; it cannot continue hardcoding the old checkedH53 when the canonical authoring tree has new paths.
+3. Run NEW actual static, actual GLTFLoader/clone/Mixer65keys+64midpoints + Float64 capture, and actual posed129 geometry under those exact canonical pins, fixed bounds, live resource guards and owned closures. The external proof remains useful backup and algorithm evidence, but is not transferred as this final implementation's qualification.
+4. Produce the compact final exact-source certificate from that new canonical execution. Then select the new child in real SOURCE/sidecar/placement/idle mode metadata. Record every ancestor and all remaining visual limits. Publish and capture actual native organic-dielectric old/new views, inspect all required views, then canonical owners/full preflight/new-HEAD checks/push/currentCI/DEV acceptance.
+
+Avoid a certificate self-hash cycle: the14 qualifying tools must not embed the SHA of the future certificate whose content includes their own code pins. Keep qualification independent of future child certification. A separate recorded-certificate reader/source gate can bind the actual completed certificate to exact source, input and executing code pins; runtime PLANTED_MASTERS and metadata can pin the final certificate SHA after qualification, with real contract controls. These ordinary runtime/record-reader changes are subsequently covered by full preflight and actual published native-world comparison.
+
+No source changes, canonical execution, new application certificate or new runtime selection occurred when this addendum was written. Root's explicit current GO applies to the already reviewed external pipeline only.
