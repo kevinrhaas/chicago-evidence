@@ -1,0 +1,85 @@
+{
+  "result": "PASS light native report rebuild/check/selftest and affected downstream checks; FULLGATE HOLD for H slot",
+  "HEAD": "9e14c138848ef854a535271fbd3feaae52dd4aa2",
+  "TREE": "e873ea8531ab1a8f8bb74434976ace6234c3d6e6",
+  "authored16_exact": true,
+  "total_staged_paths": 19,
+  "native_report_sha256": "8dd5de2a4e3fe2ffd52b93b09515bede629cd011a0fe9e44826b6039fde2c44c",
+  "old_report_sha256": "11cb183a9c7cb34acb73e916d6f2a330f179e97fdb70f68ce45df26ea92b5744",
+  "commands": [
+    {
+      "label": "NATIVE-REPORT-BUILD",
+      "command": [
+        "python3",
+        "tools/report_research_signoff.py",
+        "--build"
+      ],
+      "returncode": 0,
+      "seconds": 0.9389690199750476
+    },
+    {
+      "label": "NATIVE-REPORT-CHECK",
+      "command": [
+        "python3",
+        "tools/report_research_signoff.py",
+        "--check",
+        "--quiet"
+      ],
+      "returncode": 0,
+      "seconds": 0.9580465349717997
+    },
+    {
+      "label": "NATIVE-REPORT-SELFTEST",
+      "command": [
+        "python3",
+        "tools/report_research_signoff.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "seconds": 0.9853300710092299
+    },
+    {
+      "label": "NATIVE-SOURCEUSE-CHECK",
+      "command": [
+        "python3",
+        "tools/compile_source_use.py",
+        "--check"
+      ],
+      "returncode": 0,
+      "seconds": 3.5919978609890677
+    },
+    {
+      "label": "NATIVE-CLOSING-AUDIT-CHECK",
+      "command": [
+        "python3",
+        "tools/report_research_closing_audit.py",
+        "--check",
+        "--quiet"
+      ],
+      "returncode": 0,
+      "seconds": 0.4573017049988266
+    },
+    {
+      "label": "NATIVE-CLOSING-SET-CHECK",
+      "command": [
+        "python3",
+        "tools/rebuild_closing_set.py",
+        "--check",
+        "--quiet"
+      ],
+      "returncode": 0,
+      "seconds": 0.7124378650041763
+    }
+  ],
+  "dependency": {
+    "report_has_native_build_check": true,
+    "native_manifest_step": 197,
+    "only_direct_Python_reader": [
+      "tools/report_research_signoff.py"
+    ],
+    "reads_audit_inventory": true,
+    "SourceUse_fresh_no_tail_rerun": true
+  },
+  "source_code_or_assertions_edited": false,
+  "next": "Wait ROOT heavyGO then fresh fullpreflight; no commit/push"
+}

@@ -1,0 +1,5 @@
+# Actual-view review
+
+Root personally inspected all four desktop and phone PNGs. They show the actual e49 horse in the real current native published yard. The body quarter view is partly occluded by the unchanged fence. Desktop's native CLICK TO ENGAGE LOOK hint covers part of the cheek; phone head view has no such hint. The head retains visible eye/brow ring, faceting and mane limitations. These images do not establish broad photographic acceptance. Camera-only and native pointer-engagement improvements are being prepared outside the app; no scene, UI, renderer, ground, asset or quality override is authorized by this review.
+
+Four-view attempt2 really closed NONPASS. All other recorded actual geometry/contact/picking/budget/DPR/source/index/mirror/browser/HTTP/GL guards passed; four assertions incorrectly treated the native known nonblocking review-annotation notices as hard problems. A future observer must use smoke_renderer.mjs's exact review-ID consistency and fatal-problem classification, preserve all notices, and pass a fresh actual run. Do not relabel attempt2 PASS or discard its images/receipts.

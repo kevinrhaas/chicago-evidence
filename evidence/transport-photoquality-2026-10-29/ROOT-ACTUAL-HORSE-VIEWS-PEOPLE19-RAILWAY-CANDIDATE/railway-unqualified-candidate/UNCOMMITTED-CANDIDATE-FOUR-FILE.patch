@@ -1,0 +1,47 @@
+diff --git a/chicago/4d/docs/ROADMAP.md b/chicago/4d/docs/ROADMAP.md
+index 78cf8a382..87c930fa4 100644
+--- a/chicago/4d/docs/ROADMAP.md
++++ b/chicago/4d/docs/ROADMAP.md
+@@ -5974,3 +5974,6 @@ Concrete separate source now preserves the licensed Old Cart's weathered boards,
+ T-2793: finish current-source publisher/full-gate and world/photo release checks for the licensed articulated master. Current isolated desktop/mobile WebP appearance/control proof is separate; retain the four explicit source-only publication omissions without cap changes. No broad photographic or ticket completion is recorded here.
+ 
+ T-2793 final-source qualification must use the separately owned actual reach/kingbolt candidate (8,465,076-bytewebset); old pre-reach captures do not qualify the added member. Preserve current80staticwagons/3finewoodstands until explicitworld-selection qualification.
++
++
++T-2793 desktop memory follow-up (2026-10-29): qualify the existing railway upload-release path at desktop detail without removing geometry or changing caps. Compare the same native 1904 meter against public 9e14c1388, then verify real rail picks, near/far rebuilds, confidence/season/detail changes and ordinary context recovery. Savings and the historical T-3173 memory goal remain unverified; T-3173 stays OPEN. Complete current-source canonical/preflight and every mapped published smoke before release.
+diff --git a/chicago/4d/docs/STATUS.md b/chicago/4d/docs/STATUS.md
+index 14d1ab566..b210b5bd3 100644
+--- a/chicago/4d/docs/STATUS.md
++++ b/chicago/4d/docs/STATUS.md
+@@ -25321,3 +25321,6 @@ A separately versioned wagon master now adapts the recovered licensed Old Cart g
+ T-2793 source increment now has actual current WebP LODs8,433,236bytes total and desktop/mobile isolated captures with zero errors; full repository/published-world qualification remains pending. Continuous actual front-wheel/body envelopes and explicit detached/moved-geometry controls pass; artist pin/rim fit limits remain disclosed. Source-only publication exclusions preserve originals and live consumers; actual final publisher budget still pending.
+ 
+ T-2793 required portable structural nodes now own actual reach/kingbolt geometry: one44-triangle reconstructed coupling reach and the original28-triangle pin split from front details. Current near/mid/far total8,465,076bytes,12materialbatches; prior8,433,236-byte views remain historical. Final current-source rendering, canonical tail, full publisher/preflight and photographic/world acceptance remain pending.
++
++
++T-2793 memory follow-up candidate (2026-10-29): railway upload release now also marks desktop static geometry, preserving profiles, materials, reaches and analytic picking. Public baseline 9e14c1388 passed current 1904 native memory caps; its desktop 1,184,409,779-byte estimate exceeded the historical 1125 MiB goal by 4,761,779 bytes. Candidate savings, current-source memory, rendered railway lifecycle/picking/context recovery, full preflight and all applicable published smoke remain unverified. No threshold changes or T-3173 completion; T-2793 photographic/world acceptance remains open.
+diff --git a/chicago/4d/renderers/web/js/main.js b/chicago/4d/renderers/web/js/main.js
+index df6b96e72..a9e23479d 100644
+--- a/chicago/4d/renderers/web/js/main.js
++++ b/chicago/4d/renderers/web/js/main.js
+@@ -2319,7 +2319,7 @@ async function boot() {
+     terrain, confidence, problems: layerProblems('railway'), ...detailOpts(),
+     // Newly reached rail zones are marked before their next draw. This only
+     // installs upload callbacks; it does not render from inside update().
+-    onGeometry: coarse ? (group) => releaseAfterUpload(group) : undefined,
++    onGeometry: (group) => releaseAfterUpload(group),
+   });
+   scene3d.add(railway.group);
+   api.railway = railway;
+diff --git a/chicago/4d/tools/test_rail_geometry_lifecycle.mjs b/chicago/4d/tools/test_rail_geometry_lifecycle.mjs
+index 5b4f4ea36..fb68d6e0e 100644
+--- a/chicago/4d/tools/test_rail_geometry_lifecycle.mjs
++++ b/chicago/4d/tools/test_rail_geometry_lifecycle.mjs
+@@ -43,6 +43,6 @@ const eye=n=>({position:new THREE.Vector3(0,1,-n)});
+  f.dispose();assert.equal(f.group.children.length,0);assert.equal(f.zone.railsNear,null);assert.equal(f.zone.railsFar,null);checks+=3;
+ }
+ assert.ok(!proposed.includes('z0.railFar'));assert.ok(!proposed.includes('geometries.push(z.railsFar.geometry)'));checks+=2;
+-const main=await fs.readFile(`${root}/renderers/web/js/main.js`,'utf8');assert.ok(main.includes('onGeometry: coarse ? (group) => releaseAfterUpload(group) : undefined'));checks++;
++const main=await fs.readFile(`${root}/renderers/web/js/main.js`,'utf8');assert.ok(main.includes('onGeometry: (group) => releaseAfterUpload(group)'));assert.ok(!main.includes('onGeometry: coarse ? (group) => releaseAfterUpload(group) : undefined'));checks+=2;
+ console.log(JSON.stringify({geometrySHA256:expectedHash,fixtureFarBytes:[...Object.values(expected.geometry.attributes),expected.geometry.index].reduce((s,a)=>s+a.array.byteLength,0),goldenFixtureGeometryByteExact:true,nearFarVisibilityAcrossTiers:true,dropRebuildGeometryByteExact:true,markedBeforeDraw:true,noDisposedReferenceInGroup:true}));
+ console.log(`PASS ${checks} bounded actual-producer geometry/lifecycle/upload-mark/visibility checks. Browser memory, pixels, complete walk and timing still required.`);
