@@ -1,5 +1,16 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- OCT29_FINAL_MILLER_WING_DATED_PRODUCTION_START -->
+## Final Miller wing handoff and dated native units
+
+This small recovery checkpoint saves the final two-control Miller source handoff before its owningnativeproduction. The earlier38-core prototype was genuinely produced and photographed; the FINAL25-core/38-maincandidate remains UNRUN in this archive. Puredefault parity is distinct from newgeometry acceptance. A separate closed production capsule records353actualMASTERexports, only changedHoganWEB, rawrecords/reapers and three scopedimagegates from before the finalwing change. Those dated proofs do not certify the newMiller geometry. Root's independentHogan direct-image review is also saved. No liveprimary snapshot, finalapp/full3/codePR/merge or originalticketDONE is inferred.
+
+- [MILLER-FINAL-TWO-CONTROL-WING-HANDOFF-PROTOTYPE-DATED-20261029](archives/MILLER-FINAL-TWO-CONTROL-WING-HANDOFF-PROTOTYPE-DATED-20261029.tar.gz) — Final50-member1.766MB two-control/exact3postimage Miller handoff. Pure82defaultparams+5readers+roofvaluesexact,9invalidoptinsrefused. Earlier38-core externalprototype had ONEactual3.03s nativepilot/photo/reaped; FINAL25-core/38-maincandidate is NOT nativeproduced bythispacket. Exactpostimages/baseSHAs/patch/all8picturegapdispositions/Libertyhand-off preserved. Leadadoptedfinal25 into samefour-casegroup; no final25 GLB/photo/nativegate/app/full3/codePR/merge/originalDONE inferred. Source remains private untilpolicyqualified.
+- [FOUR-CASE-ACTUAL353-MASTERS-HOGAN-WEB-THREE-GATES-20261029](archives/FOUR-CASE-ACTUAL353-MASTERS-HOGAN-WEB-THREE-GATES-20261029.tar.gz) — Closeddated25-member473598B actualnativeproduction:353actualMASTERexports andONLYchangedHoganWEB, rawUNREVIEWED/productionlogs/reapers/current scopedimagegates/protectionproofs. These datedunits precede the newfinalMillerwing25-corecandidate and DO NOTqualify it. No full353WEBclaim, finalgroupapp/full3/codePR/merge/originalDONE inferred.
+- [ROOT-HOGAN-ACTUAL-DIRECT-IMAGE-REVIEW-20261029](archives/ROOT-HOGAN-ACTUAL-DIRECT-IMAGE-REVIEW-20261029.tar.gz) — ExactRoot independentdirectreview ofactualnewHogancomparison, model/camera/photo/JPEGhashbound. Projectingcap/gablecourses/sash/door/hatch/roof/ridgehead agree underT3153; no newdimension/pigment/hiddenside/historyclaim. Expertper-gapverdict/nativegate/app/full3/merge are separate actualrequirements. Exactfinite REVIEW.json wrappedwithoutrewritingoriginal; originalDONE notclaimed.
+<!-- OCT29_FINAL_MILLER_WING_DATED_PRODUCTION_END -->
+
+
 <!-- OCT29_TGT_COMPLETE_CURRENT_SOURCE_NATIVE_START -->
 ## Complete corrected Tremont and Green Tree source/native recovery
 
