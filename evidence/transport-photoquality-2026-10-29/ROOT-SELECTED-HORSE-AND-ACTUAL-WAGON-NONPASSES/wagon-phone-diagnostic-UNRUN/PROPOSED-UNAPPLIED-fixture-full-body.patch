@@ -1,0 +1,39 @@
+--- a/chicago/4d/renderers/web/transport/farm-box-master/fixture.js
++++ b/chicago/4d/renderers/web/transport/farm-box-master/fixture.js
+@@ -73,10 +73,25 @@
+     if(warm)material.color.multiply(new THREE.Color().setRGB(.93,.84,.72));
+   }
+ }
+-function loadDetail(){
++// Read the actual complete body before native parsing, as the existing Brougham helper does.
++// Retain loading-manager abort/error accounting and the same codec-configured loader.
++async function loadDelivery(detail){
++  const assetUrl=new URL(`./farm-box-${detail}.glb`,import.meta.url),manager=loader.manager;
++  const requestUrl=manager.resolveURL(assetUrl.href);manager.itemStart(requestUrl);
++  try{
++    const response=await fetch(requestUrl,{headers:loader.requestHeader,
++      credentials:loader.withCredentials?'include':'same-origin',signal:manager.abortController.signal});
++    if(!response.ok)throw Error(`Farm-box HTTP ${response.status}`);
++    const bytes=await response.arrayBuffer();
++    return await loader.parseAsync(bytes,new URL('.',assetUrl).href);
++  }catch(error){manager.itemError(requestUrl);throw error;}
++  finally{manager.itemEnd(requestUrl);}
++}
++async function loadDetail(){
+   const token=++request,detail=document.querySelector('#detail').value;
+   document.querySelector('#status').textContent='Loading wagon…';
+-  loader.load(`./farm-box-${detail}.glb`,g=>{
++  try{
++    const g=await loadDelivery(detail);
+     if(token!==request){dispose(g.scene);return;}
+     if(model){scene.remove(model);dispose(model);}
+     metadata=g.parser.json.extras;model=g.scene.getObjectByName('vehicle_root');scene.add(model);loadedDetail=detail;
+@@ -86,7 +101,7 @@
+     document.querySelector('#technical-status').textContent=`${triangles.toLocaleString()} triangles · ${batches} material batches`;
+     update();finish();frameSamples=[];if(!canonicalBox)canonicalBox=new THREE.Box3().setFromObject(model);
+     if(!document.querySelector('#hold-view').checked)fitView();
+-  },undefined,error=>{document.querySelector('#status').textContent='Wagon could not be loaded';console.error(error);});
++  }catch(error){document.querySelector('#status').textContent='Wagon could not be loaded';console.error(error);}
+ }
+ document.querySelector('#detail').addEventListener('change',loadDetail);loadDetail();
+ document.querySelector('#finish').addEventListener('change',finish);

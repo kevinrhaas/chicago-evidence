@@ -1,0 +1,117 @@
+--- immutable-attempt01-1f807e72
++++ timestamped-diagnostic-8eb6b6f1
+@@ -7,8 +7,9 @@
+ const cp = require('node:child_process');
+ const crypto = require('node:crypto');
+ const assert = require('node:assert/strict');
+-const [repoArg, outArg, sealArg, indexArg, expectedHead] = process.argv.slice(2);
+-assert.equal(process.argv.length, 7, 'node run-native-farm-master.cjs REPO FRESH_OUT FIVE_PATH_SEAL FROZEN_INDEX EXACT_EXPECTED_HEAD');
++const [repoArg, outArg, sealArg, indexArg, expectedHead, profileSelection] = process.argv.slice(2);
++assert.ok(['phone','both'].includes(profileSelection), 'Explicit diagnostic scope');
++assert.equal(process.argv.length, 8, 'node diagnose-native-farm-network.cjs REPO FRESH_OUT FIVE_PATH_SEAL FROZEN_INDEX EXACT_EXPECTED_HEAD phone|both');
+ assert.match(expectedHead, /^[0-9a-f]{40}$/, 'Root supplies the exact actual precommitted or committed feature HEAD');
+ const repo = path.resolve(repoArg), out = path.resolve(outArg);
+ const app = path.join(repo, 'chicago/4d'), mirrorRoot = path.join(repo, 'site/4d');
+@@ -62,6 +63,9 @@
+ const before = snapshot(); fs.mkdirSync(out);
+ const save = (name, value) => fs.writeFileSync(path.join(out, name), JSON.stringify(value, null, 2) + '\n');
+ save('BEFORE.json', before);
++const eventStart=process.hrtime.bigint();let eventSequence=0,phase='server-start';
++const trace=(kind,data={})=>fs.appendFileSync(path.join(out,'NETWORK-EVENTS.ndjson'),JSON.stringify({seq:++eventSequence,at:new Date().toISOString(),elapsed_ms:Number(process.hrtime.bigint()-eventStart)/1e6,phase,kind,...data})+'\n');
++trace('BEFORE-GUARDS-COMPLETE',{HEAD:expectedHead});
+ const errors = {page: [], console: [], http: [], requests: [], closure: [], integrity: []};
+ const warnings = [], responses = [], responseReads = [], profiles = [];
+ let server, browser, currentContext;
+@@ -91,22 +95,29 @@
+       {name: 'desktop', viewport: {width: 1280, height: 800}, deviceScaleFactor: 1, isMobile: false, hasTouch: false},
+       {name: 'phone', viewport: {width: 390, height: 780}, deviceScaleFactor: 3, isMobile: true, hasTouch: true},
+     ]) {
+-      const {name, ...contextOptions} = profile;
++      if(profileSelection==='phone'&&profile.name!=='phone')continue;
++      const {name, ...contextOptions} = profile;phase=name+'-context-create';trace('CONTEXT-CREATE-BEGIN',{profile});
+       currentContext = await browser.newContext(contextOptions);
+       const page = await currentContext.newPage(); page.setDefaultTimeout(120000);
++      const requestIDs=new Map();let requestSequence=0;const rid=request=>{if(!requestIDs.has(request))requestIDs.set(request,++requestSequence);return requestIDs.get(request);};
++      page.on('request',request=>trace('REQUEST',{profile:name,id:rid(request),url:request.url(),method:request.method()}));
++      page.on('requestfinished',request=>trace('REQUEST-FINISHED',{profile:name,id:rid(request),url:request.url(),timing:request.timing()}));
+       const activate = selector => name === 'phone' ? page.locator(selector).tap() : page.locator(selector).click();
+       page.on('pageerror', error => errors.page.push({profile: name, message: String(error)}));
+       page.on('console', message => { if (message.type() === 'error') errors.console.push({profile: name, message: message.text()});
+         else if (message.type() === 'warning') warnings.push({profile: name, message: message.text()}); });
+-      page.on('requestfailed', request => errors.requests.push({profile: name, url: request.url(), failure: request.failure()}));
++      page.on('requestfailed', request => {const row={profile:name,id:rid(request),url:request.url(),failure:request.failure(),timing:request.timing()};trace('REQUEST-FAILED',row);errors.requests.push(row);});
+       page.on('response', response => {
++        trace('RESPONSE-HEADERS',{profile:name,id:rid(response.request()),url:response.url(),status:response.status(),mime:response.headers()['content-type'],length:response.headers()['content-length']});
+         if (response.status() >= 400) errors.http.push({profile: name, url: response.url(), status: response.status()});
+         if (response.url().startsWith(base + '/')) responseReads.push((async () => {
+-          const raw = await response.body(); responses.push({profile: name, path: new URL(response.url()).pathname,
++          trace('BODY-READ-BEGIN',{profile:name,id:rid(response.request()),url:response.url()});
++          const raw = await response.body();trace('BODY-READ-SUCCESS',{profile:name,id:rid(response.request()),url:response.url(),bytes:raw.length,sha256:digest(raw)}); responses.push({profile: name, path: new URL(response.url()).pathname,
+             status: response.status(), bytes: raw.length, sha256: digest(raw)});
+-        })().catch(error => errors.http.push({profile: name, url: response.url(), message: String(error)})));
++        })().catch(error => {const row={profile:name,id:rid(response.request()),url:response.url(),message:String(error)};trace('BODY-READ-FAILURE',row);errors.http.push(row);}));
+       });
+-      await page.goto(base + '/walk/transport/farm-box-master/', {waitUntil: 'load'});
++      phase=name+'-native-near';trace('NAVIGATION-BEGIN',{profile:name});
++      await page.goto(base + '/walk/transport/farm-box-master/', {waitUntil: 'load'});trace('NAVIGATION-LOAD',{profile:name});
+       async function ready(detail) {
+         await page.waitForFunction(wanted => window.farmBoxState?.loaded === true && window.farmBoxState.detail === wanted
+           && window.farmBoxRenderReceipt?.detail === wanted && document.querySelector('#status').textContent === 'Wagon ready', detail, {timeout: 180000});
+@@ -122,7 +133,7 @@
+         assert.equal(ratio, name === 'desktop' ? 1 : 2, 'Preserve actual native fixture DPR cap');
+         assert.equal(receipt.coarse, name === 'phone');
+         assert.ok(receipt.technical.startsWith(lods[detail].triangles.toLocaleString('en-US') + ' triangles'));
+-        return receipt;
++        trace('NATIVE-READY-FRAMES',{profile:name,detail,receipt});return receipt;
+       }
+       await ready('near');
+       await page.locator('#steer').focus(); await page.keyboard.press('End');
+@@ -163,30 +174,37 @@
+         // than pretending a mouse wheel is an implemented phone zoom gesture.
+         await activate('[data-view="front"]'); await capture('near-front', 'near');
+       }
+-      await page.locator('#detail').selectOption('mid'); const middle = await ready('mid');
+-      await page.locator('#detail').selectOption('far'); await ready('far');
++      phase=name+'-switch-mid';trace('LOD-SWITCH-BEGIN',{profile:name,detail:'mid'});
++      await page.locator('#detail').selectOption('mid'); const middle = await ready('mid');trace('LOD-SWITCH-READY',{profile:name,detail:'mid'});
++      phase=name+'-switch-far';trace('LOD-SWITCH-BEGIN',{profile:name,detail:'far'});
++      await page.locator('#detail').selectOption('far'); await ready('far');trace('LOD-SWITCH-READY',{profile:name,detail:'far'});
+       await activate('[data-view="side"]'); await capture('far-side', 'far');
+       assert.ok(views.at(-1).render.rearWheelPixels <= 24.000001, 'Native far fit at no more than 24 wheel pixels');
+       const cdp = await currentContext.newCDPSession(page), heap = await cdp.send('Runtime.getHeapUsage'); await cdp.detach();
+-      await Promise.all(responseReads);
++      phase=name+'-body-read-join';trace('BODY-READ-JOIN-BEGIN',{profile:name});
++      await Promise.all(responseReads);trace('BODY-READ-JOIN-END',{profile:name});
+       const final = await ready('far'); // Recheck real GL/state after the last actual screenshot.
+-      for (const [level, record] of Object.entries(lods)) assert.ok(responses.some(row => row.profile === name
+-        && row.path.endsWith('/' + record.file) && row.bytes === record.bytes && row.sha256 === record.sha256), 'Actual exact native LOD response ' + level);
+       profiles.push({profile, actualControls: {moving, rolling}, middle, views, final, heap,
+         range_input_method: 'Native keyboard End accessibility controls, with native coarse/touch profile unchanged',
+         phone_close_zoom: name === 'phone' ? 'UNSUPPORTED in current fixture: front view observed instead; no mouse-wheel substitution' : null,
+         scope: 'Native portable fixture Near/Middle/Far; no world Full/Balanced/Light tier or town adoption claim'});
+-      await currentContext.close(); currentContext = null;
++      save('DIAGNOSTIC-PARTIAL-PROFILES.json',profiles);trace('PROFILE-SAVED-BEFORE-NETWORK-ASSERTIONS',{profile:name});
++      for (const [level, record] of Object.entries(lods)) assert.ok(responses.some(row => row.profile === name
++        && row.path.endsWith('/' + record.file) && row.bytes === record.bytes && row.sha256 === record.sha256), 'Actual exact native LOD response ' + level);
++      phase=name+'-normal-context-close';trace('CONTEXT-CLOSE-BEGIN',{profile:name});await currentContext.close();currentContext=null;trace('CONTEXT-CLOSE-END',{profile:name});
+     }
+-  } catch (error) { errors.integrity.push({message: String(error), stack: error.stack}); }
++  } catch (error) { trace('INTEGRITY-FAILURE',{message:String(error),stack:error.stack});errors.integrity.push({message: String(error), stack: error.stack}); }
+   finally {
+-    if (currentContext) try { await currentContext.close(); } catch (error) { errors.closure.push({kind: 'context', message: String(error)}); }
+-    if (browser) try { await browser.close(); } catch (error) { errors.closure.push({kind: 'browser', message: String(error)}); }
++    phase='finally-context-close';trace('FINALLY-CONTEXT-CLOSE-BEGIN');
++    if (currentContext) try { await currentContext.close();trace('FINALLY-CONTEXT-CLOSE-END'); } catch (error) { errors.closure.push({kind: 'context', message: String(error)}); }
++    phase='finally-browser-close';trace('BROWSER-CLOSE-BEGIN');
++    if (browser) try { await browser.close();trace('BROWSER-CLOSE-END'); } catch (error) { errors.closure.push({kind: 'browser', message: String(error)}); }
+     if (server) try { await closeServer(server); } catch (error) { errors.closure.push({kind: 'server', message: String(error)}); }
+     try { const after = snapshot(); assert.deepEqual(after, before); save('AFTER.json', after); }
+     catch (error) { errors.integrity.push({kind: 'after-guards', message: String(error), stack: error.stack}); }
+-    const passed = profiles.length === 2 && Object.values(errors).every(rows => rows.length === 0);
+-    save('RESULT.json', {status: passed ? 'ACTUAL_NATIVE_FIXTURE_CONTROLS_AND_VIEWS_COMPLETE_UNQUALIFIED' : 'NONPASS_NATIVE_FIXTURE_OBSERVATION',
++    const passed = profiles.length === (profileSelection==='both'?2:1) && Object.values(errors).every(rows => rows.length === 0);
++    phase='diagnostic-closed';trace('DIAGNOSTIC-CLOSED',{passed,error_counts:Object.fromEntries(Object.entries(errors).map(([k,v])=>[k,v.length]))});
++    save('RESULT.json', {status: passed ? 'DIAGNOSTIC_NATIVE_NETWORK_OBSERVATION_COMPLETE_NO_ACCEPTANCE' : 'NONPASS_DIAGNOSTIC_NATIVE_NETWORK_OBSERVATION',profile_selection:profileSelection,
+       profiles, responses, warnings, errors, photographic_acceptance: false, town_master_adoption: false,
+       personal_image_review: 'REQUIRED', world_renderer_smoke_coverage: 'NOT PROVIDED'});
+     console.log(JSON.stringify({passed, profiles: profiles.length, errors: Object.fromEntries(Object.entries(errors).map(([key, rows]) => [key, rows.length])), warnings: warnings.length}));
