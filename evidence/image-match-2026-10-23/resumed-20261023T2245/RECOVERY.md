@@ -1,5 +1,16 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- OCT29_EC16_ACTUAL_NATIVE_FULLPASS_PUBLISHED_START -->
+## Four-building native repair passed and is pushed; PR1456 awaits current integration checks
+
+Native b20f4200495c38f57f268d24870313e53ed366d9 has exact checked tree d630e015d2fb2556f1a38bc3634e55d17ba2eedd and parents24e4/EC16. The full1104-step source gate passed with all seven byte/index/reaping guards. Native publish, current1904 mobile phone395.678866MiB/400, all three PR questions and four image gates passed. Twelve-check qualification binds actual204+7+57 native derivation,44 audited outputs,533 protected sources plus three exact upstream K helpers,706 models/353 recipes,305 dated published inputs and chronological appendix test. Exact native merge was published normally; all60 immutable changed paths read back byte-for-byte, and source metadata/refs stayed unchanged at publication.
+
+PR1456 is ready into dev but remains unmerged at this checkpoint. Current dev72c03 includes later unrelated Pullman glasshouse work; this receipt does not qualify that later composite. Four original tickets remain REVIEW, not DONE. Green Tree entireWIP remains preserved in checkpoint688 and is being rebound separately. The Dearborn Earle corrected native picture was directly viewed and accepted as a prototype only; canonical/app/closure still pending. No production promotion.
+
+- [FOURCASE-ACTUAL-EC16-FULL1104-PHONE3956-NATIVE-PUBLICATION60-AND-EARLE-ROOTREVIEW-20261029](archives/FOURCASE-ACTUAL-EC16-FULL1104-PHONE3956-NATIVE-PUBLICATION60-AND-EARLE-ROOTREVIEW-20261029.tar.gz.parts.json) — Actual new native repair, full1104 gate, publish,395.678866MiB phone, twelve-check qualification, bounded normalFF exact60path readback. PR1456 not merged; later72c03 dev unqualified. Earle root visual prototype review separate from canonical adoption.
+<!-- OCT29_EC16_ACTUAL_NATIVE_FULLPASS_PUBLISHED_END -->
+
+
 <!-- OCT29_EC16_IMPORT_CHRONOLOGY_HOST12_BRIDGE_START -->
 ## EC16 import is verified; the native four-building repair is running
 
