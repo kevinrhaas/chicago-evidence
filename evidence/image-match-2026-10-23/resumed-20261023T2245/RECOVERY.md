@@ -1,5 +1,18 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- OCT29_GTB20F_CARPENTER_PUBLICRETIRE_START -->
+## Green Tree adoption is saved; Carpenter controls are prepared; duplicate runtime space is recovered
+
+Green Tree48postimages were rebound onto native b20f and actually adopted with prior upstream rows and new documentation preserved. The closed65-file packet includes fresh root-reviewed comparisons and corrected third-picture/Full-setting harness. Its global native owners are still running; no live output or unrun app/gate is called complete. Carpenter has an eleven-file guarded three-control canonical preparation and all-original-picture inventory; canonical production/app/closure remain pending.
+
+Exactly3,221 verified duplicate public ticket runtime workingfiles were retired only after checkpoint696 full immutable3,223-member/mode readback. The actual reclaimed49,123,328bytes funded the next native owner pass. All Git metadata/objects/config/alternates and all private/untracked/checkpoint material remain. That isolated runtime requires restoration before reuse. PR1456 body now links actual1104/currentphone395.68MiB/native60path publication. Our native lap lock was released normally; existing foreign native lap runs remain undisturbed. Four originals remain REVIEW until actual merge and settlement.
+
+- [GREENTREE2376-ACTUAL-B20F48-REBINDED-ADOPTION-ROOTREVIEW-AND-THREEPICTURE-HARNESS-20261029](archives/GREENTREE2376-ACTUAL-B20F48-REBINDED-ADOPTION-ROOTREVIEW-AND-THREEPICTURE-HARNESS-20261029.tar.gz) — Closed65members11.14MB:48 guarded b20f candidate postimages actually adopted, native model/input reuse checked, root review and three-picture/Full preference harness saved. Current global native204 pass is RUNNING and excluded. No global gate/app/browser/canonical-original DONE claimed.
+- [CARPENTER2382-THREECONTROL-CANONICAL-SOURCE-AND-ALLORIGINAL-PICTURE-PACKET-20261029](archives/CARPENTER2382-THREECONTROL-CANONICAL-SOURCE-AND-ALLORIGINAL-PICTURE-PACKET-20261029.tar.gz) — Closed11members148527B: guarded roof21.49/stack.94/+xwoodgable candidate/source/camera/liberty union and complete original-picture coverage. Prototypes already directly reviewed; canonical adoption/production/app/fullgate/PR remain pending. Annex camera qualifies the shop, not the hotel.
+- [ACTUAL-PUBLIC-TICKET-RUNTIME49123328-RETIREMENT-AND-PR1456-FOLLOWTHROUGH-20261029](archives/ACTUAL-PUBLIC-TICKET-RUNTIME49123328-RETIREMENT-AND-PR1456-FOLLOWTHROUGH-20261029.tar.gz) — Actual3,221 duplicate public workingfiles retired after full immutable archive696 readback of3,223 members/modes;49,123,328bytes reclaimed exactly. HEAD2929/index/config/refs/objects/alternates/privateprofiles/checkpoints/primary app+ticketcache preserved. Includes source binding, actual retirement receipt, immutable archive proofs, body-only PR1456 update and native owned-lap release. Retired isolated runtime is unusable until restoration. PR1456 remains unmerged, four originals REVIEW.
+<!-- OCT29_GTB20F_CARPENTER_PUBLICRETIRE_END -->
+
+
 <!-- OCT29_PUBLIC_TICKET_RUNTIME_DUPLICATES_START -->
 ## Exact duplicate public ticket runtime is saved before freeing workingfiles
 
