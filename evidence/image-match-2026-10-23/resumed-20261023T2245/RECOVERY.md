@@ -1,5 +1,23 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- OCT30_PR1456_APPROVED_BEC_STAGED77_ACTIVE1109_PREP_744_START -->
+## PR1456 newer genuine staged integration is recoverable while its final source check runs
+
+PR1456 now has a root-reviewed genuine STAGED integration of public3e63ad191b0c264fa3d6a0707db9ffeed7e4de79 with immutable nameddevbec5986b60d30138ba2922d3f5228326f5ec6620. Exact stagedtreed63a440694dbb594220240c1673b9d00bc7381f1 and complete77-path restoration map are saved in closed capsulee58fdbac349405516f01a7b65130092e0023c4c1997af1f734391d1f2389bc5d:65members30,956,653rawbytes, nine actual private postimages and exact public-source restore identities for every other path. This is recoverable staged work, not an invented future commit. The earlier checked3e63 native1105/CP/publicFF remains740, old staged8b1108PASS is742 and dated native geometry/yard2-3BOTH207desktop/207mobile PASS is743.
+
+The actual bounded177-object import, genuine3e63+bec merge, six native owner/check commands with real zero exits/all children reaped, fixed-point checks, exact fixes, native stage and entrywise PENDING review completed normally. The detached actual integration controller exited0. Root independently checked fullcommon/source authority,49 whole original files, assets/liberties/source/rights preservation and published a separate approved manifest50f969a3d5a1e4255920e8e2376e6d794452159f037a0ef2f01dfe347db8353b. The frozen PENDING manifest remains false/historical and is never rewritten into approval. Native clean three-way source document/rights composition, foreign catalogue rows, all source/index mode/blob/deletion checks and nine exact private postimages are retained in the actual closed capsule.
+
+Concurrent foreign People work inbec adds a real1904 smoke assertion. Frozen smoke composition185a067 and rootacceptedmap9e2d preserve the foreign1904 assertion while applying only the accepted seven owned validation hunks; no geometry changes, weakened bounds or regression rollback. Frozen import correction9d56, integration67dd and report-only resume controllera883 are archived independently, preserving exact source/preimage/object authority. They are preparation authority alongside the actual completed staged receipts, not fabricated final source qualification.
+
+At this freeze the actual full1109 sourcegate followed by ordinary native two-parent checkpoint is ACTIVE in detached root controller2779608. Only immutable controller source7a6ffdc38f84f66a1566cc59a6bad513ff9b724e8987a6a023911a3ea8e978ea and immutable launchOWNER are saved. EVERY active actualgate/nativecheck/binding/log/timing/invocation/reaper/result/TMP/controllerlog/publishedsite/sourcecopy is excluded, even if it finishes during upload. No full1109PASS, actualbec commit, finalphone, currentUI, branchpush, CI or devmerge is claimed.
+
+Read root1918note09c8a97 and follow its exact source lease. The new scopedUI adapteree854 and v3mergeguard5b4a are frozen PREPARATION only. Fresh currentUI is planned as four People8 scopes, Images8 and native Glessner2 after finalsource; dated stagedBOTH707d remains explicitly qualified for geometry/yard through a precise foreignnav exception, never restamped to finalhead. The later8fb tour runtime scope review9e8f is included as static readonly classification, not currentbrowser or memory proof. Still-under-preparation expectedtree/phone join is deliberately excluded.
+
+After actual full1109 footer/exit/reaper/allguards, create a real ordinary native checkpoint with actual parents[3e63,bec], preserve its actual source qualification, run fresh official1904mobile400MiB and actual currentUI, source-qualified normalFF GitHub publication to start real CI, concrete approved dated/current consumer/catalog/HTML/changelog projection, then normal expected-head PR1456 merge into dev once CI/serverclean/liveownlap/foreign preservation hold. PublicPR1456 was3e63 at prior publication; no branchhead or merge result is guessed here. PR1486 is not a prerequisite. Own metadata lap1456 marker4a209579 expires21:52:01UTC;1486 marker5dda2e expires21:52:19UTC. Only originalT2385DONE, four1456 REVIEW and12othersunfinished.
+
+This checkpoint worker reads only closed external artifacts and writes evidence by ordinary force:false fast-forward/full immutable readback, preserving every prior remote leaf. It does not read or mutate the active source/index/config/ref/site/TMP or any codebranch/ticket/production state.
+<!-- OCT30_PR1456_APPROVED_BEC_STAGED77_ACTIVE1109_PREP_744_END -->
+
 <!-- OCT30_PR1456_ACTUAL_STAGEDBOTH_PASS_NAMEDF247_HANDOFF_743_START -->
 ## PR1456 staged desktop and mobile pass; genuine nameddev integration follows
 
