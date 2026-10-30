@@ -1,0 +1,53 @@
+--- /tmp/OTIS-CHECKED-FEATURE-PUSH-AFTER-ISOLATION-PREP-20261030/run-checked-feature-commit-push.py
++++ /tmp/OTIS-CHECKED-FEATURE-PUSH-AFTER-WRITER-INVENTORY-PREP-20261030/run-checked-feature-commit-push.py
+@@ -5,12 +5,12 @@
+ 
+ R=Path('/tmp/chicago-transport-resume-20261029');A=R/'chicago/4d';P=Path(__file__).resolve().parent
+ OLD='9400c662b24909598fa6afdea2df4d3b89e7f25d'
+-TREE='222273b4b2e118885887ebb94f7778b70029ddbd';APP='3fc00238e7435a9ee5566e38b8d05d0618ee6355'
+-INDEX_SHA='05ca10c2ec401b8e4e6c6fa3e09e7ccf305caf2c14e4b7a0bcec7335200fa70f'
++TREE='bed69364051ee11b8684c9a02793d40e9b870a4f';APP='a6b4c60ac78d108eacb394d86a218a82438eff77'
++INDEX_SHA='f464d4d9f5eb9c272828db6c7f62db089bedf69be0e371c05c63ab36d116bb30'
+ BRANCH='steward/t1790-natural-human-idle-20261029';REF='refs/heads/'+BRANCH
+-SOURCE_GUARD=Path('/tmp/OTIS-SOURCE54-AFTER-ACTUAL-ISOLATION-MEASUREMENT-20261030-01.json')
+-GUARD_SHA='2488cddd32e369bce2bcf5434740faef36945ebd3522c8e045e7ae1e527ccbb2'
+-GATE_WRAPPER=Path('/tmp/OTIS-WHOLE-GATE-AFTER-ISOLATION-PREP-20261030/run-guarded-whole-gate.py')
++SOURCE_GUARD=Path('/tmp/OTIS-SOURCE55-AFTER-ACTUAL-WRITER-INVENTORY-20261030-01.json')
++GUARD_SHA='21416d4fe7197bdbeeb9424ca0dc78d6f869a15f6b8fa05b4fc7ec5b97227f89'
++GATE_WRAPPER=Path('/tmp/OTIS-WHOLE-GATE-AFTER-WRITER-INVENTORY-PREP-20261030/run-guarded-whole-gate.py')
+ POLICY=Path('/workspace/.cloud-setup/logs/transport-recovery/WAGON-CURRENT-DEV-20261029/PINNED-EC16-INTAKE-PRESERVED/OWNED-WAGON-BOUND-REPAIR-20261029/resource_admission_v10.py')
+ POLICY_SHA='eebdd83e057f31bc44f76e0b85acf037f28e4d06807c1070346e4e2802b6d65d'
+ E={**os.environ,'GIT_TERMINAL_PROMPT':'0','C4D_GATE_REQUIRE_BASE':'1','PYTHONDONTWRITEBYTECODE':'1'}
+@@ -36,12 +36,12 @@
+         assert git('rev-parse','HEAD^{tree}')==TREE and git('rev-parse','HEAD:chicago/4d')==APP
+         assert not rawgit('diff','--cached','--name-only','-z','--')
+     assert pin(SOURCE_GUARD)['sha256']==GUARD_SHA
+-    frozen=load(SOURCE_GUARD);assert len(frozen['source_files'])==54
++    frozen=load(SOURCE_GUARD);assert len(frozen['source_files'])==55
+     assert sum(row['path'].endswith('.glb') for row in frozen['source_files'])==16
+     for row in frozen['source_files']:
+         item=pin(A/row['path']);assert item['bytes']==row['bytes'] and item['sha256']==row['sha256'],row['path']
+     for row in load(P/'CURRENT-PINS.json')['tools']:assert pin(row['path'])==row
+-    return dict(head=expected_head,tree=TREE,app_tree=APP,semantic_index_sha256=INDEX_SHA,source_files=54,human_GLB_files=16)
++    return dict(head=expected_head,tree=TREE,app_tree=APP,semantic_index_sha256=INDEX_SHA,source_files=55,human_GLB_files=16)
+ 
+ def current_mirror(expected):
+     root=R/'site/4d';rows=[];assert root.is_dir() and not root.is_symlink()
+@@ -59,7 +59,7 @@
+     parser.add_argument('--gate-wrapper-sha',required=True)
+     parser.add_argument('--out',required=True,type=Path)
+     args=parser.parse_args();out=args.out.resolve();assert out.is_relative_to(Path('/tmp')) and not out.is_relative_to(R) and not out.exists()
+-    assert args.gate_out.resolve()==Path('/tmp/OTIS-ACTUAL-FULL-GATE-SHM-20261030-02')
++    assert args.gate_out.resolve()==Path('/tmp/OTIS-ACTUAL-FULL-GATE-SHM-20261030-03')
+     assert re.fullmatch('[0-9a-f]{64}',args.gate_wrapper_sha)
+     out.mkdir(mode=0o700);state=dict(at=now(),state='VALIDATING_ACTUAL_FULL_GATE_BEFORE_COMMIT',commands=[],commit='UNRUN',push='UNRUN',DEV_merge='UNRUN',whole_ticket_or_photo_completion=False)
+     def save(): (out/'ACTUAL-CHECKED-FEATURE-DELIVERY.json').write_text(json.dumps(state,indent=2)+'\n')
+@@ -86,7 +86,7 @@
+         assert summaries and summaries[-1][0]=='PASS' and list(summaries[-1])==closed['final_native_summary']
+         assert closed['native_environment_explicit']['C4D_GATE_REQUIRE_READERS']=='1' and closed['native_environment_explicit']['C4D_GATE_REQUIRE_BASE']=='1' and closed['native_environment_explicit']['CHECK_JOBS']=='4'
+         before=load(g/'SOURCE-BEFORE.json');after=load(g/'SOURCE-AFTER.json');assert before==after and before['head']==OLD and before['tree']==TREE and before['app_tree']==APP
+-        gate_index=(g/'COMPLETE-INDEX-BEFORE.z').read_bytes();assert before['semantic_index_sha256']==sha(gate_index)==INDEX_SHA and before['semantic_index_entries']==18052 and len(before['source_files'])==54 and sum(row['path'].endswith('.glb') for row in before['source_files'])==16
++        gate_index=(g/'COMPLETE-INDEX-BEFORE.z').read_bytes();assert before['semantic_index_sha256']==sha(gate_index)==INDEX_SHA and before['semantic_index_entries']==18052 and len(before['source_files'])==55 and sum(row['path'].endswith('.glb') for row in before['source_files'])==16
+         assert pin(POLICY)['sha256']==POLICY_SHA
+         spec=importlib.util.spec_from_file_location('P_checked_resource10',POLICY);policy=importlib.util.module_from_spec(spec);spec.loader.exec_module(policy)
+         rb=load(g/'RESOURCES-BEFORE.json');ra=load(g/'RESOURCES-AFTER.json');pair=policy.check_pair(rb['snapshot'],ra['snapshot']);assert pair['accepted'] and pair==ra['pair_assessment']==closed['shared_resource10_pair'] and rb['active_owners']==ra['active_owners']==[]
