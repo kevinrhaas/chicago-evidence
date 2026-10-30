@@ -1,5 +1,26 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- OCT30_CURRENT1AF_NATIVEV2_ORIGINAL_EVIDENCE_START -->
+## Current native closure and original-ticket evidence are saved
+
+Current1af native V2 closed in523.496seconds: actual61/two settled laps, allseven guards/configuration and2073models exact, children reaped. Its74-path staged tree is fe96a4d373a2ec1069b729ba3d2ec091891cbfce, genuine merge in progress from checked4b22 plus1af. Current fullgate is ACTIVE and excluded; no current1af phone, checked commit, publication, CI or dev merge is claimed.
+
+The preceding V1 resolver failed ENOSPC atstep199 after workspace TMPDIR routed native1.54GB synthesis scratch onto insufficient workspace space. The honest negative/log/reaper/guards are saved. Root restored established /tmp routing with a concrete1,538,777,088B scratch plus134,217,728B reserve budget and unchanged1.8GB caller floor before/after. Native ledger serialization changed only gzip OSbyte9 FFto03; all12,958,902decompressed bytes are exact, and raw bytes/classification remain saved. No owner or check was skipped.
+
+Closed1af import, actual frontyard owner, frozen original16helpers and new12V2helpers are preserved. Two V2 symlinks retain exact kind/mode/target metadata and explicit restoration instructions; their immutable ordinary target bytes are archived at their original source paths, never falsely represented as regular files with symlink0777permissions. Root reviewed finalphone preparation:300/305datedconsumer bytes exact, fiveprecise exceptions and original29Lib/sourcejoins qualified; final newhead phone remains UNRUN with the mandatory unchanged400MiB limit.
+
+New original-ticket evidence includes Beaubien conditional orientation and six-file bounded capture controller, both UNRENDERED/UNRUN. Its revised conditional bearing nearNW53.97/yaw126 does not declare a geometry or fitted-match acceptance. Cobweb source identity now binds actual1856pages185/186 and1881p86 with the sourcecrosswalk, while wholecompound form remains unresolved. The exactpublic GlessnerWEB hardlink funding preserved both paths/bytes/modes; same-owner Schoolrenewal, root0717/0734recoveries and actualPR1456description update are saved. RelatedPR1340readonlyaudit is not ready and its lapownership remains unknown. No private profiles, primary Git/source copies or active gate logs are archived.
+
+- [CURRENT1AF-NATIVE-V2-CLOSED-NEGATIVE-V1-BEAUBIEN-COBWEB-AND-PREP-20261030](archives/CURRENT1AF-NATIVE-V2-CLOSED-NEGATIVE-V1-BEAUBIEN-COBWEB-AND-PREP-20261030.tar.gz) — Current1af native V2 closed in523.496seconds: actual61/two settled laps, allseven guards/configuration and2073models exact, children reaped. Its74-path staged tree is fe96a4d373a2ec1069b729ba3d2ec091891cbfce, genuine merge in progress from checked4b22 plus1af. Current fullgate is ACTIVE and excluded; no current1af phone, checked commit, publication, CI or dev merge is claimed.
+
+The preceding V1 resolver failed ENOSPC atstep199 after workspace TMPDIR routed native1.54GB synthesis scratch onto insufficient workspace space. The honest negative/log/reaper/guards are saved. Root restored established /tmp routing with a concrete1,538,777,088B scratch plus134,217,728B reserve budget and unchanged1.8GB caller floor before/after. Native ledger serialization changed only gzip OSbyte9 FFto03; all12,958,902decompressed bytes are exact, and raw bytes/classification remain saved. No owner or check was skipped.
+
+Closed1af import, actual frontyard owner, frozen original16helpers and new12V2helpers are preserved. Two V2 symlinks retain exact kind/mode/target metadata and explicit restoration instructions; their immutable ordinary target bytes are archived at their original source paths, never falsely represented as regular files with symlink0777permissions. Root reviewed finalphone preparation:300/305datedconsumer bytes exact, fiveprecise exceptions and original29Lib/sourcejoins qualified; final newhead phone remains UNRUN with the mandatory unchanged400MiB limit.
+
+New original-ticket evidence includes Beaubien conditional orientation and six-file bounded capture controller, both UNRENDERED/UNRUN. Its revised conditional bearing nearNW53.97/yaw126 does not declare a geometry or fitted-match acceptance. Cobweb source identity now binds actual1856pages185/186 and1881p86 with the sourcecrosswalk, while wholecompound form remains unresolved. The exactpublic GlessnerWEB hardlink funding preserved both paths/bytes/modes; same-owner Schoolrenewal, root0717/0734recoveries and actualPR1456description update are saved. RelatedPR1340readonlyaudit is not ready and its lapownership remains unknown. No private profiles, primary Git/source copies or active gate logs are archived.
+<!-- OCT30_CURRENT1AF_NATIVEV2_ORIGINAL_EVIDENCE_END -->
+
+
 <!-- OCT30_CHECKED4B22_UNIFORM_BEAUBIEN_1449_START -->
 ## Checked phone pass, recovered publication and new baseline evidence are saved
 
