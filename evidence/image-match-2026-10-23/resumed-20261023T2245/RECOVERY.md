@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- OCT30_NATIVE_D2F_IMPORT_NEXT_ORIGINALS_START -->
+## Native integration checkpoint and three original building packets are saved
+
+ActualnativePR1456 updater40981777368 SUCCESS: genuineFFdd1→d2f74f337b87cb19e732d4be0382ff996d830982/tree918f48 parentsdd1+a7ff; ownemptytreeCASa592reacquired beforeanymerge. No canceledjob/alternativeexecution. Exact167canonicalobjectcombinedimport actualPASS, current4d73treeed9d/d2ftrees/eachblobtypeandsize verified; CASonlyorigin87→4d73, all67GTworkingbytes/HEAD/index/config/otherrefs unchanged. CLOSEDsolewriter50trackedrestore+17ownedunlink after713all67rescue andactualnative d2f+4d73pendingmergejournal included; two derivedconflicts, owners/fix/fullgate stillpending, noordinarynewcommit/devmerge/DONE. NewSchoolcanonicalcapture/rootacceptance/nativeimagegate/12pathguardedregistration; CB3canonicalcaptures+twoimagehostPR13actualmerge6013be1/Pages/publicSHA/native955to957projection; appadoption/groundBOTH/finalgate remainowed. SauganashONEfiniteentranceprototype+ownbaseline camera rootaccepted boundedvisibleform, notwholeT2383. Transitiveexactselectedbakepayloadsalready714 referencedbyimmutablehash/path insteadofduplicated. Mutablefixtures/privateprofiles/livegate logs excluded.
+
+- [NATIVE-D2F-FF-167-IMPORT-AND-SCHOOL-CARPENTER-SAUGANASH-PROGRESS-20261030](archives/NATIVE-D2F-FF-167-IMPORT-AND-SCHOOL-CARPENTER-SAUGANASH-PROGRESS-20261030.tar.gz) — ActualnativePR1456 updater40981777368 SUCCESS: genuineFFdd1→d2f74f337b87cb19e732d4be0382ff996d830982/tree918f48 parentsdd1+a7ff; ownemptytreeCASa592reacquired beforeanymerge. No canceledjob/alternativeexecution. Exact167canonicalobjectcombinedimport actualPASS, current4d73treeed9d/d2ftrees/eachblobtypeandsize verified; CASonlyorigin87→4d73, all67GTworkingbytes/HEAD/index/config/otherrefs unchanged. CLOSEDsolewriter50trackedrestore+17ownedunlink after713all67rescue andactualnative d2f+4d73pendingmergejournal included; two derivedconflicts, owners/fix/fullgate stillpending, noordinarynewcommit/devmerge/DONE. NewSchoolcanonicalcapture/rootacceptance/nativeimagegate/12pathguardedregistration; CB3canonicalcaptures+twoimagehostPR13actualmerge6013be1/Pages/publicSHA/native955to957projection; appadoption/groundBOTH/finalgate remainowed. SauganashONEfiniteentranceprototype+ownbaseline camera rootaccepted boundedvisibleform, notwholeT2383. Transitiveexactselectedbakepayloadsalready714 referencedbyimmutablehash/path insteadofduplicated. Mutablefixtures/privateprofiles/livegate logs excluded.
+<!-- OCT30_NATIVE_D2F_IMPORT_NEXT_ORIGINALS_END -->
+
+
 <!-- OCT30_ACCEPTED_NORMALS_AND_NATIVE_BAKES_START -->
 ## Phone allocation repair and canonical School/Carpenter bakes are saved
 
