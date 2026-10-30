@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- OCT30_CHECKED3746_ROOT1205_729_START -->
+## Checked3746 source and phone recovery saved
+
+Checked native3746b23bf1298c34a29946b4cdb6ee2d98abff8f/tree4f460 has a closed 852.810-second source gate, committed questions/image gates, normal immutable61-path publication and same-head complete1904 phone398.9841709136963MiB/400 with no errors and closed reapers. These are exact3746 proofs, not current-dev or standalone performance qualification. The V2 audit preserves29targetLibertyIDs,28whole-record exact and strict incomingbc globalL264 classification;302of305consumersexact9d and297original+8qualifiedexceptions. DatedPeople/mobileDOM/Census limits and V1 negative remain explicit.
+
+The reviewed standalone performance extraction is unapplied:2renderer and2existingtest files, plus future own changelog/status notes; fresh standalone source gate, phone, CI and normal dev merge remain required. Native support-ticket filing is separately in progress and not asserted complete by this frozen packet. Original17 remain ongoing. Root1205 recovery records continuation.
+
+Three exact inactive a0fe planning ledgers are preserved as actual bytes with their original modes and SHA256. Only after strict immutable all-member readback may their owner retire these3copies using this archive and exact member mapping. No private profiles, live logs, primary source/Git writes or local tar copies are included.
+
 <!-- OCT30_BC_FROZEN_WIP8_ROOT1120_728_START -->
 ## Exact frozen WIP source and closed integration recovery are saved
 
