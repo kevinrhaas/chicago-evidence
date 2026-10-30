@@ -1,5 +1,18 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- OCT30_CHECKED89AD_CURRENT_PHONE_FAIL_ROOT1435_733_START -->
+## Current Field integration and its failed phone are durably saved
+
+The genuine current-data integration is a checked ordinary native commit89ad07fd2b43679c028715dbf30830b7dacf2a54, tree36590ee4e51d8970ebcb25608f36e7a7bf217912, with genuine parents3e0001b9ef061b9fb2a0ee293b734b2c7a99c6fa andbcf92524e404dbb4f441d1d8d5c4ab9e3303d4b9. The full native1105 source check passed in879.5948 seconds and committed PR questions passed. Its caller-temporary-space resource halt and exact-owned-fixture recovery are preserved separately from the genuine source result: all same guards and floors were requalified, without a source-test rerun or threshold change. Canonical incoming Field paths and the original seven performance paths remain explicitly bound.
+
+The fresh official complete1904 mobile phone on this integration FAILED at400.99707221984863MiB against the unchanged400MiB cap after85.0947 seconds, errors zero, all source/publication guards exact and all children reaped. The earlier396.592 phone pass belongs to3e on older9117 data and cannot qualify this newer Field scene. Both PRs remain unmerged and owned laps stay protected. Additional tuft-cache work is an unapplied external proposal and is excluded.
+
+Root completed normal fast-forward SOURCE-ONLY publication of89ad to existing PR1486 before this archive froze. Exact native commit/tree/genuine parents, all seven immutable own files, canonical incoming modes/blobs and local guards passed readback; no force, new branch or dev merge occurred. These actual publication receipts supersede the pending-publication wording in the dated root1435 note. New exact-head CI starts normally; no new89ad CI pass or runtime pass is inferred.
+
+The read-only CI audit proves three already-successful real jobs checked synthetic merge543b98b243883cc234407b65f60b4f6b9f71415c with exactly the same3659 tree and canonical parents[bcf,3e]. Gate, moving-frames and upload-release checkout logs and Git-data tree proofs are retained. The push report separately checked actual3e, not the combined tree. The initial HTTP503 log-read failure and one read-only retry are preserved; no job rerun/status write occurred. This tree evidence does not qualify later dev237848 additions or bypass the failed phone.
+
+Canonicalbcf import execution, genuine native merge/root review and its complete finite controller/source/phone proof directory are saved. The separately approved one clean old lighthouse terrain-copy retirement has a complete exact canonical/local/public restore map, actual controller/ledger and conspicuous worktree note; only30,621,696 allocated bytes were reclaimed. The ten dirty/untracked lighthouse authority files were already verified in732. No whole checkout, developer configuration, private profiles, bulk duplicate GLB or canonical Git object is included or removed by this checkpoint. Relevant import handshake, resource recovery, body readback and current root1435 restart instructions are included. The newest237848 Field-balcony delta remains unimported and unqualified at this closure. Publisher made no primary-source, app-API or app-branch change; all existing evidence paths remain preserved.
+
 <!-- OCT30_CHECKED3E_PHONE396_LIGHTHOUSE_WIP_ROOT1330_732_START -->
 ## Checked lossless memory improvement and unique lighthouse work are saved
 
