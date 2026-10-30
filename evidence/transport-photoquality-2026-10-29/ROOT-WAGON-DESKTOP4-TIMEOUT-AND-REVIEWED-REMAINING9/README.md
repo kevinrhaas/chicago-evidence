@@ -1,0 +1,7 @@
+# Closed desktop4 timeout and reviewed W11 source plan
+
+Desktop4 reached its original600-second supervisor timeout at600.179194652s. It remainsnativeNONPASS; the source/index/full5637publishedmirror stayedexact andthe separate resource10before/afterpair passed. Cleanupcompletedwithzeroownedchildren andthe ownedHTTPportrefusedconnection. No desktop5 waslaunched.
+
+W11isreviewedstatic sourceonly, SHA4c778cde4707e7a335e4878bd2ba5f41ed0b6e838ec03ee52a18846f86da8750. It preserves the15/30accepted count andsixunqualifiedslots m13/m14/d2/d4/d13/d14; onlydesktop5–12and15remainrunnable. UnrunD13/D14haveNOactualfailurepath; the fouractualtimeoutrowsnameonlytheir ownviewport/stage. Source/env/assertions/original600caps/resourcepolicy/floorsareunchanged. W11hasNOTexecuted. HfullgateandthenPfullgatehave theheavy slot beforefutureWresumption.
+
+Allsourceguards areincluded orreferenced byindependentlyverifiedexactpublicblobs from330a31f969672aa20b4541c33918ed2b8fbf12ba. Hugeappassetsare notduplicated. NoactiveH/P/Wlogs ormutableglobalstate areincluded. Alloriginals remain; rootisthesoleGitwriter. No wholepublishedgate/currentCI/DEVmerge/photoacceptanceisclaimed.
