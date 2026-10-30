@@ -1,5 +1,30 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- OCT30_NATIVE_ORIGINALS_35IMPORTS_724_START -->
+## Closed original-ticket native outputs and current integration recovery are saved
+
+New original-ticket native outputs and source recipes are saved without inflating ticket status. Jail has38closedpublic files/2.82MB: actuale613MASTER/a72WEB,4217recipe, nativeentries/source guards/rawsource/rawPNG/sideby and reapers. BUILD1.112s/WEB3.322s/PHOTO3.368s all exitedzero/reaped. Root DIRECTVIEW found clipping and compoundhandedness problems, NOTmatch acceptance. No271defaultcontrols, grade or DONE is claimed. Onlyinactiveownedfixture/tmp/cache/config retired after everyuniqueoutput was copied and hash/mode verified, reclaim12,992,512B; cleanup.pyc initialrefusal and fullrestore authority remain saved. No P/run recursive or privateprofile copy.
+
+Beaubien has166ordinaryfrozen source/input/output files/8.08MB. ActualnativeBUILD/officialWEB/fixedcamera completed in10.92seconds with all2073primarymodel and Gitguards exact/reaped. MASTER47aee/WEBf87a/recipef8d59 are preserved. Root directly viewed fullsideby/raw and ACCEPTED mainmassing only as an inferred graphicworkingprototype: taller2levels/twostacks/roof. This is NOTwholematch, metric or grade acceptance; lowprojection/openings/finish remain unresolved. Author rawmatchUNREVIEWED stays unchanged. Activeprojectionplans are excluded.
+
+Carpenter has47closedfiles/6.484MB,20concrete entrywisepostimages/native498recipe/f3eMASTER/281WEB/threephotos and earlierdatedBOTHbindings. Wholeforeign952library/103picture/879Librows are preserved. Controller refuses datedfe96 application until actualpost1456squash/fold/devrebind and parentlease. FreshcurrenttargetBOTH/phone/gate/PRremain owed. No primaryadoption or newbake is claimed. Schoolrefresh remains at723, notduplicated here.
+
+Actual4f9then35 canonicalimports,35price, genuine430+35merge and completedfrontyard owner are closed. ONE exacthardlink of a CLOSED205,049,856B GlessnerMASTER duplicate preservedbothpaths/bytes/modes/originalmtimeledger, fundingimports withoutprofile or dependency deletion. At frozenroot0842recovery the35native61 tail remained ACTIVE; its logs/results/reapers and allcurrentprimaryworkingbytes are excluded. Current35 fullgate/phone/nativecommit/publication/CI/devmerge are not claimed. Checked430source and399.37295phone remain datedqualified at723.
+
+Frozen21file35helper packet and root0842recovery retain exactinherited owner workflow1478 guard: Gitblob06f8ecab0758dff2aa67a11d9b179a18e2488458, SHA256d4147454a1cb572a8315c87758cfa7e08fa4620cf02a8ec63f82e81897b8faef. No authoredworkflow permission is implied. The f460ownlap renewal controller/plan/wrapper are PREPARED ONLY, not executed; rootmustgrant closednative/read-onlyfullgate and actualstagedtree. No source/Git snapshot, PR/code/lap mutation, activeproposal, fixture or privateprofile is performed by this checkpoint.
+
+- [CLOSED-JAIL-BEAUBIEN-CARPENTER-NATIVE-OUTPUTS-35IMPORTS-AND-RECOVERY-20261030](archives/CLOSED-JAIL-BEAUBIEN-CARPENTER-NATIVE-OUTPUTS-35IMPORTS-AND-RECOVERY-20261030.tar.gz) — New original-ticket native outputs and source recipes are saved without inflating ticket status. Jail has38closedpublic files/2.82MB: actuale613MASTER/a72WEB,4217recipe, nativeentries/source guards/rawsource/rawPNG/sideby and reapers. BUILD1.112s/WEB3.322s/PHOTO3.368s all exitedzero/reaped. Root DIRECTVIEW found clipping and compoundhandedness problems, NOTmatch acceptance. No271defaultcontrols, grade or DONE is claimed. Onlyinactiveownedfixture/tmp/cache/config retired after everyuniqueoutput was copied and hash/mode verified, reclaim12,992,512B; cleanup.pyc initialrefusal and fullrestore authority remain saved. No P/run recursive or privateprofile copy.
+
+Beaubien has166ordinaryfrozen source/input/output files/8.08MB. ActualnativeBUILD/officialWEB/fixedcamera completed in10.92seconds with all2073primarymodel and Gitguards exact/reaped. MASTER47aee/WEBf87a/recipef8d59 are preserved. Root directly viewed fullsideby/raw and ACCEPTED mainmassing only as an inferred graphicworkingprototype: taller2levels/twostacks/roof. This is NOTwholematch, metric or grade acceptance; lowprojection/openings/finish remain unresolved. Author rawmatchUNREVIEWED stays unchanged. Activeprojectionplans are excluded.
+
+Carpenter has47closedfiles/6.484MB,20concrete entrywisepostimages/native498recipe/f3eMASTER/281WEB/threephotos and earlierdatedBOTHbindings. Wholeforeign952library/103picture/879Librows are preserved. Controller refuses datedfe96 application until actualpost1456squash/fold/devrebind and parentlease. FreshcurrenttargetBOTH/phone/gate/PRremain owed. No primaryadoption or newbake is claimed. Schoolrefresh remains at723, notduplicated here.
+
+Actual4f9then35 canonicalimports,35price, genuine430+35merge and completedfrontyard owner are closed. ONE exacthardlink of a CLOSED205,049,856B GlessnerMASTER duplicate preservedbothpaths/bytes/modes/originalmtimeledger, fundingimports withoutprofile or dependency deletion. At frozenroot0842recovery the35native61 tail remained ACTIVE; its logs/results/reapers and allcurrentprimaryworkingbytes are excluded. Current35 fullgate/phone/nativecommit/publication/CI/devmerge are not claimed. Checked430source and399.37295phone remain datedqualified at723.
+
+Frozen21file35helper packet and root0842recovery retain exactinherited owner workflow1478 guard: Gitblob06f8ecab0758dff2aa67a11d9b179a18e2488458, SHA256d4147454a1cb572a8315c87758cfa7e08fa4620cf02a8ec63f82e81897b8faef. No authoredworkflow permission is implied. The f460ownlap renewal controller/plan/wrapper are PREPARED ONLY, not executed; rootmustgrant closednative/read-onlyfullgate and actualstagedtree. No source/Git snapshot, PR/code/lap mutation, activeproposal, fixture or privateprofile is performed by this checkpoint.
+<!-- OCT30_NATIVE_ORIGINALS_35IMPORTS_724_END -->
+
+
 <!-- OCT30_CHECKED430_FINALPHONE_ORIGINALS_START -->
 ## Checked native publication, final phone pass and original-ticket evidence saved
 
