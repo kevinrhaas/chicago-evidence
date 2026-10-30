@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- OCT30_A7FF_FAIL_GT67_START -->
+## Combined phone regression and exact Green Tree rescue are saved
+
+Actual scoped combineda7ff+GT1904Lightmobileprobe FAILED401.035075MiB/400 unchangedassertion; zeroerrors/allchildrenreaped, allprimarysource/Gitbytesunchanged. All13ordinaryexclusiveincomingoverlays savedexactly plusmetadata/reproducers/nativebootpacking/allrequestSHA;2858publicunchangedsubtreesymlinks andprivateChromeprofilesexcluded. No mergeacceptance. NEW exactcurrentGT67postowner source/generatedrescue ondd1 iscomplete67members20.51MB, innergzip6,356,007B SHAa9e8d7ef6514d4713acb48ff00c90aa66358192a10b0990ca0aea72fed7eeeff plusSNAPSHOT/rebind/selfconsistency; notafinalgateorcommit. PreviousGTfullsource710 andclosedowners712remainvaliddatedproof. Sharedruntimeallocationfix/currentnativePRheadCI/phonepassstillowed.
+
+- [A7FF-ACTUAL-PHONE-FAIL-AND-CURRENT-GT67-POSTOWNER-RESCUE-20261030](archives/A7FF-ACTUAL-PHONE-FAIL-AND-CURRENT-GT67-POSTOWNER-RESCUE-20261030.tar.gz.parts.json) — Actual scoped combineda7ff+GT1904Lightmobileprobe FAILED401.035075MiB/400 unchangedassertion; zeroerrors/allchildrenreaped, allprimarysource/Gitbytesunchanged. All13ordinaryexclusiveincomingoverlays savedexactly plusmetadata/reproducers/nativebootpacking/allrequestSHA;2858publicunchangedsubtreesymlinks andprivateChromeprofilesexcluded. No mergeacceptance. NEW exactcurrentGT67postowner source/generatedrescue ondd1 iscomplete67members20.51MB, innergzip6,356,007B SHAa9e8d7ef6514d4713acb48ff00c90aa66358192a10b0990ca0aea72fed7eeeff plusSNAPSHOT/rebind/selfconsistency; notafinalgateorcommit. PreviousGTfullsource710 andclosedowners712remainvaliddatedproof. Sharedruntimeallocationfix/currentnativePRheadCI/phonepassstillowed.
+<!-- OCT30_A7FF_FAIL_GT67_END -->
+
+
 <!-- OCT30_GT_NATIVE61_NEXT3_START -->
 ## Green Tree owners and next three original packets are saved
 
