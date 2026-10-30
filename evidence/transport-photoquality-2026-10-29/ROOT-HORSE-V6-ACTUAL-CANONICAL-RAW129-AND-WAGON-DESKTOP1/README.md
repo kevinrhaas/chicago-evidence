@@ -1,0 +1,11 @@
+# Actual canonical horse V6 finite129 RAW proof and fresh wagon desktop1
+
+Prepared only; root must publish by a normal verified push. This packet preserves every one of the516 actual Float64LE RAW files (59,214,096 original bytes) and their129 frame records, shape/dtype/role/time/source GLB bindings. Byte-identical rows share encoded payloads but every original path is retained. Full native RESULT, CAPTURE-FRAMES, POSE-MANIFEST, static and posed results, finite certificate, source/code/input guards, closed supervisors and phase summaries are included. Every original+encoded+decoded SHA256 and byte length was verified. RAW originals are retained locally.
+
+Canonical source23 controls passed7.788036s, static11.102099s, native47.128040s, posed153.530391s and finite record1.068156s, all with complete cleanup and unchanged frozen110source/index. Runtime/master12838-vertex, normal and bone129 parity is exact; quiet tail969 matches original posture, head/neck moves with full retained source amplitude, and all original physical/socket limits pass. BODY maximum0.013770834107241663m, contact0.006247168224021396m, no new crossings, allfive actual capture replay/path/state controls detected. This is finite canonical qualification only. Active bd443 runtime selection remains unchanged. Real unheld world motion, photographic review, runtime adoption, full app gate, current CI and merge are not asserted.
+
+The complete HPhaseA source/HEAD binary patch is already public at29b82a26a70c159f57d9ee1e07692b8b825a4c38 /ROOT-WAGON-78B11B7-CHECKED-AND-HORSE-PHASEA-COMPLETE and is not duplicated. This packet's small frozen110/index/sourceguard metadata binds the new actual qualification to the exact source. No public-byte dedup references are used without verification.
+
+Fresh wagon public78b11b7 desktop1 passed95/0 in483.297570s with full source/index/5637mirror guards and actualPNG included. Running mobile4 and remaining controller logs are excluded; whole15parts/both profiles/currentCI/DEV merge remain pending.
+
+Decode each gzipmtime0level1 payload to its manifest original_path. Restore aliases to each separate original path; verify original/encoded SHA256 and bytes. Each raw_capture row retains exact original relative path, dtype, shape, frame index/time/key/role and source GLB hashes. All original source and evidence remain unchanged.
