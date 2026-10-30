@@ -1,0 +1,7 @@
+# Closed wagon evidence and explicit resource reconciliation
+
+Immutable originalphone14anddesktop2timeouts remain NONPASS. Phone15 passed34checks; its blankwhitePNG is the expectedparked outerpage, not visualevidence. Desktop3passed107nativechecks butits originalfixed-counter resourceguardfailed whenmax1269rose5144 withzeroothercounters; thatFalseverdict remains untouched.
+
+The separatelyreviewed resource10policy treatsmax as informational/nondecreasing, retains the initialtrustedkeyset andallnonmaxcounterszero, andpreserves4GiBavailablememory/512MiBworkspace/1GiBtmp beforeANDafter withtheoriginal32GiBlimit. Actual1.067sreconciliation reverifiedall13originalartifacthashes, originalhealthylaunch/eventhistory, laterexactsource/index/fullmirrorandhealthyresources; its40eeSHA receiptwasaccepted byroot. Latermeasurements are neverrelabeled as originalrun-endfullcomponents.
+
+All15/30acceptedparts andfiveunqualifiedslots are declared inGENERATED/CURRENT-CLOSED-SCOPE.json. Desktop4isactive andexcluded, as aremutableglobalstate andallrunningH/Poutputs. No wholepublishedgate, currentCI,DEVmerge orphotoacceptance isclaimed. Alloriginals remain; rootisthesoleGitwriter. Payloadsusegzipmtime0level1, wholefileSHA256,andbyte-exactaliasesonly.
