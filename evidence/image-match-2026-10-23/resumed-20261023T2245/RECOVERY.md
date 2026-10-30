@@ -1,5 +1,18 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- OCT30_CHECKED40453_PHONE_PASS_PROVENANCE_ROOT1520_735_START -->
+## Checked source and current phone pass are saved while full smoke continues
+
+The revised lossless cache is now checked and published as genuine native40453bde8ba1812925d61fef118782a30323f98e, tree2b609b8461f000730de75dd4672275ca5115fa8d, parents[89ad07fd2b43679c028715dbf30830b7dacf2a54,2378484c31b91a1b8d28fd8430d2b4d1a783bdaa]. Full1105 source check passed in912.989 seconds with all18 guards; committed questions and normal fast-forward publication to existing PR1486 passed, including immutable own7/canonical13 paths, native parent/tree and local authority guards.
+
+The official same-head complete1904 mobile measurement passed at398.96864223480225MiB against the unchanged400MiB cap in82.2589 seconds, zero errors, all children reaped and source/currentField/publication guards exact. This scene includes237 Field balconies. Prior89ad400.997FAIL and older3e396.592PASS retain their separate scope; there is no controlled same-scene GPU-saving or reduction claim. The full20-cell published desktop/mobile native smoke map is still active and is explicitly excluded. Required current-head CI, later dev qualification and ordinary merge remain pending; neither PR is represented as merged.
+
+The original source controller stopped only on the caller temporary-space floor after the genuine native1105 pass. Its raw failure, root approval, exact-owned five-fixture restoration/retirement proof and all same source guards were preserved and requalified without a source rerun or lower floor. An important provenance error is documented: after recovery and the completed checkpoint, an agent edited restore-rule prose and README in a previously frozen helper. This archive preserves the separately reconstructed original six-file preparation matching manifest7b32dd38159a66d30be1a1fcb4c62dbbc219696650643a7ce26bce69d9e4cafb and executed helper7791b18d02d1c541757db261966111c5cf710566f12fadf048b2cf6b0880cf1a. The later6168 clarified copy is labeled NOT EXECUTED, with exact original/changed diff and timestamp provenance. Its live modified file is never substituted as execution authority. Source and actual results stayed unchanged; no process-exit timestamp is invented.
+
+Queued root helper review and pre-V3 PR snapshot, genuine native publication, authentic source/checkpoint/phone logs/timings/reapers, small incominga248 audit and current root1520 recovery are included. The new25-path stable change leaves active indexes/counts/People/originaltargets/runtime/performance7 untouched; three research gzip differences are only OS-header byte9 with identical compressed data/trailer/decodedJSON. Canonical incoming bytes still matter on any later merge. This read-only classification is not an imported/current-phone/CI qualification. The three-file ordinary merge controller is preparation only and has not run.
+
+The closed two-index audit and frozen B-survivor verifier preparation are saved as metadata and future/ongoing verification context only. No active actual pack-verification output, eight-gigabyte pack/index body, reclaimability assertion or pack retirement is included. All active SMOKE bindings, logs, partial reapers and screenshots are excluded. Publisher performed only normal-FF RAM evidence publication, with no app/source/Git metadata change, private profile or bulk GLB copy. The exact source WIP authority was already saved in734; all prior evidence paths remain intact.
+
 <!-- OCT30_T3262_V3_TRUE_WIP_ROOT1450_734_START -->
 ## True staged V3source and current ownership are recoverable
 
