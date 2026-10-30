@@ -1,0 +1,9 @@
+# Local horse PhaseB19 source and wagon mobile7–9 actual proof
+
+Horse source is locally installed and staged only: TREE `4278fa10062c3593ea2cf65f7bf41a4bee7d39b0`, APP `bfc9fcdd77e694e9deb3f5d514d0f45b8fb559cf`,116 frozen source rows. The exact19path binarypatch applies cleanly from originalPhaseA TREE `bc697721852b6a3fb2e2dc5850dcebf693ad0089` using a private index and reconstructs the exact newTREE; the shared index and all116sources remain unchanged. The complete originalPhaseA base/source is alreadypublic29b82; original finitequalification/RAW proof is public1fdc and retains its realPhaseA source identity. The unchanged finitecertificate uses a byte-exact public reference. The actual native certified helper mechanical test passed in1.220057s under original30s,154056vertex comparisons with exact0 bone/vertex difference; bitmap/visual/world acceptance was not performed.
+
+Wagon PR1340 remainsHEAD `78b11b7a8e49126a8a5724a4035ea961461a4f49`. Published mobile7,8attempt02,9 actually passed39/22/27 assertions, under original600s supervisors with zero remainingownedchildren and unchangedsource/index/fullmirror. All actualreceipts/logs/guards/PNGs are included. Mobile8attempt01 stopped at resource admission before a browser/nativecommand; it is not presented as a failed or passing test. Running10–11logs and mutablecurrentstate are excluded.
+
+No Hworld/fullappgate/featurecommit/push or DEVmerge is claimed. No wholewagon-gate or photographicacceptance is claimed. Restore each record by decoding its gzip payload (or exact publicreference), checkingoriginalSHA256/length, and writing the desired originalpath. All originalfiles remain.
+
+After the installed freeze, all six bounded source-selection checks actually passed in9.756s with exact116source/index and cleanup0. These are partial selectors, not the full legacy physical or application gate. Native canonical publish was running at preparation and its logs/results are excluded.
