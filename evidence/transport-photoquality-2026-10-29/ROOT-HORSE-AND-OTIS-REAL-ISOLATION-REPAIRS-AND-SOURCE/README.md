@@ -1,0 +1,7 @@
+# Exact H3/P1 repairs and actual native isolation measurements
+
+H oldTREE4278fa10/APPbfc9fcdd becomes9e3d17f3/11da9f86 through exactlythree repairpaths. P oldTREEeee92b42/APP44d9d090 becomes222273b4/3fc00238 through onlytools/step_isolation.json. Both actual Gitbinarypatches reconstruct their entire targetTREE/APP and complete semanticindex using packet-private indices/objectdirectories; app/sharedGit state is unchanged. Repaired text files, readable maps, source117/source54 guards and completeindices areincluded. Assets and77MB oldcopies arenotduplicated.
+
+Allsix native --tool measurements areactual: twoH commands closed in12.007s andfourP commands in2.323s underoriginal120-second caps, declaredandmeasurerreturncodeszero/cleanupzero. Their original/preservedrawprobes, logs, exactcommands, oldledgers and source/resourceclosure areincluded. Allpreexistingrows remain unchanged. Preparationcode andfuture-mutableguard inputs arefrozenbytes with originalpaths andSHA.
+
+P's separate requiredcanonicalpublish restore actuallypassed in48.567s andits new source54/full5635mirror guard is preserved. This doesnotrewriteP's earlier interrupted partialmirror failure. Oldfailedfullgates remainpublic separately. Newfullretry/featurepush/DEVmerge/world-photoacceptance areNOTestablished bythispacket; active retrylogs areexcluded. RootissoleGitpublisher. Alloriginalsremain; gzipmtime0level1/exactaliases/verifiedpublicreferences only.
