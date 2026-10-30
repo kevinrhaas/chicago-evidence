@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- OCT30_T3262_V2_FROZEN_WIP_ROOT1300_731_START -->
+## Four uncommitted lossless memory postimages are recoverable
+
+Four actual uncommitted V2 source postimages are now recoverable from public native3c132cbe75bda7eb3960e723129af7fd0ce6d616. Their total2,945,636 bytes were read directly from the frozen primary source only after SHA256 matched the root-reviewed four-path authority. They are archived at t3262-v2-frozen-WIP/<repository-path> with exact size, mode, SHA256 and Git blob bindings in RESTORE.json. The expected staged tree is a3bc0f126d0a1f3e944b287258d6e000e4f41bdc; the aggregate PR remains seven paths against9117, with the other three exact public3c bytes. Restore the genuine public base and only these four postimages, verify/stage the exact tree, then finish the native source gate before any ordinary commit. This is a WIP checkpoint, not a checked commit. No source or primary Git mutation and no local tar copy was used.
+
+The root-reviewed lossless tie cache stores exact final Float32 CPU data until reach, preserving the original eager oracle, Object3D identities/order, materials, visibility and update/disposal semantics. Noncanonical layouts, negative zero and tilted transforms retain the full fallback. Conditional bounding-box invalidation is included. This claims no GPU saving. The actual-context pure allocation account is theoretical and excludes headers, transients and GC; a browser measurement is still required. Final external V2 lifecycle434 checks and the actual primary native434-unit reaper passed. The complete ten-file final candidate, twelve frozen gate/checkpoint/phone/smoke helpers and message-only checkpoint_buffers adapter, four-file normal-FF transport preparation and root reviews are saved. Nine small V1 provenance/account files plus the original manifest are preserved; superseded V1 postimages are intentionally not duplicated and no full16-payload snapshot is claimed.
+
+The new full1105 source gate is running and every active gate log, reaper, timing and result is excluded, even if it finishes during publication. There is no V2 fullgate, phone, published BOTH, required-CI or dev-merge pass. The prior same-head3c phone400.1986474990845/400 failure remains preserved in730, without a repeated unchanged meter or threshold increase. Both owned PR laps keep the unqualified work protected. Root1300 recovery provides exact continuation, future native commit/publication/phone and smoke order, original seventeen-ticket scope and claim expiries. Native claim-renewal preparation is separate and no ticket fields change in this checkpoint.
+
 <!-- OCT30_T3262_PHONE_FAIL_PUBLISHER_CURRENT_730_START -->
 ## Standalone checked source and actual phone failure are recoverable
 
