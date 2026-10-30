@@ -1,0 +1,9 @@
+# Transport actual world failures and remaining published gate
+
+Horse canonical publish passed with unchanged source/index. Both original desktop world attempt and observerV2 closed NONPASS with zero motion rows. Original32MiB video-cap failure and separate final-media annotation remain unchanged; the actual final video is in the separate original-failed-video packet. V2 fetched the actual quiet horse GLB (SHA7ce84d...) but failed full-figure viewport framing before any media capture. Both exact fullsource/index/mirror guards, pinned observer code, actualentry/quality facts, reviews and supervised closures are retained. No world, photographic or full-app acceptance is claimed.
+
+Otis V4 is a frozen observation-only proposal with source-clear review and53source-file/fullindex/mirror recheck. Its195 stored Float32 quaternionrotationrows are not vertices. No Otis world/browser/native test or actor edit was performed by V4.
+
+Wagon PR1340 remainsHEAD78b11b7. Published phone10–11 and12 actually passed39 and29 assertions. Phone13 timed out at its unchanged600s supervisor ceiling and remains NONPASS; both phone13 and desktop13 are deferred UNQUALIFIED. Read-only diagnosis, preparedremote-runtime proposal and the external06 two-deferred ledger are included; neither a remote-run PASS nor whole-gate completion is asserted. Other group execution continues outside this immutable snapshot; running logs/state are excluded.
+
+Latest root ACTIVE handoff is copied byte-exactly after root-confirmed freeze. Every original, gzip payload or already-public reference has verified SHA256 and byte lengths before/after preparation. Original source identities and failed receipts are retained. All sourceworktrees, primarylogs/results/RAW and originalvideo remain intact. No application/sharedindex/Git writes or original data deletion occurred during preparation.
