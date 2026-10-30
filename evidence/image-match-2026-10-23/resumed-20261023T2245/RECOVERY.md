@@ -1,5 +1,14 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- OCT30_ACCEPTED_NORMALS_AND_NATIVE_BAKES_START -->
+## Phone allocation repair and canonical School/Carpenter bakes are saved
+
+RootACCEPTEDactual3lineexistingcompactNormalsrailwayallocationrepair afterDIRECTVIEW6same-cameraA/Bcaptures,103nativechecksandactual1904Lightphone396.955676MiB/400 (saved4.0794MiBvsoriginal401.035075FAIL713); exactunchanged5633baseline/source/Git/reaper/requestSHAguards. Rawthree-cameraVISUALexit1 remainshonest inheritedAIR/NORTHtrianglebudgetfails; scopedvisualprecisionaccepted, NOTwholeperformancesmokePASS. PatchNOTyetinprimary, noordinarycommit/newCI/merge/DONEclaimed. CLOSEDofficialsingle-recordnativeCarpenterandSchoolBUILD+WEBoutputs/fullrecipes/registrypreservation included; canonicalcaptures/app/ground/finalgates/PRstillowed. Bothinitialwrappercacheassert1transcripts preserved withlateractualclosurePASS. Mutablefixture/privateprofilesexcluded. Root0057/aptpubliccacheeviction/713restorepointer andactualscopednative1456dispatch proof included; nativejob40981777368 stillLIVE so no actualnewhead/gate inferred.
+
+- [ACCEPTED-PHONE-ALLOCATION-REPAIR-AND-TWO-CANONICAL-NATIVE-BAKES-20261030](archives/ACCEPTED-PHONE-ALLOCATION-REPAIR-AND-TWO-CANONICAL-NATIVE-BAKES-20261030.tar.gz) — RootACCEPTEDactual3lineexistingcompactNormalsrailwayallocationrepair afterDIRECTVIEW6same-cameraA/Bcaptures,103nativechecksandactual1904Lightphone396.955676MiB/400 (saved4.0794MiBvsoriginal401.035075FAIL713); exactunchanged5633baseline/source/Git/reaper/requestSHAguards. Rawthree-cameraVISUALexit1 remainshonest inheritedAIR/NORTHtrianglebudgetfails; scopedvisualprecisionaccepted, NOTwholeperformancesmokePASS. PatchNOTyetinprimary, noordinarycommit/newCI/merge/DONEclaimed. CLOSEDofficialsingle-recordnativeCarpenterandSchoolBUILD+WEBoutputs/fullrecipes/registrypreservation included; canonicalcaptures/app/ground/finalgates/PRstillowed. Bothinitialwrappercacheassert1transcripts preserved withlateractualclosurePASS. Mutablefixture/privateprofilesexcluded. Root0057/aptpubliccacheeviction/713restorepointer andactualscopednative1456dispatch proof included; nativejob40981777368 stillLIVE so no actualnewhead/gate inferred.
+<!-- OCT30_ACCEPTED_NORMALS_AND_NATIVE_BAKES_END -->
+
+
 <!-- OCT30_A7FF_FAIL_GT67_START -->
 ## Combined phone regression and exact Green Tree rescue are saved
 
