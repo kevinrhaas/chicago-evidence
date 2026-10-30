@@ -1,5 +1,19 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- OCT30_PR1456_ACTUAL_COMPOSED_CI_PHONE_MERGE_751_START -->
+## PR #1456 merged into dev
+
+PR [#1456](https://github.com/kevinrhaas/chicago/pull/1456) **merged into `dev`** at 2026-10-30 21:42:36 UTC by a normal expected-head squash merge. Final head `8624c013b426d643d66229aab63d03d42ad12de6` became merge commit `fa2ba02b269533664ac903a3766a26fb51092cfa`. Its immutable tree is `e7b6772dde748a9e395d4ea07d77d3e5d4e52955`, exactly the qualified CI checkout `f76d6153b29dd0af88983f0dd1624a8c2188aebc`; its parent is current canonical `a68c8878ac914122a18ce712c869933612ba00ff`. This combined tree includes concurrent work and is deliberately distinguished from the source head's earlier tree `743ba915a57a30d029c6afbbfa5999d511495a67`. No force, admin merge, or production change occurred.
+
+T-2373, T-2377, T-2381 and T-2384 are **done**, verified in ticket-repository commit `b36fd821b8c8c7cc22b679d3473c1d5bc60fca7d` and removed from QUEUE. The owned PR1456 lap lock was released and its absence verified. The changes give Miller House its low log wing, Hogan's store its gable courses and chimney cap, St Mary's its raised front sash, and the lighthouse its credited Castelnau harbour image. Source credits, disputed dates and reconstruction liberties remain recorded.
+
+Validation is closed: **1,109 native source checks passed locally before the repair commit**, followed by three PR checks; actual GitHub CI passed **1,109** on the combined tree, with rendering and release checks successful. A fresh official published 1904 mobile reading on that exact combined tree passed at **398.8415/400 MiB**, with native exit 0, all children reaped, and unchanged limits. Its temporary 17-file composition was fully restored; all 18,201 working file modes/blobs, the permanent index, refs and config returned to the clean source head, followed by native republication.
+
+The archive retains the prior desktop/mobile People and Images captures and four fresh source-head mobile Images captures with real pictures and visible credits. A separate bounded comparison qualifies these four 1835 cards on the combined tree: 333/334 consumers are exact, and the changed 1904 furniture renderer returns before creating geometry in 1835. Earlier 207/207-per-viewport geometry evidence remains dated, with a bounded model/yard/current-route join; no fresh full renderer matrix or whole-1904 UI equivalence is claimed. The earlier 399.1126 MiB reading belongs to the source-head tree, not the final composed-tree measurement. Truthful earlier harness/proof refusals are preserved separately.
+
+All previous archive leaves and recovery history remain intact. Checkpoints 747-750 retain the source work and prior execution chain; this checkpoint adds final runtime, combined-tree CI/preservation, normal merge and ticket/lap closure. Of the original 17 tickets, five are now done (T-2385 earlier plus these four); twelve remain checkpointed. PR1486 remains open: its four performance code/test blobs are included here, but its entire seven-path change is not claimed merged. Its remaining three narrative files were handed back through the native resume metadata, and only the owned PR1486 lap lock was released; T-3262's state was unchanged. Resume remaining tickets from their saved checkpoints; do not undo the merged work or manufacture photo follow-up tickets.
+<!-- OCT30_PR1456_ACTUAL_COMPOSED_CI_PHONE_MERGE_751_END -->
+
 <!-- OCT30_PR1456_PUBLIC_Z_1109_NATIVE_CP_NORMAL_FF_750_START -->
 ## PR1456 source-qualified repair is pushed; final merge checks remain
 
