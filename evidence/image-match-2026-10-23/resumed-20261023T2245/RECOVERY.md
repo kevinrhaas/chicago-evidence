@@ -1,5 +1,18 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- OCT30_CHECKED3E_PHONE396_LIGHTHOUSE_WIP_ROOT1330_732_START -->
+## Checked lossless memory improvement and unique lighthouse work are saved
+
+The revised standalone performance work is now a checked ordinary native commit3e0001b9ef061b9fb2a0ee293b734b2c7a99c6fa, tree a3bc0f126d0a1f3e944b287258d6e000e4f41bdc, genuine parent3c132cbe75bda7eb3960e723129af7fd0ce6d616. Normal fast-forward publication updated existing PR1486, with all seven aggregate immutable files, native commit/parent/tree and local guards verified. The full source check passed1105 checks in905.4797 seconds, native exit0 and315 children reaped. Its original controller then stopped on the caller temporary-space floor; this resource incident is preserved, not hidden or mislabeled as a failed source check. Root retired only ten exact owned closed self-test fixture directories after byte/window/FD/restore proof, restored the unchanged floor and rechecked all twelve source/index/config/ref guards against the same genuine check. No source test was rerun and no threshold was lowered. The authentic qualifier, original resource-halt receipt, restore map, cleanup ledger and committed questions are included.
+
+The actual same-head complete1904 mobile phone passed at396.5921382904053MiB against the unchanged400MiB cap in78.5277 seconds, with zero errors, closed reapers and exact source/publication guards. Relative to the preserved prior3c failure, measured memory decreased3,781,699 bytes: arrayBuffers by3,534,351 and JS heap by247,348. GPU buffers, textures and renderbuffers were exactly unchanged. This supports the lossless CPU allocation improvement; no GPU saving is claimed. The measurement qualifies3e on9117 scene data, not the significant incoming Field geometry. Published BOTH smoke, current-data phone, required CI and normal dev merge remain owed.
+
+School, Green Tree and Carpenter claims were renewed individually through the unchanged native CLI before expiry, normal ticket-main fast-forwards, only claimed_by/claimed_at changed and all3235 foreign paths/modes/blobs exact for each. No group, original ticket closure, source/primary Git operation or app-marker write occurred. The complete35-file renewal packet and honest initial native refusals are preserved.
+
+Incomingbcf925 audit, canonical73-object price, resource plan and finite import preparation are saved as UNRUN. FieldMASTER/WEB changes and current catalog effects require new qualification. The genuine merge gate/checkpoint/current-phone/current-smoke adapters and existing-branch normal-FF transport are also closed preparation only. There is no bcf import, merge, new source gate, phone, smoke, CI or merge claim. Root1330 recovery contains exact next bindings and ownership.
+
+Exactly ten uncommitted lighthouse authority files totaling3,137,170 bytes were read entrywise from the old finite-signoff worktree only after every SHA256, size and0600 mode matched its author manifest. They are archived at lighthouse-worktree-uncommitted/<worktree-relative-path>, with the original oldHEAD e5b9a0fbb145545c95079ccc7e7a3e08ffa050a5, four modified/six untracked statuses and exact restoration map. No whole checkout, model copy, ignored tickets symlink, developer configuration or private profiles are archived. This preserves the unique work before any separate future funding decision; no worktree removal or canonical payload retirement is authorized or performed by this checkpoint. All prior paths remain preserved; no local tar copy or primary write was created.
+
 <!-- OCT30_T3262_V2_FROZEN_WIP_ROOT1300_731_START -->
 ## Four uncommitted lossless memory postimages are recoverable
 
