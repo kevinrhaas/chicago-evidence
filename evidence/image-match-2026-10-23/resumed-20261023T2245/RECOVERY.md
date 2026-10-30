@@ -1,5 +1,18 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- OCT30_T3262_V3_TRUE_WIP_ROOT1450_734_START -->
+## True staged V3source and current ownership are recoverable
+
+The true precommit integration is durably recoverable: actual HEAD89ad07fd2b43679c028715dbf30830b7dacf2a54, genuine MERGE_HEAD2378484c31b91a1b8d28fd8430d2b4d1a783bdaa, reviewed staged tree2b609b8461f000730de75dd4672275ca5115fa8d. Exactly17 paths comprise13 untouched canonical incoming paths and four new own renderer/test/document postimages; the PR remains seven own paths versus237. Every actual frozen own source file was read and compared byte-for-byte, size/mode/SHA256 against the root-reviewed map and the archived candidate/document authority. RESTORE.json points to the exact four archive members without duplicating their payloads. It records genuine native merge and exact tree reconstruction, not a guessed future commit or ancestry edit.
+
+The complete closed20-file lossless tuft-cache candidate preserves its eager oracle, source/test postimages, raw-scratch proof, pure allocation account, actual736-unit results, and the initial syntax-failed test/reaper. Those external unit/account results are separate from pending browser qualification. The three raw-byte document authority files, ten frozen controller files including the enclosing manifest, four-file normal-FF publication preparation, root integration review/merge log and fresh root1450 recovery are saved. Every active V3source gate log, binding, timing, reaper and result is excluded even if that gate finishes during this archive publication. There is no V3fullgate, checked native commit, phone, published BOTH, current CI or dev-merge pass. The actual prior89ad phone400.997FAIL remains preserved; the older3e396.592PASS cannot qualify this staged tree.
+
+The actual finite canonical237 import closed with source/index/config/resident/ref guards and only the approved origin change; its small native execution proof and exact root phase handshake are included. The second separately approved old natural-terrain duplicate-copy retirement reclaimed30,007,296 allocated bytes, with full canonical/public/local restore proof, proposal/controller/current note and actual readback. No GLB, whole checkout, private cache, developer configuration or dirty lighthouse authority was deleted or copied by the publisher. The ten unique old lighthouse WIP files remain preserved in732; the earlier harbor-copy restore authority remains historical.
+
+Both actual live-owned PR laps were renewed atomically through the unchanged native ticket CLI, exact-old compare-and-swap and immutable empty-tree nonce markers: PR1486 now4ddda915e7fc01263ccc8fd090b9c53a4b7f8302 through17:39:24UTC, PR1456 now7a867c0e7bcb4fb646c71f09730edc9f274aadf9 through17:40:20UTC. The native generic dead-lap wording is explicitly qualified: both previous leases were LIVE and held by this same work. There was no release gap, foreign takeover, code force or primary source/Git/PR/dev write; every foreign advertised ref stayed unchanged. The18-file renewal packet and verified CURRENT pointer are included.
+
+The original four-picture PR1456 future four-file performance integration packet is closed readiness only. It neither applies code nor closes those originals. All original seventeen-ticket work and normal source/runtime/CI/dev-merge requirements continue. Publisher performed only RAM evidence publication and read-only source comparisons; no local tar copy, bulk model duplicate or primary metadata operation was created.
+
 <!-- OCT30_CHECKED89AD_CURRENT_PHONE_FAIL_ROOT1435_733_START -->
 ## Current Field integration and its failed phone are durably saved
 
