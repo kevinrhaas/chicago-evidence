@@ -1,5 +1,20 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- OCT30_T3262_PHONE_FAIL_PUBLISHER_CURRENT_730_START -->
+## Standalone checked source and actual phone failure are recoverable
+
+The renderer-only support ticket T-3262 was filed and claimed through the unchanged native CLI, including a real ID-lock CAS reservation and normal ticket-main fast-forwards. The first HTTPS-refused reservation was blocked before publication; no unreserved fallback ID was published. The concrete acceptance and standing owner mobile OOM report are retained. Epic RENDERING is the valid native value. The original seventeen picture tickets remain in scope and are not closed by this support ticket.
+
+The standalone native commit 3c132cbe75bda7eb3960e723129af7fd0ce6d616 has genuine parent9117 and tree d89eee3c1784fdc62d0a59d85cd296a83e2257a9. Exactly seven paths comprise two renderer files, two existing tests, its own changelog entry and byte-preserving STATUS/ROADMAP prefixes. The full source gate passed1105 checks in870.821 seconds with all11 source/config/index/ref/reaper guards. Native committed questions passed. The original publisher created the exact native branch before a cached pre-create404 stopped confirmation. Root independently verified all seven immutable files and native commit/tree/parent, then created ordinary dev PR1486 without force or a duplicate push. The original negative and recovered publication are both retained.
+
+The fresh same-head complete1904 mobile measurement FAILED at400.1986474990845MiB against the unchanged400MiB cap, exit1 after76.801 seconds, with no page errors, all children reaped and all source guards exact. The historical3746 reading is not this branch result. No phone PASS, published BOTH smoke, required-CI pass or dev merge is claimed. The root will add a concrete allocation improvement; there is no same-tree meter rerun or threshold change in this archive.
+
+Native done records T-3262 in REVIEW on PR1486; settle records DONE only after actual merge. Complete read-only data/docs and actual liveness imports ran without an override; the initial missing-import refusal was retained before any ticket change. Only state/pr changed and3235 foreign ticket paths/modes stayed exact. An absent-only native own PR1486 lap prevents premature automation merge while qualification remains outstanding. The foreign lap/pr1482 disappearance observed during that interval is explicitly reported as concurrent, not claimed unchanged.
+
+Original PR1456 first received a native structured resume and exact-own de4e release, then an official main workflow dispatch scoped only1456. After the standalone phone failure, the workflow was still pending and the1456 marker was actually absent; native absent-only reacquisition did not steal a marker or cancel work. Its new structured resume waits on T-3262 and preserves the dated3746 phone scope. Both live owned laps and immutable readbacks are preserved; no primary Git operation or code-reference push was performed by the publisher.
+
+Closed evidence also saves the72-object canonical9117 import and source guards, source application/controller reviews, small School12 and Bridge6 postmerge-readiness packets, and scoped resource funding receipts. The latter retired only exact already-banked planning ledgers, old BC log/tree inventory and the owned inactive attic runtime after immutable verification; no source, canonical Git objects or private profiles were removed. The publisher-authored current-state note records the closed failure and live ownership; root planned a future1235 recovery for the next checkpoint, and stale1230 RUNNING-phone text is excluded. Active future proposals, browser profiles and smoke work are excluded.
+
 <!-- OCT30_CHECKED3746_ROOT1205_729_START -->
 ## Checked3746 source and phone recovery saved
 
