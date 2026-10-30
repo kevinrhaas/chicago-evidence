@@ -1,0 +1,29 @@
+--- /tmp/HORSE-CHECKED-FEATURE-PUSH-REPAIRED-PREP-20261030/run-checked-feature-commit-push.py
++++ /tmp/HORSE-CHECKED-FEATURE-PUSH-SOURCEUSE-PREP-20261030/run-checked-feature-commit-push.py
+@@ -5,12 +5,12 @@
+ 
+ R=Path('/tmp/chicago-horse-20261029');A=R/'chicago/4d';P=Path(__file__).resolve().parent
+ OLD='ddb77c3191c6fbf28953b8b96f2477bf91f088cb'
+-TREE='9e3d17f39e5cec9be13d155eb8a273816e55195c';APP='11da9f86196ed4e3ebbcd694f1868487141a1246'
+-INDEX_SHA='277c26af03ece19bf0d26e3a37494cafe592be8f4bb769c5fd096ef908a58ed4'
++TREE='bfa54eae2cdfbaed609720ffae9f4bdac472a735';APP='a47f2535c1f4e0cf9935d53e4bfc20a8a1c1c868'
++INDEX_SHA='8805fc7bd8ae522a83d86654160257336efba95c6b5730199b827b89fe513ff9'
+ BRANCH='steward/t3088-horse-photoquality-20261026';REF='refs/heads/'+BRANCH
+-SOURCE_GUARD=Path('/tmp/horse-quiet-head-neck-v6-full-gate-repair-source-freeze-20261030-01.json')
+-GUARD_SHA='4888892b183110c8c8c2bbc354c05fe4f8631fd0a32331d5b7504c4833722253'
+-GATE_WRAPPER=Path('/tmp/HORSE-FULL-GATE-RETRY02-PREP-20261030/run-guarded-whole-gate.py')
++SOURCE_GUARD=Path('/tmp/horse-quiet-head-neck-v6-source-use-closed-source-freeze-20261030-01.json')
++GUARD_SHA='bfc6be5b3e19b625c0af5c0b9d4711612cea11e39e57b8a9d2d6c7914725ba0c'
++GATE_WRAPPER=Path('/tmp/HORSE-FULL-GATE-RETRY03-PREP-20261030/run-guarded-whole-gate.py')
+ POLICY=Path('/workspace/.cloud-setup/logs/transport-recovery/WAGON-CURRENT-DEV-20261029/PINNED-EC16-INTAKE-PRESERVED/OWNED-WAGON-BOUND-REPAIR-20261029/resource_admission_v10.py')
+ POLICY_SHA='eebdd83e057f31bc44f76e0b85acf037f28e4d06807c1070346e4e2802b6d65d'
+ E={**os.environ,'GIT_TERMINAL_PROMPT':'0','C4D_GATE_REQUIRE_BASE':'1','PYTHONDONTWRITEBYTECODE':'1'}
+@@ -58,7 +58,7 @@
+     parser.add_argument('--gate-wrapper-sha',required=True)
+     parser.add_argument('--out',required=True,type=Path)
+     args=parser.parse_args();out=args.out.resolve();assert out.is_relative_to(Path('/tmp')) and not out.is_relative_to(R) and not out.exists()
+-    assert args.gate_out.resolve()==Path('/tmp/HORSE-ACTUAL-FULL-GATE-SHM-20261030-02')
++    assert args.gate_out.resolve()==Path('/tmp/HORSE-ACTUAL-FULL-GATE-SHM-20261030-03')
+     assert re.fullmatch('[0-9a-f]{64}',args.gate_wrapper_sha)
+     out.mkdir(mode=0o700);state=dict(at=now(),state='VALIDATING_ACTUAL_FULL_GATE_BEFORE_COMMIT',commands=[],commit='UNRUN',push='UNRUN',DEV_merge='UNRUN',whole_ticket_or_photo_completion=False)
+     def save(): (out/'ACTUAL-CHECKED-FEATURE-DELIVERY.json').write_text(json.dumps(state,indent=2)+'\n')
