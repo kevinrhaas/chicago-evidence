@@ -1,5 +1,36 @@
 # Resumed picture-work recovery — 23 October 2026, 22:45 UTC
 
+<!-- OCT31_EARLY_FOUR_C08_BD909_FAILED_SOURCE_GATE_WIP_756_START -->
+## Source gate failed six checks; strict phone passed; source and recovery saved
+
+Checkpoint756 freezes the four-ticket working candidate for T-2372 (Eliza Chappell school), T-2375 (Dearborn bridge), T-2378 (Beaubien homestead), and T-2382 (Carpenter shop). The full source gate FAILED six of 1110 checks. The official staged 1904 mobile memory gate PASSED at 398.985389709 MiB against the unchanged 400 MiB limit. The separate BOTH desktop attempt failed its initial screenshot capture; mobile did not run. No new code commit or four-ticket PR has been created, committed, or merged; none of these four tickets is done.
+
+The frozen canonical source HEAD/base is c08a4bd8db871e652e3b7b716d4690bed0195d8a and staged tree bd909581f3193f08222268b5b47d73d2343052f4 on steward/t2372-t2375-t2378-t2382-early-pictures-20261030. Stage enumerated149 entries, including36 canonical additions absent from the old index; the actual canonical-base difference is113 paths. Restore from canonical c08 plus the exact113-row source map in next-four-c08-bd909-delta-vs755-source-CLOSED-20261031/RESULT.json. This checkpoint saves14 new or changed source payloads (12,704,020 bytes); the other99 exact SHA/mode payloads refer to checkpoint755's full111-source archive. Do not overlay all755 files indiscriminately or count canonical36 as ticket work. The two-pass source delta export was root-authorized and verified bytes/modes against the closed native stage; checkpoint publication performs no product repository reads or writes. Source models and native terrain unchanged in the99-row set remain recoverable through755.
+
+Checkpoint755 archive EARLY-FOUR-REPAIRED-0D82-SOURCE111-NATIVE-TERRAIN-WIP-755-20261031 has gzip SHA256 b7a9151edecc9190f7b1d2ab80471b5148f1f359d4e0ec1de8c5a1bdc29846f7 and immutable availability commit3d55046ca82efe2302c1466086815b35324c84d4. Its RECOVERY.md and archived source capsule explain restoring prior terrain and111 source postimages. Checkpoints752–754 preserve preceding case adoptions, camera/match changes, source credits, and the bridge image publication. All older evidence paths and archive bytes are preserved.
+
+The actual combined native full source gate ran947.716361765 seconds, exited1, and closed with all children reaped, no timeout, interruption or cleanup. Working source blobs/modes and semantic index/flags/refs/config guards remained exact. Its expected1110-pass footer is absent; its actual failed footer identifies these six checks:
+- Emitted plank crossings remain above the distant terrain (T-2037)
+- Parked vehicles keep their exact wagon stands and cannot cross era boundaries (T-2979)
+- Covered identity rejects kind, yoke, era and stand substitutions
+- the band between the re-centred corridor and its block faces is what T-0419 measured
+- every routed woody record can be selected by something that places it
+- …and its own assertions still fire when broken
+
+The closed gate log, node fixture audit, invocations, before/after snapshots, reaper, timings and root launch are archived. Earlier specific138 native owner commands and four focused commands passed; the second owner lap reached a byte-identical fixed point. Those facts do not qualify the failed full source gate. The compiler mode repair restored canonical0755 with identical bytes. The gzip ledger audit found only OS-header byte9 changed; decompressed payload and JSON fields were exact, and root retained canonical bytes. Preserve the failed first owner and older V2 application attempt: that old V2 run had false source/published/index guards and no functional acceptance.
+
+The actual strict phone run used unchanged tools/measure_memory.mjs --year1904 --onlymobile --gate --no-snapshot against the staged publication, native exit0 in230.397848407 seconds, all children reaped and no cleanup. Peak398.985389709/400 MiB leaves1.014610291 MiB; all source/published/index/refs/config guards were exact. Its native publication truthfully retained HEAD stamp c08a4bd8db rather than claiming a nonexistent committed C4. This is the closed staged diagnostic, not committed C4 qualification, the full source gate, UI acceptance or ticket completion.
+
+The V7 BOTH desktop attempt passed its three-frame world-settle check in about19.58 seconds and the four declared native image gates, then failed initial capture after a10-second screenshot timeout. Root reviewed the failure image and saw the actual1835 Sauganash/Carpenter scene. The desktop command exited1 and reaped all children without cleanup; retry count0, mobile never started, no functional case/plugin acceptance ran. The wrapper stopped before its final global source/published/index/ref guard, so no completed BOTH or final global guard is claimed. Keep the desktop failure image and exact native receipts; do not promote world-settle or image gates into functional acceptance.
+
+The closed5cb6694 contingency packet contains immutable incoming metadata and composed-source preparation only. Public canonical18 payload duplicates/native packs are omitted and remain fetchable from the packet's pinned GitHub references. This contingency was not adopted into bd909. Wolf Point seven-view adoption, the optional canonical one-view helper and first-fort finite lantern/component packet are PREPARATION ONLY; no native execution from those helpers, Wolf adoption, fort completion or ticket-done claim is made. Optional Wolf scratch mirror/source symlinks are excluded.
+
+Next: inspect and repair the six real failed full-gate contracts using the closed logs and source bindings; rerun the full native1110 source gate on the resulting freshly pinned candidate. Resolve desktop native capture timing and obtain actual desktop/mobile functional acceptance with final guards, then run required unchanged memory checks for the final code candidate. Only after required checks pass, create scoped native code commits/PR and normal dev merge per policy, followed by ticket settlement. Root's newer plank/covered/source diagnosis and proposals are a separate phase, excluded from this archive, and do not qualify bd909. Public images alone and passing specific owner checks do not close the four tickets.
+
+Historical merges remain complete: PR1456 merged normally into dev as fa2ba02b269533664ac903a3766a26fb51092cfa; T-2373, T-2377, T-2381 and T-2384 were settled, plus earlier T-2385. PR1486 was subsequently merged by kevinrhaas as f90ec65835e905e6965a1a06e0bf74bf3b4c610c and T-3262 is done; no1486 handoff remains. The original17-picture-ticket request is not all complete. This checkpoint changes only chicago-evidence main using normal fast-forward force:false, lossless RAM gzip with at most4 MiB raw parts, immutable all-member readback, and preservation of every prior evidence leaf. No product source/PR/ticket writes, unique-asset deletions, force pushes, admin overrides, or app main merges occur here.
+
+<!-- OCT31_EARLY_FOUR_C08_BD909_FAILED_SOURCE_GATE_WIP_756_END -->
+
 <!-- OCT31_EARLY_FOUR_REPAIRED_0D82_WIP_755_START -->
 ## Repairs and native terrain saved; fresh full gate and code PR remain
 
