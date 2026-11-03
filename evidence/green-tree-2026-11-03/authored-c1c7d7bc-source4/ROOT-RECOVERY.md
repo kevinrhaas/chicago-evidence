@@ -1,0 +1,11 @@
+# Actual authored Green Tree source qualification c1c7d7bc
+
+All four final corrected native source parts pass on the exact45-postimage tree54c76e6084712f512b1ffc5b321594a4fcfe648f, committed as c1c7d7bcf2e601588ec807af7383d063e248eb15 on steward/green-tree-wagon-bay-20261103, parent1f8a67ca80a0ab9f66853af6754a8187ebedff34. Exact source-gate proof SHA3ea65ca3792cba4c5c38ec6bb039db07b6dd5d6451b43c112394cf2ed3eb284b is bound in the actual authored commit receipt. Native authored PR-ID and changelog preflight questions are also closed PASS.
+
+Part1 passed300.375s; Part2 unchanged whole retry280.994s; Part3 passed333.040s; Part4 passed274.306s. The first final Part2 attempt failed one asynchronous structure-version fixture. Its raw result/log/reaper remain failed evidence. The unchanged focused native fixture and unchanged whole Part2 retry passed; no production or assertion change was made for that timing retry. Both histories are included rather than relabeling the failure.
+
+This is authored qualification, not final integrated-head or actual app qualification. Draft push/PR creation and latest-dev integration are the active writer's next work; no final PR number, merge, CI success, deployment or runtime result is claimed here. Fresh committed publication and root-authorized both-viewport default-visitor UI/native stage3 are still required after final integration/freeze. OriginalT2376 remains open/differs with one compound discrepancy; useful connector/turned-range progress is not full picture signoff.
+
+Use the complete corrected source restore packet48994314f115f9483b9b8d31df2a6256b60489c0/evidence/green-tree-2026-11-03/final-corrected-source-1f8/RECOVERY.md. This proof-only ZIP intentionally does not duplicate45 source posts/assets. Never overwrite a later Liberty book/registry from the earlier source snapshot; preserve incoming work by qualified delta/entrywise adoption. All prior evidence remains unchanged.
+
+The small storage receipt and pre-relocation process snapshot document verified byte-exact movement of262 closed old proof files into retained/tmp backing with original aliases. Do not delete the backing or republish the old63MB. This collector accessed only closed external receipts/logs, no canonical source/Git/publication/tickets. Green Tree actor/root retain writer ownership until reader release.
