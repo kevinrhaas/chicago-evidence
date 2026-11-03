@@ -1,0 +1,9 @@
+# Sauganash PR1680: actual desktop accepted, exact hosted gate green
+
+Both custom desktop legs on exact head `27ab2f3b6dc38547e2668ced16191c30c0e8ca48` CLOSED proper PASS: cards/Reader320.279s and body449.5s, nativeexit0/allchildrenreaped/no cleanup, all error arrays empty and every frozen source/Git/publication guard exact. Root directly viewed all six actual JPGs and accepted the bounded desktop scope; both signed root review receipts and raw native results/reapers are archived.
+
+The real Images card visibly has three rows: one held Andreas engraving and two credited source links. The current retrospective/remaining-roof paragraph is physically visible. The held-tile caption is ellipsized; complete credit is in native DOM/row, so no fullcredit-fully-onscreen or fullsizeviewer claim. Full Hotel and separate logShop are seen Normal/ByGrade from a curated33ft flying inspection, not a historical camera. Native arrival is clear. Outsideentry2m/3m rows are dry/unblocked/grounded/nonflying; its closecrop does not show all ground contact in pixels or prove door traversal.
+
+Required hosted run41738483593 passed the whole exact-head gate: **1,139 steps, none red** (job126273697331). Actual authenticated run/jobs/log/hash are included. No new source head or gate restart was required for the external helper split. The original600s cleanup timeout remains honestly NOT_QUALIFIED in its separate checkpoint; it was not recast as a proper pass.
+
+**Mobile cards/body and official nativeStage3both107 are still PENDING/ACTIVE.** The protected source/Git/pub/helper freeze continues at `/tmp/sauganash-final-qa-split-20261103`. After those proper closures and root phone review: ordinary exact-head green dev merge, partial original release and public delivery check. T2383 still has open roof/rearwing and leftgable differences; no geometryfix or full-original/full15smoke completion is claimed.
