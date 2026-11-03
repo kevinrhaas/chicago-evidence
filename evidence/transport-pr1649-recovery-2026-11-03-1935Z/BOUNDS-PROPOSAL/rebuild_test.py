@@ -1,0 +1,3 @@
+from pathlib import Path
+import json
+D=Path(__file__).parent;W=Path('/workspace/chicago-bounds-proposal-20261103');p='chicago/4d/tools/check_batch_bounds.mjs';old=(D/'BASE'/p).read_text();h=(D/'BASE/chicago/4d/renderers/web/js/batch-bounds.js').read_text();oracle=h[h.index('export function compactBatchBounds('):].replace('export function compactBatchBounds(','function compactBatchBounds(',1);ext=(D/'check_extension.js').read_text().replace('%%LEGACY%%',json.dumps(oracle));needle='if (SELF_TEST) {\n  if (failures === 0)';assert old.count(needle)==1;(W/p).write_text(old.replace(needle,ext+'\n'+needle))
