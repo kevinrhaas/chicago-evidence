@@ -1,0 +1,15 @@
+# T-2379 — applied and frozen later-state picture link
+
+Actual independent source checkout `/tmp/lake-house-source-20261103`, own Git/index/ref/config and physical ticket clone. Initial base dev485ca2736e9e5e38dc8aaa8f5700d57ef8dee298. The six prepared authored paths are now applied, seven native-derived paths compiled, and all thirteen staged/frozen. This is actual applied source, not merely a candidate; no authored commit or code PR yet.
+
+The native whole-tree Pictures join changes Lake House Images0→1, with title **Old Fort Dearborn — later completed Lake House, about1836–1849**, full Kellogg/Blanchard/NYPL credit, and public-domain rights. The original local filename ending1830 is misleading. Actual current Scene1835 sidecar preserves **inferred**, `shell_1835`, target1835-07-01. Existing source date/camera/model/geometry/position/confidences and exclusions stay unchanged. Both native MASTER and WEB are byte-identical to the initial base.
+
+Actual native lightweight owners all passed: Pictures2.086s; Scene1835 16.259s; SourceUse3.531s; Grade5.540s; Changelog0.120s; existing name-pool selftest2.026s. All owned process groups closed with zero leftovers. SourceRecord and structure pass their current JSON schemas. The actual full-tree before/after join, actual sidecar assertions, raw owner logs and postimages are in the archive. SourceUse's other-scene maps merely add the new registered source's unused entry; source index registration remains within its existing byte ceiling.
+
+Original T2379 is natively claimed by this run (remote blob e101521bc2be214bfe6f25c4022ce875ec8c8bec;17:25:28Z, lease20:25:28Z), still partial/prnull. Its existing image gate correctly remains BLOCKED because no Lake House reference view exists. No solved camera, accepted building match, grade promotion or original completion is claimed. The finished hotel is later context; no finished appearance is moved into July1835.
+
+**Pending:** all four full native source parts, authored commit, draft PR, hosted checks and current-head desktop/390×780 app acceptance, then normal protected dev merge. Heavy checks deliberately wait for the existing Wolf source/runtime resource lease to finish. This checkpoint is not substituted for those checks.
+
+Earlier source identification/public-domain evidence and prepared six-file recipe: https://github.com/kevinrhaas/chicago-evidence/blob/f8fb2beb80295c7f3917ba0aa4ccfeafccc4cfc5/evidence/lake-house-2026-11-03/prepared-context-link/RECOVERY.md . Direct NYPL catalog access was blocked; the NYPL-attributed Commons scan/metadata and printed credits were actually read. The typed SourceRecord preserves that distinction.
+
+Recovery: obtain this archive, authenticate CLOSED-MANIFEST, then restore the thirteen exact postimages onto the specified base in an independently owned checkout. SOURCE-13-BINARY.patch is the complete staged patch. Current source/cache borrowing and ticket historical-pack cleanup receipts are included; no borrowed objectstore or other active source was deleted. Do not run another initial full/depth ticket fetch: current known-tip metadata and current blobs are sufficient.
