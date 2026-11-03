@@ -1,0 +1,7 @@
+# Actual desktop and phone UI checks complete
+
+Final pushed PR1631 head1855273d9d8d423db20ea072a95d8169bda7ae71 passed the combined actual published browser checks at1280x800 and390x780. All six screenshots were directly opened and reviewed by root. Exact source/published/helper/plan/Git metadata guards remained unchanged; both browser reapers closed and each viewport reported zero page, console, network and server errors. The source commit is mergeable, all four local source-check sections and three PR questions passed, and GitHub CI is running.
+
+Native published card regression stage3 is RUNNING separately; its final both-viewport result is NOT claimed here. That result will be added to this same evidence prefix when it closes. The whole15-part body, FPS, historical source-camera calibration, door traversal and full-hotel signoff are not claimed. Both original tickets remain open. VIEW-REVIEW.md states the accepted visible changes and limits.
+
+All final source-check transcripts and recovery context: commit21aa2718167d440dcd5073f2d1672caa7a77929e, evidence/wolf-sauganash-2026-11-03/pushed-1855273/RECOVERY.md. Root owns lap/pr-1631 and will merge normally into dev after current-head CI and native card regression are green. No further app edits are intended. Exact probe helpers, final input plan, household-publication contract proof and six screenshot hashes are included for recovery.
