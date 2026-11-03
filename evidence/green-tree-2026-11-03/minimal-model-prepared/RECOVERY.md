@@ -1,0 +1,13 @@
+# Green Tree: genuine model and minimal source prepared
+
+This is a checkpoint for the next visible increment on original T-2376, not an application PR or completed ticket. It is deliberately separate from current Wolf Point/Sauganash PR #1631.
+
+The archive contains five authored postimages, a genuine Green Tree MASTER, entrywise native registry rows and complete native proof. All members were checked against CLOSED-MANIFEST.json before archival. Extract checkpoint.tar.gz, verify archive.json SHA256 and each member against CLOSED-MANIFEST.json, then read README.md and REQUIRED-CONSUMERS.json.
+
+Against immutable combined application commit18af0a33808083f393b28ab60c1afbc6326f39bd, the native isolated run passed25 default controls and kept24 unrelated official MASTERs byte-identical, including corrected Sauganasha369. The selected Green Tree MASTER is f447aa45b93e507ea8606f6c74703b5948d9ee736a84d3a01d47d8a587db81c3 (245112bytes). The new visible model replaces the old rear ell with an open wagon bay, connector and turned farther range. The front door/sash layout is already in dev and is NOT new work.
+
+NOT READY FOR APPLICATION ADOPTION: the new solid annexes extend the main footprint. REQUIRED-CONSUMERS.json maps the necessary occupied-polygon, compiler, collision, route, arrival/framing, ground and entrance changes already prepared in the older full packet. Preserve the open bay and gaps instead of filling their convex hull. Compose against current sources, preserving the new Sauganash leaf-width API and merged bridge fix. No Miller changes are required. This checkpoint supplies no qualified WEB asset, current source gate, current photo-camera acceptance, browser/navigation/ground qualification, ticket closure or app merge.
+
+The older complete35-path GT/Sauganash packet is /workspace/GT-Saug-current-dev-20261102. Its source/material checkpoint is chicago-evidence commit a9c52a23fbbe38898d57227f38bdbdef93f6d152, evidence/wolf-point-2026-11-02/source-checkpoint/RECOVERY.md. Start from this minimal current-Sauganash-compatible package, then adopt only the genuinely necessary remaining consumer paths from that older packet, with exact preimage composition and native qualification. Never overwrite later source notes; append LIBERTIES-APPEND.md to the entire latest LIBERTIES.md.
+
+Source-preparation owner /root/saug_recover has closed this package and stopped work for the current PR's final native card smoke. No canonical app/ticket/Git metadata was changed, no new ticket created, and no extra full gate or browser competed with PR1631. Current integration recovery is d649161a15d0a0c28be366c69a26890f8eab87bf/evidence/wolf-sauganash-2026-11-03/integration-1ce/RECOVERY.md.
