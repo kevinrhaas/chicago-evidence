@@ -1,0 +1,5 @@
+Chicago geometry changes need native assets before their first source commit, but the existing native worker only chooses queue positions and can fall back to unrelated work. Add an optional exact Chicago ticket input with strict validation and a dedicated Ubuntu26.04 job reusing the complete existing150-minute native worker. Blank-input scheduler behavior is preserved.
+
+The targeted prompt takes only the named existing ticket, stops on live ownership, builds affected native outputs before committing, and retains all four source parts, actual both-viewport checks and normal green PRs into dev. It does not change the local cloud runner or promote application code.
+
+Prepared validation: patch apply check, YAML parse and exact shared-step/pinned-image assertions passed; nine actual Node selector cases passed with a proper reaper. Persistent platform test wiring and hosted workflow validation remain required before approval. No native build or dispatch has run. The workflow review must explicitly document the scoped native-authoring policy alongside the repository's older improve-runner wording.
