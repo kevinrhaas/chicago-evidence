@@ -1,0 +1,9 @@
+# Sauganash PR1680: timeout preserved, approved split review active
+
+Exact source/public head remains `27ab2f3b6dc38547e2668ced16191c30c0e8ca48`. Original desktop completed all business assertions and wrote its result at599.801 seconds, but the native600-second foreground cap expired during cleanup (exit124, all11children reaped). The overall attempt remains **NOT_QUALIFIED**. All six real screenshots, rawresult, nativeprocess receipts, finalsource/Git/publication guard and originalhelper are preserved in the zip; no completed runtime-gate claim is made from that timeout.
+
+Root reviewed and approved a helper-only split into cards/Reader and exterior/arrival/entry legs at each viewport. Every original assertion and all five capture(12) calls are preserved across those legs; each gets the full native-world three-frame settle and finalzero-error checks. Cardbody differs only in two variable scope hoists, body/catch/finally chunks match byte-for-byte, and the official Stage3both107 loop is unchanged. Exact diffs and blockhash coverage accompany the archive. Each leg still requires properexit0/allreaped under600seconds.
+
+The new protected2500-second controller actually started23:37:42 UTC with regularfile stdout/stderr; its first desktop-cards leg is ACTIVE, not yet qualified. All5849publishedbytes/source/Git/helpers are frozen on the same head, with unchanged publicmapSHA414152c0. No application/source/publichead/CI change was needed. The zip's currentrecovery note gives the newlivepath and preserved oldattempt.
+
+[Earlier exactsource11/integration/source4/publication recovery](https://github.com/kevinrhaas/chicago-evidence/blob/a817d15ed334e4f20d3fe3ab6d2249996a6ea730/evidence/sauganash-2026-11-03/pr1680-integrated27-source4-published-qa-active/RECOVERY.md). T2383 remains partial/DIFFERS; no fullroofmatch/full15smoke/fullsizeviewer/originalcompletion claim.

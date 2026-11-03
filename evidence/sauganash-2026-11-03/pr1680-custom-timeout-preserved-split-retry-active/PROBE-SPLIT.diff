@@ -1,0 +1,60 @@
+--- original/PROBE-SPLIT.diff
++++ split/PROBE-SPLIT.diff
+@@ -9,6 +9,7 @@
+ const { chromium } = require('playwright');
+ const plan = JSON.parse(fs.readFileSync(process.env.SAUG_PROBE_PLAN));
+ const out = process.env.SAUG_PROBE_OUT, viewport = process.env.SAUG_PROBE_VIEWPORT;
++const leg = process.env.SAUG_PROBE_LEG; assert(['cards', 'body'].includes(leg));
+ assert(['desktop', 'mobile'].includes(viewport)); assert(out); fs.mkdirSync(out);
+ const mobile = viewport === 'mobile', root = plan.site_parent;
+ const sha = b => crypto.createHash('sha256').update(b).digest('hex');
+@@ -26,7 +27,7 @@
+     fs.createReadStream(file).on('error', e => { serverErrors.push(e.message); res.destroy(e); }).pipe(res);
+   } catch (e) { serverErrors.push(e.message); res.writeHead(500).end(); }
+ });
+-let browser, context, page, outcome = null, saugExterior = null, saugArrival = null, failure = null;
++let browser, context, page, outcome = null, saugExterior = null, saugArrival = null, visibleImage = null, screenshotBinding = null, failure = null;
+ const started = performance.now();
+ try {
+   guard();
+@@ -66,6 +67,7 @@
+   const settled = await page.evaluate(() => window.__chicago4d.renderer.info.render.frame);
+   assert(settled >= baseline.frame + 3);
+   save('WORLD-SETTLE.json', { status: 'PASS', baseline, settled, native_counter_advances_required: 3, bound_ms: 180000, scope: 'Renderer counter only; no FPS or GPU-readback timing claim' });
++  if (leg === 'cards') {
+   outcome = await page.evaluate(async expected => {
+     const a = window.__chicago4d, id = 'sauganash_hotel';
+     a.popup.close(); a.navigator.dock(); a.travel.stop('Sauganash Hotel Images acceptance'); a.setFly(false); a.confidence.resetGrades(); a.setConfidenceView(false);
+@@ -107,10 +109,10 @@
+   }
+   const paneVisibility=await page.locator('#popup [data-pop-pane="images"]').evaluate(p=>{const r=p.getBoundingClientRect();return{width:r.width,height:r.height,inViewport:r.width>0&&r.height>0&&r.bottom>0&&r.top<innerHeight};});
+   assert(paneVisibility.inViewport,'Native credited Images pane is physically visible');
+-  const visibleImage={expected_held_count:plan.expected_held_count,loadedImages,paneVisibility,no_held_thumbnail_claim:plan.expected_held_count===0};
++  visibleImage={expected_held_count:plan.expected_held_count,loadedImages,paneVisibility,no_held_thumbnail_claim:plan.expected_held_count===0};
+   save('VISIBLE-IMAGE.json',visibleImage);
+   const screenshot=path.join(out,'saug-images.jpg');await page.screenshot({path:screenshot,type:'jpeg',quality:90});
+-  const screenshotBinding={path:screenshot,sha256:sha(fs.readFileSync(screenshot)),bytes:fs.statSync(screenshot).size};
++  screenshotBinding={path:screenshot,sha256:sha(fs.readFileSync(screenshot)),bytes:fs.statSync(screenshot).size};
+   assert(outcome.arrived===true&&outcome.framed===true,'Actual Sauganash Hotel arrival/frame');
+   assert(outcome.shown&&outcome.srcBefore===0&&outcome.items===plan.expected_picture_count&&outcome.uncredited===0&&outcome.tabCount===String(outcome.items),'Actual credited Images tab with no pre-open image src');
+   assert(outcome.missingExpected.length===0,'Every frozen compiled Sauganash Hotel picture row is present');
+@@ -122,6 +124,7 @@
+   save('SAUG-CARD-RESULT.json', {outcome,visibleImage,screenshot:screenshotBinding});
+   const rt=page.locator('#popup [data-pop-tab="record"]');await rt.scrollIntoViewIfNeeded();await rt.click();const sum=page.locator('#popup [data-pop-pane="record"] details.research summary');await sum.scrollIntoViewIfNeeded();await sum.click();
+   const record=await page.evaluate(()=>{const p=document.querySelector('#popup [data-pop-pane="record"]');return {shown:!p.hidden,open:p.querySelector('details.research').open,text:p.querySelector('.research-body').textContent};});assert(record.shown&&record.open);assert.equal(record.text,plan.expected_research_note);assert(/Andreas.?s\s+1884\s+engraving/i.test(record.text)&&/is now held on this hotel.?s Images tab/i.test(record.text)&&/roof shapes.*remain under review/is.test(record.text),'Current native Record states held Andreas engraving and remaining hotel shape review');save('SAUG-NATIVE-READER.json',record);await page.locator('#popup [data-pop-pane="record"] .research-body').evaluate(el=>el.scrollIntoView({block:'end'}));const currentNote=await page.evaluate(()=>{const el=document.querySelector('#popup [data-pop-pane="record"] .research-body'),w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);let n;while(n=w.nextNode()){const i=n.textContent.indexOf("Andreas's 1884 engraving");if(i>=0){const r=document.createRange();r.setStart(n,i);r.setEnd(n,i+"Andreas's 1884 engraving".length);const q=r.getBoundingClientRect();return {x:q.x,y:q.y,width:q.width,height:q.height,visible:q.width>0&&q.height>0&&q.top>=0&&q.bottom<=innerHeight};}}return {visible:false};});assert(currentNote.visible,'Current Andreas paragraph is physically visible after native card scroll');save('SAUG-CURRENT-READER-VISIBLE.json',currentNote);await page.screenshot({path:path.join(out,'saug-record.jpg'),type:'jpeg',quality:92});await page.evaluate(()=>window.__chicago4d.popup.close());
++  } else {
+   // Trusted native skyclick only; no DOM/style hiding of the look hint.
+   await page.mouse.click(mobile?195:640,mobile?250:180);save('NATIVE-LOOK-STATE.json',await page.evaluate(()=>({pointerLock:document.pointerLockElement?.tagName??null})));
+   // Curated flying inspection uses the native walker; the renderer remains its owner.
+@@ -192,8 +195,10 @@
+   saugArrival.screenshot={path:arrivalFile,sha256:sha(fs.readFileSync(arrivalFile)),bytes:fs.statSync(arrivalFile).size};save('SAUG-ARRIVAL.json',saugArrival);
+   assert.equal(errors.length,0,JSON.stringify(errors));assert.equal(network.length,0,JSON.stringify(network));assert.equal(consoleErrors.length,0,JSON.stringify(consoleErrors));assert.equal(serverErrors.length,0,JSON.stringify(serverErrors));
+   const entry=await page.evaluate(async door=>{const a=window.__chicago4d,b=door.bearing_deg*Math.PI/180,rows=[];a.popup.close();a.setFly(false);for(const distance of[3,2]){const e=door.at_local_enu_m[0]+Math.sin(b)*distance,n=door.at_local_enu_m[1]+Math.cos(b)*distance;a.walker.teleport({local_e:e,local_n:n,yaw_deg:(door.bearing_deg+180)%360});a.step();rows.push({distance,e,n,blocked:a.router.blockedAt(e,n),water:a.terrain.isWater(e,n),surface:a.walker.surfaceAt(e,n),ground:a.walker.state.groundY,eye:a.walker.state.eyeY,actualE:a.walker.state.e,actualN:a.walker.state.n,flying:a.walker.state.flying,hudFlying:a.hud.flying,intentFlying:a.intent.flying});}const before=a.renderer.info.render.frame,p=a.capture(12);a.step();const signature=await p;return {door,rows,before,after:a.renderer.info.render.frame,signature};},plan.saug_entrance);assert(entry.after>entry.before);for(const x of entry.rows){assert(!x.blocked&&!x.water&&!x.flying&&!x.hudFlying&&!x.intentFlying);assert(Math.abs(x.ground-x.surface)<1e-6&&x.eye>x.ground&&Math.hypot(x.actualE-x.e,x.actualN-x.n)<.01);}save('SAUG-NATIVE-ENTRY.json',entry);await page.screenshot({path:path.join(out,'saug-native-front-entry.jpg'),type:'jpeg',quality:92});
++  }
+   guard();
+-  save('RESULT.json', { status: 'ACTUAL_FINAL_SAUGANASH_PASS', viewport, head: plan.expected_head, qualified_source_scope_sha256: plan.source_scope_sha256, outcome, visibleImage, screenshot: screenshotBinding, saugExterior, saugArrival, errors, network, cancelled, consoleErrors, serverErrors, wall_ms: performance.now()-started, native_capture_timeout_unchanged: true, no_wallclock_10s_or_FPS_claim: true, no_retry: true, scope: 'Actual Sauganash Hotel credited visible Images pane; Sauganash Hotel curated bbox exterior and native arrival. Native readbacks and screenshots, no whole-body/full-size viewer/door traversal/historical-camera/full-Green-Tree signoff claim' });
++  assert.equal(errors.length,0,JSON.stringify(errors));assert.equal(network.length,0,JSON.stringify(network));assert.equal(consoleErrors.length,0,JSON.stringify(consoleErrors));assert.equal(serverErrors.length,0,JSON.stringify(serverErrors));
++  save('RESULT.json', { status: leg === 'cards' ? 'ACTUAL_SAUGANASH_CARDS_PASS' : 'ACTUAL_SAUGANASH_BODY_PASS', viewport, leg, head: plan.expected_head, qualified_source_scope_sha256: plan.source_scope_sha256, outcome, visibleImage, screenshot: screenshotBinding, saugExterior, saugArrival, errors, network, cancelled, consoleErrors, serverErrors, wall_ms: performance.now()-started, native_capture_timeout_unchanged: true, no_wallclock_10s_or_FPS_claim: true, no_retry: true, scope: leg === 'cards' ? 'Actual full-detail native world; credited held Images and exact physically scrolled Record/Reader. No full-size viewer claim.' : 'Separate actual full-detail native world on the same frozen head; curated Hotel Normal/ByGrade exterior, native arrival and grounded outside entry. No historical camera, door traversal, photo match or original completion claim.' });
+ } catch (e) {
+   failure = { message: e.message, stack: e.stack };
+   const settleFile = path.join(out, 'WORLD-SETTLE.json');
