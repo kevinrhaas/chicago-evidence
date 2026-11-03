@@ -1,0 +1,13 @@
+# Original Chicago picture tickets: continuation checkpoint
+
+Observed 2026-11-03 around 20:35 UTC. Nine originals are DONE. Wolf T2386 is REVIEW through ready PR1666; it is not yet merged. Lake T2379 remains partial/CLAIMED with ready PR1670. Other original open/claimed/split states are preserved in the exact ticket snapshot.
+
+- Wolf final public source: baec9ffa57059a5fa3209cec8f5216731cb574b8. Full hosted gate41712749414 pending at checkpoint. All authored four source parts and actual desktop/phone published checks, including107 native stage3 assertions each, passed on qualified snapshots. Current target1835 runtime/reference/model identity is preserved and actual latest validate --all passes.
+- Lake final public source: 5603e2d6d1496d346d5fe61421b857ef4032df6f. Full hosted gate41711919386 running actual gate. Local authored four parts, actual desktop/phone and107 native assertions each passed on qualified snapshots. Current relevant source/publication identity qualified. It adds a credited LATER completed-hotel picture, not evidence of the July1835 construction state; grade remains inferred. No whole-ticket closure.
+- Both include real upstream dev92bee native51-house freshness repair, Mayer current recipe4554 with unchanged physical bytes. No fabricated freshness stamp. Old separate targeted bake was canceled as superseded, not passed.
+- Cobweb PR1665 already merged normally and deployed; originalT2374 remains partial/open. Do not replay old fallback source edits.
+- Next Green Tree partial source lives on steward/t2376-closed-shoulder-coupled-yard-20261103. Genuine native closedMASTER0b53 and native WEB0154cf are present, bbox unchanged; canonical comparison stays DIFFERS. Ordered derived owners are running, four full source parts/commit/PR still pending. Its separate agent owns N source; W/Lake borrow immutable N objects, never GC them.
+
+See ACTIVE-HANDOFF.md for exact local paths and previous public evidence links. The last appended correction governs: PR1666 and1670 stay independent, one authored changelog entry each. Normal protected dev merges only after actual final checks pass. No admin/force merge or assertion weakening. Partial originals remain open; no new picture follow-up tickets.
+
+This is a recovery checkpoint, not a merge or deployment claim. Continue the two final hosted gates, merge first healthy ready PR normally, then normal integrate/rederive the other if generated files conflict. Finish the bounded Green Tree increment and preserve the documented disagreements. Source every shell with /workspace/shared/resume-chicago-env.sh. Preserve minimum disk512MiB workspace/1.8GiB tmp, one GPU owner, foreground600s and proper reapers.
