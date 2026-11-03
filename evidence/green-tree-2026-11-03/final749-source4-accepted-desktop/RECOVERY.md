@@ -1,0 +1,15 @@
+# Green Tree: all source parts, PR1677 and accepted current desktop
+
+This is a CLOSED partial qualification checkpoint, not a phone, native107-both, hosted-gate, merge, deployment or original-ticket completion claim.
+
+Actual public source is74992e8fb2811f92e9e90da6f97039d1dd29b60c, a normal merge of authored3ce297e2 (21paths, parent92bee) and actual dev8025bc1. Draft PR1677 is open. Actual current owners, validate --all, PR-only questions, fresh publish and correct published contract pass. All exact21 source postimages are preserved.
+
+Four source parts passed in457.254/336.181/241.131/318.610seconds with actual per-part footers287/286/287/286, proper native exit0 and all children reaped. Do not add their repeated setup work into a new unique-test count. All19 application postimages were unchanged across every part. Parts1/2 preceded only the precise existing open-bay fixture adaptation; parts1/2/3 preceded only the consciously documented protected wagon snapshot transition. Original interrupted/failed attempts remain separate in recovery; they are not passing qualifications. Whole hosted current-head gate remains required before dev merge.
+
+The protected transition removes only Green Tree's competing covered wagon when its shed is suppressed by the chosen closed shoulder. All80 retained wagon bodies/order/dimensions and all67 old refusals stay exact; one explicit closed-shoulder refusal is added. The previous transition chain and every other protected export/license/geometry/LOD guard are preserved. No asset recipe was manually stamped and no assertion was weakened. The full old and new logical packets and hashes are included.
+
+Actual published desktop1280x800 passed after the cloud reconnect: the bounded protected controller and real subreapers survived; no rerender/relabel was needed. Desktop probe538.520seconds; complete closed leg549.221seconds with five children reaped, no cleanup and zero page/console/network/server errors. Root directly reviewed all six actual shots and accepted the bounded new shoulder/yard/card/Record/grounded outside-entry scope. Tiny/reed-obscured wagon pixels do not prove every wheel contact; full Trowbridge prose was not all visible in one shot, while exact nativeReader text and scrollability are separate evidence. No through-door, perfect roof match, historical camera or street-arrival body completeness is accepted.
+
+PHONE/custom and official native107 both viewports are still pending here. The exclusive live controller is /tmp/green-tree-final-qa-prep-20261103/run.py, protected by setsid and a2500-second outer reaper, with unchanged600-second native leg limits. Do not restart it or edit source/Git/publication/tickets/helpers during its freeze. Inspect actual FINAL-CLOSURE and native receipts before resuming any leg after another reconnect. Root final acceptance remains required for the phone.
+
+OriginalT2376 stays partial/DIFFERS and must remain open after this increment merges. No new picture follow-up or done override. Normal exact-head protected dev merge only after actual final hosted gate passes.
