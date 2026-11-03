@@ -1,0 +1,7 @@
+# Observations after the closed8e5 checkpoint
+
+At21:04UTC the owned old-base baec full gate41712749414 actually closed CANCELLED after the requested cancellation. The earlier sealed checkpoint sampled it while the cancellation was still pending; OLD-BAEC-GATE-FINAL.json inside that archive is a point-in-time sample, not a successful or completed verdict. OLD-BAEC-CLOSED-CANCELLED.json records the real closed state. Final8e5 gate41717780685 remains untouched and required.
+
+At21:08UTC an actual HTTP public snapshot still served dev485ca273, seven Wolf source rows and the OLD native-reader note hash eb5eb45843002cfe6877bef573ba65c7cab20de60d9a75db922361f6abdb3ca1. It does not deliver the accepted new reader note0664e8f7. This demonstrates preview lag, not a source regression; no merged/delivered claim is made before actual source merge and ancestry/static verification. The new native verifier uses trusted local published readerCopy against actual HTTP sidecar/overlay JSON; it performs no browser run or remote JavaScript execution.
+
+PR1666 is ready/current8e5 with current local owners, actual publish/contract and exact accepted-e32 target identity qualified. Continue full gate41717780685, normal exact-head protected merge, native ticket settlement/lap release, actual public ancestry/reader/card/model verification. Current1666lap expires23:44:49UTC. Source worktree/tmp/wolf-poster-source-20261103 is clean. No broad gitadd-A or shared-object GC.
