@@ -1,0 +1,17 @@
+--- a/.github/workflows/deploy.yml
++++ b/.github/workflows/deploy.yml
+@@ -121,8 +121,14 @@
+         # hours while every other tenant's deploy waited. Fetches dev in the
+         # same bounded call so the preview step's fetch below is a no-op
+         # freshness check.
++        # The 2026-11-03 main deploy exhausted four 240s materializations;
++        # an actual full-tree checkout took 15m58s. Allow 20m per native operation,
++        # retain one retry, and cap this entire step at 45m for the Pages queue.
++        timeout-minutes: 45
+         env:
+           GITHUB_TOKEN: ${{ github.token }}
++          CLONE_BOUND_SECS: '1200'
++          CLONE_ATTEMPTS: '2'
+         run: bash "$RUNNER_TEMP/chicago-4d-clone.sh" main dev
+       - uses: actions/setup-node@v4
+         with:
