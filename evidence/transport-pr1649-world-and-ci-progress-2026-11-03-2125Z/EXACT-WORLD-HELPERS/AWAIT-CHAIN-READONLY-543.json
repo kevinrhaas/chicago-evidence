@@ -1,0 +1,196 @@
+{
+  "status": "READONLY_SOURCE_AND_ACTUAL_GLB_HEADER_AWAIT_AUDIT_NO_BROWSER_OR_PARSER_EXECUTION",
+  "source_HEAD": "543 (root-frozen; filenames and source line references observed in canonical readonly checkout)",
+  "assets": [
+    {
+      "file": "renderers/web/transport/parked-brougham/brougham-near.glb",
+      "bytes": 1474296,
+      "sha256": "3d2f3a802f4b32dba6a3e61f2c188dddce4db05cecfcbba81e1e8d369d5dfe89",
+      "extensions_used": [
+        "KHR_materials_clearcoat",
+        "KHR_materials_transmission",
+        "KHR_materials_ior"
+      ],
+      "extensions_required": [],
+      "meshopt_buffer_views": 0,
+      "images": [],
+      "nodes": 43,
+      "animations": 0
+    },
+    {
+      "file": "assets/humans/web/anonymous_working_driver_1904.lod3.glb",
+      "bytes": 311448,
+      "sha256": "681da7b7e9119f5c4e8bf0ddd0a491427ef5898697665157b2321d8725138bed",
+      "extensions_used": [
+        "EXT_meshopt_compression",
+        "KHR_mesh_quantization"
+      ],
+      "extensions_required": [
+        "EXT_meshopt_compression",
+        "KHR_mesh_quantization"
+      ],
+      "meshopt_buffer_views": 51,
+      "images": [
+        {
+          "mimeType": "image/png",
+          "encoded_bytes": 78003,
+          "dimensions": [
+            255,
+            256
+          ],
+          "external_URI": null
+        },
+        {
+          "mimeType": "image/jpeg",
+          "encoded_bytes": 12088,
+          "dimensions": [
+            256,
+            256
+          ],
+          "external_URI": null
+        },
+        {
+          "mimeType": "image/jpeg",
+          "encoded_bytes": 653,
+          "dimensions": [
+            256,
+            256
+          ],
+          "external_URI": null
+        },
+        {
+          "mimeType": "image/jpeg",
+          "encoded_bytes": 6599,
+          "dimensions": [
+            256,
+            128
+          ],
+          "external_URI": null
+        }
+      ],
+      "nodes": 69,
+      "animations": 3
+    },
+    {
+      "file": "renderers/web/transport/driven/horse-current26-inplace-full.glb",
+      "bytes": 3460908,
+      "sha256": "ad9dc060f8630d0de04fef97d716e8c82be3ac8bf070684e78107720c5221ec6",
+      "extensions_used": [],
+      "extensions_required": [],
+      "meshopt_buffer_views": 0,
+      "images": [
+        {
+          "mimeType": "image/jpeg",
+          "encoded_bytes": 743684,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "external_URI": null
+        },
+        {
+          "mimeType": "image/png",
+          "encoded_bytes": 643560,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "external_URI": null
+        },
+        {
+          "mimeType": "image/jpeg",
+          "encoded_bytes": 466698,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "external_URI": null
+        },
+        {
+          "mimeType": "image/png",
+          "encoded_bytes": 373160,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "external_URI": null
+        },
+        {
+          "mimeType": "image/jpeg",
+          "encoded_bytes": 38707,
+          "dimensions": [
+            256,
+            256
+          ],
+          "external_URI": null
+        },
+        {
+          "mimeType": "image/png",
+          "encoded_bytes": 31473,
+          "dimensions": [
+            256,
+            256
+          ],
+          "external_URI": null
+        }
+      ],
+      "nodes": 29,
+      "animations": 2
+    }
+  ],
+  "chain": [
+    {
+      "source": "town-transport.js:132",
+      "await": "complete cooperative route preflight before makeAssembly138"
+    },
+    {
+      "source": "driven-assembly-loader.js:61",
+      "await": "Promise.allSettled all3 independent branches"
+    },
+    {
+      "source": "driven-assembly-loader.js:63-69",
+      "await": "vehicle fetch, arrayBuffer, SHA256, GLTFLoader.parseAsync"
+    },
+    {
+      "source": "humans.js:103-114,119-125",
+      "await": "human fetch, buffer, optional meshopt module, GLTFLoader.parseAsync; cached perasset/lod promise"
+    },
+    {
+      "source": "driven-assembly-loader.js:27-38",
+      "await": "horse fetch, buffer, SHA256, GLTFLoader.parseAsync"
+    },
+    {
+      "source": "driven-assembly-loader.js:87-96 / humans.js:206-250",
+      "await": "setLod reacquires fulfilled human cache; then synchronous cloned body/bounds/mixer"
+    },
+    {
+      "source": "driven-assembly-loader.js:99-186",
+      "await": "no further await before makeHitch; source-contract checks,2horse clones/skeleton setup,palm projection synchronous"
+    },
+    {
+      "source": "driven-assembly-loader.js:187 / draft-hitch.js:37",
+      "await": "makeHitch immediately starts harnessGLB,unitsGLB,bindingsJSON concurrently"
+    }
+  ],
+  "no_cycle_found": true,
+  "actual_async_candidates_before_hitch": [
+    "vehicle/horse SHA256 native crypto jobs",
+    "human meshopt embedded WASMready then synchronous51view decode (module already seen duringinitial town boot)",
+    "10embeddedPNG/JPEG imageBitmap decodes awaited by human/horse GLTF parse",
+    "browser event-loop/software-render scheduling/interruption"
+  ],
+  "not_supported_by_actual_headers": [
+    "KTX2/Basis worker wait: none of these3assets uses KHR_texture_basisu",
+    "meshopt worker queue: no production useWorkers caller; defaultdecodeGltfBufferAsync waitsready then synchronouslydecodes",
+    "missingexternaltexture/bufferHTTP: these3assets use embedded content",
+    "renderer shadercompile dependency: GLTFParser awaits CPUscene/animation/material/texture objects, no renderer.compile call before hitch"
+  ],
+  "native_parser_sources": {
+    "GLTFLoader.js:560": "parseAsync wraps parse callback in Promise",
+    "GLTFLoader.js:2653-2699": "beforeRoot\u2192scene/animation/camera dependencies\u2192afterRoot\u2192onLoad",
+    "GLTFLoader.js:1605-1660": "EXT_meshopt decoder dependency",
+    "GLTFLoader.js:3233-3372": "embedded bufferView\u2192blobURL\u2192imageBitmaploader\u2192texture Promise",
+    "three.core.js:49918-49959": "fetchblob\u2192createImageBitmap\u2192onLoad; cache failure removesentry"
+  },
+  "incomplete_evidence": "Headers and source cannot identify which live promise is pending. V2 readonly telemetry/served timestamps must be read; no sourcechange/caprelaxation or productFAIL/PASS inference."
+}

@@ -1,0 +1,16 @@
+Otis Bardwell drives an occupied wagon circuit in 1835, and Hans Johnson drives a Brougham circuit in 1904, in Full or Balanced detail. Walk up and use Interact to Stop or Continue; Step back checks visitor clearance. Driver picks and Find use the named person and the vehicle’s current position. Light retires the occupied assembly.
+
+Inspector retains the requested person through its first mount and redraw; Back clears the pending selection. The portable drivers, horses, fitted hitch and reconstructed routes retain their provenance.
+
+Memory repairs preserve scenery and quality settings. They compress static bounds and railway data exactly, retain only configured density counts, release completed tree-search scratch, and avoid loading unsupported town scenes. Memory ceilings remain unchanged. The gate and lap retain full Git history while fetching blobs on demand. Native owners also rebuilt the inherited stale Mayer asset and regenerated liberties and source-use reports.
+
+Validation for public HEAD `5439723317fbb6491e837911243f2f62fb35065b`, TREE `ef566b993dd2bfe76eea419c750aa01e7acec263`:
+
+- All four native preflight parts passed on this tree: 1,152 distinct checks, including 400 self-tests, within the original 600-second limit for each part. The outer reporting helper subsequently failed while printing its completed summary; that error and the successful native receipts are preserved separately.
+- Five checks against the actual commit passed: changelog entry, identifier collisions, changelog contract, pending entry and history. Whitespace, normal push, native publication and publication validation passed.
+- Published Chromium 141 phone memory checks passed on the immediately preceding TREE `5ede905`: 1904 **399.0 / 400 MiB**, 1812 **222.5 / 225 MiB**. Incoming DEV adds 23,304 decoded column-geometry bytes with all 16 embedded images unchanged. Those earlier measurements are not measurements of this HEAD; the dispatched native CI matrix tests the current commit.
+- Current-commit CI and published world interaction checks remain in progress. An interrupted local world test did not pass and is retained as a negative; a bounded fresh test is collecting progress diagnostics. One warranted CI job timed out during checkout before either native decision ran; its single retry retains the original workflow and limits.
+
+This is an incremental driving and interaction delivery. Photographic appearance, gait, boarding, riding and natural seated animation remain open. Driver head/neck motion is prepared separately and is not included here. Merge into DEV requires current-source checks and actual interaction verification; this PR makes no production-deployment or completed broader-ticket claim.
+
+[Public checkpoint 40ae070](https://github.com/kevinrhaas/chicago-evidence/blob/40ae0706cdac6eb0b08d972ebdbfb6b42ec4ad8e/evidence/transport-pr1649-checked-push-2026-11-03-2050Z/MANIFEST.json) preserves the four-part receipts, outer-helper error, checked push, publication and interrupted world-test evidence. [Checkpoint 478b51b](https://github.com/kevinrhaas/chicago-evidence/tree/478b51b01fd23774f6ed0c20dcdfd1d53532d8a6/evidence/transport-pr1649-final-memory-and-driver-prep-2026-11-03-2020Z) preserves the exact source recovery chain, preceding memory pair and separate driver-motion preparation.
