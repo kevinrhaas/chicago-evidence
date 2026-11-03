@@ -1,0 +1,5 @@
+PR1670 hosted attempt2 completed the full native gate. Exactly one of1137 steps failed: dataset validation, with one inherited Mayer2009 stale-mesh error (wanted42d2c70d40e4, built4fb40730aa8d) and300warnings. All other gate steps passed; checkout and dependencies succeeded. Fixture intentional failures are prefixed self-test and are not additional failed steps.
+
+The run was already completed FAILURE when root considered cancelling obsolete runs, so this attempt was NOT cancelled. Only old authored/integration runs received cancellation requests. No retry of this known-stale head. Genuine native targeted production41705636341 is underway; no production output or success claimed. A new repaired head must pass the required full hosted gate before normal dev merge.
+
+Lake House remains partial OPEN/prnull. Final localUI, actual models unchanged and native107/0 BOTH, source4, claim22:46 and CI-only reuse proof: https://github.com/kevinrhaas/chicago-evidence/blob/eb59f220b597a0139f09775b70ab39f6c42bd465/evidence/lake-house-2026-11-03/final-eed-local-ui-ready-inherited-asset-block/RECOVERY.md
