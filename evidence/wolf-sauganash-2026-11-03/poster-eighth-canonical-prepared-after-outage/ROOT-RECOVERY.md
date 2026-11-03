@@ -1,0 +1,1 @@
+OriginalT2386 claim was renewed natively and read back14:08:02UTC by the serialized ticket owner; expires17:08UTC. The prepared source packet does not bind a PR or close the original. Source owner is cobweb_recover_finish; coordinate before any active checkout writes/read leases or GPU use.
