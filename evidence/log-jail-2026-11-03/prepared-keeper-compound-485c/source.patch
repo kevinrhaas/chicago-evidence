@@ -1,0 +1,793 @@
+--- a/assets/LICENSES.md
++++ b/assets/LICENSES.md
+@@ -1641,3 +1641,11 @@
+ Exact reconstructed-fit limitation: the retained artist kingbolt axis is 4.994mm eccentric from the tyre-centre yaw frame (XZ+1.925/+4.609mm), moving0.697mm over an8degree turn. No exact coaxial/strength claim. Original rims retain at most2.617mm radial ground irregularity; this is not a perfect-circle/suspension simulation.
+ 
+ The final farm-box master also includes an actual central90x55mm coupling reach, reconstructed from the same licensed shaft surface/UVs and separately owned in vehicle_reach. Its end connections are geometry-checked against the fixed front bolster and rear axle. The actual original28-triangle kingbolt is separately owned in vehicle_kingbolt; this is a component split, not an empty proxy or a hidden change to source surfaces. Both remain CC BY4.0 derivatives with the same author credit; fit/strength/historic-design limits remain reconstruction.
++
++
++### Log-jail keeper house generated pair — T-2380
++
++| path | origin | license | notes |
++|---|---|---|---|
++| `gltf/log_jail_keeper_house__frame_1835.glb` | Native Blender4.5.3 generation from `data/structures/log_jail_keeper_house.json`, optional `frame_dwelling` keeper layout | project license | Source-informed form from W.E.S.Trowbridge's illustration in Edwin O.Gale, *Reminiscences of Early Chicago and Vicinity* (Fleming H.Revell,1902), plate facingp53, source `trowbridge_first_jail_gale_1902`; independently public domain by1902USpublication. Flat/procedural materials, no source-image texture. Metric dimensions, finish and July1835continuity remain reconstructed. Actual source/MASTER registration is required, not supplied by this prose. |
++| `web/log_jail_keeper_house__frame_1835.glb` | Native pinned web derivative of the master above | project license | Same provenance. The retained pair is byte-exact actual native output; current family qualification and entrywise registry integration remain required before release. |
+--- /dev/null
++++ b/changelog.d/T-2380.json
+@@ -0,0 +1,7 @@
++{
++  "title": "A keeper house and low gate at the log jail",
++  "kind": "change",
++  "items": [
++    "The log jail gains the keeper's low house and a framed gate beside its pointed fence. Their exact layout and July1835 continuity are reconstructed; the picture comparison remains unfinished."
++  ]
++}
+--- a/data/enclosures/index.json
++++ b/data/enclosures/index.json
+@@ -82,6 +82,11 @@
+       "id": "log_jail_palisade",
+       "file": "log_jail_palisade.json",
+       "note": "HAND-AUTHORED T-2380. The high plank palisadeGale describes around the log jail; existence/kind inferred, layout/height/access/scantlings reconstructed. Core/keeper-house/source-camera differences remain open."
++    },
++    {
++      "id": "log_jail_keeper_link",
++      "file": "log_jail_keeper_link.json",
++      "note": "T-2380 V4 source-inferred low hung keeper link, exact layout/height/stock reconstructed; sourcefit unaccepted."
+     }
+   ]
+ }
+--- /dev/null
++++ b/data/enclosures/log_jail_keeper_link.json
+@@ -0,0 +1,103 @@
++{
++  "id": "log_jail_keeper_link",
++  "name": "The keeper-side low hung gate",
++  "kind": "yard",
++  "scene": "1835",
++  "target_date": "1835-07-01",
++  "structure_id": "log_jail",
++  "belongs_to": [
++    "log_jail",
++    "log_jail_keeper_house"
++  ],
++  "documented_range": {
++    "from": "1833-10-01",
++    "to": "1835-12-31",
++    "confidence": "reconstructed",
++    "note": "Continuity bounds copied from the enclosed jail phase, not a dated fence contract. Gale1902 p51 remembers the small jail concealed within a high plank palisade in his1835 town-walk narrative; its exact completion relative to1July is not dated. The separate plate is captioned1836. Building this enclosure in theJuly scene is a declared continuity reconstruction; neither the1833 opening bound nor the1835 closing bound dates this fence."
++  },
++  "existence": {
++    "value": true,
++    "confidence": "inferred",
++    "sources": [
++      "trowbridge_first_jail_gale_1902"
++    ],
++    "note": "The1902 plate captioned1836 shows a low framed hung gate beside the keeper front door, linking house to tall palisade. ExactJuly1835 continuity is reconstructed."
++  },
++  "runs": [
++    {
++      "id": "keeper_link",
++      "path_local_enu_m": [
++        [
++          472.306,
++          -269.25
++        ],
++        [
++          473.31,
++          -269.97
++        ]
++      ],
++      "note": "R diagonal link between proposed tall front endpoint and V3 keeper NW corner.1.235 m is derived from these reconstructed endpoints, not measured from the picture. The whole run is an opening; tall endpoint supplies its own jamb and the native gate opt-in adds only the low house-end jamb."
++    }
++  ],
++  "openings": [
++    {
++      "id": "keeper_link_gate",
++      "on": "keeper_link",
++      "at_local_enu_m": [
++        472.808,
++        -269.61
++      ],
++      "width_m": 1.2354820921405854,
++      "confidence": "reconstructed",
++      "opens_into_local_enu_m": [
++        472.5,
++        -271.0
++      ],
++      "gate": {
++        "kind": "foot_gate",
++        "leaves": 1,
++        "leaf_stock": "braced_rail",
++        "hinge": "b",
++        "swing_deg": 0,
++        "jamb_posts": "b",
++        "confidence": "reconstructed",
++        "note": "Native optional open framed leaf with one diagonal brace. Low open hung profile is pictorially inferred; exact stock, brace direction, hinge, closed pose and dimensions are R. Existing board/picket/default gate output is untouched."
++      },
++      "note": "Link post-centre spacing1.235 m, native timber/hinge/latch allowances leave about1.035 m of leaf. This is not a new independent historical width. Low gate remains outside both genuine core approach and proposed keeper doorway approach."
++    }
++  ],
++  "form": {
++    "fence_type": {
++      "value": "post_and_rail",
++      "confidence": "reconstructed",
++      "note": "Native container for a fully open link run; no rail-fence bays are emitted because its entire length is the declared gate opening."
++    },
++    "height_m": {
++      "value": 1.1,
++      "confidence": "reconstructed",
++      "note": "Chosen low jamb height to distinguish the source low hung gate from3.05 m palisade. No metric height is attested."
++    },
++    "post_size_m": {
++      "value": 0.14,
++      "confidence": "reconstructed",
++      "note": "Native gate stock140 mm; no source scantling."
++    },
++    "post_spacing_m": {
++      "value": 2.44,
++      "confidence": "reconstructed"
++    },
++    "rail_courses": {
++      "value": 2,
++      "confidence": "reconstructed"
++    }
++  },
++  "citations": [
++    {
++      "source_id": "trowbridge_first_jail_gale_1902",
++      "citation": "Edwin O.Gale, Reminiscences of Early Chicago and Vicinity (Chicago:Fleming H.Revell,1902), p51 and plate facingp53; actual scan n76/n79. Illustration byW.E.S.Trowbridge, captioned1836.",
++      "tier": 5,
++      "tier_label": "retrospective memoir and illustration, independently verified1902 publication"
++    }
++  ],
++  "research_note": "Low framed hung gate between the keeper house and high palisade, informed by the verified1902 plate captioned1836. One diagonal brace, exact1.10m height, stock, hinge direction, pose, jamb and all metric placement are reconstructed. The native descriptor is opt-in; ordinary fence and gate defaults remain unchanged. The original compound picture acceptance remains DIFFERS, and current published clearance/terrain review is required. No July construction date, measured dimension or completed match is claimed."
++}
+--- a/data/enclosures/log_jail_palisade.json
++++ b/data/enclosures/log_jail_palisade.json
+@@ -9,7 +9,8 @@
+   "target_date": "1835-07-01",
+   "structure_id": "log_jail",
+   "belongs_to": [
+-    "log_jail"
++    "log_jail",
++    "log_jail_keeper_house"
+   ],
+   "documented_range": {
+     "from": "1833-10-01",
+@@ -27,49 +28,33 @@
+   },
+   "runs": [
+     {
+-      "id": "jail_perimeter",
++      "id": "jail_compound_perimeter",
+       "path_local_enu_m": [
+         [
+-          467.46,
+-          -269.25
++          475.31,
++          -274.57
++        ],
++        [
++          475.31,
++          -276.57
++        ],
++        [
++          464.81,
++          -276.57
+         ],
+         [
+           464.81,
+           -269.25
+         ],
+         [
+-          464.81,
+-          -275.27
+-        ],
+-        [
+           472.306,
+-          -275.27
+-        ],
+-        [
+-          472.306,
+-          -269.25
+-        ],
+-        [
+-          469.66,
+           -269.25
+         ]
+       ],
+-      "note": "Reconstructed compact outline around the unchanged jail footprint. Existing jail walls runE465.51..471.606 andN-274.57..-269.998 at bearing0; the fence stands0.70m beyond either side/back and0.748m in front. No source gives these distances. The north run remains within the public-square frontage and carries the gateway aligned with the already-compiled doorway. This outline does not invent or locate the missing keeper house, whose partly enclosed relationship and original-cell identity remain open. The authored run stops at the two gateway jambs rather than drawing a line across the doorway and relying only on renderer clipping; both the native geometry and the doorway-obstruction census therefore see the same2.20m passage."
++      "note": "ONE V4 R compound outline, not a traced/surveyed ground plan. The continuous north high-plank face is7.496 m long; this is ENCLOSURE length, not a change to the unchanged6.096 x4.572 m log core. The core moves1.30 m south only. Retain0.70 m west and rear core clearance; the former east divider is removed so a low keeper-link gate can connect the tall NE endpoint to the keeper NW corner. Rear closure reaches2.00 m into the6.40 m keeper back wall so part of the keeper is topologically inside the compound, consistent with Gale wording but not a measured plan. That2.00 m attachment and the exact outline are reconstructed. No tall fence crosses the native core doorway zone. Keeper/source-camera inputs stay V3."
+     }
+   ],
+-  "openings": [
+-    {
+-      "id": "jail_access",
+-      "on": "north",
+-      "at_local_enu_m": [
+-        468.56,
+-        -269.25
+-      ],
+-      "width_m": 2.2,
+-      "confidence": "reconstructed",
+-      "note": "An open passage centered on native entrance log_jail__door_1 atE468.56/N-270.00. Width2.20m clears the0.86m doorway and its existing1.46m doorway safety band without making the fence block the approach. The actual picture shows a gate by the keeper house, whose footprint is not resolved here. This passage is an access reconstruction; no hung leaf, historical width, lock or gate position is claimed."
+-    }
+-  ],
++  "openings": [],
+   "form": {
+     "fence_type": {
+       "value": "board",
+@@ -131,5 +116,5 @@
+       "tier_label": "retrospective memoir and illustration, independently verified1902 publication"
+     }
+   ],
+-  "research_note": "This adds only the missing high plank enclosure thatGale describes. The unchanged jail core, its shallow roof, a keeper house, hung gate and detailed compound layout still differ from the1836-captioned drawing or remain unresolved. No surveyed coordinate, building date, grade, GLB or population is changed. The existing enclosure renderer grounds every post on actual app terrain; full app review must verify a usable north passage. Reference comparisons remain DIFFERS."
++  "research_note": "The high pointed plank enclosure now includes the separate keeper component and a continuous front. The old reconstructed central entrance gap is replaced by a low house-side hung gate in log_jail_keeper_link; the unchanged core door is behind the high front with its own reconstructed approach setback. The Gale1836-captioned picture and1835-framed narrative support the kind and partly enclosed house relation, not these numeric bounds or exactJuly1835continuity. Core roof/relative compound proportions remain DIFFERS. Actual current published terrain, both doorway approaches and gate clearance are still required before release acceptance."
+ }
+--- a/data/structures/log_jail.json
++++ b/data/structures/log_jail.json
+@@ -21,18 +21,18 @@
+       },
+       "position": {
+         "utm_e": 447538.21,
+-        "utm_n": 4637121.23,
++        "utm_n": 4637119.93,
+         "rotation_deg": 0.0,
+         "symbolic_location": "North-west corner of the court-house square (the public square bounded by Randolph, Clark, Washington and LaSalle), at the Randolph and LaSalle end; fronting north onto Randolph.",
+-        "confidence": "inferred",
++        "confidence": "reconstructed",
+         "sources": [
+           "andreas_1884_v1",
+           "osm_streets_2026"
+         ],
+-        "note": "PLACED 2026-08-11. THE CORNER IS DOCUMENTED AND THE COORDINATE IS DERIVED, so the tag follows the weaker half. Andreas puts the log jail on 'the northwest corner of the court-house square'. The public square is the block bounded by Randolph Street on the north, Washington Street on the south, Clark Street on the east and LaSalle Street on the west - the block this project's own ground control identifies as such in data/traces/gcp/wright_1834_gcps.json, where LaSalle and Randolph is labelled 'NW corner of the Public Square block' and Clark and Washington 'SE corner of the Public Square block'. Its four inside corners were computed for this parcel from modern OpenStreetMap intersection centres fetched 2026-08-11, offset 12.2 m into the block on each axis, half of an 80 ft street per Hathaway 1834: NW 447538.25 / 4637130.78, NE 447639.27 / 4637130.25, SW 447541.20 / 4637018.49, SE 447639.80 / 4637018.05, which makes the block about 101 x 112 m. The jail's own north-west corner is set on the square's north-west corner, so the footprint origin - which is the building's south-west corner - sits its own depth south of it. THIS IS A CORNER OF A BLOCK, NOT A LOT, so it is a weaker statement than the corner-lot placements elsewhere in this dataset: nothing says how far into the block the building stood, whether it was set back from either street line, or which way it faced. WORKING UNCERTAINTY ABOUT 20 M from the georeference (data/datum.json: 17.5 m RMS on Wright 1834, 3.7 per cent paper stretch), plus an unquantified setback into the block. Facade bearing 0, due north onto Randolph, CONVENTION RATHER THAN EVIDENCE - a jail at the north-west corner could as reasonably have faced west onto LaSalle or inward onto the square, and nothing attests it. The square itself in 1835 was otherwise an open, unimproved prairie block, fenced or not; no fence, path or improvement of the block is modelled. RECONCILED WITH THE COMMITTED PLAT 2026-08-28 (T-0246), AND THE CLAIM DID NOT MOVE - ONLY THE LINE IT WAS DERIVED AGAINST. The method above found the square's north-west corner by taking modern OpenStreetMap intersection centres, fetched 2026-08-11, and stepping 12.2 m into the block on each axis. That is not this project's own Randolph Street: the committed centreline in data/streets/1835.json, offset by half the committed 80 ft corridor, is what tools/generate_plat_lots.py builds every platted block edge from, and it is the line every derived layer in this scene reads. Measured against it with tools/measure_corridor_intrusion.py, this footprint's north wall stood 3.48 m OUT PAST blk_randolph_lasalle's Randolph frontage line, in the platted roadway, with its centroid inside the corridor - deeper than any of the four Lake Street records T-0196 looked at - and tools/generate_frontage_works.py refused two steps of Randolph's plank walk, 0.0 to 10.4 m along that face, naming this building in the refusal. THE REPAIR IS THIS RECORD'S OWN METHOD RUN AGAINST THIS PROJECT'S OWN LINE: the footprint is translated 4.981 m along the face's inward normal - dE -0.040 m, dN -4.981 m in local ENU, so UTM E 447538.25 N 4637126.21 becomes E 447538.21 N 4637121.23 - which leaves its north wall 1.50 m back from the committed frontage line. THE SQUARE IS NOT SUBDIVIDED, so there is no lot line to stand off: 1.50 m is plat_occupancy.LOT_MARGIN_M, the plat module's own margin off a boundary, and it is the same figure the reconciled South Water and Lake records took off their lot lines (T-0127, T-0198, T-0199). NOTHING ALONG THE STREET MOVED: the along-face position, the block, the corner and the side are untouched, and so is the confidence grade - re-deriving a coordinate from better geometry is not new evidence, and Andreas's 'northwest corner of the court-house square' is what it always was. WHAT THIS DOES NOT REPAIR: the 20 m working uncertainty stated above is unchanged and dwarfs this 4.98 m, so the move is a reconciliation between two of this project's own lines and not a claim to have located the jail better. The facade bearing stays 0 while this face runs at 0.46 degrees, which leaves the front wall between 1.50 and 1.55 m back across its width; that skew is not corrected here, because rotating a record is a second claim and this one is a repair.",
++        "note": "PLACED 2026-08-11. THE CORNER IS DOCUMENTED AND THE COORDINATE IS DERIVED, so the tag follows the weaker half. Andreas puts the log jail on 'the northwest corner of the court-house square'. The public square is the block bounded by Randolph Street on the north, Washington Street on the south, Clark Street on the east and LaSalle Street on the west - the block this project's own ground control identifies as such in data/traces/gcp/wright_1834_gcps.json, where LaSalle and Randolph is labelled 'NW corner of the Public Square block' and Clark and Washington 'SE corner of the Public Square block'. Its four inside corners were computed for this parcel from modern OpenStreetMap intersection centres fetched 2026-08-11, offset 12.2 m into the block on each axis, half of an 80 ft street per Hathaway 1834: NW 447538.25 / 4637130.78, NE 447639.27 / 4637130.25, SW 447541.20 / 4637018.49, SE 447639.80 / 4637018.05, which makes the block about 101 x 112 m. The jail's own north-west corner is set on the square's north-west corner, so the footprint origin - which is the building's south-west corner - sits its own depth south of it. THIS IS A CORNER OF A BLOCK, NOT A LOT, so it is a weaker statement than the corner-lot placements elsewhere in this dataset: nothing says how far into the block the building stood, whether it was set back from either street line, or which way it faced. WORKING UNCERTAINTY ABOUT 20 M from the georeference (data/datum.json: 17.5 m RMS on Wright 1834, 3.7 per cent paper stretch), plus an unquantified setback into the block. Facade bearing 0, due north onto Randolph, CONVENTION RATHER THAN EVIDENCE - a jail at the north-west corner could as reasonably have faced west onto LaSalle or inward onto the square, and nothing attests it. The square itself in 1835 was otherwise an open, unimproved prairie block, fenced or not; no fence, path or improvement of the block is modelled. RECONCILED WITH THE COMMITTED PLAT 2026-08-28 (T-0246), AND THE CLAIM DID NOT MOVE - ONLY THE LINE IT WAS DERIVED AGAINST. The method above found the square's north-west corner by taking modern OpenStreetMap intersection centres, fetched 2026-08-11, and stepping 12.2 m into the block on each axis. That is not this project's own Randolph Street: the committed centreline in data/streets/1835.json, offset by half the committed 80 ft corridor, is what tools/generate_plat_lots.py builds every platted block edge from, and it is the line every derived layer in this scene reads. Measured against it with tools/measure_corridor_intrusion.py, this footprint's north wall stood 3.48 m OUT PAST blk_randolph_lasalle's Randolph frontage line, in the platted roadway, with its centroid inside the corridor - deeper than any of the four Lake Street records T-0196 looked at - and tools/generate_frontage_works.py refused two steps of Randolph's plank walk, 0.0 to 10.4 m along that face, naming this building in the refusal. THE REPAIR IS THIS RECORD'S OWN METHOD RUN AGAINST THIS PROJECT'S OWN LINE: the footprint is translated 4.981 m along the face's inward normal - dE -0.040 m, dN -4.981 m in local ENU, so UTM E 447538.25 N 4637126.21 becomes E 447538.21 N 4637121.23 - which leaves its north wall 1.50 m back from the committed frontage line. THE SQUARE IS NOT SUBDIVIDED, so there is no lot line to stand off: 1.50 m is plat_occupancy.LOT_MARGIN_M, the plat module's own margin off a boundary, and it is the same figure the reconciled South Water and Lake records took off their lot lines (T-0127, T-0198, T-0199). NOTHING ALONG THE STREET MOVED: the along-face position, the block, the corner and the side are untouched, and so is the confidence grade - re-deriving a coordinate from better geometry is not new evidence, and Andreas's 'northwest corner of the court-house square' is what it always was. WHAT THIS DOES NOT REPAIR: the 20 m working uncertainty stated above is unchanged and dwarfs this 4.98 m, so the move is a reconciliation between two of this project's own lines and not a claim to have located the jail better. The facade bearing stays 0 while this face runs at 0.46 degrees, which leaves the front wall between 1.50 and 1.55 m back across its width; that skew is not corrected here, because rotating a record is a second claim and this one is a repair. V4 ENCLOSURE/ACCESS RECONSTRUCTION 2026-10-30: the earlier exact northing was a chosen setback derived from the public-square street line, not an attested building coordinate. Andreas attests the northwest part of the square, not the exact setback. Move only 1.30 m south within the stated roughly20 m working uncertainty, retaining easting, bearing, core fabric, footprint, parcel and every committed street input. This finite R placement allows the existing1.80 m native doorway approach plus0.25 m to the continuous palisade axis atN-269.25 (0.16 m beyond a180 mm backing post), rather than preserving an invented centre gap that is absent from the1902 drawing. The exact1.30 m is an access/layout convention, not survey evidence or a measured pictorial distance. The1836-captioned plate does not establish the July1835 arrangement; continuity remains R. The earlier placement and plat-reconciliation history above is retained as history, not a claim that the later R setback is derived.",
+         "derivation": {
+           "method": "not_derivable",
+-          "reason": "This placement predates the derivation module. Its provenance and reasoning are recorded in position.note, but no machine-checkable derivation block has been authored for it yet."
++          "reason": "Source-bounded reconstructed compound setback:1.30 m south of the earlier derived convention to preserve real native doorway clearance under a continuous high front. No historical metric coordinate is attested; see position.note."
+         }
+       },
+       "footprint": {
+@@ -87,7 +87,7 @@
+           "note": "Not attested. `door` in this archetype names what has to get through the opening rather than whether there was one. A jail takes a person through in hand and nothing else - no horse, no wagon - so the man-door class is the reading, and it is the only one whose 1.88 m clear height fits under this wall. Where the door stood, what it was made of, and whether it was barred or grated is not attested and is the archetype's default."
+         }
+       },
+-      "change_note": "The log jail the citizens put up on the north-west corner of the court-house square in the fall of 1833, because the estray pen at the other corner of the same block had until then been the town's only place of confinement. Standing on 1835-07-01. No change of fabric is attested inside the phase. THE ONLY COUNTY BUILDING STANDING ON THE SQUARE ON THIS DAY, and the square held no third thing (T-1687). Andreas's summary of the new city reads 'A court-house, a jail, and an engine-house adorned the present square', and two of those three are later than 1 July 1835: the one-story and basement brick court-house was erected on the north-east corner 'during the fall of the year (1835,)' and the county's offices only moved into it toward the end of October, and the engine house was contracted to Levi Blake on 30 December 1835 and was still not fairly completed in February 1836. So on the scene date this jail is the one roof the block carries, with the roofless estray pen at the corner diagonally opposite and nothing else between them - the rest of the square is open, unimproved prairie. No worship or school building stands on it either: all four of the town's worship roofs and both its school roofs are named records elsewhere in the town (Andreas I scan pp. 299, 305, 369, 463; docs/RESEARCH/civic_public_buildings_1835.md)."
++      "change_note": "The log jail built at the northwest corner of the public square in autumn1833 remains the only documented county institutional building on1July1835: the courthouse and engine house followed later. A separate domestic keeper house is included by explicit continuity reconstruction from Gale1902 p51's1835-framed walk, despite the illustration's1836caption; it does not establish the exact July compound. The earlier assertion that the jail was the square's only roof is superseded by that qualified domestic component. The core's mesh, footprint, fabric and phase dates stay unchanged. Its exact reconstructed setback moves1.30m south for the compound's continuous high front and doorway approach; this is an access/layout choice inside the existing roughly20m site uncertainty, not a surveyed correction. No named household or population is created."
+     }
+   ],
+   "function": {
+@@ -106,6 +106,6 @@
+     ],
+     "note": "Andreas: the log jail was built in the fall of 1833."
+   },
+-  "research_note": "CURRENT IMAGE EVIDENCE: The exact detailed jail drawing is verified in Edwin O. Gale’s 1902 book, illustrated by W. E. S. Trowbridge. Its actual title and copyright pages establish a public-domain publication; the earlier artwork-level hold below is superseded. The separate UCR copy is catalogued Date Created and/or Issued 19 September 1930, which still does not establish publication in 1930 or an item-specific reuse licence. Its required credit is Keystone-Mast Collection, UCR/California Museum of Photography, University of California at Riverside. Use the independently verified 1902 plate as the artwork source. The caption describes 1836, and the jail core is mostly concealed by its palisade; exact July 1835 form and component continuity remain unresolved. This correction derives no new geometry or asset from the UCR copy and changes no building form.\n\nHISTORICAL MODEL RATIONALE AND DATED SOURCE REASSESSMENTS FOLLOW.\n\nA DOCUMENTED BUILDING WITH ONE DOCUMENTED ATTRIBUTE. What is attested is that it was a jail, that it was of logs, that it went up in the fall of 1833, and that it stood at the north-west corner of the court-house square. Everything else in this record - every dimension, the roof, the wall height, the door, the bearing - is inference or invention, and the confidence view will show it as such. THE RECORD IS WORTH HAVING ANYWAY, and this is the clearest case in the parcel for the working policy behind it: on 1835-07-01 the public square carried the jail and the roofless estray pen; the brick courthouse was not erected until the fall of 1835. The earlier three-building conjecture is superseded by this record’s phase change_note and the actual Andreas page176. ARCHETYPE CHOICE: outbuilding rather than log_dwelling, and the difference is not cosmetic. log_dwelling reads a storey count, a loft, a chimney count and a sign, and builds a dwelling's openings; outbuilding builds a plain box with one door sized by what has to get through it, and refuses a storey count outright. A jail is the second of those. The archetype's own family list - stable, shed, barn, smokehouse, privy, crib, woodshed - does not name a jail, and that is a gap in the vocabulary rather than a reason to build the wrong thing. WHAT THE PLATE ADDED, 2026-08-21 (T-0070, the owner asking that the jail 'should be made more accurate' to its engraving): a tier-5 pictorial of this building, written up as image 1 of the 2026-08-18 brief, which the record did not have when it was placed. It reached two attributes and no others. The roof came down from the archetype's 32-degree gable default to 12 degrees, because the plate draws a near-flat roof and a convention loses to a picture of the thing itself; the construction note stopped calling hewn-versus-round unattested, because the plate draws squared timber laid horizontally. It reached NEITHER dimension nor coordinate, and it may not: a tier-5 pictorial drives form, materials and massing as inferred and never a footprint outline or a position. So the footprint is still invented and still says so. WHAT WOULD UPGRADE THIS RECORD, in order of value: any county order or contract for the jail's construction, which is the kind of document that carries a dimension, a cost or a specification for the logs; Andreas vol. 1 at page-image level around scan pp. 367 and 1243, which is where the prose transcribed into this project's dossier sits; and the Cook County Sheriff's own published jail history, cited in the dossier and not yet held as a source record here.\n\n1902 PUBLICATION FOUND — T-2380, LATER SAME-DAY SUPERSESSION (2026-10-23). The exact detailed jail artwork has now been actually read in Edwin O. Gale’s 1902Reminiscences of Early Chicago and Vicinity, plate facing printed p53, source trowbridge_first_jail_gale_1902. Actual title credits ILLUSTRATED BY W.E.S.TROWBRIDGE and Fleming H. Revell Company, Chicago/New York/Toronto, MCMII; actual copyright page states 1902 and October. The independently published 1902artwork is public domain by age and unblocks project picture work from that plate. It supersedes the earlier artwork-level hold, without assuming publication from UCR’s 1930 combined date or clearing later copy-specific additions. The UCR catalogue remains check_required/text_only with its required credit retained. No school/Tremont permission is being extended to the jail.\n\nNARRATIVE AND SCENE DATE REMAIN BOUNDED. Gale p25 dates arrival to 25 May 1835; p43 starts the early-morning town stroll; p51 says a small log jail is concealed by a high plank palisade and John Beach occupies a house partly in that enclosure facing Randolph. The courthouse is “just started.” Pages 52–55 continue the stroll and give no jail alteration sequence. This is a 1902 recollection framed in 1835, while the actual plate explicitly says 1836. It supports the jail/keeper-house distinction but does not measure the core or prove every pictured detail existed by 1 July 1835. The independent Andreas hip-roof contrast and separate-oaken-cell question remain. No form, dimensions, source linkage from a form attribute, date, confidence, placement or recipe changes here; earlier numeric geometry proposals remain unapplied pending actual model review. T-2380 stays open.\n\nINDEPENDENT PUBLIC-DOMAIN CONTRAST. The actual Andreas’s 1884 History of Chicago vol.1 pages 175–177 were read. Page 175 distinguishes the first 1833 log jail from a later, separate oaken cell without dating the addition. Page 176 dates the first brick courthouse to FALL 1835, after the target 1 July scene. The plate on page 177, Copyright secured by A.T.Andreas 1884, shows a low house/stockade and a rear log block under a shallow hip/pyramidal cap; the same artwork is explicitly captioned FIRST COURT HOUSE AND JAIL in Andreas’s 1884 History of Cook County page 353. This confirms the jail ensemble, but not which pictured cell is the original 1833 core, its July 1835 appearance or an absolute eave/pitch. It conflicts with the taller gable in the rights-held detailed drawing. The existing model remains a provisional proxy; no roof, height, opening, date, placement or confidence value is altered by this metadata correction. T-2380 remains open.",
++  "research_note": "CURRENT COMPOUND INCREMENT: John Beach's separate keeper house, a continuous pointed palisade front and a low braced hung gate are represented as one source-informed continuity reconstruction. Gale1902 p51 places the house partly within the enclosure facing Randolph during an1835-framed recollection; the accompanying plate explicitly says1836. Neither source supplies a metric site plan or proves this exact July1835 state. The domestic house supersedes the older one-roof/open-square assertion. The original log-cell geometry and shallow12degree roof remain unchanged, with a1.30m southward reconstructed access setback explicitly declared in position.note. The Gale comparison still differs in exposed rear-core roof and compound proportions; Andreas shows a conflicting shallow cap and different house elevation. T-2380 stays open and no picture match or geographic camera is claimed. The verified1902 US publication supplies public-domain artwork; the separately catalogued UCR copy retains its own credit and copy-specific hold.\n\n DATED HISTORICAL SOURCE AND MODEL RATIONALES FOLLOW, preserved from the preceding record; older statements of no new placement or a sole roof are superseded by the current paragraph and phase change_note.\n\n CURRENT IMAGE EVIDENCE: The exact detailed jail drawing is verified in Edwin O. Gale’s 1902 book, illustrated by W. E. S. Trowbridge. Its actual title and copyright pages establish a public-domain publication; the earlier artwork-level hold below is superseded. The separate UCR copy is catalogued Date Created and/or Issued 19 September 1930, which still does not establish publication in 1930 or an item-specific reuse licence. Its required credit is Keystone-Mast Collection, UCR/California Museum of Photography, University of California at Riverside. Use the independently verified 1902 plate as the artwork source. The caption describes 1836, and the jail core is mostly concealed by its palisade; exact July 1835 form and component continuity remain unresolved. This correction derives no new geometry or asset from the UCR copy and changes no building form.\n\nHISTORICAL MODEL RATIONALE AND DATED SOURCE REASSESSMENTS FOLLOW.\n\nA DOCUMENTED BUILDING WITH ONE DOCUMENTED ATTRIBUTE. What is attested is that it was a jail, that it was of logs, that it went up in the fall of 1833, and that it stood at the north-west corner of the court-house square. Everything else in this record - every dimension, the roof, the wall height, the door, the bearing - is inference or invention, and the confidence view will show it as such. THE RECORD IS WORTH HAVING ANYWAY, and this is the clearest case in the parcel for the working policy behind it: on 1835-07-01 the public square carried the jail and the roofless estray pen; the brick courthouse was not erected until the fall of 1835. The earlier three-building conjecture is superseded by this record’s phase change_note and the actual Andreas page176. ARCHETYPE CHOICE: outbuilding rather than log_dwelling, and the difference is not cosmetic. log_dwelling reads a storey count, a loft, a chimney count and a sign, and builds a dwelling's openings; outbuilding builds a plain box with one door sized by what has to get through it, and refuses a storey count outright. A jail is the second of those. The archetype's own family list - stable, shed, barn, smokehouse, privy, crib, woodshed - does not name a jail, and that is a gap in the vocabulary rather than a reason to build the wrong thing. WHAT THE PLATE ADDED, 2026-08-21 (T-0070, the owner asking that the jail 'should be made more accurate' to its engraving): a tier-5 pictorial of this building, written up as image 1 of the 2026-08-18 brief, which the record did not have when it was placed. It reached two attributes and no others. The roof came down from the archetype's 32-degree gable default to 12 degrees, because the plate draws a near-flat roof and a convention loses to a picture of the thing itself; the construction note stopped calling hewn-versus-round unattested, because the plate draws squared timber laid horizontally. It reached NEITHER dimension nor coordinate, and it may not: a tier-5 pictorial drives form, materials and massing as inferred and never a footprint outline or a position. So the footprint is still invented and still says so. WHAT WOULD UPGRADE THIS RECORD, in order of value: any county order or contract for the jail's construction, which is the kind of document that carries a dimension, a cost or a specification for the logs; Andreas vol. 1 at page-image level around scan pp. 367 and 1243, which is where the prose transcribed into this project's dossier sits; and the Cook County Sheriff's own published jail history, cited in the dossier and not yet held as a source record here.\n\n1902 PUBLICATION FOUND — T-2380, LATER SAME-DAY SUPERSESSION (2026-10-23). The exact detailed jail artwork has now been actually read in Edwin O. Gale’s 1902Reminiscences of Early Chicago and Vicinity, plate facing printed p53, source trowbridge_first_jail_gale_1902. Actual title credits ILLUSTRATED BY W.E.S.TROWBRIDGE and Fleming H. Revell Company, Chicago/New York/Toronto, MCMII; actual copyright page states 1902 and October. The independently published 1902artwork is public domain by age and unblocks project picture work from that plate. It supersedes the earlier artwork-level hold, without assuming publication from UCR’s 1930 combined date or clearing later copy-specific additions. The UCR catalogue remains check_required/text_only with its required credit retained. No school/Tremont permission is being extended to the jail.\n\nNARRATIVE AND SCENE DATE REMAIN BOUNDED. Gale p25 dates arrival to 25 May 1835; p43 starts the early-morning town stroll; p51 says a small log jail is concealed by a high plank palisade and John Beach occupies a house partly in that enclosure facing Randolph. The courthouse is “just started.” Pages 52–55 continue the stroll and give no jail alteration sequence. This is a 1902 recollection framed in 1835, while the actual plate explicitly says 1836. It supports the jail/keeper-house distinction but does not measure the core or prove every pictured detail existed by 1 July 1835. The independent Andreas hip-roof contrast and separate-oaken-cell question remain. No form, dimensions, source linkage from a form attribute, date, confidence, placement or recipe changes here; earlier numeric geometry proposals remain unapplied pending actual model review. T-2380 stays open.\n\nINDEPENDENT PUBLIC-DOMAIN CONTRAST. The actual Andreas’s 1884 History of Chicago vol.1 pages 175–177 were read. Page 175 distinguishes the first 1833 log jail from a later, separate oaken cell without dating the addition. Page 176 dates the first brick courthouse to FALL 1835, after the target 1 July scene. The plate on page 177, Copyright secured by A.T.Andreas 1884, shows a low house/stockade and a rear log block under a shallow hip/pyramidal cap; the same artwork is explicitly captioned FIRST COURT HOUSE AND JAIL in Andreas’s 1884 History of Cook County page 353. This confirms the jail ensemble, but not which pictured cell is the original 1833 core, its July 1835 appearance or an absolute eave/pitch. It conflicts with the taller gable in the rights-held detailed drawing. The existing model remains a provisional proxy; no roof, height, opening, date, placement or confidence value is altered by this metadata correction. T-2380 remains open.",
+   "review_required": false
+ }
+--- /dev/null
++++ b/data/structures/log_jail_keeper_house.json
+@@ -0,0 +1,152 @@
++{
++  "id": "log_jail_keeper_house",
++  "name": "John Beach’s house at the log jail",
++  "aka": [
++    "the first jail keeper’s house"
++  ],
++  "archetype": "frame_dwelling",
++  "phases": [
++    {
++      "id": "frame_1835",
++      "documented_range": {
++        "from": "1835-01-01",
++        "to": "1835-12-31",
++        "confidence": "reconstructed",
++        "sources": [
++          "trowbridge_first_jail_gale_1902"
++        ],
++        "note": "Book1902 p51 places John Beach in a house partly inside the jail enclosure facing Randolph during the retrospective1835-framed walk. The actual illustration says1836. Bounds are continuity conventions, not construction/demolition dates, and do not prove every pictured detail existed by1July1835.",
++        "from_is": "began"
++      },
++      "position": {
++        "utm_e": 447546.01,
++        "utm_n": 4637121.23,
++        "rotation_deg": 0.0,
++        "confidence": "reconstructed",
++        "symbolic_location": "Beside the log jail at northwest public square, facing Randolph; exact position reconstructed.",
++        "note": "Reconstructed house southwest corner7.8m east of the jail's preceding southwest convention, and1.30m north of the core's new reconstructed access setback; both face north by convention. This east registration gives the Gale view's keeper-left/compound-right order. Neither7.8m spacing,1.30m offset, compass registration nor exact setback is surveyed or measured from the print. House and core remain in the public square; current terrain and doorway clearance require actual published app review. No street or parcel control moves.",
++        "derivation": {
++          "method": "not_derivable",
++          "reason": "No surveyed offset exists. This is one topological correction of an explicitly reconstructed prototype after actual native framing review;7.8m is retained as a trial distance, not new historical evidence."
++        }
++      },
++      "footprint": {
++        "polygon": [
++          [
++            0,
++            0
++          ],
++          [
++            6.4,
++            0
++          ],
++          [
++            6.4,
++            4.6
++          ],
++          [
++            0,
++            4.6
++          ]
++        ],
++        "confidence": "reconstructed",
++        "note": "One6.4x4.6m rectangular house pilot. Both dimensions and hidden rear are invented; source plate supplies appearance topology, never a metric plan."
++      },
++      "form": {
++        "picture_layout": {
++          "value": "keeper_gale_1902",
++          "confidence": "reconstructed",
++          "note": "One corrected north-facing interpretation of the1902 Gale artwork captioned1836: depicted gable is the model east/uMax end; local-u D/W/W stations read W/W/D from outside the north front, with two depicted gable ground sash and loft light. All numeric set-out, compass registration and July1835 continuity remain reconstructed. Andreas has a different elevation; no reconciliation or match is claimed.",
++          "sources": [
++            "trowbridge_first_jail_gale_1902"
++          ]
++        },
++        "construction": {
++          "value": "braced_frame",
++          "confidence": "reconstructed",
++          "note": "Clapboard hides framing; a braced frame is a prototype convention, not observed studs."
++        },
++        "cladding": {
++          "value": "clapboard",
++          "confidence": "inferred",
++          "note": "The1902picture depicts horizontal siding; the native frame dwelling always builds clapboard.",
++          "sources": [
++            "trowbridge_first_jail_gale_1902"
++          ],
++          "geometry": "simplified"
++        },
++        "stories": {
++          "value": 1.0,
++          "confidence": "reconstructed",
++          "note": "One low main storey plus a small unclassified loft light; no habitable half storey asserted."
++        },
++        "wall_height_m": {
++          "value": 2.65,
++          "confidence": "reconstructed",
++          "note": "Prototype standing height, not measured from drawing."
++        },
++        "roof_type": {
++          "value": "gable",
++          "confidence": "inferred",
++          "note": "Both pictures show the keeper house under a gable; its depicted orientation differs between the independent drawings.",
++          "sources": [
++            "trowbridge_first_jail_gale_1902"
++          ]
++        },
++        "roof_pitch_deg": {
++          "value": 25.0,
++          "confidence": "reconstructed",
++          "note": "One finite low-gable prototype; no source measures angle."
++        },
++        "plan": {
++          "value": "hall_parlour",
++          "confidence": "reconstructed",
++          "note": "Native base plan vocabulary only; interior rooms are unknown. The opt-in picture layout governs front apertures."
++        },
++        "bays": {
++          "value": 3,
++          "confidence": "inferred",
++          "note": "Two sash followed by the door on the long front in Gale; Andreas shows a different elevation. Count inferred, metric spacing reconstructed.",
++          "sources": [
++            "trowbridge_first_jail_gale_1902"
++          ]
++        },
++        "chimneys": {
++          "value": 1,
++          "confidence": "inferred",
++          "note": "One brick-looking stack appears in Gale. The corrected pictured-end assignment moves the same reconstructed prototype stack to localu5.5m near the east pictured gable; neither location nor dimensions are source measurements.",
++          "sources": [
++            "trowbridge_first_jail_gale_1902"
++          ]
++        },
++        "paint": {
++          "value": "whitewash",
++          "confidence": "reconstructed",
++          "note": "A light tone in monochrome does not establish hue or coating; whitewash is a reconstructed prototype finish."
++        },
++        "glazing": {
++          "value": "12_over_12_6x8",
++          "confidence": "reconstructed",
++          "note": "Native available pane module used as a prototype placeholder; exact panes have not been established from either source."
++        },
++        "shutters": {
++          "value": "green",
++          "confidence": "reconstructed",
++          "note": "Dark open shutters appear at pictured windows. The actual hue/material detail is not shown in monochrome; native green is reconstructed."
++        },
++        "porch": {
++          "value": null,
++          "confidence": "reconstructed",
++          "note": "No roofed porch is asserted. The opt-in layout draws the pictured low front rail with a clear door station; a separate native enclosure supplies the low hung compound gate. A historically measured landing/platform is not known."
++        }
++      },
++      "change_note": "A separate keeper dwelling described byGale p51, partly within the jail enclosure and facingRandolph. Included in the July1835 prototype by explicit continuity reconstruction; plate caption1836 remains unchanged. New house does not relabel the original log cell or select a core roof from conflicting images."
++    }
++  ],
++  "research_note": "SOURCE-INFORMED KEEPER HOUSE, originalT-2380 incremental work. The separate house appears in Gale1902's public-domain plate captioned1836 and is described partly within the jail enclosure on p51 of the retrospective1835-framed walk. One low clapboard storey, two long-front sash followed by a door, two pictured-end ground sash, a small loft light and one stack inform the optional keeper_gale_1902 layout. Metric size,25degree pitch, exact glazing, green shutter hue, whitewash, hidden framing, plan, compass, placement and July continuity remain reconstructed. The low braced gate belongs to a separate enclosure. A genuine native model pair exists for these exact resolved inputs; existing default-family models still require native parity and current registration before source adoption can pass its gates. The actual private V4 full-page compound comparison remains DIFFERS: relative compound proportions and the screened rear-core roof are unresolved, and Andreas shows a different elevation/cap. This record neither claims a complete picture match nor creates a household or population seat.",
++  "resident_assignment": {
++    "status": "unassigned",
++    "confidence": "reconstructed",
++    "note": "Gale namesJohn Beach, but this candidate does not create a person, household or population seat. Existing resident identity research must govern any later assignment."
++  }
++}
+--- a/docs/LIBERTIES.md
++++ b/docs/LIBERTIES.md
+@@ -39834,3 +39834,17 @@
+ 
+ **Ticket:** T-2376.
+ **Recorded:** 2026-11-03.
++
++
++### L-log-jail-keeper-compound-2380 — the keeper dwelling and low compound gate
++
++**Covers:** `log_jail.log_1833.position`, `log_jail_keeper_house.frame_1835.documented_range`, `log_jail_keeper_house.frame_1835.position`, `log_jail_keeper_house.frame_1835.footprint`, `log_jail_keeper_house.frame_1835.form.picture_layout`, `log_jail_keeper_house.frame_1835.form.construction`, `log_jail_keeper_house.frame_1835.form.stories`, `log_jail_keeper_house.frame_1835.form.wall_height_m`, `log_jail_keeper_house.frame_1835.form.roof_pitch_deg`, `log_jail_keeper_house.frame_1835.form.plan`, `log_jail_keeper_house.frame_1835.form.paint`, `log_jail_keeper_house.frame_1835.form.glazing`, `log_jail_keeper_house.frame_1835.form.shutters`, `log_jail_keeper_house.frame_1835.form.porch`.
++
++**Decision:** Include the separate low keeper house and its low framed gate beside the existing high pointed palisade. Gale1902 p51 places John Beach's house partly inside the enclosure facing Randolph in an1835-framed retrospective walk; its plate facingp53 explicitly depicts1836. The July1835 existence/continuity and exact boundary dates are reconstruction, not a dated construction finding. The new domestic roof explicitly supersedes the earlier sole-roof assertion for the square, without adding the fall1835 courthouse or a named household/population. Sources: `trowbridge_first_jail_gale_1902` and contrasting `andreas_1884_v1`.
++
++The6.4x4.6m footprint,2.65m eaves,25degree gable,7.8m east registration, wall/rail/stack sections, hidden plan and framing,12-over12 glazing, shutter colour and whitewash are choices. The small loft light does not assert a habitable half-storey. The source-informed aperture count and material class do not measure those numbers. The core retains its existing mesh and12degree roof; only its exact setback moves1.30m south inside its declared roughly20m site uncertainty, permitting a continuous high front and reconstructed doorway approach. No surveyed street/parcel control changes.
++
++The separate1.10m gate, diagonal brace, hinge, pose, stock and endpoint spacing are reconstructed. Both independent pictures disagree on the concealed core roof and house elevation. The genuine private compound comparison still DIFFERS in exposed rear-core roof and relative proportions; no calibrated camera, full photo acceptance, grade promotion or original-ticket closure is implied. Published terrain and doorway/gate clearance remain acceptance work.
++
++**Ticket:** T-2380.
++**Recorded:** 2026-11-03.
+--- a/docs/RESEARCH/photo-match/log_jail/README.md
++++ b/docs/RESEARCH/photo-match/log_jail/README.md
+@@ -9,3 +9,10 @@
+ Each tested nine-step native walker path moves from N−268 to N−269.6092 at E468.56 across the fence plane N−269.25, with every movement unblocked and correct walking ground/eye. The separate coarse route-planning grid marks the endpoint near the core wall blocked. That earlier local harness failure is retained, and the corrected access assertion checks actual native movement. No general accessibility claim extends beyond this tested approach. The first 240-second readiness timeout and bounded successful retry are retained; capped-resource timing is not a performance result.
+ 
+ Recovery packets are retained in `kevinrhaas/chicago-evidence`: native manifest `5170cc3007ddc53927242244b6babc56578f07f155858aebb9fb6e3d14e0a478`, formal delta `a5740959d4fbc97b1ddb8c211b443aa7313d7a76aa327c96d88d424ff2d84f47`, and actual app delta `73d42e74fc6d35f1fb5f3fd39e44581a144f756b73c8964aa224f39f4ccdd738`. The combined cf25+88 native61/package5 fixed point and publish passed, with all5,343 integrated protected inputs/assets unchanged. The single all-dirty XLSX/gzip/outside4d audit restored only two whole-proof-equal serialized artifacts to exact incoming88 bytes. Phone/desktop screenshots were captured on9f7; selected jail web GLB, enclosure JSON/renderer and sidecar remain byte-identical in the combined native mirror. The incoming lighthouse change is preserved. Wholecheck/preflight remain pending before delivery.
++
++
++## Keeper/compound increment prepared on 2026-11-03
++
++The retained native V4 keeper pair and source-qualified nine-leaf proposal supply the next visible increment: a separate low domestic keeper roof, continuous pointed front and low framed gate. The pre-existing palisade increment above remains historical. The sole-roof claim is superseded; numeric layout/finish and July continuity are reconstruction, without a named population seat or later courthouse. Both original compositions remain DIFFERS; the existing diagnostic records must be refreshed against the final current compound inputs before any full acceptance. The private V4 frame is genuine rendered evidence of the proposal, not current canonical or published acceptance.
++
++The exposed rear-core roof and compound proportions still differ in Gale. The separate32degree roof prediction was never emitted or accepted and is excluded from this partial increment. Detailed keeper metrics are conventions; Andreas's independent elevation and shallow cap remain a source disagreement, not an excuse to invent a match.
+--- /dev/null
++++ b/docs/RESEARCH/photo-match/log_jail/keeper-compound-increment-20261103.md
+@@ -0,0 +1,11 @@
++# Original T-2380: keeper/compound partial increment
++
++This introduces a source-qualified domestic keeper house and low gate without claiming a complete photo match. Gale1902 p51 supplies the narrative relation; its exact artwork is captioned1836. The older Andreas plate shows a different elevation/cap. No courthouse is backdated intoJuly1835.
++
++Source, actual retained assets, current-input identity and native default-family qualification remain separate. A changed frame builder affects every frame-family input signature; predicted signatures cannot stand in for actual native geometry parity or written bake provenance. The retained keeper pair may be reused only while its full normalized current input document equals the genuine build's document. Existing whole registries/sidecars are never installed from the older fixture.
++
++The source packet has not passed current full source/browser checks or merged. Fresh original-composition comparisons and physical app clearance are owed. The original remains OPEN/DIFFERS, with no new photo follow-up.
++
++## Historical prior phase change_note — verbatim, superseded where it asserts a sole roof
++
++The log jail the citizens put up on the north-west corner of the court-house square in the fall of 1833, because the estray pen at the other corner of the same block had until then been the town's only place of confinement. Standing on 1835-07-01. No change of fabric is attested inside the phase. THE ONLY COUNTY BUILDING STANDING ON THE SQUARE ON THIS DAY, and the square held no third thing (T-1687). Andreas's summary of the new city reads 'A court-house, a jail, and an engine-house adorned the present square', and two of those three are later than 1 July 1835: the one-story and basement brick court-house was erected on the north-east corner 'during the fall of the year (1835,)' and the county's offices only moved into it toward the end of October, and the engine house was contracted to Levi Blake on 30 December 1835 and was still not fairly completed in February 1836. So on the scene date this jail is the one roof the block carries, with the roofless estray pen at the corner diagonally opposite and nothing else between them - the rest of the square is open, unimproved prairie. No worship or school building stands on it either: all four of the town's worship roofs and both its school roofs are named records elsewhere in the town (Andreas I scan pp. 299, 305, 369, 463; docs/RESEARCH/civic_public_buildings_1835.md).
+--- a/docs/ROADMAP.md
++++ b/docs/ROADMAP.md
+@@ -6481,3 +6481,8 @@
+ unresolved compound appearance, partial siding and July 1835 survival. This
+ increment adds no camera or matched verdict and does not promote the structure’s
+ grade. Continue the original image gate; file no photo follow-up.
++
++
++### Original T-2380 — bounded keeper/compound increment, 2026-11-03
++
++Prepared the missing keeper dwelling, continuous high palisade and low braced gate from the retained actual V4 native proposal, preserving concurrent scene-directory support and enclosure entries. The current concealed-core roof is retained; no32degree prediction is adopted. Next: native current-family qualification and actual registered/derived outputs, fresh group-bound source reviews and published desktop/phone access review, then a partial-progress PR to dev. The original two-composition picture-match acceptance stays open; no photo follow-up or completion is filed.
+--- a/docs/STATUS.md
++++ b/docs/STATUS.md
+@@ -25487,3 +25487,10 @@
+ the authored commit, then actual desktop/mobile checks on the committed
+ publication before PR readiness and normal merge. Receipts belong with the PR
+ and checkpoint; the original image gate remains unfinished.
++
++
++### T-2380 keeper dwelling and low compound gate — incremental source, 2026-11-03
++
++A separate source-qualified keeper house, continuous high palisade front and low braced hung gate are prepared as one visible increment. The exact retained native keeper pair is bound to its resolved inputs. The July1835 continuity, dimensions, finishes and compound registration are explicitly reconstructed from Gale1902's1835-framed narrative and1836-captioned plate; the old one-roof assertion is corrected. Core fabric/roof remain unchanged; a1.30m reconstructed access setback is declared. Original T-2380 remains OPEN/DIFFERS, including rear-core roof exposure and compound proportions.
++
++This source packet is not a passed build or release: current frame-family native parity/registration, ordered derivatives, fresh original-composition group comparisons, all four source-check parts, published desktop/phone physical review and normal PR/dev integration remain pending. No existing trial is relabelled as current published acceptance.
+--- a/generators/archetypes/frame_dwelling.py
++++ b/generators/archetypes/frame_dwelling.py
+@@ -164,6 +164,9 @@
+                 params.conf("plan", "reconstructed"), params.conf("bays", "reconstructed"),
+                 params.conf("glazing", "reconstructed"))
+ 
++    if params.picture_layout is not None:
++        c_fen = max(c_fen, params.conf("picture_layout", "reconstructed"))
++
+     # main range — omit the bottom, it is never seen and costs two triangles per
+     # building across the whole town
+     b.add_box(0, y0, 0, w, d, wall_z, c_mass, M_WALL, skip=("bottom",))
+@@ -184,10 +187,15 @@
+         else None
+ 
+     _chimneys(b, params, w, y0, d, wall_z, ridge_z, ell_ridge_z,
+-              (params.worst_conf("chimneys", "chimney_placement")
+-               if params.chimney_placement != "house"
+-               else params.conf("chimneys", "reconstructed")),
++              (params.worst_conf("chimneys", "picture_layout")
++               if params.picture_layout is not None else
++               (params.worst_conf("chimneys", "chimney_placement")
++                if params.chimney_placement != "house"
++                else params.conf("chimneys", "reconstructed"))),
+               M_CHIMNEY if params.chimneys > 0 else M_ROOF)
++
++    if params.picture_layout == "keeper_gale_1902":
++        _keeper_front_rail(b, params, d, params.conf("picture_layout", "reconstructed"))
+ 
+     if params.tower:
+         _chapel_belfry(b, params, y0, d, ridge_z, params.conf("tower"))
+@@ -663,6 +671,10 @@
+     A ground-floor window goes in whichever gable end has no stack against it. The end
+     walls of a small house carried very little glass; the fireplaces were there.
+     """
++    if p.picture_layout == "keeper_gale_1902":
++        _keeper_gale_gable(b, p, wall_z, c_fen, c_mass)
++        # The unseen west gable is still reconstructed using the old house rule.
++        # Generate it below, while suppressing only the replaced east end.
+     if p.roof_type != "gable" or p.chapel_blank_gables:
+         return
+     rise = ridge_z - wall_z
+@@ -670,6 +682,8 @@
+     half_depth = (d - y0) / 2.0 + EAVE_M
+ 
+     for x, out in ((0.0, -1), (w, 1)):
++        if p.picture_layout == "keeper_gale_1902" and out == 1:
++            continue
+         top = wall_z + 0.16 + GABLE_WIN_H_M
+         shrink = 1.0 - (top - wall_z) / max(rise, 1e-6)
+         if shrink * half_depth > GABLE_WIN_W_M / 2 + 0.35 and p.stories >= 1.5:
+@@ -684,9 +698,54 @@
+     if sash[0] < 0.5:
+         return
+     for x, out in ((0.0, -1), (w, 1)):
++        if p.picture_layout == "keeper_gale_1902" and out == 1:
++            continue
+         if any(abs(sx - x) < 1.0 for sx in stack_x):
+             continue
+         _window(b, p, "x", x, yc, sill, sash, out, c_fen)
++
++
++def _keeper_front_rail(b: MeshBuilder, p: FrameDwellingParams, d: float,
++                       conf: float) -> None:
++    """Low unroofed front rail in Gale; exact stock/set-out reconstructed.
++
++    Keep the native doorway's full safety band clear. This rail is part of the
++    pictured keeper-house frontage; the separate compound gate remains pending.
++    """
++    door = next(cx for cx, kind in p.keeper_front_stations if kind == "door")
++    a, end = door + DOOR_W_M / 2 + 0.40, p.width_m - 0.12
++    y = d + 0.60
++    for z in (0.30, 0.80):
++        b.add_box(a, y - 0.035, z - 0.035, end, y + 0.035, z + 0.035,
++                  conf, M_TRIM)
++    for x in (a, a + (end - a) / 3, a + 2 * (end - a) / 3, end):
++        b.add_box(x - 0.045, y - 0.045, 0.0, x + 0.045, y + 0.045, 0.88,
++                  conf, M_TRIM, skip=("bottom",))
++
++
++def _keeper_gale_gable(b: MeshBuilder, p: FrameDwellingParams, wall_z: float,
++                       c_fen: float, c_mass: float) -> None:
++    """The pictured east end only: two ground sash and a separate small loft light.
++
++    Source topology is inferred; every set-out dimension is reconstructed. The
++    optional source layout does not change the generic house's far-end arithmetic.
++    """
++    conf = max(c_fen, p.conf("picture_layout", "reconstructed"))
++    sill = p.front_sill_m
++    sash = _sash(p, sill, wall_z - 0.28)
++    for v in p.keeper_gable_sash_centres:
++        _window(b, p, "x", p.width_m, v, sill, sash, 1, conf)
++        if p.shutters:
++            # Native panel primitive on x-normal end, same stock as front shutters.
++            shutter_conf = max(conf, p.conf("shutters", "reconstructed"))
++            for side in (-1, 1):
++                v0 = v + side * (p.window_w_m / 2 + openings.CASING_W_M + 0.012)
++                v1 = v0 + side * p.window_w_m * 0.5
++                _panel(b, "x", p.width_m + CLAPBOARD_LIP_M + 0.008, min(v0, v1), max(v0, v1),
++                       sill, sill + sash[0], 1, shutter_conf, M_SHUTTER)
++    v, z0, width, height = p.keeper_loft_opening
++    _fixed_light(b, p, "x", p.width_m, v - width / 2, v + width / 2,
++                 z0, z0 + height, 1, max(conf, c_mass))
+ 
+ 
+ # -------------------------------------------------------------------- the ell
+--- a/generators/archetypes/frame_dwelling_params.py
++++ b/generators/archetypes/frame_dwelling_params.py
+@@ -313,6 +313,7 @@
+     "construction", "plan", "bays", "porch", "ell", "ell_wall_height_m",
+     "chimneys", "paint", "shutters", "siding_exposure_m", "stovepipes", "glazing",
+     "trim", "chimney_head", "tower", "chimney_placement", "front_window_sill_m",
++    "picture_layout",
+ })
+ # NOT in the set, and each absence is a decision rather than an oversight:
+ #   `cladding`      — this archetype always builds clapboard over sheathing, so a
+@@ -449,7 +450,34 @@
+     # None preserves the existing house, rear and gable opening arithmetic.
+     front_window_sill_m: float | None = field(default=None, kw_only=True)
+ 
++    # T-2380: one opt-in retrospective keeper-house layout. None retains all
++    # existing house paths; adding a loft light does not assert a habitable half storey.
++    picture_layout: str | None = field(default=None, kw_only=True)
++
+     # ---------------------------------------------------------------- derived
++
++    @property
++    def keeper_front_stations(self) -> tuple:
++        """North-facing set-out: local D/W/W reads W/W/D from outside; distances reconstructed."""
++        if self.picture_layout != "keeper_gale_1902":
++            return ()
++        return tuple((self.width_m * u, kind) for u, kind in
++                     ((0.95 / 6.4, "door"), (3.25 / 6.4, "window"),
++                      (5.20 / 6.4, "window")))
++
++    @property
++    def keeper_gable_sash_centres(self) -> tuple:
++        """Two pictured east-end ground sash, independent of stack suppression."""
++        if self.picture_layout != "keeper_gale_1902":
++            return ()
++        return (self.depth_m * (1.25 / 4.6), self.depth_m * (3.35 / 4.6))
++
++    @property
++    def keeper_loft_opening(self) -> tuple:
++        """(centre-v, bottom-z, width, height); small light, not a storey claim."""
++        if self.picture_layout != "keeper_gale_1902":
++            return ()
++        return (self.depth_m / 2, self.wall_height_m + 0.17, 0.42, 0.45)
+ 
+     @property
+     def chapel_front_stations(self) -> tuple:
+@@ -478,6 +506,8 @@
+         """The unchanged house layout, or the pictured chapel's existing far stack."""
+         if self.chimneys <= 0:
+             return ()
++        if self.picture_layout == "keeper_gale_1902":
++            return (self.width_m * (5.50 / 6.4),)
+         if self.chimney_placement == "far_gable":
+             return (self.width_m - 0.75,)
+         out = [0.75]
+@@ -687,6 +717,35 @@
+                 f"Rotate the footprint or record the building as something else")
+ 
+     def _validate_facade(self) -> None:
++        if self.picture_layout is not None:
++            if self.picture_layout != "keeper_gale_1902":
++                raise ParamError("picture_layout must be None or keeper_gale_1902")
++            if (self.stories != 1.0 or self.ell or self.roof_type != "gable"
++                    or self.plan != "hall_parlour" or self.bays != 3
++                    or self.chimneys != 1 or self.stovepipes or self.tower
++                    or self.chimney_placement != "house"
++                    or self.front_window_sill_m is not None):
++                raise ParamError("keeper_gale_1902 needs one-storey rectangular gabled "
++                                 "hall_parlour, three front bays and one existing stack")
++            stations = self.keeper_front_stations
++            for i, (cx, kind) in enumerate(stations):
++                half = _opening_w(self, kind) / 2
++                if cx - half < 0.35 or cx + half > self.width_m - 0.35:
++                    raise ParamError("keeper_gale_1902 front opening crosses corner trim")
++                if i and _clash(stations[i - 1], stations[i], self):
++                    raise ParamError("keeper_gale_1902 front openings overlap")
++            g = self.keeper_gable_sash_centres
++            if (g[0] - self.window_w_m / 2 < 0.35
++                    or g[1] + self.window_w_m / 2 > self.depth_m - 0.35
++                    or g[1] - g[0] < self.window_w_m + OPENING_GAP_M):
++                raise ParamError("keeper_gale_1902 gable sash do not fit")
++            _v, bottom, width, height = self.keeper_loft_opening
++            # The cap is a gable, so ensure both loft-light upper corners fit
++            # inside its wall-plane triangle, rather than only below the ridge.
++            available = self.wall_height_m + (self.depth_m / 2 - width / 2) * math.tan(
++                math.radians(self.roof_pitch_deg))
++            if bottom + height + 0.10 > available:
++                raise ParamError("keeper_gale_1902 loft light crosses the roof slope")
+         if self.plan not in PLANS:
+             raise ParamError(f"plan '{self.plan}' not in {PLANS}")
+         if not isinstance(self.tower, bool):
+@@ -1025,6 +1084,7 @@
+         tower=val("tower", False),
+         chimney_placement=str(val("chimney_placement", "house")),
+         front_window_sill_m=val("front_window_sill_m"),
++        picture_layout=val("picture_layout"),
+     )
+     p.resolve()
+     return p
+@@ -1129,6 +1189,8 @@
+     something the sidecar mentions. Openings the snap runs together are parted
+     (`_part`, T-1984).
+     """
++    if p.picture_layout == "keeper_gale_1902":
++        return list(p.keeper_front_stations)
+     if p.plan == "chapel_side":
+         return list(p.chapel_front_stations)
+     w, n = p.width_m, p.bays
+--- a/renderers/web/js/enclosures.js
++++ b/renderers/web/js/enclosures.js
+@@ -265,6 +265,28 @@
+       const i = tris[q];
+       buf.pos.push(p[i * 3], p[i * 3 + 1], p[i * 3 + 2]);
+       buf.nrm.push(n0, n1, n2);
++      buf.conf.push(level);
++    }
++  }
++}
++
++/** One opted-in gate brace; ordinary fence posts/boxes remain upright. */
++function pushTiltedGateBox(buf, bx, level) {
++  const c = bx.tilt_cos, s = bx.tilt_sin;
++  const u = [bx.ux * c, s, bx.uz * c];
++  const v = [-bx.uz, 0, bx.ux];
++  const up = [-bx.ux * s, c, -bx.uz * s];
++  const p = BOX_P;
++  for (let i = 0; i < 8; i += 1) {
++    const q = BOX_CORNER[i];
++    for (let k = 0; k < 3; k += 1) p[i * 3 + k] = [bx.cx, bx.cy, bx.cz][k]
++      + u[k] * q[0] * bx.halfLen + v[k] * q[1] * bx.halfW + up[k] * q[2] * bx.halfH;
++  }
++  for (const f of (PARTS[bx.part] ?? PARTS.box)) {
++    const n = BOX_FACE_NORMAL[f];
++    for (const i of BOX_FACE_TRIS[f]) {
++      buf.pos.push(p[i * 3], p[i * 3 + 1], p[i * 3 + 2]);
++      buf.nrm.push(...u.map((x, k) => n[0] * x + n[1] * v[k] + n[2] * up[k]));
+       buf.conf.push(level);
+     }
+   }
+@@ -666,8 +688,16 @@
+     into(ja, jb);
+     cover(ch.buf, ja.e, ja.n);
+     cover(ch.buf, jb.e, jb.n);
++    // A fully open link has no residual fence stretch to emit its house-end jamb.
++    // This explicit opt-in supplies only B; A is the adjacent tall palisade post.
++    if (g.o.gate.jamb_posts === 'b') {
++      pushBox(ch.buf, jb.e, jb.y + height / 2, -jb.n, 1, 0,
++        postHalf, postHalf, height / 2, level, 'post');
++      tally.posts++;
++    }
+     for (const bx of gateBoxes(g.o.gate, ja, jb, height, g.o.opens_into_local_enu_m)) {
+-      pushBox(ch.buf, bx.cx, bx.cy, bx.cz, bx.ux, bx.uz, bx.halfLen, bx.halfW, bx.halfH,
++      if (bx.tilt_cos !== undefined) pushTiltedGateBox(ch.buf, bx, level);
++      else pushBox(ch.buf, bx.cx, bx.cy, bx.cz, bx.ux, bx.uz, bx.halfLen, bx.halfW, bx.halfH,
+         level, bx.part);
+     }
+     tally.gates = (tally.gates ?? 0) + 1;
+--- a/renderers/web/js/gates.js
++++ b/renderers/web/js/gates.js
+@@ -13,8 +13,9 @@
+  * one leaf, a pair of cart leaves, or slip bars let down out of a rail fence.
+  * A boarded leaf is one panel, the way the fence's own butted boards read; a
+  * paled leaf is two rails with the pales spaced across them. No brace is
+- * drawn, because this layer only draws boxes that stand upright, and a
+- * leaning one would be a claim about the gate it does not make.
++ * drawn for those default leaves. The explicit braced_rail opt-in is an open
++ * framed leaf read from a cited picture; only enclosures consumes its optional
++ * tilted brace descriptor. No current frontage gate selects this stock.
+  *
+  * WHAT IT DOES NOT DRAW, and why (T-0672's ceilings): the gate posts. Both
+  * fence layers already stand a post at either end of every stretch, so the
+@@ -51,6 +52,22 @@
+   const top = height - 0.12;
+   const low = 0.18;
+   const mid = at(len / 2);
++  if (stock === 'braced_rail') {
++    // Explicit source-led open leaf only. Every unstated/board/picket leaf
++    // continues through its original branch below with identical arithmetic.
++    for (const y of [low, top]) box(out, mid[0], h.y + y, mid[1], ue, un,
++      len / 2, LEAF_T_M, LEAF_RAIL_H_M / 2, 'rail');
++    for (const t of [LEAF_RAIL_H_M / 2, len - LEAF_RAIL_H_M / 2]) {
++      const p = at(t); box(out, p[0], h.y + (low + top) / 2, p[1], ue, un,
++        LEAF_RAIL_H_M / 2, LEAF_T_M, (top - low) / 2, 'rail');
++    }
++    const rise = top - low, diag = Math.hypot(len, rise);
++    box(out, mid[0], h.y + (low + top) / 2, mid[1], ue, un,
++      diag / 2, LEAF_T_M / 2, LEAF_RAIL_H_M / 2, 'rail');
++    out[out.length - 1].tilt_cos = len / diag;
++    out[out.length - 1].tilt_sin = rise / diag;
++    return;
++  }
+   if (stock !== 'picket') {
+     // Boards butted edge to edge read as one face, so they are drawn as one.
+     box(out, mid[0], h.y + (0.06 + top) / 2, mid[1], ue, un, len / 2, LEAF_T_M / 2,
