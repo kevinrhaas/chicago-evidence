@@ -1,0 +1,5 @@
+# Recorded review authority and scope
+
+Root's delegated task records that root directly viewed the actual1081×579Kurz/Allison panel5, read the current `_building`/`_chimneys` implementation and the structure record's explicitly invented stack note. Root qualified a deliberate roof-assembly depiction choice: replace the unsupported separate central stack with the pictured cupola; no claim of no heating or no flue. Root required the full readiness packet, current ownership, actual25-family qualification, source4, both viewports, native comparison, no new photo tickets and ordinary green dev PR.
+
+The recovered reviewer independently reread the actual source/parameter/card/grade code and directly viewed both Wau-Bun1831 reproductions and the later Kellogg/Blanchard print, retaining the ambiguous later secondary projection. Other seven-image review hashes in AUDIT.json are prior-agent observations, preserved as such. No new geometry or runtime result is implied. Parent/root still must authorize any actual T2388 handoff/dispatch after full packet review.
