@@ -1,0 +1,5 @@
+# Sauganash first native source part closed PASS; parts2–4 pending
+
+The corrected complete native source part1/4 passed in398.589s, exit0,88children fully reaped/no cleanup, all eleven source/index postimages exact. The whole-gate ticket-directory override was explicitly unset. The initial failed run and local-only fixture repair remain public at1e743fbca394f4574d18f2f72b493df489c074af. This checkpoint does not claim source4 complete or a source commit/PR/merge. Part2 is currently running, with protected sequential parts3/4 after success. Source candidate remains the source11 archive from the earlier checkpoint. Structure field audit confirms only research_note changes; other phase/attribute/geometry/placement values and all GLB/registry paths are unchanged. Runtime review remains pending and will explicitly use the parent-approved relevant scope without a full15 claim. OriginalT2383 remains partial/OPEN.
+
+Recovery: /workspace/shared/SAUGANASH-CURRENT-20261103.md; native controllers and receipts /tmp/sauganash-source4-20261103. Source each shell /workspace/shared/resume-chicago-env.sh. No source GitGC/repack/broadadd or backer mutation.
