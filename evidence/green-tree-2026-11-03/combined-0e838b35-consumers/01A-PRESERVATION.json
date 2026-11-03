@@ -1,0 +1,89 @@
+{
+  "composition": [
+    {
+      "path": "chicago/4d/renderers/web/js/occupied-footprints.js",
+      "method": "new-opt-in-helper",
+      "pre_sha256": null,
+      "post_sha256": "882a01b7c46b1b95e82e05846d96e9867181c9dec4f079580199d5acb30e6f5f",
+      "delta": "occupied-footprints.js.01A-ONLY-GT-DELTA.patch"
+    },
+    {
+      "path": "chicago/4d/renderers/web/js/walker.js",
+      "method": "clean-native-three-way-from-Eae-proposal",
+      "pre_sha256": "28f8415dab3dee0679d202aeb73f840e9d1756862439801adcce6a28765e07e4",
+      "post_sha256": "1e61998f50340498bfce180d70db2767830fdf3c6bcf99f479ec6ef228f83d58",
+      "delta": "walker.js.01A-ONLY-GT-DELTA.patch"
+    },
+    {
+      "path": "chicago/4d/renderers/web/js/navigation.js",
+      "method": "clean-native-three-way-from-Eae-proposal",
+      "pre_sha256": "350b6655c5bf7ebb9cee0fb46f0e9b5991861e90545b0bdb99e031d04cb13a6c",
+      "post_sha256": "9078fecd2556a398650e34807640504d29454bd913be4e0f14870d3baab0b028",
+      "delta": "navigation.js.01A-ONLY-GT-DELTA.patch"
+    },
+    {
+      "path": "chicago/4d/renderers/web/js/main.js",
+      "method": "clean-native-three-way-from-Eae-proposal",
+      "pre_sha256": "d1aa0457f179589210eb93a855e771c4b19d94aff6c18249f5ad78a9a932d30a",
+      "post_sha256": "9daa77f35a99d3a39792de7c97b718ad262360e9a8054cc53c6af9a432433bbd",
+      "delta": "main.js.01A-ONLY-GT-DELTA.patch"
+    },
+    {
+      "path": "chicago/4d/renderers/web/js/jaunt-context.js",
+      "method": "clean-native-three-way-from-Eae-proposal",
+      "pre_sha256": "d9500f9819214d75d7640ba2b28b4f2f0c54450092374ba1634a18c62960ed5e",
+      "post_sha256": "fb28d036e9657f211425fb38d9e16b12a3dda677b7df1d538dc3afee3059692b",
+      "delta": "jaunt-context.js.01A-ONLY-GT-DELTA.patch"
+    }
+  ],
+  "renderer_delta_removed_lines": [
+    {
+      "path": "chicago/4d/renderers/web/js/walker.js",
+      "removed_lines": [
+        "    const poly = Array.isArray(raw) ? raw : raw?.polygon;",
+        "    if (!Array.isArray(poly) || poly.length < 3) continue;",
+        "    const fp = { id: record.id, pts: poly.map(toWorld) };",
+        "    // T-3319: a parade is ground the visitor walks on (see the header).",
+        "    if (record.sidecar?.attributes?.kind?.value === 'parade') fp.ground = true;",
+        "    // T-2943: the openings through it a visitor may walk (see the header).",
+        "    const lanes = (Array.isArray(raw?.passages) ? raw.passages : []).map((p) => passageLane(p, toWorld)).filter(Boolean);",
+        "    if (lanes.length) fp.passages = lanes;",
+        "    out.push(fp);"
+      ]
+    },
+    {
+      "path": "chicago/4d/renderers/web/js/navigation.js",
+      "removed_lines": [
+        "function structureOutlines(registry) {",
+        "    const polygon = Array.isArray(raw) ? raw : raw?.polygon;",
+        "    if (!Array.isArray(polygon) || polygon.length < 3) continue;",
+        "    const ring = polygon.map(([u, v]) => [",
+        "      e0 + u * cos + v * sin,",
+        "      n0 - u * sin + v * cos,",
+        "    ]);",
+        "    // T-2654: the Map app hit-tests these and colours them by the building's own grade.",
+        "    ring.id = record.id ?? sidecar.id ?? null;",
+        "    ring.grade = sidecar.grade?.value ?? sidecar.documented_range?.confidence ?? null;",
+        "    out.push(ring);"
+      ]
+    },
+    {
+      "path": "chicago/4d/renderers/web/js/main.js",
+      "removed_lines": [
+        "          const outlines = new Map(footprints.map(f => [f.id, f.pts]));",
+        "            point: structurePosition(record.id), outline: outlines.get(record.id),"
+      ]
+    },
+    {
+      "path": "chicago/4d/renderers/web/js/jaunt-context.js",
+      "removed_lines": [
+        "    const outline = place.outline?.length >= 3 ? place.outline : [[place.point.e, place.point.n]];",
+        "      for (let k = 0; k < outline.length; k++) {"
+      ]
+    }
+  ],
+  "latest_fort_renderer_inputs": "01A-RENDERER-INPUTS.json",
+  "original_Eae_research_preserved": "EAE-PRESERVATION.json",
+  "no_canonical_reads_or_writes": true,
+  "producer_base_not_replaced_with_01a_because_unmerged_Sauganash_must_survive": true
+}
