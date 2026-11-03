@@ -1,0 +1,7 @@
+# Sauganash PR1680: exact integrated source and active runtime checkpoint
+
+The public feature head is `27ab2f3b6dc38547e2668ced16191c30c0e8ca48`, tree `d719d0d702da0d5cbadf5ba1d49c0619143d10f0`. All four native source parts passed before authored commit ce36; normal integration with current dev42b passed twelve current owning checks, unchanged native Hotel phase params/recipes, PR-only questions and actual committed-head publication/byte contract. The zip contains all eleven current source bodies, each rechecked against its exact server-verified blob/sha256 without touching source Git, plus the closed provenance and prepared/frozen runtime helpers.
+
+Runtime review is **ACTIVE, not yet qualified**. The protected exact-head controller survived the23:25 cloud reconnect. Desktop Images and Record screenshots exist; complete desktop/phone and native Stage3both107 closures, root direct pixel acceptance and hosted gate are still pending. No source/Git/publication/ticket/helper writer ran to make this checkpoint.
+
+The visible increment holds Andreas's credited retrospective1884 engraving on the hotel Images card and states remaining roof/gable differences. No geometry, phase, placement, paint or confidence change is claimed. T2383 remains partial; never close it merely because this PR merges. Finish the normal green dev PR, then release the partial original and verify public preview delivery. The zip recovery note gives exact paths/claim expiry and the frozen-controller protocol.
