@@ -1,0 +1,1 @@
+Root directly inspected all four actual card/Record screenshots and accepted the bounded context/credit/date/inferred scope. Exact receipts accompany actual-ui; no source body or whole original match acceptance follows.
