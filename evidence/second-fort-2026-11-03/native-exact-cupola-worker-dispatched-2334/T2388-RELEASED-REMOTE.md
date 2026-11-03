@@ -1,0 +1,96 @@
+---
+id: T-2388
+title: Match the second Fort Dearborn (1835) to its pictures, every building in it
+state: open
+epic: TOWN
+requested_by: owner
+seen: false
+effort: M
+legacy_id: null
+parent: null
+opened: 2026-10-11
+closed: null
+pr: null
+claimed_by: null
+blocked_on: null
+needs_bake: false
+closed_at: null
+claimed_run: null
+claimed_at: null
+decision: null
+decision_answer: null
+---
+
+Match the second Fort Dearborn (1835) to its pictures, every building in it.
+
+Owner, 2026-10-11: "if you have an image you should work towards it until it's a photographic representation of any images even drawings are ok, but it should look exactly perfectly like the image or drawing"; "redo any work already done to meet this high standard"; "you don't wrap the case until it matches the photo".
+
+The fort was built without being checked against its pictures as a whole (inventory of 2026-10-11, T-2368). Open every picture listed here and read the building off the picture itself. Solve each one's camera into `data/reference_views/<structure_id>/<view>.json`, render with `node tools/photo_match.mjs`, and rebuild until the side-by-side shows nothing the picture shows differently: massing, bays, every opening's shape and height, ornament, cornice, porch and stoop, roof and chimneys, fence, materials and tone (AGENTS.md rule 11; `data/reference_views/README.md`). What the picture does not show stays reconstructed and recorded in `docs/LIBERTIES.md`.
+
+A picture of the fort shows many records at once, so `tools/photo_match.mjs` first learns to render a group: the camera names `also_render` (the other structure ids), each placed by its scene position. Every record of the fort is matched through those views, and the gate is carried by the blockhouse's.
+
+Pictorial sources are tier 5: form only, never a coordinate. Several are drawn from memory or later (Andreas 1884, Kurz & Allison 1893), and some post-date 1835 (each is evidence of its own date, scene 1835-07-01, AGENTS.md rule 3): the build follows what each shows of the building as it stood then, and the match record says which picture governs where they disagree.
+
+Records: `fort_dearborn_artillery_house`, `fort_dearborn_barracks`, `fort_dearborn_big_barn`, `fort_dearborn_blockhouse`, `fort_dearborn_commandants_quarters`, `fort_dearborn_flagstaff`, `fort_dearborn_garrison_garden`, `fort_dearborn_guard_house`, `fort_dearborn_magazine`, `fort_dearborn_officers_quarters`, `fort_dearborn_out_building_a`, `fort_dearborn_out_building_b`, `fort_dearborn_palisade`, `fort_dearborn_parade`, `fort_dearborn_root_house`, `fort_dearborn_root_house_b`, `fort_dearborn_shop`, `fort_dearborn_store_house`, `fort_dearborn_sutlers_store`, `fort_dearborn_us_factors_house`, `fort_dearborn_wash_house`.
+
+Pictures:
+  source: `data/sources/kurz_allison_1893.json`
+  source: `data/sources/chicagology_prefire276.json`
+  source: `data/sources/chicagology_prefire052.json`
+  source: `data/sources/wentworth_1881_fort_dearborn.json`
+  picture: `chicago/reference/images/chicago/chicago_settlement_1820_2.jpg`
+  picture: `chicago/reference/images/chicago/chicago_from_lake_1818_1830_childs.jpg`
+  picture: `chicago/reference/images/chicago/chicago_fort_dearborn_1831_1.jpg`
+  picture: `chicago/reference/images/chicago/chicago_fort_dearborn_1831_2.jpg`
+  picture: `chicago/reference/images/chicago/chicago_fort_dearborn_river_mouth_1830.jpg`
+  picture: `chicago/reference/images/chicago/licensed_previews/chicago_second_fort_dearborn_1816_getty.jpg`
+  picture: `chicago/reference/images/chicago/licensed_previews/chicago_fort_dearborn_1830_alamy.jpg`
+  picture: `chicago/reference/images/chicago/licensed_previews/chicago_fort_dearborn_1892_peck_hindman.jpg`
+  picture: `chicago/reference/images/chicago/chicago_harbor_lighthouse_1838.jpg`
+
+**Acceptance:** every reference view of the building(s) below has its camera, its side-by-side from the GLB in the tree, and a match record with verdict `matches` and nothing open. The PR carries the before and after side-by-sides, plus desktop and 390x780 in-app shots with no page errors.
+
+## Image gate
+- fort_dearborn_blockhouse
+
+
+## Picture-review checkpoint — 2026-10-22
+
+The unique blockhouse at the right of panel 5 has an absent cupola. Add a consumed cupola option, grade occurrence inferred from this source and dimensions reconstructed, then bake. Do not guess which range carries the pictured gallery. Early 1820 views predate replacement barracks; 1838/1850s views cannot silently govern July 1835.
+
+No matching verdict or completion is claimed. See the [shared compound-render checkpoint](https://github.com/kevinrhaas/chicago/blob/steward/t3040-fort-reference-groups/chicago/4d/docs/RESEARCH/fort-reference-groups-T-3040/README.md) for source/date findings and the next implementation step.
+
+## Unapplied next-change handoff — 2026-10-22
+
+A proposed first refinement and its evidence/remaining validation are saved in [T-2388.patch and T-2388.md](https://github.com/kevinrhaas/chicago-tickets/tree/main/evidence/image-match-2026-10-22/t3040-compound-review-checkpoint/unapplied-next-parcels). `git apply --check` passed against code commit `d3685569c5284946ab400deb0d2ccd0aa17a06be`. This is not an applied change, bake, solved camera or completed match. Claim the ticket before implementation, inspect current source and the handoff, and retain its full image acceptance. Whole-compound review support is [code PR #1218](https://github.com/kevinrhaas/chicago/pull/1218), awaiting GitHub CI at this checkpoint.
+
+**Released 2026-10-23** (claim of run 10/23/2026, 8:49:10 AM CT): Owner requested session wrap. Exact closed prototypes, actual renders and unapplied source patches are saved at https://github.com/kevinrhaas/chicago-evidence/blob/3575ef6/evidence/image-match-2026-10-22/final-parallel-recovery-20261023T1430/RECOVERY.md . Delegated workers have stopped. Image matching remains unfinished; resume from the case handoff and preserve its evidence limits.
+
+
+## Exact native-worker blockhouse cupola handoff — 2026-11-03
+
+The bounded visible increment under existing T-2388 is ONLY the second fort blockhouse roof assembly: build its pictured little square cupola and replace the current invented separate centre stack that would intersect it. Full all-buildings/all-pictures matching remains unfinished. No new photo ticket, split, done--pr or forced completion is authorized for this partial work.
+
+Read the [closed current-source and actual-picture implementation packet](https://github.com/kevinrhaas/chicago-evidence/blob/3c8069d96f65410adb186478ae435bf9691229da/evidence/second-fort-2026-11-03/native-blockhouse-cupola-readiness-current42b/RECOVERY.md), ROOT-REVIEW.md, AUDIT.json and actual public-domain Kurz & Allison panel5 before editing. Root directly reviewed the actual plate, existing source/record and producer. Fresh current-source/ownership readbacks are saved with this handoff; recheck actual current dev when the native worker starts.
+
+Keep fort_dearborn_blockhouse a fort_structure(kind=blockhouse), log_1816 phase. Add an optional/default-off explicitly consumed blockhouse cupola control locally in fort_structure.py and fort_structure_params.py. Existing lantern only builds on _tower(): toggling it on this blockhouse adds nothing. Do not route this building through the lighthouse, change shared common geometry or turn on cupolas globally. Implement finite bounded parameters and supported combinations without weakening generic schemas/assertions.
+
+Root qualified this intentional roof-assembly choice: replace the unsupported reconstructed centre chimney count with0 and build the pictured cupola at the centre. The old single chimney is placed exactly there. This limited depiction choice is NOT a claim of no heating, no flue, or no later secondary projection, and does not silently move a stack elsewhere. Cupola occurrence is inferred from identified pictures; exact dimensions, cap pitch, openings, joinery and materials are reconstructed and recorded as a liberty. Preserve the entire existing below-roof body, walls, doors, jetty0.45m, loopholes, surveyed seat/rotation8degrees, 14.52by9.80m inferred footprint with its existing ambiguity,5.2m reconstructed walls, two stories, main pyramid/pitch30degrees and existing palettes. The cupola must sit/overlap properly against all four sloping roof planes, without floating corners, sky gaps or a hidden stack.
+
+The Kurz & Allison1893 sheet is a verified public-domain retrospective picture at tier5, not a coordinate, metric, paint or independent proof of every feature on1July1835. Existing Wau-Bun/1831 reproductions corroborate the cap. The filename chicago_fort_dearborn_river_mouth_1830.jpg is misleading: its verified1856Kellogg/Blanchard print depicts about1836–1849 and has a small ambiguous secondary projection beside a louvred cap. Keep that later detail unresolved; do not backdate its louvres/projection or completed Lake House. No asset may derive from held check_required sources.
+
+Changing this producer reaches the current25fort_structure MASTERs plus any applicable variants found by the actual staleness owner, including the already accepted1832lighthouse. Before the FIRST geometry-source commit, genuinely generate/qualify every affected current MASTER on pinnedUbuntu26.04/SHA-verifiedBlender4.5.3 in bounded native batches, with actual complete normalized inputs and output hashes. Do not predict/stamp freshness, omit foreign family members, alter recipe schemes or accept old WEB derivatives by filename. Actually regenerated byte-identical MASTERs may retain genuinely bound existing WEB bytes; changed outputs require actual encoding.
+
+The independent Jail run41734994705 targets T-2380/frame_dwelling271 and the first-fort NE roof run41739288717 targets T-3041/outbuilding243. Their producers are distinct. Leave their runs/topics/claims/source alone. Preserve every foreign registry row and new keeper/NE model, use native entry-wise registry integration, and genuinely rebake any true both-sides model conflict. Keep accepted Green Tree and lighthouse outputs intact.
+
+Preserve the historical docs/RESEARCH/fort-reference-groups-T-3040/second-fort-panel-5.* bodies as historical diagnostics. Capture ACTUAL same-camera before/after current21member compound comparisons through photo_match.mjs, with actual model hashes/placements and fresh group binding. Do not turn the old100m-eye/undersized compound into a claimed historical or metric fit, move surveyed geometry to match it or relabel old renders as new. A separate local blockhouse camera refinement may state actual controls/uncertainty; camera uncertainty alone adds no extra stop beyond T3153. Re-render every actual canonical group whose member bytes change. Mark only this pictured roof-assembly change fixed after actual visual confirmation; every other real compound/date gap remainsOPEN/DIFFERS.
+
+Make the picture reachable with credit on the actual blockhouse Images card through supported native source/camera compilation. Baseline Images0/gradeinferred; a reasonable whole picture shows this named building, so derive the attested grade with an explicit pictured-source reason. Do not type sidecar confidence, guess library_image/held/thumbnail flags or attest hidden context. If a fresh canonical comparison is enrolled, resolve the actual photo/hash correctly and keep diagnostic_only:true for poorly constrained framing, without a false from-this-spot invitation.
+
+Root reviewed platform draftPR219 exact feature aa9d7d2322d3abbc78d72526146c018a241c643e on steward/chicago-native-exact-ticket-20261103; both sourceCI checks and official15case desktop/phone smoke passed. The dedicated exact native-authoring job is literalUbuntu26.04/150minutes with existing pinnedBlender cache. Platform main stays unchanged. Only one exact target_ticket=T-2388 dispatch, lane fort-cupola-native-20261103, appchicago/slice1/slices1/defaultmodel-effort is authorized after this handoff sync/release and fresh ownership recheck. No unrelated fallback or duplicate Jail/NE job. No dispatch is claimed by this metadata handoff.
+
+After all genuine affected geometry, all four source-check parts must PASS BEFORE first source commit, every native foreground command bounded600seconds with truthful reaping/verdicts. Ask actual committed-head PR changelog and ID questions; push a native feature branch and draft dev PR promptly. Publish the exact committed head and verify the byte contract, then actual default1835 desktop1280x800 AND phone390x780 roof/body in Normal/ByGrade, Imagescredit/Record/date/reconstructed metrics, grounded native arrival/entry/roof joins and appropriate existing smoke with zero page/console/network/server errors. Price current light-tier headroom before the deal and retain its floor/assertions. Keep conservative smoke-budget request distinct from actual subset; do not claim unrun whole15. Root must inspect actual pixels before required hosted-green ordinary exact-head dev merge.
+
+Append LIBERTIES/STATUS/ROADMAP without replacing concurrent suffixes; one small visitor-facing changelog entry. Checkpoint qualified geometry/source4/PR/merge/delivery in chicago-evidence. Ship a checked partial cupola increment and release T-2388 OPEN with the remaining discrepancy/recovery pointer. No direct dev/main push, admin/force merge, local-host Blender, fabricated source/license/metric, new photo followup or done--anyway.
+
+**Released 2026-11-03** (claim of Codex second-fort cupola native handoff 2026-11-03 11/3/2026, 5:34:11 PM CT): Reviewed bounded pictured-cupola native handoff saved; OPEN for authorized exact T2388 worker. No geometry, worker dispatch or full-original completion claimed by metadata handoff.
