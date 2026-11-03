@@ -1,0 +1,249 @@
+{
+  "status": "CLOSED_READONLY_SOURCE_AND_REMOTE_ARTIFACT_TRIAGE_NO_IMPLEMENTATION_OR_RUNTIME_PROOF",
+  "utc": "2026-11-03T14:01:29.957344+00:00",
+  "source_HEAD": "1b1db388e4965a852f660a4fda2b5f467a97b907",
+  "source_TREE": "4e1168259bbc1b4c619ca8a069b8022e2d2a8bab",
+  "actual_remote_run": 41625055336,
+  "actual_remote_mobile1904": {
+    "total_bytes": 419610116,
+    "MiB": 400.171391,
+    "ceiling_bytes": 419430400,
+    "excess_bytes": 179716,
+    "minimum_saving_for_1MiB_headroom": 1228292
+  },
+  "totals": {
+    "jsHeap": 74516912,
+    "arrayBuffers": 88692347,
+    "gpuBuffers": 195109368,
+    "gpuTextures": 61291489,
+    "gpuRenderbuffers": 3145728,
+    "total": 419610116
+  },
+  "GPU_renderbuffer_accounting": "totals.gpuTextures already includes gl.gpuRenderbuffers; do not add renderbuffers again",
+  "layerSum": {
+    "cpuKept": 14363998,
+    "gpuGeometry": 153782610,
+    "textureBytes": 205615853,
+    "cpuNeverUploaded": 9300756
+  },
+  "layers": [
+    {
+      "name": "structures",
+      "cpuKept": 0,
+      "gpuGeometry": 121806532,
+      "textureBytes": 194780016,
+      "textures": 673,
+      "geometries": 425,
+      "cpuNeverUploaded": 0
+    },
+    {
+      "name": "railway",
+      "cpuKept": 344580,
+      "gpuGeometry": 19375520,
+      "textureBytes": 8912888,
+      "textures": 26,
+      "geometries": 22,
+      "cpuNeverUploaded": 159552
+    },
+    {
+      "name": "terrain",
+      "cpuKept": 8892948,
+      "gpuGeometry": 1775716,
+      "textureBytes": 87381,
+      "textures": 1,
+      "geometries": 111,
+      "cpuNeverUploaded": 8892948
+    },
+    {
+      "name": "street-grid",
+      "cpuKept": 1992420,
+      "gpuGeometry": 4422576,
+      "textureBytes": 1835568,
+      "textures": 21,
+      "geometries": 18,
+      "cpuNeverUploaded": 248256
+    },
+    {
+      "name": "context",
+      "cpuKept": 1045932,
+      "gpuGeometry": 2892084,
+      "textureBytes": 0,
+      "textures": 0,
+      "geometries": 6,
+      "cpuNeverUploaded": 0
+    },
+    {
+      "name": "front-yards",
+      "cpuKept": 787332,
+      "gpuGeometry": 2209396,
+      "textureBytes": 0,
+      "textures": 0,
+      "geometries": 6,
+      "cpuNeverUploaded": 0
+    },
+    {
+      "name": "street-trees",
+      "cpuKept": 981874,
+      "gpuGeometry": 981874,
+      "textureBytes": 0,
+      "textures": 2,
+      "geometries": 4,
+      "cpuNeverUploaded": 0
+    },
+    {
+      "name": "street-furniture",
+      "cpuKept": 318072,
+      "gpuGeometry": 318072,
+      "textureBytes": 0,
+      "textures": 0,
+      "geometries": 16,
+      "cpuNeverUploaded": 0
+    },
+    {
+      "name": "sky",
+      "cpuKept": 840,
+      "gpuGeometry": 840,
+      "textureBytes": 0,
+      "textures": 0,
+      "geometries": 1,
+      "cpuNeverUploaded": 0
+    }
+  ],
+  "uploadRelease": {
+    "geometries": 577,
+    "attributes": 2728,
+    "bytes": 199917854,
+    "keptForHarness": false,
+    "sources": 284,
+    "sourceBytes": 138490554,
+    "images": 0,
+    "imageBytes": 0,
+    "compressed": 69,
+    "compressedBytes": 20449072,
+    "boundsRows": 84919,
+    "boundsBytes": 3488854
+  },
+  "residency": {
+    "pendingAtRead": 0,
+    "settleMs": 106,
+    "resident": 66,
+    "sources": 69,
+    "residentBytes": 19924704,
+    "budgetBytes": 268435456,
+    "wantedBytes": 19924704,
+    "pending": 0,
+    "uploads": 0,
+    "evictions": 3,
+    "overBudget": 0
+  },
+  "retainers": {
+    "reported": false,
+    "snapshot_reported": false,
+    "reason": "Actual CI command had no snapshot flag and artifact row has neither retainers nor snapshot. Scene counters omit non-geometry closure caches; backing stores cannot be assigned to paths from this artifact."
+  },
+  "bounded_candidate": {
+    "kind": "REVIEW_ONLY_UNAPPLIED",
+    "paths": [
+      "chicago/4d/renderers/web/js/upload-release.js"
+    ],
+    "suggestion": "Add 'street-trees': [] to RELEASE_KEEP using existing standard BatchedMesh release protocol, after control validation",
+    "source_basis": [
+      "Street-tree layer is currently omitted from RELEASE_KEEP; four geometry buffers retain981874B",
+      "Street-tree picking uses analytical trunk cylinders, not triangle arrays",
+      "TreeInstances batches mutate matrices/visibility/geometry IDs/color textures for LOD/fades; original geometry data laid once",
+      "Ordinary trees:[] already uses this release machinery with bounds/confidence capture; rebuild disposes/regrows forest"
+    ],
+    "upper_bound_scene_bytes": 981874,
+    "upper_bound_saved_MiB": 0.936388,
+    "best_possible_result_if_only_these_bytes_saved": 418628242,
+    "best_possible_headroom": 802158,
+    "alone_reaches_requested_1MiB_headroom": false,
+    "required_controls": [
+      "Native release callback/bounds/confidence ranges and keep-geometry=1 behavior",
+      "Exact actual original geometry/GPU bytes and parent/child rendered pixel checks",
+      "Near/far/distant LOD/fades; summer/winter/detail rebuild; context loss recovery",
+      "Same original CI141 memory command on exact candidate source; do not infer actual saving from upper bound"
+    ]
+  },
+  "other_findings": [
+    {
+      "scope": "railway",
+      "scene_CPU_bytes": 344580,
+      "pending_bytes": 159552,
+      "reason": "Insufficient1MiB even if all attribute bytes freed. Unreached ties/tufts/rock caches outside scene counters not quantified by artifact."
+    },
+    {
+      "scope": "railway instanceColor",
+      "kind": "FOLLOWUP_SOURCE_REVIEW_ONLY",
+      "reason": "Static instanceMatrix release already exists; corresponding fixed once-written instanceColor remains. Need separate exact lastwrite and tier/rebuild controls; no1MiB claim."
+    },
+    {
+      "scope": "street-furniture",
+      "reason": "Do not release instanceMatrix/confidence lanes: deal() rewrites while moving or changing detail. Static base geometry could be reviewed separately but exact share of318072B is not in artifact."
+    },
+    {
+      "scope": "terrain",
+      "scene_pending_bytes": 8892948,
+      "reason": "Largest pending scene allocation; currently hidden/not-uploaded detail tiles retain their original source geometry for later reach. Requires exact replay/lazy lifetime architecture; cannot simply discard without later walking regressions."
+    },
+    {
+      "scope": "context",
+      "reason": "Instanced geometry/matrices are used by ordinary Raycaster building picks; do not remove CPU positions/matrices indiscriminately."
+    },
+    {
+      "scope": "existing changes",
+      "reason": "Unsupported-town laziness, floraU8, timberU8/Half, railway static matrices, exact rock replay and gray caching already exist; no duplicate savings claimed."
+    }
+  ],
+  "source_pins": [
+    {
+      "path": "chicago/4d/renderers/web/js/upload-release.js",
+      "blob": "4fee3f7ce91aad255e8d2e381bfe048bf8fb30cb",
+      "sha256": "2b941310fb6323b63112478427a0f9c4d785aa966bf99b1fb680a2a5159cefff",
+      "bytes": 21785
+    },
+    {
+      "path": "chicago/4d/renderers/web/js/railway.js",
+      "blob": "a1eb80d063a3bf662652d9af4bab0bdfe2feb73b",
+      "sha256": "b9b3b3d878a43f75c6afc4fe11a71fe4667deb5d78406e8b9d0bbf275e665611",
+      "bytes": 82982
+    },
+    {
+      "path": "chicago/4d/renderers/web/js/street-trees.js",
+      "blob": "637b6f593717fed5f9b7f8b9aa52d0259cc7f600",
+      "sha256": "0910d1c4c92ae365a8e7bdc9eded2ca745cdcb5b564f6d9ed97028d76b8582ca",
+      "bytes": 17886
+    },
+    {
+      "path": "chicago/4d/renderers/web/js/tree-instances.js",
+      "blob": "b279556c40e547601541b7bf6655e7b5820cc726",
+      "sha256": "39ea6657e4a0799dd9241b69481e62f3a5ce64c250151b2828ca87a77c17b361",
+      "bytes": 29135
+    },
+    {
+      "path": "chicago/4d/renderers/web/js/street-furniture.js",
+      "blob": "a51a70a5373c83760d69aefae76ecbdfc4e55f9f",
+      "sha256": "7fee7fdef39a226a70017be8fa79edecb507a763999de036f6b71cc2ffdc0230",
+      "bytes": 33572
+    },
+    {
+      "path": "chicago/4d/renderers/web/js/context.js",
+      "blob": "d7ab3637d14c884e66d511063a9e5a04548fb0e3",
+      "sha256": "c6f5775e2d5e1e860ae49b65235c2f79cb7f51192613d6ed162e4fa3d3588f50",
+      "bytes": 36013
+    },
+    {
+      "path": "chicago/4d/renderers/web/js/terrain.js",
+      "blob": "0d8bda7262c007768381375ec0b035a73fb26ea4",
+      "sha256": "febe57fa35e90aaf580fab2e5733dd23bc19f4b898c4a011447a9f6403dee8b1",
+      "bytes": 149282
+    },
+    {
+      "path": "chicago/4d/tools/measure_memory.mjs",
+      "blob": "7741b7d74aa9139d5549d8c8670064fb90709668",
+      "sha256": "bff9aea2fd77ee4f7d18399642829d296e2d5a0e217b8fb82223ecba6e5935d3",
+      "bytes": 53002
+    }
+  ],
+  "no_H_edits_browser_heavy_gates_or_API_writes": true
+}
