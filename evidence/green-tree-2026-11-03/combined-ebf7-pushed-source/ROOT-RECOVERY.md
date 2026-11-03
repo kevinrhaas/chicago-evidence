@@ -1,0 +1,1 @@
+Root checkpoint uses only closed receipts and public GitHub API reads. Canonical writer lease remains with green_tree_next_increment. Final combined reader/browser lease is handed to saug_recover only after explicit writer freeze.
