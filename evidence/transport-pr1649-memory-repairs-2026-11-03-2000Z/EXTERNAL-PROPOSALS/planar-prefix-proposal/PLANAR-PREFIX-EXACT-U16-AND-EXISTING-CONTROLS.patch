@@ -1,0 +1,63 @@
+--- a/chicago/4d/renderers/web/js/planar-occluders.js
++++ b/chicago/4d/renderers/web/js/planar-occluders.js
+@@ -114,7 +114,7 @@
+  * @param {ArrayLike<number>} position  xyz triples, the frame the planes come back in
+  * @param {ArrayLike<number>|null} index
+  * @returns {{normal:number[], d:number, u:number[], v:number[], umin:number, vmin:number,
+- *   res:number, W:number, H:number, sat:Int32Array, cells:number, tol:number}[]}
++ *   res:number, W:number, H:number, sat:Uint16Array|Int32Array, cells:number, tol:number}[]}
+  *   `sat` is the covered cells' summed-area table, (W+1) x (H+1), so a caller asks whether
+  *   a whole range of cells is covered in four reads.
+  */
+@@ -208,17 +208,19 @@
+         if (segmentMeetsRect(e.a[0], e.a[1], e.b[0], e.b[1], cx0, cy0, cx0 + res + 2 * inset, cy0 + res + 2 * inset)) mask[gy * W + gx] = 0;
+       }
+     }
+-    const sat = new Int32Array((W + 1) * (H + 1));
+-    let cells = 0;
++    // Every prefix is a count of a subset of these covered cells. Narrow only
++    // when the COMPLETE plane count fits; neither wrap nor approximate a prefix.
++    const cells = mask.reduce((sum, covered) => sum + covered, 0);
++    if (cells < minCells) continue;
++    const Counts = cells <= 0xffff ? Uint16Array : Int32Array;
++    const sat = new Counts((W + 1) * (H + 1));
+     for (let gy = 0; gy < H; gy++) {
+       let row = 0;
+       for (let gx = 0; gx < W; gx++) {
+         row += mask[gy * W + gx];
+         sat[(gy + 1) * (W + 1) + gx + 1] = sat[gy * (W + 1) + gx + 1] + row;
+       }
+-      cells += row;
+-    }
+-    if (cells < minCells) continue;
++    }
+     out.push({ normal: n, d, u, v: v2, umin, vmin, res, W, H, sat, cells, tol });
+   }
+   return out;
+--- a/chicago/4d/tools/check_spatial_batch.mjs
++++ b/chicago/4d/tools/check_spatial_batch.mjs
+@@ -519,6 +519,24 @@
+   u:new THREE.Vector3(...c.u),v:new THREE.Vector3(...c.v),active:()=>true});
+ const [plane]=planarCoverPlanes(wallOf(),null).map(worldPlane);
+ assert.ok(plane && plane.cells>30000,'the wall is one plane with its cells proven');
++// The prefix stores exact counts, not normalized/rounded values. The total
++// occupied count bounds EVERY prefix, even when the rectangular grid is larger.
++assert.ok(plane.sat instanceof Uint16Array, 'the existing perforated wall fits exact u16 counts');
++assert.equal(plane.sat.at(-1), plane.cells, 'the final prefix retains the complete covered count');
++const [wideCover] = planarCoverPlanes(rect(-20,-20,20,20), null);
++assert.ok(wideCover.cells > 65535 && wideCover.sat instanceof Int32Array,
++  'a plane exceeding u16 count keeps the original wide representation');
++assert.equal(wideCover.sat.at(-1), wideCover.cells, 'wide counts do not wrap at 65536');
++const [lastNarrow] = planarCoverPlanes(rect(0,0,257,259), null, {res:1});
++const [firstWide] = planarCoverPlanes(rect(0,0,258,258), null, {res:1});
++assert.equal(lastNarrow.cells, 65535); assert.ok(lastNarrow.sat instanceof Uint16Array);
++assert.equal(lastNarrow.sat.at(-1), 65535, 'last narrow count is not rounded');
++assert.equal(firstWide.cells, 65536); assert.ok(firstWide.sat instanceof Int32Array);
++assert.equal(firstWide.sat.at(-1), 65536, 'first wide count is not truncated');
++const [sparseCover] = planarCoverPlanes([...rect(0,0,.5,30), ...rect(29.5,0,30,30)], null);
++assert.ok(sparseCover.W*sparseCover.H > 65535 && sparseCover.cells < 65536
++  && sparseCover.sat instanceof Uint16Array, 'admission uses occupied count, not rectangular area');
++assert.equal(sparseCover.sat.at(-1), sparseCover.cells, 'sparse wide-grid prefix stays exact');
+ assert.equal(planarCoverPlanes(wallOf(),null,{minPlaneArea:500}).length,0,'a small plane is not a cover');
+ const eye=new THREE.Vector3(),forward=new THREE.Vector3(0,0,-1),px=2/800;
+ const box=(a,b)=>new THREE.Box3(new THREE.Vector3(...a),new THREE.Vector3(...b));
