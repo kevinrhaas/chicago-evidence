@@ -1,0 +1,19 @@
+--- frozen-V2/observe-one-world-case.cjs
++++ stored-visitor-tier-V3/observe-one-world-case.cjs
+@@ -45,10 +45,13 @@
+       hasTouch: !!cfg.touch, deviceScaleFactor: cfg.touch ? 2 : 1, reducedMotion: 'no-preference' });
+     // Existing visitor Image sharpness: Low(1), persisted through the normal settings reader.
+     // Touch/DPR2/390x780/Balanced/assets/physics and every functional predicate stay unchanged.
+-    await context.addInitScript(() => { try {
++    await context.addInitScript(({ detail }) => { try {
+       const settings = JSON.parse(localStorage.getItem('chicago4d.settings') || '{}');
+-      settings.quality = 1; localStorage.setItem('chicago4d.settings', JSON.stringify(settings));
+-    } catch {} });
++      settings.quality = 1; settings.detail = detail;
++      localStorage.setItem('chicago4d.settings', JSON.stringify(settings));
++    } catch {} }, { detail: cfg.touch ? 'balanced' : 'full' });
++    report.nativeVisitorBootProfile = { detail: cfg.touch ? 'balanced' : 'full', quality: 1,
++      differenceFromV2: 'Persist actual requested visitor tier before boot; original setDetail remains and original Light retirement test remains.' };
+     page = await context.newPage(); page.on('pageerror', e => pageErrors.push(String(e)));
+     const entry = cfg.tree === 'source' ? '/renderers/web/index.html' : '/walk/index.html';
+     const moduleBase = cfg.tree === 'source' ? '/renderers/web/js/' : '/walk/js/';

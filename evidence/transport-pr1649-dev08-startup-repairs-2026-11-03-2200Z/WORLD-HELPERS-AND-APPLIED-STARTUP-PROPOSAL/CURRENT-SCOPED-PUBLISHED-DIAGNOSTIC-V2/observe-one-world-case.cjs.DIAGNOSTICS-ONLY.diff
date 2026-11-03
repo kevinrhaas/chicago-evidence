@@ -1,0 +1,43 @@
+--- frozen-current/observe-one-world-case.cjs
++++ diagnostic-v2/observe-one-world-case.cjs
+@@ -28,13 +28,13 @@
+     file = fs.realpathSync(file); assert(file.startsWith(root + path.sep));
+     const body = fs.readFileSync(file), sha256 = crypto.createHash('sha256').update(body).digest('hex');
+     if (seen.has(file)) assert.equal(seen.get(file).sha256, sha256, file);
+-    seen.set(file, { file, sha256, bytes: body.length, url: rel });
++    seen.set(file, { file, sha256, bytes: body.length, url: rel, firstServedUtc: seen.get(file)?.firstServedUtc ?? new Date().toISOString() });
+     res.writeHead(200, { 'Content-Type': types[path.extname(file)] || 'application/octet-stream', 'Cache-Control': 'no-store' });
+     res.end(body);
+   } catch (error) { report.serveError = String(error); res.writeHead(500); res.end(); }
+ });
+ (async () => {
+-  let browser, context, page;
++  let browser, context, page, observerProgressTimer;
+   try {
+     await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+     const playwright = require(path.join((process.env.NODE_PATH || '/workspace/.cloud-setup/npm/node_modules').split(path.delimiter)[0], 'playwright'));
+@@ -53,6 +53,16 @@
+     const entry = cfg.tree === 'source' ? '/renderers/web/index.html' : '/walk/index.html';
+     const moduleBase = cfg.tree === 'source' ? '/renderers/web/js/' : '/walk/js/';
+     await page.goto(`http://127.0.0.1:${server.address().port}${entry}?year=${cfg.scene}`, { waitUntil: 'domcontentloaded', timeout: 30000 });
++    const sampleObserverProgress = () => {
++      report.observerProgress ??= [];
++      report.observerProgress.push({ hostUtc: new Date().toISOString(), servedFileCount: seen.size,
++        missingCount: missing.length, pageErrorCount: pageErrors.length,
++        servedAssemblyStages: [...seen.values()].filter(row => /transport\/|humans\/|assembly|hitch|meshopt|people\.json/.test(row.url))
++          .map(({ url, bytes, firstServedUtc }) => ({ url, bytes, firstServedUtc })) });
++      save();
++    };
++    sampleObserverProgress();
++    observerProgressTimer = setInterval(sampleObserverProgress, 10000);
+     const routeProbe = cfg.recheck_whole_route ? require(cfg.actual_route_probe).probeNativeWorldRoute : null;
+     report.probe = await probeTownDriverWorld(page, { sceneId: cfg.scene, touch: !!cfg.touch,
+       moduleBase, outdir: cfg.output, label: `${cfg.tree}-${cfg.scene}-${cfg.touch ? 'mobile' : 'desktop'}-scope${cfg.scope}`,
+@@ -77,6 +87,7 @@
+     }
+   }
+   finally {
++    if (observerProgressTimer) clearInterval(observerProgressTimer);
+     if (context) await context.close(); if (browser) await browser.close();
+     await new Promise(resolve => server.close(resolve)); save();
+   }

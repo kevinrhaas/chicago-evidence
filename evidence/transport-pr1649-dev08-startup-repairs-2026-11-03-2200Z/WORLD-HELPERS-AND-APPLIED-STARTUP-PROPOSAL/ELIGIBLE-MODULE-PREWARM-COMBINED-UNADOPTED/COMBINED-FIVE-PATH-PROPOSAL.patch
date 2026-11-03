@@ -1,0 +1,270 @@
+--- a/chicago/4d/renderers/web/js/transport-loop.js
++++ b/chicago/4d/renderers/web/js/transport-loop.js
+@@ -242,10 +242,19 @@
+   return next.value;
+ }
+ 
++/** Prefer a prioritized continuation while still yielding to input/browser work.
++ * Older engines retain the original timer path; neither path changes the samples. */
++function yieldRouteTask() {
++  const scheduler = globalThis.scheduler;
++  return typeof scheduler?.yield === 'function'
++    ? scheduler.yield()
++    : new Promise(resolve => setTimeout(resolve, 0));
++}
++
+ /** Cooperative version for an already entered town. It yields BEFORE the first
+  * reading and between small chunks; main's first frame and welcome never wait on it. */
+ export async function preflightTransportRouteAsync(configuration, {
+-  yieldEvery = 32, yieldControl = () => new Promise(resolve => setTimeout(resolve, 0)),
++  yieldEvery = 32, yieldControl = yieldRouteTask,
+   cancelled = () => false,
+ } = {}) {
+   if (!Number.isInteger(yieldEvery) || yieldEvery <= 0 || yieldEvery > 128) throw Error('transport loop: bounded preflight chunk required');
+--- a/chicago/4d/renderers/web/js/town-transport.js
++++ b/chicago/4d/renderers/web/js/town-transport.js
+@@ -92,10 +92,11 @@
+ }
+ 
+ /** One instance per scene. The static parked layer remains independently owned. */
+-export function createTownTransport({ rows, sceneId, makeAssembly, heightAt,
++export function createTownTransport({ rows, sceneId, makeAssembly, prepareAssembly = null, heightAt,
+   clear, routeClear = clear, routeSupport = null, detail = 'full',
+   reach = { full: 90, balanced: 60, light: 0 }, problems = [], onActorsChanged = () => {} }) {
+   if (!Array.isArray(rows) || typeof makeAssembly !== 'function' || typeof clear !== 'function') throw Error('town transport: scene rows, assembly loader and clearance reader required');
++  if (prepareAssembly !== null && typeof prepareAssembly !== 'function') throw Error('town transport: optional assembly preparation callback required');
+   const actors = [], roots = [];
+   const saved = new Map();
+   const routeReadings = new Map(), deferred = new Map(), failed = new Set();
+@@ -129,6 +130,11 @@
+               ? roundedBlockRoute(row.route) : circleRoute(row.route);
+             if (row.horse_offset_m && !routeSupport) throw Error('town transport: actual whole-circuit horse support reader required');
+             let routeReading = routeReadings.get(row.id);
++            if (!routeReading && prepareAssembly) {
++              // Eligible near-route JS imports can overlap the complete static read.
++              // This optional warmup owns no models; the real factory remains authoritative.
++              try { Promise.resolve(prepareAssembly(liveRow)).catch(() => {}); } catch { /* factory reports its actual dependency error after the route passes */ }
++            }
+             if (!routeReading) routeReading = await preflightTransportRouteAsync({ row, route, heightAt,
+               clear: (from, to) => routeClear(row, from, to), support: routeSupport ? pose => routeSupport(row, pose) : null },
+               { yieldEvery: 128, cancelled: () => disposed || ownGeneration !== generation || tier === 'light' });
+--- a/chicago/4d/renderers/web/js/town-transport-scene.js
++++ b/chicago/4d/renderers/web/js/town-transport-scene.js
+@@ -36,11 +36,13 @@
+   const moduleBase = new URL('../', import.meta.url);
+   // Light/remote boot needs route metadata, never assembly modules or loaders.
+   // Start these only for an ordinary eligible assembly, alongside its directory.
+-  let assemblyTools = null;
+-  const getAssemblyTools = () => (assemblyTools ??= Promise.all([
++  let assemblyModules = null, assemblyTools = null;
++  const prepareAssemblyModules = () => (assemblyModules ??= Promise.all([
+     import('./driven-assembly-loader.js'), import('./draft-hitch.js'),
+     import('three/addons/loaders/GLTFLoader.js'),
+-  ]).then(([{ createDrivenAssemblyLoader }, { createDraftHitchFactory }, { GLTFLoader }]) => {
++  ]).catch(error => { assemblyModules = null; throw error; }));
++  const getAssemblyTools = () => (assemblyTools ??= prepareAssemblyModules()
++    .then(([{ createDrivenAssemblyLoader }, { createDraftHitchFactory }, { GLTFLoader }]) => {
+     const loader = new GLTFLoader();
+     return { createDrivenAssemblyLoader, makeHitch: createDraftHitchFactory({ confidence, loadJSON: json,
+       loadGLTF: file => loader.loadAsync(new URL(file, moduleBase).href) }) };
+@@ -54,6 +56,7 @@
+     return cache.get(row.id);
+   };
+   town = createTownTransport({ rows, sceneId, heightAt, detail, problems,
++    prepareAssembly: () => prepareAssemblyModules(),
+     clear: (row, a, b) => clearance(live, row, true)(a, b),
+     routeClear: (row, a, b) => clearance(fixed, row, false)(a, b),
+     routeSupport: (row, pose) => teamSupportAt(row, pose, heightAt, supportByHorse.get(modelFor(row))),
+--- a/chicago/4d/tools/test_transport_loop.mjs
++++ b/chicago/4d/tools/test_transport_loop.mjs
+@@ -1,5 +1,6 @@
+ // SPDX-License-Identifier: GPL-3.0-or-later
+ import assert from 'node:assert/strict';
++import { readFileSync } from 'node:fs';
+ import { circleRoute, roundedBlockRoute, createTransportLoop, preflightTransportRoute, preflightTransportRouteAsync } from '../renderers/web/js/transport-loop.js';
+ 
+ let count = 0;
+@@ -188,4 +189,63 @@
+ }
+ await assert.rejects(preflightTransportRouteAsync({}, { yieldEvery: 129 }), /bounded preflight chunk/); count++;
+ 
++
++// Prioritized default continuation changes scheduling only. These are Node CPU
++// count/cancellation fixtures, never a substituted field in a rendered scene.
++const current1904 = JSON.parse(readFileSync(new URL('../data/transport/driven/loops.json', import.meta.url))).rows.find(row => row.scene === '1904');
++const actualBlock = roundedBlockRoute(current1904.route);
++async function defaultScheduleReading({ fallback = false, cancelAt = null, cancelBefore = false, rejectYield = false } = {}) {
++  const descriptor = Object.getOwnPropertyDescriptor(globalThis, 'scheduler');
++  const originalTimer = globalThis.setTimeout, reads = [], supports = [], boundaries = [];
++  let timerCalls = 0, schedulerCalls = 0;
++  const scheduler = { yield() {
++    assert.equal(this, scheduler); count++;
++    schedulerCalls++; boundaries.push(supports.length);
++    return rejectYield ? Promise.reject(new Error('native scheduler rejection')) : Promise.resolve();
++  } };
++  try {
++    Object.defineProperty(globalThis, 'scheduler', { configurable: true, writable: true,
++      value: fallback ? { yield: null } : scheduler });
++    globalThis.setTimeout = (fn, delay, ...args) => {
++      assert.equal(fallback, true, 'supported scheduler must avoid timer fallback'); count++;
++      assert.equal(delay, 0); count++;
++      timerCalls++; boundaries.push(supports.length);
++      return originalTimer(fn, delay, ...args);
++    };
++    const reading = preflightTransportRouteAsync({ row: current1904, route: actualBlock,
++      heightAt(e, n) { reads.push([e, n]); return 1.31; }, clear: () => true,
++      support(pose) { supports.push([pose.e, pose.n, pose.yaw]); } },
++      { yieldEvery: 128, cancelled: () => cancelBefore || (cancelAt !== null && supports.length >= cancelAt) });
++    assert.equal(reads.length, 0, 'initial cooperative yield precedes terrain reads'); count++;
++    const value = await reading;
++    return { value, reads, supports, boundaries, timerCalls, schedulerCalls };
++  } finally {
++    globalThis.setTimeout = originalTimer;
++    if (descriptor) Object.defineProperty(globalThis, 'scheduler', descriptor);
++    else delete globalThis.scheduler;
++  }
++}
++const prioritized = await defaultScheduleReading(), timerFallback = await defaultScheduleReading({ fallback: true });
++assert.deepEqual(prioritized.value, timerFallback.value); count++;
++assert.deepEqual(prioritized.reads, timerFallback.reads); count++;
++assert.deepEqual(prioritized.supports, timerFallback.supports); count++;
++assert.equal(prioritized.value.samples, 3163); count++;
++assert.deepEqual(prioritized.boundaries, Array.from({ length: 25 }, (_, i) => i * 128)); count++;
++assert.deepEqual(timerFallback.boundaries, prioritized.boundaries); count++;
++assert.equal(prioritized.schedulerCalls, 25); count++;
++assert.equal(prioritized.timerCalls, 0); count++;
++assert.equal(timerFallback.schedulerCalls, 0); count++;
++assert.equal(timerFallback.timerCalls, 25); count++;
++for (const cancelAt of [13, 128]) {
++  const cancelled = await defaultScheduleReading({ cancelAt });
++  assert.equal(cancelled.value.status, 'CANCELED_ROUTE_READING_NOT_PASS'); count++;
++  assert.equal(cancelled.supports.length, cancelAt); count++;
++  assert.deepEqual(cancelled.boundaries, cancelAt === 13 ? [0] : [0, 128]); count++;
++}
++const beforeAnyRead = await defaultScheduleReading({ cancelBefore: true });
++assert.equal(beforeAnyRead.value.status, 'CANCELED_ROUTE_READING_NOT_PASS'); count++;
++assert.equal(beforeAnyRead.reads.length, 0); count++;
++assert.deepEqual(beforeAnyRead.boundaries, [0]); count++;
++await assert.rejects(defaultScheduleReading({ rejectYield: true }), /native scheduler rejection/); count++;
++
+ console.log(`transport loop: ${count} checks PASS`);
+--- a/chicago/4d/tools/test_driven_assembly.mjs
++++ b/chicago/4d/tools/test_driven_assembly.mjs
+@@ -453,3 +453,117 @@
+ assert.equal(await Promise.race([legacyPublicResult, Promise.resolve('unresolved-legacy-request')]), true, 'Legacy Navigator returns true without waiting for card household/joins');
+ legacyFinish(true);
+ console.log('original1835 Navigator immediate return preserved while household promise remains unresolved PASS');
++
++// Eligible preparation overlaps only JavaScript imports, never a GLB/model lease.
++// The actual factory still starts only after the complete ordinary static proof.
++{
++  let warmed = 0, models = 0, reads = 0;
++  const modules = deferredAsset();
++  const town = createTownTransport({ rows: [validRow], sceneId: '1835', detail: 'light',
++    heightAt() { reads++; return 0; }, clear: () => true,
++    prepareAssembly() { warmed++; return modules.promise; },
++    makeAssembly() { models++; throw Error('cancelled generation must not acquire'); } });
++  assert.throws(() => createTownTransport({ rows: [], sceneId: '1835', heightAt: () => 0,
++    clear: () => true, makeAssembly() {}, prepareAssembly: 1 }), /preparation callback/);
++  await town.ready(); assert.equal(warmed, 0); assert.equal(models, 0);
++  town.update(0, { x: 20, z: 0 }, { paused: true }); // welcome remains held
++  await town.setTier('full'); assert.equal(warmed, 0);
++  assert.equal(town.ensureNear({ x: 10000, z: 10000 }, true), false);
++  assert.equal(town.ensureNear({ x: 20, z: 0 }, false), false); assert.equal(warmed, 0);
++  const pending = town.ready(); assert.equal(warmed, 1); assert.equal(reads, 0); assert.equal(models, 0);
++  await town.setTier('light'); await pending;
++  assert.equal(reads, 0); assert.equal(models, 0); assert.equal(town.actors.length, 0);
++  modules.resolve(['modules only']); await modules.promise; await Promise.resolve();
++  assert.equal(models, 0); assert.equal(town.actors.length, 0); town.dispose();
++}
++{
++  const modules = deferredAsset(); let warmed = 0, makes = 0, models = 0, staticReads = 0;
++  const town = createTownTransport({ rows: [validRow], sceneId: '1835', heightAt: () => 0,
++    clear: () => true, routeClear() { staticReads++; return true; },
++    prepareAssembly() { warmed++; return modules.promise; },
++    async makeAssembly() {
++      makes++; assert(staticReads >= 505, 'entire20m circle must pass before actual factory');
++      await modules.promise; models++;
++      return { root: new THREE.Group(), pose() {}, dispose() {} };
++    } });
++  const pending = town.ready(); assert.equal(warmed, 1); assert.equal(makes, 0); assert.equal(models, 0);
++  await until(() => makes === 1); assert.equal(models, 0);
++  for (let i = 0; i < 5; i++) town.ensureNear({ x: 20, z: 0 });
++  assert.equal(warmed, 1); assert.equal(makes, 1);
++  modules.resolve(['same cached modules']); await pending;
++  assert.equal(models, 1); assert.equal(town.actors.length, 1); town.dispose();
++}
++{
++  const failure = Error('controlled module import refusal'), problems = [], unhandled = [];
++  const onUnhandled = error => unhandled.push(error); process.on('unhandledRejection', onUnhandled);
++  let warmed = 0, makes = 0;
++  try {
++    const rejected = Promise.reject(failure);
++    const town = createTownTransport({ rows: [validRow], sceneId: '1835', heightAt: () => 0,
++      clear: () => true, problems, prepareAssembly() { warmed++; return rejected; },
++      async makeAssembly() { makes++; await rejected; throw Error('must not reach models'); } });
++    await town.ready(); await new Promise(resolve => setImmediate(resolve));
++    assert.equal(warmed, 1); assert.equal(makes, 1, 'actual factory remains authoritative after import warmup refusal');
++    assert.equal(town.actors.length, 0); assert(problems.some(p => p.includes(failure.message)));
++    assert.deepEqual(unhandled, []); town.dispose();
++  } finally { process.removeListener('unhandledRejection', onUnhandled); }
++}
++{
++  let warmed = 0, models = 0;
++  const problems = [], town = createTownTransport({ rows: [validRow], sceneId: '1835', heightAt: () => 0,
++    clear: () => true, routeClear: () => false, problems,
++    prepareAssembly() { warmed++; return Promise.resolve(['onlyJS']); },
++    makeAssembly() { models++; throw Error('static proof failure must not acquire'); } });
++  await town.ready(); assert.equal(warmed, 1); assert.equal(models, 0); assert.equal(town.actors.length, 0);
++  assert.equal(problems.length, 1); town.dispose();
++}
++// Execute the ACTUAL scene import/tool-cache closures with controlled module I/O.
++// Resolving the warm modules must not construct loaders/factories or touch assets.
++{
++  const begin = sceneBindingSource.indexOf('let assemblyModules = null'), end = sceneBindingSource.indexOf('  const makeByHorse', begin);
++  assert(begin >= 0 && end > begin);
++  const events = [], pendingModules = deferredAsset(); let loaders = 0, hitchFactories = 0;
++  class Loader { constructor() { loaders++; } loadAsync() { events.push('GLB'); throw Error('no GLB before actual makeHitch'); } }
++  const modules = {
++    './driven-assembly-loader.js': { createDrivenAssemblyLoader() {} },
++    './draft-hitch.js': { createDraftHitchFactory() { hitchFactories++; return () => {}; } },
++    'three/addons/loaders/GLTFLoader.js': { GLTFLoader: Loader },
++  };
++  const source = sceneBindingSource.slice(begin, end).replace(/\bimport\(/g, 'loadModule(');
++  const caches = new Function('loadModule', 'confidence', 'json', 'moduleBase', source + '\nreturn { prepareAssemblyModules, getAssemblyTools };')(
++    path => { events.push(path); return pendingModules.promise.then(() => modules[path]); }, null,
++    () => { events.push('JSON'); throw Error('directory/binding JSON must remain lazy'); }, new URL('https://controlled.example/'));
++  const first = caches.prepareAssemblyModules(), second = caches.prepareAssemblyModules();
++  assert.strictEqual(first, second); assert.equal(events.length, 3);
++  assert(events.every(path => path.endsWith('.js'))); assert.equal(loaders, 0); assert.equal(hitchFactories, 0);
++  pendingModules.resolve(); await first;
++  assert.equal(loaders, 0); assert.equal(hitchFactories, 0); assert.equal(events.length, 3);
++  const tools = caches.getAssemblyTools(), sameTools = caches.getAssemblyTools(); assert.strictEqual(tools, sameTools);
++  const readyTools = await tools; assert.equal(typeof readyTools.createDrivenAssemblyLoader, 'function');
++  assert.equal(loaders, 1); assert.equal(hitchFactories, 1); assert.equal(events.length, 3);
++}
++console.log('eligibleJSprewarm: zeroGLBs/leases beforecomplete route, Light/remote/welcome/cancel/refusal/cache ownership PASS');
++// One cached JS request can finish across Light->Full generations; only the
++// new complete preflight may acquire an assembly, which remains singly owned.
++{
++  const modules = deferredAsset(); let warmed = 0, makes = 0, models = 0, frees = 0;
++  const town = createTownTransport({ rows: [validRow], sceneId: '1835', heightAt: () => 0,
++    clear: () => true, prepareAssembly() { warmed++; return modules.promise; },
++    async makeAssembly() { makes++; await modules.promise; models++;
++      return { root: new THREE.Group(), pose() {}, dispose() { frees++; } }; } });
++  town.update(0, { x: 20, z: 0 });
++  const oldReady = town.ready(); assert.equal(warmed, 1);
++  const light = town.setTier('light'), latest = town.setTier('full');
++  await until(() => makes === 1); await oldReady; await light;
++  assert.equal(warmed, 2); assert.equal(makes, 1); assert.equal(models, 0);
++  modules.resolve(); await latest;
++  assert.equal(models, 1); assert.equal(town.actors.length, 1);
++  town.dispose(); town.dispose(); assert.equal(frees, 1);
++}
++{
++  let warmed = 0, models = 0;
++  const town = createTownTransport({ rows: [validRow], sceneId: '1904', heightAt: () => 0,
++    clear: () => true, prepareAssembly() { warmed++; }, makeAssembly() { models++; } });
++  await town.ready(); assert.equal(warmed, 0); assert.equal(models, 0); town.dispose();
++}
++console.log('module-warm oldgeneration cancels beforemodels/newgeneration mounts once; wrongscene remains cold PASS');

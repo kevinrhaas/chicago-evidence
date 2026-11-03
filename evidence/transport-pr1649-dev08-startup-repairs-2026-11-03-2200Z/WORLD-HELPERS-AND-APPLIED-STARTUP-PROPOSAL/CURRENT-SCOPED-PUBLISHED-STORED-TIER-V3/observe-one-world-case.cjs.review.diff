@@ -1,0 +1,19 @@
+--- frozen-recovered-V14/observe-one-world-case.cjs
++++ current-both-years-viewports/observe-one-world-case.cjs
+@@ -5,7 +5,7 @@
+ const { probeTownDriverWorld } = require('./probe-town-driver-world.cjs');
+ const cfg = JSON.parse(fs.readFileSync(process.argv[2]));
+ assert.equal(cfg.root_explicit_world_interaction_GO, true); assert.equal(cfg.template_only, false);
+-assert(['A', 'B', 'C'].includes(cfg.scope)); assert.equal(cfg.scene, '1904'); assert.equal(cfg.touch, true);
++assert(['A', 'B', 'C'].includes(cfg.scope)); assert(['1835', '1904'].includes(cfg.scene)); assert.equal(typeof cfg.touch, 'boolean');
+ assert(['source', 'published'].includes(cfg.tree)); assert(['1835', '1904'].includes(cfg.scene));
+ assert(cfg.root && cfg.output && !fs.existsSync(cfg.output));
+ assert(Object.keys(cfg.actual_source_pins ?? {}).length >= 10);
+@@ -40,6 +40,7 @@
+     const playwright = require(path.join((process.env.NODE_PATH || '/workspace/.cloud-setup/npm/node_modules').split(path.delimiter)[0], 'playwright'));
+     browser = await playwright.chromium.launch({ executablePath: process.env.PW_EXECUTABLE || undefined,
+       args: ['--enable-unsafe-swiftshader'] });
++    report.browserVersion = browser.version(); assert.match(report.browserVersion, /^141\./, 'Matching native Chromium141 required');
+     context = await browser.newContext({ viewport: cfg.touch ? { width: 390, height: 780 } : { width: 1280, height: 800 },
+       hasTouch: !!cfg.touch, deviceScaleFactor: cfg.touch ? 2 : 1, reducedMotion: 'no-preference' });
+     // Existing visitor Image sharpness: Low(1), persisted through the normal settings reader.

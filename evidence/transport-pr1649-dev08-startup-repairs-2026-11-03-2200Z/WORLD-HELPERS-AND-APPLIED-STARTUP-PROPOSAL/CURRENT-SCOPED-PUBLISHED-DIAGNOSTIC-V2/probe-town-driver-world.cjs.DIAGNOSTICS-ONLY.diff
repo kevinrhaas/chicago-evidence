@@ -1,0 +1,57 @@
+--- frozen-current/probe-town-driver-world.cjs
++++ diagnostic-v2/probe-town-driver-world.cjs
+@@ -157,10 +157,50 @@
+     setup.originalRootUUID = initial.allHumanRoots.find(h => h.personId === setup.row.person_id)?.rootUUID ?? null;
+     setup.originalCount = initial.humanCount;
+     fs.writeFileSync(path.join(outdir, label + '-ACTUAL-COLD-FIND.json'), JSON.stringify(setup.coldFind, null, 2) + '\n');
+-    await page.waitForFunction(personId => {
+-      const a = window.__chicago4d, actor = a.townTransport?.driverForPerson(personId);
+-      return actor?.visible && a.humans.external(personId)?.body;
+-    }, setup.row.person_id, { timeout: mountReadyMs, polling: 100 });
++    // Diagnostic only: passive reads while the ORIGINAL mount predicate waits.
++    // At most one read is in flight; a blocked browser cannot queue more samples.
++    const mountSamples = [], mountStarted = Date.now();
++    let mountSampling = true, mountReadPending = false, mountReadStarted = null;
++    const persistMountSample = value => {
++      mountSamples.push({ hostUtc: new Date().toISOString(), hostElapsedMs: Date.now() - mountStarted, ...value });
++      fs.writeFileSync(path.join(outdir, label + '-MOUNT-TELEMETRY.json'), JSON.stringify(mountSamples, null, 2) + '\n');
++    };
++    const sampleMount = () => {
++      if (!mountSampling) return;
++      if (mountReadPending) { persistMountSample({ browserReadStillPending: true, pendingMs: Date.now() - mountReadStarted }); return; }
++      mountReadPending = true; mountReadStarted = Date.now();
++      page.evaluate(() => {
++        const a = window.__chicago4d, gate = document.getElementById('gate');
++        return { browserUtc: new Date().toISOString(), browserNowMs: performance.now(),
++          frame: a?.renderer?.info?.render?.frame ?? null, detail: a?.detail ?? null,
++          documentHidden: document.hidden, visibilityState: document.visibilityState,
++          gateHidden: gate ? gate.hidden : null, welcome: a?.welcome?.state ?? null,
++          ready: a?.ready ?? null, error: a?.error ?? null, problems: [...(a?.problems ?? [])],
++          confidenceHidden: a?.confidence?.hidden ? { ...a.confidence.hidden } : null,
++          camera: a?.camera ? { x: a.camera.position.x, y: a.camera.position.y, z: a.camera.position.z } : null,
++          walker: a?.walker ? { e: a.walker.state.e, n: a.walker.state.n } : null,
++          town: a?.townTransport?.snapshot?.() ?? null, actorCount: a?.townTransport?.actors?.length ?? null,
++          humanCount: a?.humans?.count ?? null,
++          // Asset keys include pending entries, not proof GLTF parse completed.
++          humanAssetRequestedEntries: a?.humans?.assets?.loaded ?? null,
++          rendererMemory: a?.renderer?.info?.memory ? { ...a.renderer.info.memory } : null,
++          rendererRender: a?.renderer?.info?.render ? { ...a.renderer.info.render } : null,
++          animationHold: 'not exposed by read-only public API; no setter called' };
++      }).then(value => { if (mountSampling) persistMountSample({ browser: value }); })
++        .catch(error => { if (mountSampling) persistMountSample({ browserReadError: String(error) }); })
++        .finally(() => { mountReadPending = false; });
++    };
++    sampleMount();
++    const mountSampleTimer = setInterval(sampleMount, 10000);
++    try {
++      await page.waitForFunction(personId => {
++        const a = window.__chicago4d, actor = a.townTransport?.driverForPerson(personId);
++        return actor?.visible && a.humans.external(personId)?.body;
++      }, setup.row.person_id, { timeout: mountReadyMs, polling: 100 });
++    } finally {
++      mountSampling = false; clearInterval(mountSampleTimer);
++      persistMountSample({ mountWaitEnded: true, readStillPending: mountReadPending });
++    }
+     const mounted = await read('ordinary-near-loader-mounted-actual-driver');
+     check(mounted.identities === 1 && mounted.livePersonRoots.length === 1 && mounted.human.externallyOwned,
+       'seated driver identity is missing or duplicated');

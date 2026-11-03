@@ -1,0 +1,171 @@
+--- frozen-V2/probe-town-driver-world.cjs
++++ stored-visitor-tier-V3/probe-town-driver-world.cjs
+@@ -12,7 +12,13 @@
+   if (scope === 'C' && !checkLight) throw Error('ScopeC requires original Light restore assertions');
+   fs.mkdirSync(outdir, { recursive: true });
+   const readings = [], images = [], errors = [];
++  const phases = [], phaseStarted = Date.now();
++  const markPhase = (name, detail = {}) => {
++    phases.push({ name, hostUtc: new Date().toISOString(), hostElapsedMs: Date.now() - phaseStarted, ...detail });
++    fs.writeFileSync(path.join(outdir, label + '-PHASES.json'), JSON.stringify(phases, null, 2) + '\n');
++  };
+   const onError = e => errors.push(String(e)); page.on('pageerror', onError);
++  const flushReadings = () => fs.writeFileSync(path.join(outdir, label + '-LIVE-READINGS.json'), JSON.stringify(readings, null, 2) + '\n');
+   const read = async name => {
+     const value = await page.evaluate(() => {
+       const a = window.__chicago4d, loop = a.townTransport?.actors[0];
+@@ -91,16 +97,21 @@
+       check(clicks.length === 1 && clicks[0].trusted && clicks[0].pointerType === 'touch',
+         'native trusted touch did not reach the actual Interact button exactly once');
+       readings.push({ name: 'actual-trusted-DOM-touch-click', value: clicks[0] });
++      flushReadings();
+     }
+   };
+   let touchSession = null;
+   try {
++    markPhase('before-native-app-ready');
+     await page.waitForFunction(() => window.__chicago4d?.ready || !!window.__chicago4d?.error, null, { timeout: bootReadyMs, polling: 1000 });
++    markPhase('after-native-app-ready');
+     const bootFailure = await page.evaluate(() => window.__chicago4d?.error ?? null);
+     check(!bootFailure, `app boot failed: ${bootFailure}`);
+     const initial = await read('actual-ready-app'); check(initial.scene === sceneId && !initial.error, 'wrong scene or app error');
+     check(initial.actorCount === 0, 'probe requires a fresh boot-ready welcome before occupied actors load');
+     check(initial.graphics.nativeQualityPreference === 1 && initial.graphics.actualPixelRatio > 0 && initial.graphics.actualPixelRatio <= 1, 'native Low(1) sharpness preference was not applied');
++    check(initial.detail === (touch ? 'balanced' : 'full'), 'native stored visitor detail tier was not applied at boot');
++    markPhase('before-native-welcome-entry');
+     await page.evaluate(async () => {
+     if (!document.getElementById('gate').hasAttribute('hidden')) {
+       const welcome = window.__chicago4d.welcome;
+@@ -119,15 +130,19 @@
+       document.getElementById('control-help-gotit')?.click();
+     }
+   });
++    markPhase('after-native-welcome-entry');
+     const enteredWorld = await page.evaluate(() => window.__chicago4d.welcome?.state === 'world');
+     check(enteredWorld, 'native90s welcome entry did not reach world');
++    markPhase('before-original-setDetail', { requestedTier: touch ? 'balanced' : 'full' });
+     await page.evaluate(async tier => {
+       const a = window.__chicago4d; await a.setDetail(tier);
+       a.setFly(false); a.setPace('walk'); a.setAnimationHold(false); a.hud.setPanel(false); a.popup.close();
+     }, touch ? 'balanced' : 'full');
++    markPhase('after-original-setDetail');
+     // A real source/published row and the actual route module choose the setup.
+     // Only this starting camera placement is a harness teleport; the approach
+     // below uses ordinary keyboard/touch movement and ordinary lazy loading.
++    markPhase('before-cold-person-Find-setup');
+     const setup = await page.evaluate(async ({ sceneId, moduleBase }) => {
+       const a = window.__chicago4d;
+       const response = await fetch(new URL('transport/driven/loops.json', a.dataBase));
+@@ -154,11 +169,13 @@
+       return { row, originalRootUUID: old?.root.uuid ?? null, originalCount: a.humans.count,
+         coldFind: { before: coldBefore, accepted: !!accepted, actual, expected, noForcedReadyOrAssetWarmup: true } };
+     }, { sceneId, moduleBase });
++    markPhase('after-cold-person-Find-setup');
+     setup.originalRootUUID = initial.allHumanRoots.find(h => h.personId === setup.row.person_id)?.rootUUID ?? null;
+     setup.originalCount = initial.humanCount;
+     fs.writeFileSync(path.join(outdir, label + '-ACTUAL-COLD-FIND.json'), JSON.stringify(setup.coldFind, null, 2) + '\n');
+     // Diagnostic only: passive reads while the ORIGINAL mount predicate waits.
+     // At most one read is in flight; a blocked browser cannot queue more samples.
++    markPhase('before-original-mount-wait');
+     const mountSamples = [], mountStarted = Date.now();
+     let mountSampling = true, mountReadPending = false, mountReadStarted = null;
+     const persistMountSample = value => {
+@@ -200,7 +217,9 @@
+     } finally {
+       mountSampling = false; clearInterval(mountSampleTimer);
+       persistMountSample({ mountWaitEnded: true, readStillPending: mountReadPending });
+-    }
++      markPhase('original-mount-wait-ended');
++    }
++    markPhase('after-original-mount-predicate-passed');
+     const mounted = await read('ordinary-near-loader-mounted-actual-driver');
+     check(mounted.identities === 1 && mounted.livePersonRoots.length === 1 && mounted.human.externallyOwned,
+       'seated driver identity is missing or duplicated');
+@@ -212,9 +231,11 @@
+       && producer.maximum_spacing_m <= .25 && producer.maximum_wheel_gap_m <= .03,
+       'Ordinary mounted actor lacks its complete actual producer route receipt');
+     readings.push({ name: 'actual-complete-producer-route-receipt-every-scope', value: producer });
++    flushReadings();
+     if (scope === 'A') {
+       check(typeof routeProbe === 'function', 'ScopeA requires full independent whole-route observer');
+       readings.push({ name: 'actual-whole-circuit-ground-and-clearance', value: await routeProbe(page, { row: setup.row, moduleBase }) });
++      flushReadings();
+     }
+ 
+     if (scope === 'A') {
+@@ -296,6 +317,7 @@
+ 
+     }
+     if (scope === 'C') {
++    markPhase('before-real-driver-inspection');
+     await page.evaluate(() => {
+       const a = window.__chicago4d, actor = a.townTransport.actors[0], at = actor.at, yaw = actor.snapshot().yaw_rad;
+       a.walker.teleport({ local_e: at[0] + Math.cos(yaw) * 4.5, local_n: at[1] + Math.sin(yaw) * 4.5,
+@@ -303,6 +325,7 @@
+       a.interactKey.refresh();
+     });
+     readings.push({ name: 'scopeC-harness-side-stand-no-walk-claim', value: { local_side_distance_m: 4.5, actual_walk_claimed: false } });
++    flushReadings();
+     // Real posed proxy -> existing unified pick path -> existing resident card.
+     const picked = await page.evaluate(() => {
+       const a = window.__chicago4d, actor = a.humans.external(a.townTransport.actors[0].personId);
+@@ -336,6 +359,7 @@
+     check(Math.hypot(goTo.walker.e - goTo.driver.e, goTo.walker.n - goTo.driver.n) <= 6,
+       'instant GoTo used the historical standing location instead of the current driver');
+     readings.push({ name: 'actual-People-Find-GoTo-current-moving-driver', value: goTo });
++    flushReadings();
+ 
+     } else {
+       // 1904 has no legacy residents layer. Observe the real public Navigator
+@@ -368,8 +392,10 @@
+         && nativeCard.link.id === 'otis_house_2033_prairie' && nativeCard.identities === 1,
+         'Native Inspect showed the wrong household/person or a duplicate driver');
+       readings.push({ name: 'actual-seated-driver-native-Inspector-Hans-record', value: nativeCard });
++      flushReadings();
+       // Exercise the product's own Find button through trusted native input.
+       // Its ordinary handler must stop/approach the actual moving driver.
++      markPhase('before-native-Find');
+       const beforeNativeFind = await page.evaluate(personId => {
+         const a = window.__chicago4d; a.setTravelMode('instantly');
+         return { walker: { e: a.walker.state.e, n: a.walker.state.n },
+@@ -424,13 +450,16 @@
+       check(Math.hypot(goTo.walker.e - goTo.driver.e, goTo.walker.n - goTo.driver.n) <= 6,
+         'instant GoTo used the historical standing location instead of the current driver');
+       readings.push({ name: 'actual-People-Find-GoTo-current-moving-driver', value: goTo });
++      flushReadings();
+       await page.evaluate(() => { const a = window.__chicago4d; a.navigator.closeApp(); a.hud.setPanel(false); });
+       await page.waitForFunction(() => window.__chicago4d.navigator.level === 0,
+         null, { timeout: timeoutMs, polling: 100 });
+     }
+ 
+     if (checkLight) {
++      markPhase('before-original-Light-retirement');
+       await page.evaluate(async () => { await window.__chicago4d.setDetail('light'); });
++      markPhase('after-original-Light-setDetail');
+       await page.waitForFunction(() => window.__chicago4d.townTransport.actors.length === 0,
+         null, { timeout: timeoutMs, polling: 100 });
+       const retired = await page.evaluate(personId => {
+@@ -445,9 +474,13 @@
+       check(retired.rootUUID === setup.originalRootUUID && retired.humanCount === setup.originalCount,
+         'Light failed to restore the original standing ownership/count');
+       readings.push({ name: 'actual-Light-retirement-and-standing-owner-restore', value: retired });
++      flushReadings();
++      markPhase('after-original-Light-retirement-checks-before-PNG');
+       await screenshot('LIGHT-RESTORED');
+-    }
+-    }
++      markPhase('after-original-Light-retirement');
++    }
++    }
++    markPhase('all-scope-actions-ended');
+     check(errors.length === 0, `page errors: ${errors.join('; ')}`);
+     const result = { status: 'ACTUAL_APP_WORLD_DRIVER_SCOPE_PASS', sceneId, touch, label, scope, predicate_ids: SCOPE_PREDICATES[scope],
+       moduleBase, readings, images, pageErrors: errors,
+@@ -457,6 +490,7 @@
+     fs.writeFileSync(path.join(outdir, `${label}.json`), JSON.stringify(result, null, 2) + '\n');
+     return result;
+   } catch (error) {
++    markPhase('scope-failed', { failure: String(error) });
+     fs.writeFileSync(path.join(outdir, `${label}-NONPASS.json`), JSON.stringify({ status: 'ACTUAL_WORLD_SCOPE_PROBE_NONPASS',
+       sceneId, touch, label, scope, failure: String(error), readings, images, pageErrors: errors }, null, 2) + '\n');
+     throw error;

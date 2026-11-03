@@ -1,0 +1,11 @@
+--- frozen-V2/run_current_world_case.py
++++ stored-visitor-tier-V3/run_current_world_case.py
+@@ -28,7 +28,7 @@
+ for rel in ['renderers/web/index.html','renderers/web/css/walk.css','data/humans/fixture.measure.json','data/sidecars/'+a.year+'/index.json','data/sidecars/'+a.year+'/people.json','data/liberties.json','renderers/web/transport/driven/horse-current26-inplace-full.glb','renderers/web/transport/wagon-driver/wagon-w01.glb','renderers/web/transport/parked-brougham/brougham-near.glb']:
+  f=A/rel;pins[str(f)]=sha(f)
+ helpers={f.name:sha(f)for f in P.iterdir()if f.suffix in ['.py','.cjs']}
+-cfg=dict(template_only=False,root_explicit_world_interaction_GO=True,root=str(site),output=str(O/'frames'),scene=a.year,tree='published',touch=a.viewport=='mobile',scope=a.scope,check_light=a.scope=='C',recheck_whole_route=a.scope=='A',actual_route_probe=str(P/'probe-native-world-route.cjs'),actual_source_HEAD_or_staged_TREE=before,actual_source_pins=pins,boot_ready_ms=240000,mount_ready_ms=300000,native_phase_seconds=600,native_image_sharpness='Low (1)',high_sharpness_performance_or_photo_acceptance=False,harness_pins=helpers)
++cfg=dict(template_only=False,root_explicit_world_interaction_GO=True,root=str(site),output=str(O/'frames'),scene=a.year,tree='published',touch=a.viewport=='mobile',scope=a.scope,check_light=a.scope=='C',recheck_whole_route=a.scope=='A',actual_route_probe=str(P/'probe-native-world-route.cjs'),actual_source_HEAD_or_staged_TREE=before,actual_source_pins=pins,boot_ready_ms=240000,mount_ready_ms=300000,native_phase_seconds=600,native_image_sharpness='Low (1)', native_stored_boot_detail='balanced'if a.viewport=='mobile'else'full', native_profile_change_from_V2='Persist requested visitor tier before boot; original setDetail and Light retirement assertions retained',high_sharpness_performance_or_photo_acceptance=False,harness_pins=helpers)
+ save(O/'ROOT-BOUND-WORLD-CONFIG.json',cfg);save(O/'SOURCE-BEFORE.json',before)
+ env=dict(os.environ,PW_EXECUTABLE='/workspace/.cloud-setup/transport-browser141-20261103/chromium_headless_shell-1194/chrome-linux/headless_shell',PLAYWRIGHT_BROWSERS_PATH='/workspace/.cloud-setup/transport-browser141-20261103',PYTHONDONTWRITEBYTECODE='1');prefix=O/'world';result={};cleanup={};report={};error=None
+ try:
