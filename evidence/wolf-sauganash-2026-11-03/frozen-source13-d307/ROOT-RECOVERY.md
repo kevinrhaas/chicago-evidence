@@ -1,0 +1,1 @@
+Root publishes a manifest-verified CLOSED snapshot outside active source. wolf_poster_resume remains sole own-source writer. Never replay originalCobwebfallback edits as new work:1665 is already merged.
