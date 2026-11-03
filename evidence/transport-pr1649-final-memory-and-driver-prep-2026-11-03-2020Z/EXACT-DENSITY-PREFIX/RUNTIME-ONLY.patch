@@ -1,0 +1,49 @@
+--- a/chicago/4d/renderers/web/js/railway.js
++++ b/chicago/4d/renderers/web/js/railway.js
+@@ -1460,23 +1460,41 @@
+   let level = REACH[detail] ? detail : 'full';
+   const rockShare = { full: 1, balanced: (stones?.per_m2?.balanced ?? 0.9) / (stones?.per_m2?.full ?? 1.5),
+     light: (stones?.per_m2?.light ?? 0.45) / (stones?.per_m2?.full ?? 1.5) };
++  // Configured density tiers are fixed for this assembly's lifetime. Cache only
++  // their strict DOUBLE prefix counts; later debug edits require rebuilding it.
+   const applyDetail = () => {
+     out.census.tufts = 0;
+     out.census.rocks = 0;
+     for (const z of zones) {
+       for (const m of z.rockMeshes ?? []) {
+-        const keeps = m.userData.keeps;
+-        let n = 0; while (n < keeps.length && keeps[n] < rockShare[level]) n += 1;
++        if (!m.userData.densityCounts) {
++          const keeps = m.userData.keeps, counts = Object.create(null);
++          for (const tier of ['full', 'balanced', 'light']) {
++            let n = 0; while (n < keeps.length && keeps[n] < rockShare[tier]) n += 1;
++            counts[tier] = n;
++          }
++          m.userData.densityCounts = counts;
++          delete m.userData.keeps;
++        }
++        const n = m.userData.densityCounts[level] ?? 0;
+         m.userData.rockWanted = n;
+         if (!m.userData.rockCache) m.count = n;
+         out.census.rocks += n;
+       }
+     }
+-    const want = dens[level] ?? 0; const full = dens.full || 1;
+     for (const z of zones) {
+       if (!z.tuftMesh) continue;
+-      const ratio = want / full;
+-      let n = 0; while (n < z.tuftKeeps.length && z.tuftKeeps[n] < ratio) n += 1;
++      if (!z.tuftDensityCounts) {
++        const counts = Object.create(null), full = dens.full || 1;
++        for (const tier of ['full', 'balanced', 'light']) {
++          const ratio = (dens[tier] ?? 0) / full;
++          let n = 0; while (n < z.tuftKeeps.length && z.tuftKeeps[n] < ratio) n += 1;
++          counts[tier] = n;
++        }
++        z.tuftDensityCounts = counts;
++        delete z.tuftKeeps;
++      }
++      const n = z.tuftDensityCounts[level] ?? 0;
+       z.tuftWanted = n;
+       if (!z.tuftCache) z.tuftMesh.count = n;
+       out.census.tufts += n;
