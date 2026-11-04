@@ -1,0 +1,209 @@
+--- a/chicago/4d/renderers/web/js/nav-rail.js
++++ b/chicago/4d/renderers/web/js/nav-rail.js
+@@ -153,7 +153,7 @@
+     const screens = ['panel', 'load', 'mount'].filter((k) => app[k]);
+     const bad = app.panel && app.load ? true : screens.length > 2 || (!screens.length && !app.launch) || (app.load && app.mount);
+     if (bad) throw new Error(`navigator.register: ${app.id} needs one of panel, load or mount, or a launch`);
+-    const s = { app, button: makeButton(app), shown: !app.when, leaveAt: null, panel: null, mounted: false, module: null };
++    const s = { app, button: makeButton(app), shown: !app.when, leaveAt: null, panel: null, mounted: false, module: null, loading: null };
+     apps.set(app.id, s);
+     place();
+     return () => unregister(app.id);
+@@ -242,6 +242,24 @@
+     return s.panel;
+   }
+ 
++  /** Prepare only an app's code. No screen, mount, seen marker or choice changes. */
++  function preload(id) {
++    const s = apps.get(id);
++    if (!s) return Promise.resolve(false);
++    if (!s.app.load || s.module) return Promise.resolve(true);
++    if (!s.loading) {
++      s.loading = Promise.resolve().then(() => s.app.load()).then((mod) => {
++        if (apps.get(id) !== s) return false;
++        s.module = mod?.default ?? mod;
++        return true;
++      }).catch((error) => {
++        s.loading = null; // A later open may retry a failed optional preparation.
++        throw error;
++      });
++    }
++    return s.loading;
++  }
++
+   async function select(id, { by = 'code' } = {}) {
+     const s = apps.get(id);
+     if (!s) return false;
+@@ -260,11 +278,8 @@
+     const ticket = ++switching;
+     const panel = panelFor(s);
+     if (!s.mounted) {
+-      if (s.app.load) {
+-        const mod = await s.app.load();
+-        s.module = mod?.default ?? mod;
+-      }
+-      if (ticket !== switching) return false; // a later choice won the race
++      if (s.app.load && !s.module) await preload(id);
++      if (ticket !== switching || apps.get(id) !== s) return false; // a later choice won the race
+       const mounting = settle((s.module ?? s.app).mount?.(panel, ctx));
+       if (mounting) await mounting;
+       s.mounted = true;
+@@ -328,6 +343,7 @@
+     register,
+     unregister,
+     evaluate,
++    preload,
+     select,
+     setVisible,
+     get current() { return current; },
+--- a/chicago/4d/renderers/web/js/navigator.js
++++ b/chicago/4d/renderers/web/js/navigator.js
+@@ -407,6 +407,8 @@
+     unregister: (id) => registry.unregister(id),
+     /** Open an app by id: the device opens to show it (or, for a stub, runs it and docks). */
+     select: (id) => registry.select(id, { by: 'code' }),
++    /** Prepare an app's module without opening the device or mounting its screen. */
++    preload: (id) => registry.preload(id),
+     has: (id) => registry.has(id),
+     /** T-2621: open what a deep link names; an app the rail does not have is ignored. */
+     openLink(next) {
+--- a/chicago/4d/renderers/web/js/main.js
++++ b/chicago/4d/renderers/web/js/main.js
+@@ -4966,7 +4966,7 @@
+   async function prepareSceneDirectoryPerson(id) {
+     if (!supportsTownTransport(YEAR) || draws('residents')) return;
+     await Promise.allSettled([
+-      import('./apps/inspect-view.js'), ensureInspect(), ensureReaderText(), ensurePictures(),
++      navigatorUi?.preload?.('inspect') ?? import('./apps/inspect-view.js'), ensureInspect(), ensureReaderText(), ensurePictures(),
+       peopleDirectory.load().then((directory) => {
+         const row = directory?.people?.find(person => person.id === id);
+         return row ? Promise.allSettled([householdRecord(row.file), ensureResidentCitations()]) : null;
+--- a/chicago/4d/tools/test_navigator.mjs
++++ b/chicago/4d/tools/test_navigator.mjs
+@@ -1532,3 +1532,82 @@
+   if (previousCSS === undefined) delete globalThis.CSS; else globalThis.CSS = previousCSS;
+   console.log('INSPECT PEOPLE BARRIER PASS — actual main/popup/view renders Hans+census/flags without liberties; Sources/Research/default retain original barrier');
+ }
++
++// T-2804: an eligible driver may prepare Inspect's registered code before selection.
++// Preparation never mounts a screen or changes UI ownership; actual selection does.
++{
++  const dom = miniDom(), storage = fakeStorage(), opened = [];
++  let loads = 0, mounts = 0, resolveCode;
++  const code = new Promise(resolve => { resolveCode = resolve; });
++  const rail = createRail({ rail: dom.rail, screens: dom.root.querySelector('.nav-body'), doc: dom.doc,
++    storage, reduced: () => true, wait: () => {}, onOpen: id => opened.push(id), context: () => ({ selected: 'otis_house' }) });
++  rail.register({ id: 'home', label: 'Home', panel: 'nav-home' });
++  rail.register({ id: 'inspect', label: 'Inspect', when: () => true,
++    load: () => { loads++; return code; } });
++  await rail.select('home'); rail.evaluate();
++  const initialSeen = storage.m.get('chicago4d.navigator.seen');
++  const first = rail.preload('inspect'), second = rail.preload('inspect');
++  assert.strictEqual(first, second, 'simultaneous preparation shares the exact in-flight import');
++  await Promise.resolve();
++  assert.equal(loads, 1); assert.equal(mounts, 0);
++  assert.equal(rail.current, 'home'); assert.deepEqual(opened, ['home']);
++  assert.equal(dom.byId.get('nav-app-inspect'), undefined, 'preparation creates no panel');
++  assert.equal(storage.m.get('chicago4d.navigator.seen'), initialSeen, 'preparation marks nothing seen');
++  assert(button(dom, 'inspect').classList.contains('is-new'));
++  resolveCode({ mount(el) { mounts++; el.textContent = 'prepared inspector'; } });
++  assert.equal(await first, true);
++  assert.equal(mounts, 0); assert.equal(rail.current, 'home');
++  const openedPrepared = rail.select('inspect');
++  assert.equal(rail.current, 'inspect', 'a prepared synchronous mount switches in this task, without another import await');
++  assert.equal(mounts, 1); assert.equal(loads, 1);
++  assert.equal(await openedPrepared, true);
++  assert.deepEqual(opened, ['home', 'inspect']);
++  assert.deepEqual(JSON.parse(storage.m.get('chicago4d.navigator.seen')), ['inspect']);
++  assert.equal(await rail.preload('missing'), false);
++}
++{
++  const dom = miniDom(); let loads = 0, mounts = 0, release;
++  const code = new Promise(resolve => { release = resolve; });
++  const rail = createRail({ rail: dom.rail, screens: dom.root.querySelector('.nav-body'), doc: dom.doc,
++    storage: fakeStorage(), reduced: () => true, wait: () => {} });
++  rail.register({ id: 'home', label: 'Home', panel: 'nav-home' });
++  rail.register({ id: 'inspect', label: 'Inspect', load: () => { loads++; return code; } });
++  await rail.select('home');
++  const preparing = rail.preload('inspect'), opening = rail.select('inspect');
++  await Promise.resolve(); assert.equal(loads, 1, 'selection joins a pending preparation');
++  await rail.select('home'); // A newer choice must still win while the import is pending.
++  release({ mount() { mounts++; } });
++  assert.equal(await preparing, true); assert.equal(await opening, false);
++  assert.equal(rail.current, 'home'); assert.equal(mounts, 0);
++  assert.equal(await rail.select('inspect'), true); assert.equal(loads, 1); assert.equal(mounts, 1);
++}
++{
++  const dom = miniDom(); let attempts = 0, mounts = 0;
++  const rail = createRail({ rail: dom.rail, screens: dom.root.querySelector('.nav-body'), doc: dom.doc,
++    storage: fakeStorage(), reduced: () => true, wait: () => {} });
++  rail.register({ id: 'home', label: 'Home', panel: 'nav-home' });
++  rail.register({ id: 'inspect', label: 'Inspect', load: () => {
++    attempts++; if (attempts === 1) return Promise.reject(Error('optional code offline'));
++    return { mount() { mounts++; } };
++  } });
++  await rail.select('home');
++  await assert.rejects(rail.preload('inspect'), /optional code offline/);
++  assert.equal(rail.current, 'home'); assert.equal(mounts, 0);
++  assert.equal(dom.byId.get('nav-app-inspect'), undefined);
++  assert.equal(await rail.select('inspect'), true, 'a failed optional preparation does not poison the real open');
++  assert.equal(attempts, 2); assert.equal(mounts, 1);
++}
++{
++  const dom = miniDom(); let loads = 0, mounts = 0;
++  const nav = createNavigator({ root: dom.root, scene: { id: '1904' }, isPhone: () => true,
++    viewportHeight: () => 780, storage: fakeStorage(),
++    apps: [{ id: 'home', label: 'Home', panel: 'nav-home' },
++      { id: 'inspect', label: 'Inspect', load: () => { loads++; return { mount() { mounts++; } }; } }] });
++  await Promise.resolve();
++  assert.equal(await nav.preload('inspect'), true);
++  assert.equal(nav.app, 'home'); assert.equal(nav.level, 0); assert.equal(mounts, 0);
++  assert.equal(await nav.openLink({ app: 'inspect', id: 'otis_house', tab: 'people', person: 'Hans' }), true);
++  assert.equal(nav.app, 'inspect'); assert.equal(nav.level, 1); assert.equal(loads, 1); assert.equal(mounts, 1);
++  assert.deepEqual(nav.link, { app: 'inspect', id: 'otis_house', tab: 'people', person: 'Hans' });
++}
++console.log('NAVIGATOR PRELOAD PASS — code only, exact import dedup, synchronous prepared switch, original choice race, retry and real device port');
+--- a/chicago/4d/tools/test_driven_assembly.mjs
++++ b/chicago/4d/tools/test_driven_assembly.mjs
+@@ -595,23 +595,23 @@
+   assert.equal(town.ensureNear({ x: 20, z: 0 }, false), false);
+   assert.equal(calls.length, 0); assert.equal(models, 0); town.dispose();
+ }
+-// Execute the actual main card warmup with the actual392-row catalog. No Navigator,
+-// HUD, popup-open, figure loader or renderer is provided to this metadata-only closure.
++// Execute the actual main card warmup with the actual392-row catalog. Test its no-device
++// fallback and code-only Navigator port; no HUD, popup-open, figure loader or renderer.
+ {
+   const begin = mainSource.indexOf('  async function prepareSceneDirectoryPerson(id) {');
+   const end = mainSource.indexOf('  function ensureResidentCitations()', begin);
+   assert(begin >= 0 && end > begin);
+   const code = mainSource.slice(begin, end).replace(/\bimport\(/g, 'loadModule(');
+   const events = [], pending = deferredAsset();
+-  const warm = (year, residents, failing = false) => new Function('supportsTownTransport', 'YEAR', 'draws', 'loadModule',
+-    'ensureInspect', 'ensureReaderText', 'ensurePictures', 'peopleDirectory', 'householdRecord', 'ensureResidentCitations',
++  const warm = (year, residents, failing = false, navigatorUi = null) => new Function('supportsTownTransport', 'YEAR', 'draws', 'loadModule',
++    'ensureInspect', 'ensureReaderText', 'ensurePictures', 'peopleDirectory', 'householdRecord', 'ensureResidentCitations', 'navigatorUi',
+     code + '\nreturn prepareSceneDirectoryPerson;')(supportsTownTransport, year, () => residents,
+     path => { events.push(path); return pending.promise; },
+     () => { events.push('summary'); return failing ? Promise.reject(Error('summary offline')) : pending.promise; },
+     () => { events.push('reader'); return pending.promise; }, () => { events.push('pictures'); return pending.promise; },
+     { load() { events.push('directory'); return Promise.resolve(actualPeople1904); } },
+     file => { events.push(['household', file]); return failing ? Promise.reject(Error('household offline')) : pending.promise; },
+-    () => { events.push('citations'); return pending.promise; });
++    () => { events.push('citations'); return pending.promise; }, navigatorUi);
+   await warm('1835', true)(actualDriverRow.person_id);
+   await warm('1812', false)(actualDriverRow.person_id); assert.equal(events.length, 0);
+   const waiting = warm('1904', false)(actualDriverRow.person_id);
+@@ -620,6 +620,12 @@
+   const actualPerson = actualPeople1904.people.find(row => row.id === actualDriverRow.person_id);
+   assert.deepEqual(events.slice(-2), [['household', actualPerson.file], 'citations']);
+   pending.resolve(); await waiting;
++  events.length = 0;
++  await warm('1904', false, false, { preload(id) { events.push(['preload', id]); return Promise.resolve(true); } })(actualDriverRow.person_id);
++  assert.deepEqual(events[0], ['preload', 'inspect'], 'eligible driver prepares the exact Navigator app code');
++  assert(!events.includes('./apps/inspect-view.js'), 'a registered preload avoids a separate import on the opening path');
++  assert(events.includes('summary') && events.includes('reader') && events.includes('pictures'));
++  assert(events.some(event => Array.isArray(event) && event[0] === 'household' && event[1] === actualPerson.file));
+   await warm('1904', false, true)(actualDriverRow.person_id); // Optional failures remain handled.
+   assert(mainSource.includes("preparePersonCard: !draws('residents') ? prepareSceneDirectoryPerson : null"));
+   assert(mainSource.includes('residentCitations: () => ensureResidentCitations(),'));

@@ -1,0 +1,32 @@
+--- V6/run_current_world_case.py
++++ V8/run_current_world_case.py
+@@ -3,14 +3,16 @@
+ import argparse,fcntl,hashlib,importlib.util,json,os,re,subprocess,sys
+ P=Path(__file__).resolve().parent;RUNTIME=P.parents[1]
+ SUP=Path('/workspace/.cloud-setup/transport-supervise.py')
+-APP='c8f78fbe675db8d3ca1d6907b79aef13e46dd6e9'
++EXPECTED_HEAD='d0671d821ba861a171fbd3394b22e4ed496dceda'
++EXPECTED_MERGE_HEAD='42b9c601d51d8a93cde2706e1773f0bd00fadfbe'
+ FIELDS=['HEAD','MERGE_HEAD','TREE','APP','semantic_index_sha256']
+ def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+ def load(p):return json.loads(Path(p).read_text())
+ def save(p,x):Path(p).write_text(json.dumps(x,indent=2)+'\n')
+ def git(repo,*args):return subprocess.check_output(['git','-C',str(repo),*args],env=dict(os.environ,GIT_OPTIONAL_LOCKS='0',GIT_NO_LAZY_FETCH='1'),timeout=30)
+ def staged_source(repo,expected):
+- assert set(expected)==set(FIELDS) and expected['APP']==APP
++ assert set(expected)==set(FIELDS)
++ assert expected['HEAD']==EXPECTED_HEAD and expected['MERGE_HEAD']==EXPECTED_MERGE_HEAD
+  for k in ['HEAD','MERGE_HEAD','TREE','APP']:assert re.fullmatch('[a-f0-9]{40}',expected[k])
+  assert not git(repo,'ls-files','-u').strip() and not git(repo,'diff','--name-only').strip(),'No unmerged/unstaged tracked source permitted'
+  assert not git(repo,'ls-files','--others','--exclude-standard').strip(),'Unexpected untracked source'
+@@ -40,8 +42,8 @@
+ def targeted_owner(binding,repo,source):
+  ref=binding['targeted_owner_receipt'];assert sha(ref['path'])==ref['sha256'];o=load(ref['path'])
+  assert o['status']=='TARGETED_FIXTURES_AND_NATIVE_OWNERS_PASS_NOT_FULL_PREFLIGHT'and o['resources']['accepted']
+- old=o['source_after'];assert old['APP']==APP==source['APP']and old['HEAD']==source['HEAD']and old['MERGE_HEAD']==source['MERGE_HEAD']
+- assert git(repo,'rev-parse',old['TREE']+':chicago/4d').decode().strip()==APP
++ old=o['source_after'];assert old['APP']==source['APP']and old['HEAD']==source['HEAD']and old['MERGE_HEAD']==source['MERGE_HEAD']
++ assert git(repo,'rev-parse',old['TREE']+':chicago/4d').decode().strip()==source['APP']
+  delta=git(repo,'diff','--name-only','--no-renames',old['TREE'],source['TREE']).decode().splitlines()
+  assert all(p.startswith('.github/workflows/')for p in delta),'Only explicit workflow delta allowed after identicalAPP owner proof'
+  for rel,pin in o['fix_pins'].items():

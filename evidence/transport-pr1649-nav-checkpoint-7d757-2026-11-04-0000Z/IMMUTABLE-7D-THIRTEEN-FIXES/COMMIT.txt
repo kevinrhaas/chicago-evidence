@@ -1,0 +1,133 @@
+commit 7d75789f9c2d5dc91aab4227d20e20f0677c6cf9
+Merge: d0671d821b 42b9c601d5
+Author:     Kevin Haas <kevinroberthaas@gmail.com>
+AuthorDate: Tue Nov 3 23:59:36 2026 +0000
+Commit:     Kevin Haas <kevinroberthaas@gmail.com>
+CommitDate: Tue Nov 3 23:59:36 2026 +0000
+
+    T-3088: Reuse prepared Navigator code for occupied drivers
+    
+    Prepare the registered Inspector module alongside eligible driver-card metadata.
+    Reuse that module when a visitor inspects a driver, avoiding a second cold import
+    boundary. Preparation creates no panel or seen marker and preserves current UI
+    ownership. Keep import deduplication, later-choice ownership and failed-load retry.
+    
+    Integrate DEV42 while retaining occupied transport, standing idles and prior
+    loading/card fixes. Actual transport, driven-assembly, Navigator and native
+    report checks pass; publication checks qualify the exact staged tree. Keep the
+    previous phone-card timeout and native tail timeout as negative evidence.
+    
+    Full native preflight, new-source scene interaction and current-HEAD CI remain
+    required before DEV merge. No broader photographic or gait completion is claimed.
+    
+    Checkpoint: owner-requested incremental feature branch; full preflight pending
+
+ .github/workflows/chicago-4d-bake.yml              |    1 +
+ ..._1900_prairie_coach_house__as_standing_1904.glb |  Bin 0 -> 154712 bytes
+ ..._house_1900_prairie_coach_house__draft_1904.glb |  Bin 43940 -> 0 bytes
+ .../assets/gltf/green_tree_tavern__frame_1833.glb  |  Bin 245112 -> 269880 bytes
+ .../pullman_house_1729_prairie__as_mapped_1904.glb |  Bin 19172624 -> 19100528 bytes
+ chicago/4d/assets/manifest.json                    |   20 +-
+ chicago/4d/assets/manifest.web.json                |    8 +-
+ ..._1900_prairie_coach_house__as_standing_1904.glb |  Bin 0 -> 33116 bytes
+ ..._house_1900_prairie_coach_house__draft_1904.glb |  Bin 14672 -> 0 bytes
+ .../assets/web/green_tree_tavern__frame_1833.glb   |  Bin 45304 -> 48648 bytes
+ .../pullman_house_1729_prairie__as_mapped_1904.glb |  Bin 5164716 -> 5145480 bytes
+ .../prairie_1904/draft_prairie_1904.json           |    1 +
+ .../4d/data/jaunts/battle-of-fort-dearborn.json    |  316 +-
+ .../4d/data/jaunts/first-fort-dearborn-tour.json   |  312 +-
+ chicago/4d/data/jaunts/killing-of-jean-lalime.json |  182 +-
+ chicago/4d/data/jaunts/prairie-built-so-far.json   |    2 +-
+ chicago/4d/data/jaunts/schema.json                 |   14 +
+ chicago/4d/data/liberties.json                     |  116 +-
+ .../green_tree_tavern/andreas_1838.match.json      |   10 +-
+ .../inland_1894_conservatory.match.json            |    2 +-
+ .../lowe_c1897_conservatory.match.json             |    2 +-
+ .../albertype_1890.match.json                      |    4 +-
+ .../chm_clark_1905.match.json                      |    6 +-
+ .../detroit_det_4a08065.match.json                 |    8 +-
+ .../taylor_1445_album.match.json                   |   13 +-
+ .../taylor_16554_from_south.match.json             |   10 +-
+ .../inland_1894_plate.match.json                   |    8 +-
+ .../taylor_16554_from_south.match.json             |    8 +-
+ .../taylor_16555_west_front.match.json             |    8 +-
+ .../inland_1894_plate.match.json                   |    8 +-
+ .../taylor_16554_from_south.match.json             |    8 +-
+ .../taylor_16555_west_front.match.json             |    8 +-
+ .../blanchard-davis-c1893-poster.json              |   35 +
+ .../blanchard-davis-c1893-poster.match.json        |   37 +
+ .../1812/jaunts/battle-of-fort-dearborn.json       |    2 +-
+ chicago/4d/data/sidecars/1812/jaunts/catalog.json  |    2 +-
+ .../1812/jaunts/first-fort-dearborn-tour.json      |    2 +-
+ .../1812/jaunts/killing-of-jean-lalime.json        |    2 +-
+ .../4d/data/sidecars/1835/green_tree_tavern.json   |   34 +-
+ .../currey_1912_story_of_old_fort_dearborn.json    |    2 +-
+ .../dailing_2018_chicago_reader_lalime.json        |    2 +-
+ chicago/4d/data/sidecars/1835/sources/index.json   |    2 +-
+ .../sidecars/1835/sources/kinzie_waubun_1856.json  |    2 +-
+ .../sources/kirkland_1893_chicago_massacre.json    |    2 +-
+ .../kirkland_1893_chicago_massacre_appendix_k.json |    2 +-
+ .../moses_kirkland_history_of_chicago_v1.json      |    2 +-
+ .../4d/data/sidecars/1835/sources/quaife_1913.json |    2 +-
+ .../sources/sanborn_1911_chicago_v3_sheet_28.json  |    2 +-
+ .../4d/data/sidecars/1835/wolf_point_tavern.json   |   11 +-
+ ...ridge_keith_house_1900_prairie_coach_house.json |  311 +-
+ chicago/4d/data/sidecars/1904/index.json           |    4 +-
+ .../sidecars/1904/jaunts/prairie-built-so-far.json |    2 +-
+ .../sidecars/1904/pullman_house_1729_prairie.json  |   10 +-
+ .../4d/data/signage/town_business_signboards.json  | 4999 +++++++++++++++++---
+ ...ridge_keith_house_1900_prairie_coach_house.json |  309 +-
+ chicago/4d/data/structures/green_tree_tavern.json  |   42 +-
+ .../structures/pullman_house_1729_prairie.json     |   10 +-
+ chicago/4d/data/structures/wolf_point_tavern.json  |    8 +-
+ .../data/transport/studies/farm-box-protected.json |  142 +-
+ chicago/4d/data/yard/town_trade_goods.json         |   47 +-
+ chicago/4d/data/yard/town_woodpiles.json           |   19 +-
+ chicago/4d/docs/JAUNTS-AUTHORING.md                |    3 +-
+ chicago/4d/docs/LIBERTIES.md                       |   80 +-
+ .../RESEARCH/green-tree-annex-T-2376/README.md     |   12 +
+ .../previous-open-reading-20261103.md              |   26 +
+ .../andreas_1838-side-by-side.jpg                  |  Bin 476338 -> 479315 bytes
+ .../albertype_1890-side-by-side.jpg                |  Bin 1191338 -> 1191242 bytes
+ .../chm_clark_1905-side-by-side.jpg                |  Bin 61446 -> 61435 bytes
+ .../detroit_det_4a08065-side-by-side.jpg           |  Bin 379766 -> 379750 bytes
+ .../taylor_1445_album-side-by-side.jpg             |  Bin 417337 -> 417276 bytes
+ .../taylor_16554_from_south-side-by-side.jpg       |  Bin 345986 -> 345964 bytes
+ .../blanchard-davis-c1893-poster-side-by-side.jpg  |  Bin 0 -> 1414547 bytes
+ .../RESEARCH/wolf-picture-signoff-T-2386/README.md |   17 +-
+ .../wolf-picture-signoff-T-2386/coverage.json      |  113 +-
+ .../poster-1893/README.md                          |   15 +
+ .../poster-1893/camera-sensitivity.json            |  179 +
+ .../poster-1893/free-camera-limit.json             |  313 ++
+ .../poster-1893/source-picks.json                  |  129 +
+ chicago/4d/docs/RESEARCH/wolf_point_tavern.md      |   34 +
+ chicago/4d/docs/ROADMAP.md                         |   14 +
+ chicago/4d/docs/STATUS.md                          |   18 +
+ .../4d/docs/measurements/source_use_coverage.md    |    4 +-
+ .../4d/generators/archetypes/facade_openings.py    |   14 +-
+ .../generators/archetypes/frame_dwelling_params.py |   21 +
+ .../generators/archetypes/frame_tavern_params.py   |   92 +
+ chicago/4d/renderers/web/js/changelog.js           |   41 +
+ chicago/4d/renderers/web/js/jaunt-panel.js         |    2 +-
+ chicago/4d/renderers/web/js/jaunt-preview.js       |    6 +-
+ chicago/4d/renderers/web/js/jaunts.js              |   12 +-
+ chicago/4d/renderers/web/js/main.js                |    2 +-
+ chicago/4d/renderers/web/js/nav-rail.js            |   28 +-
+ chicago/4d/renderers/web/js/navigator.js           |    2 +
+ chicago/4d/renderers/web/js/travel-estimate.js     |   17 +-
+ chicago/4d/renderers/web/js/tree-model.js          |  120 +-
+ chicago/4d/tools/check.sh                          |    7 +
+ chicago/4d/tools/check_tavern_front_reader.py      |  131 +
+ chicago/4d/tools/compile_jaunts.py                 |   18 +-
+ chicago/4d/tools/generate_business_signboards.py   |  117 +-
+ chicago/4d/tools/generate_yard_goods.py            |   11 +
+ chicago/4d/tools/qa_k12_t1932.mjs                  |    6 +
+ chicago/4d/tools/smoke_renderer.mjs                |   15 +-
+ chicago/4d/tools/step_isolation.json               |    4 +
+ chicago/4d/tools/test_compile_jaunts.py            |   17 +
+ chicago/4d/tools/test_driven_assembly.mjs          |   16 +-
+ .../4d/tools/test_frame_tavern_picture_features.py |    7 +-
+ chicago/4d/tools/test_jaunts_reducer.mjs           |   21 +-
+ chicago/4d/tools/test_navigator.mjs                |   79 +
+ chicago/4d/tools/test_travel_estimate.mjs          |   14 +-
+ 108 files changed, 7623 insertions(+), 1275 deletions(-)
