@@ -1,0 +1,9 @@
+# Existing T-3041: new parade-presence fix branch
+
+The roof increment in PR1685 merged normally by squash commit22d624f3e5061dfaf54af0e3429e6278be60abe3, whose tree is exactly the qualified a7f7942 tree. The new local branch is steward/t3041-parade-presence-20261104, based on22. All seven working postimages were preserved in an ordinary branch switch with no reset. No new source commit or PR is claimed. The original merged branch has not been pushed again.
+
+The current working patch fixes only the parade presence accounting exposed by actual 1812 validation. Its fix-only changelog no longer reannounces the roof. The old roof entry is still pending in dev's changelog.d/T-3041.json because its automatic fold run41764389693 was queued at03:18; adopt that actual fold before committing this fresh fix entry so stamped roof history cannot be dropped. No direct dev/main push, manual history rewrite or new ticket is authorized.
+
+Code and actual createBuildings regression checks passed peer/root review; failed, empty, malformed or mixed assets retain missing-host checks. Ground is exposed separately without a fabricated building box or standing count. Existing fort-gate checks pass54 unchanged. Full four-part source and actual both-viewport/native smoke for this renderer fix have NOT run. The archive includes exact seven postimages, staged diff, unit receipts, raw-prefix preservation, branch-switch proof and prepared-not-run positive-ground runtime helpers.
+
+CPU source qualification is queued behind Lake House's active gate/native-quiet work. All geometry/generator code and the genuine243 native output proofs are unchanged. The earlier actual runtime failure remains public64cc6a8423a7175cef6714012ba312dd5bc64808; it is not reclassified as passed. Original whole-fort image acceptance stays open. Root owns resource scheduling and final merge authorization after current checks and actual pixels.
