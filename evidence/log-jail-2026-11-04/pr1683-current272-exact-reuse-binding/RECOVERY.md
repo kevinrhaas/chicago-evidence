@@ -1,0 +1,7 @@
+# Jail9af: exact272-input and544-output reuse proof
+
+A read-only pure-Python fixture used the ACTUAL9af frame_dwelling builder/params and all272 SHA-bound currentrecords to recompute every native input digest. All272 equal9af's manifest, with0mismatches. All272manifestrows are also exactlyoldbc0. Immutabletreecomparison then proves all544actualMASTER/WEB Gitblobs and9geometry/input-code paths are exactlybc0. This establishes current9af bindings to the previously genuine nativeoutputs; no newBlenderexecution is claimed by this audit.
+
+Fourteen foreign frame records moved or changednotes, and the parameter module gained a nongeometryfront_wall reader. Fullresolved hashes independently show those changes do not alter the currentmesh inputs. Current96haszerochangedexisting271frame_dwellingmanifestrows from381. Pruyne uses independentframe_storefront, not thisfamily; its separate13path/currentb483 proof is public439c5260.
+
+The fixture archive includes the exact builder/params/keeper source bytes and272actualdatarecords used, plus code/dependencybindings. It is an evidence fixture outsideallcheckouts, not a sourcecommit or generatedmesh. No productiondata/code/claim was edited. This proof doesnotqualify wholelatestdev integration, source gates or appUI. NewSDKraw result and actualruntimegaps are publicad49c435: source4didpass, but desktopstage1 backgroundedto12m37, mobile1-2had5failures, targetJailpixelsnotreviewed. Keepthose truths separate.
