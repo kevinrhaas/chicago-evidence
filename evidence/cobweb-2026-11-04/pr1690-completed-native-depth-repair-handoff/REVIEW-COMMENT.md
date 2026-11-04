@@ -1,0 +1,5 @@
+Independent fixed-camera review found both new lower apertures striped by log courses: [controlled before/after and depth proof](https://github.com/kevinrhaas/chicago-evidence/blob/7ef1d8e2a65d2fd9705359241a5920e21f97e624/evidence/cobweb-2026-11-04/pr1690-controlled-pair-local-depth-defect/RECOVERY.md).
+
+This still applies to current head `e9d93bf385623353a2134a18a98b959fbd84efb7`: `generators/archetypes/log_dwelling.py:1462`, blob `6698bda4bd92ba2a974b8282aa0df469f59d3595`, passes bare `APERTURE_BACK_M` to `openings.face`. The face at 9.004 m is behind log skin at 9.022 m; the surround already accounts for skin and its reveal back is 9.026 m.
+
+Use `w.skin + APERTURE_BACK_M` in that local face call, then genuinely rebuild and qualify the affected native defaults and rerender at the unchanged private camera before merge. No shared-helper, camera or grade change is needed. Keep the original partial/DIFFERS status and publish the working repair as an UNQUALIFIED raw source/log/hash checkpoint before long gates. This review does not claim that the proposed repair has run or passed.

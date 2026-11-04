@@ -1,0 +1,86 @@
+[
+  {
+    "event": 753,
+    "command": "python3 - <<'PY'\nids=sorted({k.split('__')[0] for k in open('/tmp/stale_keys.txt').read().split()})\nprint(len(ids))\nn=4\nfor i in range(n):\n    batch=ids[i::n]\n    open(f'/tmp/batch{i}.txt','w').write(','.join(batch))\n    print(i,len(batch))\nPY\nsource generators/blender.pin; BIN=\"$BLENDER_CACHE/$BLENDER_DIR/blender\"\nmkdir -p /tmp/bakelogs\ntime timeout 560 \"$BIN\" -b -noaudio --factory-startup --python generators/build.py -- --only \"$(cat /tmp/batch0.txt)\" --wrote /tmp/bakelogs/wrote0.txt > /tmp/bakelogs/build0.log 2>&1; echo \"exit=$?\"; tail -8 /tmp/bakelogs/build0.log; wc -l /tmp/bakelogs/wrote0.txt",
+    "result_event": 754,
+    "result": "82\n0 21\n1 21\n2 20\n3 20\n\nreal\t0m2.748s\nuser\t0m2.351s\nsys\t0m0.512s\nexit=0\n00:47:29 | INFO: Extracting primitive: walker_meeting_house__log_1831\n00:47:29 | INFO: Primitives created: 10\n00:47:29 | INFO: Finished glTF 2.0 export in 0.019559621810913086 s\nBlender 4.5.3 LTS (hash 67807e1800cc built 2025-09-09 01:38:15)\n\nbuilt walker_meeting_house__log_1831.glb  49,624 bytes  ~498 tris\n\n21 asset(s) built; manifest updated\n21 /tmp/bakelogs/wrote0.txt",
+    "is_error": false
+  },
+  {
+    "event": 756,
+    "command": "source generators/blender.pin; BIN=\"$BLENDER_CACHE/$BLENDER_DIR/blender\"\nfor i in 1 2 3; do\n  echo \"== batch $i\"\n  timeout 540 \"$BIN\" -b -noaudio --factory-startup --python generators/build.py -- --only \"$(cat /tmp/batch$i.txt)\" --wrote /tmp/bakelogs/wrote$i.txt > /tmp/bakelogs/build$i.log 2>&1 || { echo \"batch $i FAILED\"; tail -20 /tmp/bakelogs/build$i.log; break; }\n  tail -2 /tmp/bakelogs/build$i.log\ndone\ncat /tmp/bakelogs/wrote*.txt | sort -u > /tmp/bakelogs/wrote_all.txt; wc -l /tmp/bakelogs/wrote_all.txt",
+    "result_event": 759,
+    "result": "== batch 1\n\n21 asset(s) built; manifest updated\n== batch 2\n\n20 asset(s) built; manifest updated\n== batch 3\n\n20 asset(s) built; manifest updated\n82 /tmp/bakelogs/wrote_all.txt",
+    "is_error": false
+  },
+  {
+    "event": 852,
+    "command": "time timeout 590 ./tools/check.sh --part 1/4 > /tmp/bakelogs/check1.log 2>&1; echo \"exit=$?\"; tail -12 /tmp/bakelogs/check1.log",
+    "result_event": 872,
+    "result": "real\t8m33.782s\nuser\t26m29.161s\nsys\t1m29.363s\nexit=1\n   self-test | ok   the walker names a block nested in a list\n   self-test | 0 failure(s)\n\n\u001b[31mCHECK FAIL\u001b[0m \u2014 part 1/4: 3 of 288 steps failed:\n  \u001b[31m*\u001b[0m no gate step writes the live tree, and every one of them has been measured\n  \u001b[31m*\u001b[0m the register's four documented men still head the roofs the deal gives them\n  \u001b[31m*\u001b[0m the three levels mean what they say\n\nFix those before committing. Anything else above that looks red is a\nself-test firing \u2014 those lines are prefixed 'self-test |'.\n  This is part 1 of 4; the other 853 steps are in the other parts. The gate is\n  green only when every part is: tools/check.sh --part 1/4 through --part 4/4.",
+    "is_error": false
+  },
+  {
+    "event": 942,
+    "command": "time timeout 590 ./tools/check.sh --part 1/4 > /tmp/bakelogs/check1b.log 2>&1; echo \"exit=$?\"; tail -8 /tmp/bakelogs/check1b.log",
+    "result_event": 961,
+    "result": "real\t8m23.433s\nuser\t26m15.380s\nsys\t1m28.423s\nexit=0\n   self-test | ok   the walker names a block nested in a list\n   self-test | 0 failure(s)\n\n\u001b[32mCHECK PASS\u001b[0m \u2014 part 1/4: 288 steps, none red.\n  99 of them are self-tests that prove a gate by breaking it; their\n  assertions fire on purpose and every line of it is prefixed 'self-test |'.\n  This is part 1 of 4; the other 853 steps are in the other parts. The gate is\n  green only when every part is: tools/check.sh --part 1/4 through --part 4/4.",
+    "is_error": false
+  },
+  {
+    "event": 962,
+    "command": "time timeout 590 ./tools/check.sh --part 2/4 > /tmp/bakelogs/check2.log 2>&1; echo \"exit=$?\"; tail -10 /tmp/bakelogs/check2.log",
+    "result_event": 979,
+    "result": "real\t7m0.392s\nuser\t21m20.848s\nsys\t1m7.572s\nexit=0\n  refused  school             7\n\n\u001b[1m== the resident layer's rebuild order still holds, and its set has not grown in silence\u001b[0m\nthe rebuild order holds: 15 steps, every one gated by check.sh, 18 declared back edge(s), 61 gated re-derivation(s) beside the layer and all of them classified\n\n\u001b[32mCHECK PASS\u001b[0m \u2014 part 2/4: 287 steps, none red.\n  100 of them are self-tests that prove a gate by breaking it; their\n  assertions fire on purpose and every line of it is prefixed 'self-test |'.\n  This is part 2 of 4; the other 854 steps are in the other parts. The gate is\n  green only when every part is: tools/check.sh --part 1/4 through --part 4/4.",
+    "is_error": false
+  },
+  {
+    "event": 980,
+    "command": "time timeout 590 ./tools/check.sh --part 3/4 > /tmp/bakelogs/check3.log 2>&1; echo \"exit=$?\"; tail -10 /tmp/bakelogs/check3.log",
+    "result_event": 993,
+    "result": "real\t5m17.839s\nuser\t16m29.063s\nsys\t1m9.774s\nexit=0\n   self-test |    self-test | ok   a declared edge the steps do not have\n   self-test |    self-test | ok   a gated re-derivation classified nowhere\n   self-test |    self-test | ok   the committed order still passes\n   self-test |    self-test | 0 failure(s)\n\n\u001b[32mCHECK PASS\u001b[0m \u2014 part 3/4: 288 steps, none red.\n  104 of them are self-tests that prove a gate by breaking it; their\n  assertions fire on purpose and every line of it is prefixed 'self-test |'.\n  This is part 3 of 4; the other 853 steps are in the other parts. The gate is\n  green only when every part is: tools/check.sh --part 1/4 through --part 4/4.",
+    "is_error": false
+  },
+  {
+    "event": 994,
+    "command": "time timeout 590 ./tools/check.sh --part 4/4 > /tmp/bakelogs/check4.log 2>&1; echo \"exit=$?\"; tail -10 /tmp/bakelogs/check4.log",
+    "result_event": 1010,
+    "result": "real\t6m31.087s\nuser\t21m8.122s\nsys\t1m4.944s\nexit=0\n  basis residence_back_projection        12\n\n\u001b[1m== the walkthrough's tier reader agrees with the published table\u001b[0m\nok  the card reader and the published table agree on all 22010 attribute tiers (attested 701, inferred 3684, reconstructed 10786, unknown 6839)\n\n\u001b[32mCHECK PASS\u001b[0m \u2014 part 4/4: 287 steps, none red.\n  99 of them are self-tests that prove a gate by breaking it; their\n  assertions fire on purpose and every line of it is prefixed 'self-test |'.\n  This is part 4 of 4; the other 854 steps are in the other parts. The gate is\n  green only when every part is: tools/check.sh --part 1/4 through --part 4/4.",
+    "is_error": false
+  },
+  {
+    "event": 1097,
+    "command": "time timeout 570 env SMOKE_VIEWPORT=mobile SMOKE_STAGE=3-4 node tools/smoke_renderer.mjs --published > /tmp/bakelogs/smoke_m34.log 2>&1; echo \"exit=$?\"; tail -14 /tmp/bakelogs/smoke_m34.log",
+    "result_event": 1114,
+    "result": "real\t7m22.493s\nuser\t0m47.502s\nsys\t0m13.668s\nexit=0\n  pass  mobile 390x780: every structure is rendered at a believable size\n  pass  mobile 390x780: the Sauganash is rendered as its two-mass plan\n  pass  mobile 390x780: no building hovers above the ground beneath it\n  pass  mobile 390x780: rendered height matches the documented wall height\n  pass  mobile 390x780: the suite body ran to completion\n  pass  mobile 390x780: zero page errors\n\n  pass  vendor: meshopt decoder loads and reports supported\n  pass  vendor: meshopt import raises no page error\n\n139 passed, 0 failed\n126 staged-section check(s) (stage 3-4 of 15), 13 always-on check(s)\n7 m 22 s for stage 3-4 at mobile \u2014 the ceiling on a steward run's single foreground command is 10 m 00 s\nSMOKE PASS",
+    "is_error": false
+  },
+  {
+    "event": 1115,
+    "command": "time timeout 570 env SMOKE_VIEWPORT=desktop SMOKE_STAGE=3 node tools/smoke_renderer.mjs --published > /tmp/bakelogs/smoke_d3.log 2>&1; echo \"exit=$?\"; tail -10 /tmp/bakelogs/smoke_d3.log",
+    "result_event": 1133,
+    "result": "real\t7m16.343s\nuser\t0m16.494s\nsys\t0m5.225s\nexit=0\n  pass  desktop 1280x800: the suite body ran to completion\n  pass  desktop 1280x800: zero page errors\n\n  pass  vendor: meshopt decoder loads and reports supported\n  pass  vendor: meshopt import raises no page error\n\n107 passed, 0 failed\n94 staged-section check(s) (stage 3 of 15), 13 always-on check(s)\n7 m 16 s for stage 3 at desktop \u2014 the ceiling on a steward run's single foreground command is 10 m 00 s\nSMOKE PASS",
+    "is_error": false
+  },
+  {
+    "event": 1274,
+    "command": "cd /home/runner/work/polecat-platform/polecat-platform/chicago-repo && git commit -q --no-edit && git log --oneline -1 && git push -q origin steward/t2374-cobweb-front-apertures && echo PUSHED",
+    "result_event": 1276,
+    "result": "e9d93bf38 Merge remote-tracking branch 'origin/dev' into steward/t2374-cobweb-front-apertures\nPUSHED",
+    "is_error": false
+  },
+  {
+    "event": 1340,
+    "command": "bash .github/steward/pr-rest.sh resume 1690 --why \"foreground gate green (check.sh parts 1-4, mobile 3-4 + desktop 3 smoke, both-viewport app review, zero errors) and dev merged in; hosted gate part 7/8 was still QUEUED after two full 540s pr-automerge laps, so the merge is handed on rather than forced\" --waits-on nothing 2>&1 | tail -6",
+    "result_event": 1343,
+    "result": "resume: #1690 handed off \u00b7 waits on: nothing",
+    "is_error": false
+  },
+  {
+    "event": 1354,
+    "command": "node tools/ticket.mjs release T-2374 --why \"PARTIAL, OPEN, STILL DIFFERS. PR https://github.com/kevinrhaas/chicago/pull/1690 (branch steward/t2374-cobweb-front-apertures) carries one bounded visible increment: the centre gable's TWO grounded upright apertures and ONE small upper light, the count the 1831 Wau-Bun panorama draws, through a new opt-in compound_apertures set that overrides the room's old single centre door. Count and arrangement read from the picture; every coordinate, the recess section and the entry role are reconstructed (L-cobweb-apertures-2374). Native: pinned sha256-verified Blender 4.5.3 on Ubuntu 26.04, all 82 log_dwelling masters rebuilt, 81 byte-identical; MASTER af1f33c0->4f42207b, WEB 49cfcb86->1699d7aa. Gate green in the foreground: check.sh parts 1/4-4/4 (1150 steps, none red), smoke mobile 3-4 and desktop 3 both PASS, both-viewport app review with zero page/console/network/server errors. PR is labelled resume only because the hosted gate part 7/8 was still QUEUED after two full 540s pr-automerge laps; nothing is red. NOT A MATCH: the panorama's camera is UNSOLVED and unenrolled, and the compound width, wings, sub-roof silhouettes, roof junctions, text-attested partial clapboarding and finish/tone all still differ. Image gate stays open. No photo follow-up filed.\" 2>&1 | tail -5",
+    "result_event": 1355,
+    "result": "T-2374 released \u2192 open, in its queue place \u2014 PARTIAL, OPEN, STILL DIFFERS. PR https://github.com/kevinrhaas/chicago/pull/1690 (branch steward/t2374-cobweb-front-apertures) carries one bounded visible increment: the centre gable's TWO grounded upright apertures and ONE small upper light, the count the 1831 Wau-Bun panorama draws, through a new opt-in compound_apertures set that overrides the room's old single centre door. Count and arrangement read from the picture; every coordinate, the recess section and the entry role are reconstructed (L-cobweb-apertures-2374). Native: pinned sha256-verified Blender 4.5.3 on Ubuntu 26.04, all 82 log_dwelling masters rebuilt, 81 byte-identical; MASTER af1f33c0->4f42207b, WEB 49cfcb86->1699d7aa. Gate green in the foreground: check.sh parts 1/4-4/4 (1150 steps, none red), smoke mobile 3-4 and desktop 3 both PASS, both-viewport app review with zero page/console/network/server errors. PR is labelled resume only because the hosted gate part 7/8 was still QUEUED after two full 540s pr-automerge laps; nothing is red. NOT A MATCH: the panorama's camera is UNSOLVED and unenrolled, and the compound width, wings, sub-roof silhouettes, roof junctions, text-attested partial clapboarding and finish/tone all still differ. Image gate stays open. No photo follow-up filed.\n   tickets.json mirrored to site/4d/ (T-0154)\n   pushed to https://github.com/kevinrhaas/chicago-tickets main \u2014 T-2374: release \u2014 PARTIAL, OPEN, STILL DIFFERS. PR https://github.com/kevinrhaas/chicago/pull/1690 (branch steward/t2374",
+    "is_error": false
+  }
+]

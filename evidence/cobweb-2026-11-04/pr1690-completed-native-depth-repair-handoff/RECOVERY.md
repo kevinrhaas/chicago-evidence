@@ -1,0 +1,13 @@
+# PR1690 native run completed; local aperture depth repair is required
+
+Original native41746386858 completed FAILURE/error_max_turns200 (201turns,132minutes), actualoutcomeRESUME. PR1690 is OPEN/nondraft/resume at e9d93bf385623353a2134a18a98b959fbd84efb7 after an ordinary current-dev merge, not merged. Original T2374 was nativelyreleasedOPEN/PARTIAL/DIFFERS. Fresh normalPRlap is absent404. No ownership or new dispatch is claimed here.
+
+The raw SHA256-verified native event artifact is included. Actual four pinned Blender4.5.3 batches built21+21+20+20=82log_dwelling outputs before first sourcecommit. Initial part1 failed3checks; repairs then all4manualparts passed288/287/288/287 (1150 executed including9repeated setup;1141distinct suite). Official mobile3-4passed139/0 and desktop3passed107/0. The source/runtime proof applies to the pre-integration authored tree; finale9 named whole8partgate was still pendingpart7at this audit. Do not call one green shard/report/warranted the whole gate. Actual archive/SDK tool-result bindings are supplied rather than guessed private log filenames.
+
+Root and independent review rejected the new lower-aperture appearance for merge: both dark faces are striped by visible log courses. This appears in both the exact fixed-camera controlled pair and actual native desktop/mobile Readimage blocks. Upperaperture is clear and count improves, but neutralunobstructedlowerfaces are not delivered. [Controlled pair, unchanged camera/source and local depth cause](https://github.com/kevinrhaas/chicago-evidence/blob/7ef1d8e2a65d2fd9705359241a5920e21f97e624/evidence/cobweb-2026-11-04/pr1690-controlled-pair-local-depth-defect/RECOVERY.md).
+
+Currente9 log_dwelling.py blob6698bda4bd92ba2a974b8282aa0df469f59d3595 still passes bareAPERTURE_BACK_M to openings.face atline1462. Face9.004m lies behind logskin9.022m; surround already addsw.skin and itsrevealback is9.026m. The bounded LOCAL candidate is w.skin+APERTURE_BACK_M, with no sharedhelper/camera/grade modification. It has NOT been edited/built/tested by this observer. A producer change requires actual affected82defaults plus reported variants beforequalifiedsourcecommit, exactrerender atsamecamera, all4source/PRpreflight/currentbothUI/nativeboth/named8partgate, ordinarysamePRdevmerge and originalpartialrelease. No new photo ticket/fullmatch/claimtakeover. Every15–20min andbeforelonggates publishUNQUALIFIEDrawcode/log/hash checkpoint.
+
+Approved code review comment: https://github.com/kevinrhaas/chicago/pull/1690#issuecomment-6621239185
+
+No source branch, ticketclaim or live lap was modified by this read-only recovery; the approved review comment is the only PR write.
