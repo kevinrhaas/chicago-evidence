@@ -1,0 +1,48 @@
+{
+  "status": "INDEPENDENT_STATIC_V2_REVIEW_COMPLETE_NO_APPLICATION_OR_EXECUTION",
+  "reviewed_utc": "2026-11-04T03:58:24.858097+00:00",
+  "prepared_base_HEAD": "edfc3edc60cf00a8cf2376419d0df8fc3cd8b0a3",
+  "prepared_base_TREE": "e00cce448cb51118f000749488aaa774b95aac78",
+  "source_pins_still_exact": {
+    "chicago/4d/renderers/web/js/main.js": true,
+    "chicago/4d/renderers/web/js/town-transport.js": true,
+    "chicago/4d/renderers/web/js/transport-loop.js": true,
+    "chicago/4d/tools/test_transport_loop.mjs": true,
+    "chicago/4d/tools/test_driven_assembly.mjs": true
+  },
+  "patch_hashes_match": {
+    "runtime-candidate.patch": true,
+    "acceptance-candidate.patch": true
+  },
+  "runtime_patch_sha256": "6aa67f10100a1f27d2b80c7f24f3e5313353e2946ad3ff8f9b913baffd894d50",
+  "acceptance_patch_sha256": "c346bae4abdc17954a51adf3d1425b76aaf318e46e92030b36b8c24d225d13a2",
+  "original_acceptance_lines_removed": 0,
+  "V1_acceptance_patch_retained_as_exact_prefix": true,
+  "APP_written": false,
+  "candidate_tests_executed": false,
+  "native_or_heavy_work_executed": false,
+  "conclusion": "No static blocker found for this focused next increment; previous synthetic driver visual priming finding is addressed by the explicit opt-in guard and actual adapter regressions. Runtime/native/render qualification is still required after application.",
+  "findings": [
+    {
+      "id": "legacy",
+      "result": "preserved by static reading",
+      "detail": "When elapsedFrame is absent/false, !elapsedFrame||motionFrame remains true and actual assembly visual calls retain original synthetic0 priming behavior, including old Light restoration expectations. Existing test files have no removed or modified original acceptance lines; V1 acceptance patch is an exact prefix of V2."
+    },
+    {
+      "id": "production-visual-replay",
+      "result": "previous boundary addressed by static reading",
+      "detail": "elapsedFrame:true + motionFrame:false still applies actor visibility and journey hold/reset logic, while skipping the independent visual adapter call. Synthetic near replays can no longer clear actual createDrivenAssembly.visualReset before first real frame. Real motionFrame defaults true and invokes visual update once, independent of swept travel and stopped journey state."
+    },
+    {
+      "id": "actual-adapter-regression",
+      "result": "strong expected sequence, unexecuted",
+      "detail": "Appended test uses actual createTownTransport/createDrivenAssembly and real THREE vehicle groups, with a phase-recording driver adapter. Admission replays assert no visual call; first actual8s frame asserts0phase and0journeytravel, following.5s advances phase. Offscreen\u2192synthetic near replay asserts no extra call, next actual8s frame retains phase, following.125s advances exactly.125. Light disposes/remounts a saved stopped journey; firstactual8s visual call retains phase, next.125 advances exactly.125. Continue retains independent active head looking while zeroing precommand journey elapsed; stopped realframes receive exactly one visual call."
+    },
+    {
+      "id": "travel",
+      "result": "V1 travel review unchanged",
+      "detail": "Same distance cap .25m and <=.05s ground/clearance/wheel/gait sweeps; pause/disable/reduced/Continue/initial/visible-return motion reset; synthetic refresh cannot consume motion reset. At current.084375m/s the ceiling implies at most60 steps, not a universal bound for arbitrary smaller positive API speeds. No new asset/gait/physical limit change."
+    }
+  ],
+  "scope": "Review only of a separate increment intended after PR1693 merge. Existing PR1693 integration is not claimed merged or retested by this static review."
+}

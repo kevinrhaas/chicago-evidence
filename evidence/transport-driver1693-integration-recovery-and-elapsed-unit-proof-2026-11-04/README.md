@@ -1,0 +1,7 @@
+# Uncommitted PR1693 integration recovery and actual elapsed-clock unit proof
+
+This append-only checkpoint preserves exact staged integration TREE f2d0bc74730766d3309a8b23900e39c112e1fffe, parents intended [edfc,b622], the independently measured step-isolation conflict resolution, first failed native integration attempt, canonical two-scalar derived-count repair and recovery recipe. PR1693 is still publicly edfc and unmerged at the recorded snapshot. The fresh four-part V2 gate is running and pending; no active STATE or incomplete gate output is copied or relabelled PASS. No app commit or DEV merge is claimed.
+
+The separate motion-clock candidate V2 was applied only to an isolated25-file,3.76MB projection. Its two actual original Node tests completed successfully (.400s transport loop and.637s driven assembly), including all appended elapsed-clock assertions, original test prefixes unchanged, five syntax checks, strict original30s supervisors and complete owned cleanup. The frozen ROOT APP/index/worktree and resource guard remained unchanged. Prior projection setup/missing dependency negatives are preserved; no assertion was weakened. These unit results do not replace native integration, browser, render or world budgets.
+
+Prepared V2 patches/source pins/static review and false-GO native browser observer files are preserved as UNRUN preparation. No assets or PNGs are duplicated. Large text/raw logs are losslessly gzipped; every record carries stored and decoded hashes/lengths. Additional generated recovery files are separately hashed in MANIFEST.json.
