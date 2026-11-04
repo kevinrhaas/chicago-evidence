@@ -1,0 +1,389 @@
+diff --git a/chicago/4d/renderers/web/js/buildings.js b/chicago/4d/renderers/web/js/buildings.js
+index 80ab8a24c5..b873f85f17 100644
+--- a/chicago/4d/renderers/web/js/buildings.js
++++ b/chicago/4d/renderers/web/js/buildings.js
+@@ -58,7 +58,7 @@ import { loadCampSurfaces } from './camp-surfaces.js';
+ import { applyBrickBond, brickBondFromSearch } from './brick-bond.js';
+ import { addFeet, feetPoints, packFeet } from './building-feet.js';
+ import { buildingBodyBounds } from './building-body-bounds.js';
+-import { drawsLeaves as leavesHungElsewhere, paradeLaidAsGround } from './fort-gates.js';
++import { drawsLeaves as leavesHungElsewhere, paradeLaidAsGround, paradeGroundOwner } from './fort-gates.js';
+ import { cheapenGlass, DEFAULT_GLASS, writePaneAttributes } from './glass.js';
+ import { patchNightWindows } from './night-lights.js';
+ import { layerPick } from './gpu-pick.js';
+@@ -478,6 +478,12 @@ export async function createBuildings({ registry, confidence, terrain, checkpoin
+   // material key -> { material, entries: [{ record, geo, factors }] }
+   const groups = new Map();
+   const sourceRoles = new WeakMap();
++  const originalRole = (material) => {
++    if (!sourceRoles.has(material)) sourceRoles.set(material, material.name);
++    return sourceRoles.get(material);
++  };
++  /** Loaded ground-only assets fulfilled by the named native yards owner (T-3320). */
++  const delegatedGround = new Map();
+   const viewOccluders = [];
+   /**
+    * T-3213: what every backing's `active()` compares against — identity is read
+@@ -629,6 +635,39 @@ export async function createBuildings({ registry, confidence, terrain, checkpoin
+       continue;
+     }
+ 
++    // A successfully loaded parade may contain only the earth slab T-3320 leaves
++    // to yards. It has no building batch or box; account for the actual delegation
++    // separately. A failed/empty asset, or any remaining non-earth mesh (the second
++    // fort's sundial), must still pass the ordinary batched-geometry roll below.
++    const groundOwner = paradeGroundOwner(record);
++    const identifiedGround = groundOwner && node.userData?.structure_id === record.id
++      && (!node.userData.phase_id || node.userData.phase_id === record.sidecar.phase);
++    if (identifiedGround && meshes.every(({ mesh, matrix }) => {
++      if (!matrix.elements.every(Number.isFinite)) return false;
++      const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
++      if (!materials.length || !materials.every((material) => material && originalRole(material) === 'earth')) return false;
++      const positions = mesh.geometry.getAttribute('position');
++      const indices = mesh.geometry.getIndex();
++      const count = indices ? indices.count : positions?.count;
++      if (!positions || positions.count < 3 || !(count >= 3) || count % 3) return false;
++      for (let i = 0; i < positions.count; i += 1) {
++        if (![positions.getX(i), positions.getY(i), positions.getZ(i)].every(Number.isFinite)) return false;
++      }
++      if (indices) for (let i = 0; i < indices.count; i += 1) {
++        const index = indices.getX(i);
++        if (!Number.isInteger(index) || index < 0 || index >= positions.count) return false;
++      }
++      const a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3();
++      for (let i = 0; i < count; i += 3) {
++        a.fromBufferAttribute(positions, indices ? indices.getX(i) : i);
++        b.fromBufferAttribute(positions, indices ? indices.getX(i + 1) : i + 1);
++        c.fromBufferAttribute(positions, indices ? indices.getX(i + 2) : i + 2);
++        const area = b.sub(a).cross(c.sub(a)).lengthSq();
++        if (Number.isFinite(area) && area > 0) return true;
++      }
++      return false;
++    })) delegatedGround.set(record.id, groundOwner);
++
+     // T-0002. One tone per STRUCTURE, resolved once and multiplied into every
+     // surface the structure owns — walls, roof, trim, stack alike. Per
+     // structure rather than per material because on 38 of the shipped assets
+@@ -640,8 +679,7 @@ export async function createBuildings({ registry, confidence, terrain, checkpoin
+     for (const { mesh, matrix } of meshes) {
+       const label = `${record.id}/${mesh.name || 'mesh'}`;
+       const sourceMaterial = Array.isArray(mesh.material) ? mesh.material[0] : mesh.material;
+-      if (!sourceRoles.has(sourceMaterial)) sourceRoles.set(sourceMaterial, sourceMaterial.name);
+-      const bodyRole = sourceRoles.get(sourceMaterial); // before batching whitens/names it
++      const bodyRole = originalRole(sourceMaterial); // before batching whitens/names it
+       // T-3319: a fort gate's leaves are hung by fort-gates.js so they can swing; the
+       // shut pair the palisade baked (its `dark` primitive, the leaves and nothing else)
+       // is left out for those stockades only.
+@@ -1356,8 +1394,8 @@ export async function createBuildings({ registry, confidence, terrain, checkpoin
+    * THE TOWN'S ROLL CALL — T-1126. Which structures actually put geometry into
+    * a batch, and which were supposed to and did not.
+    *
+-   * `localBoxes` is the honest answer to "is this building standing" and the
+-   * only one in this file: it is filled where a mesh enters a batch, so a
++   * `localBoxes` is the honest answer to "is this building standing": it is
++   * filled where a mesh enters a batch, so a
+    * record that has a sidecar, a placement matrix and a manifest entry but
+    * whose GLB never arrived is simply not in it. `placements` is NOT that
+    * answer — it is filled for every record in the registry before a single
+@@ -1384,6 +1422,10 @@ export async function createBuildings({ registry, confidence, terrain, checkpoin
+     // A record with no asset is drawn by another layer (the estray pen's fence)
+     // and the loader has already reported it if it names no layer at all.
+     if (!record.sidecar?.asset) continue;
++    // Like the no-asset delegated layer above, a proven loaded earth-only parade
++    // is ground rather than a building batch. Keep it visible in a separate roll;
++    // never manufacture a box or count it as a standing building.
++    if (delegatedGround.has(record.id)) continue;
+     expected.push(record.id);
+     if (!localBoxes.has(record.id)) missing.add(record.id);
+   }
+@@ -1484,6 +1526,7 @@ export async function createBuildings({ registry, confidence, terrain, checkpoin
+       expected: expected.length,
+       standing: expected.length - missing.size,
+       missing: [...missing],
++      delegatedGround: Object.fromEntries(delegatedGround),
+     },
+     /**
+      * What the walls were bound with (T-1963): `off` under `?walls=flat`, else
+diff --git a/chicago/4d/renderers/web/js/fort-gates.js b/chicago/4d/renderers/web/js/fort-gates.js
+index bb62c3dd7f..d8f37671b1 100644
+--- a/chicago/4d/renderers/web/js/fort-gates.js
++++ b/chicago/4d/renderers/web/js/fort-gates.js
+@@ -80,9 +80,23 @@ function gradeOf(sidecar, name) {
+  * The buildings layer then leaves out the archetype's flat 6 cm slab (its `earth`
+  * primitive) and keeps the rest (Fergus's sun-dial).
+  */
+-export function paradeLaidAsGround(record) {
++export const PARADE_GROUNDS = Object.freeze({
++  first_fort_dearborn_parade: { scene: '1812', id: 'first_fort_dearborn_parade_ground' },
++  fort_dearborn_parade: { scene: '1835', id: 'fort_dearborn_parade_ground' },
++});
++
++/** The T-3320 ground owner, whose generated record supplies this parade's surface. */
++export function paradeGroundOwner(record) {
++  const ground = PARADE_GROUNDS[record?.id];
+   const kind = record?.sidecar?.attributes?.['kind'];
+-  return (kind && typeof kind === 'object' ? kind['value'] : kind) === 'parade';
++  return ground && record.sidecar?.id === record.id
++    && String(record.sidecar?.scene) === ground.scene
++    && (kind && typeof kind === 'object' ? kind['value'] : kind) === 'parade'
++    ? ground.id : null;
++}
++
++export function paradeLaidAsGround(record) {
++  return paradeGroundOwner(record) !== null;
+ }
+ 
+ /** Does the buildings layer leave this record's baked leaves to this layer? */
+diff --git a/chicago/4d/tools/check.sh b/chicago/4d/tools/check.sh
+index ca492dda8c..89a11f7cb2 100755
+--- a/chicago/4d/tools/check.sh
++++ b/chicago/4d/tools/check.sh
+@@ -399,6 +399,8 @@ step "a visitor walks through a building's modelled passage where it clears the
+   node tools/test_walker_passage.mjs
+ step "a visitor walks into Fort Dearborn through a gate Interact opens, 1835 and 1812 (T-3319)" \
+   node tools/test_fort_gates.mjs
++step "Loaded parade ground delegates to its native owner; failed assets and sundial geometry remain required (T-3041)" \
++  node tools/test_parade_presence.mjs
+ step "Jaunt daybook: idempotent keepsakes, data ranks, honest recovery (T-1258)" \
+   node tools/test_daybook.mjs
+ step "loading library: 160 sourced, phase-local cards (T-1275)" \
+diff --git a/chicago/4d/tools/step_isolation.json b/chicago/4d/tools/step_isolation.json
+index 11a149aa0b..4e1c27d1a1 100644
+--- a/chicago/4d/tools/step_isolation.json
++++ b/chicago/4d/tools/step_isolation.json
+@@ -1,7 +1,7 @@
+ {
+   "schema": 2,
+-  "_doc": "MEASURED by tools/measure_step_isolation.mjs --build (T-1339). One row per tool the gate ran, listing every file it opened for writing INSIDE the repo. A row with an empty `wrote` was measured and wrote nothing here; a tool absent from this file was never measured, which is what the coverage half of tools/audit_step_isolation.mjs refuses. Writes to a tempdir are not recorded and are not findings \u2014 that is the distinction the measurement turns on. Each in-repo write is then CLASSIFIED by `git check-ignore` at measure time (T-2075): an ignored path is a build product and is listed under `wrote_ignored`; any other path is a tree mutation and is listed under `wrote`, which the audit refuses. A tracked path is never ignored, so no write to one is excused. An ignored build product is still SHARED STATE a concurrent step can read mid-write, and its regeneration is idempotent rather than atomic: classifying it says which question the gate may ask, not that it is safe. Regenerate when a tool changes; this is too slow for a per-commit gate and does not belong in one, the same call T-1302 made for writer_inventory.json. WHAT THIS DOES NOT PROVE: it is one tree state, so a CONDITIONAL writer is invisible to it. ticket.mjs check was one \u2014 it wrote nothing on a consistent tree and REPAIRED tickets.json on a stale one \u2014 until T-1341 made it compare instead of write (probed both ways: wrote [] on each). So this file says no tool wrote on the tree it was measured on, which is weaker than saying no tool writes, and the difference is the conditional case.",
+-  "measured": "2026-11-03",
++  "_doc": "MEASURED by tools/measure_step_isolation.mjs --build (T-1339). One row per tool the gate ran, listing every file it opened for writing INSIDE the repo. A row with an empty `wrote` was measured and wrote nothing here; a tool absent from this file was never measured, which is what the coverage half of tools/audit_step_isolation.mjs refuses. Writes to a tempdir are not recorded and are not findings — that is the distinction the measurement turns on. Each in-repo write is then CLASSIFIED by `git check-ignore` at measure time (T-2075): an ignored path is a build product and is listed under `wrote_ignored`; any other path is a tree mutation and is listed under `wrote`, which the audit refuses. A tracked path is never ignored, so no write to one is excused. An ignored build product is still SHARED STATE a concurrent step can read mid-write, and its regeneration is idempotent rather than atomic: classifying it says which question the gate may ask, not that it is safe. Regenerate when a tool changes; this is too slow for a per-commit gate and does not belong in one, the same call T-1302 made for writer_inventory.json. WHAT THIS DOES NOT PROVE: it is one tree state, so a CONDITIONAL writer is invisible to it. ticket.mjs check was one — it wrote nothing on a consistent tree and REPAIRED tickets.json on a stale one — until T-1341 made it compare instead of write (probed both ways: wrote [] on each). So this file says no tool wrote on the tree it was measured on, which is weaker than saying no tool writes, and the difference is the conditional case.",
++  "measured": "2026-11-04",
+   "gate_verdict": "CHECK FAIL",
+   "declared_steps": 861,
+   "tools": {
+@@ -2193,7 +2193,7 @@
+       ],
+       "wrote_by": [
+         "- ../../site/4d/data/residents",
+-        "- ../../site/4d/walk/index.html build b35a0efa \u00b7 Oct 11, 2026, 2:51 PM CT renderers/web/js/changelog.js"
++        "- ../../site/4d/walk/index.html build b35a0efa · Oct 11, 2026, 2:51 PM CT renderers/web/js/changelog.js"
+       ]
+     },
+     "-c": {
+@@ -4219,6 +4219,10 @@
+       "wrote": [],
+       "wrote_ignored": []
+     },
++    "tools/human_natural_idle.py": {
++      "wrote": [],
++      "wrote_ignored": []
++    },
+     "tools/identity_master_guard.py": {
+       "wrote": [],
+       "wrote_ignored": []
+@@ -5542,6 +5546,10 @@
+       "wrote": [],
+       "wrote_ignored": []
+     },
++    "tools/test_batch_instance.mjs": {
++      "wrote": [],
++      "wrote_ignored": []
++    },
+     "tools/test_batch_shadow_cull.mjs": {
+       "wrote": [],
+       "wrote_ignored": []
+@@ -5646,6 +5654,10 @@
+       "wrote": [],
+       "wrote_ignored": []
+     },
++    "tools/test_driven_assembly.mjs": {
++      "wrote": [],
++      "wrote_ignored": []
++    },
+     "tools/test_driver_draws.mjs": {
+       "wrote": [],
+       "wrote_ignored": []
+@@ -5810,6 +5822,10 @@
+       "wrote": [],
+       "wrote_ignored": []
+     },
++    "tools/test_human_body_ray_grid.mjs": {
++      "wrote": [],
++      "wrote_ignored": []
++    },
+     "tools/test_human_camera_fit.mjs": {
+       "wrote": [],
+       "wrote_ignored": []
+@@ -5818,10 +5834,18 @@
+       "wrote": [],
+       "wrote_ignored": []
+     },
++    "tools/test_human_driver_transfer.mjs": {
++      "wrote": [],
++      "wrote_ignored": []
++    },
+     "tools/test_human_frame_residue.py": {
+       "wrote": [],
+       "wrote_ignored": []
+     },
++    "tools/test_human_frame_time.mjs": {
++      "wrote": [],
++      "wrote_ignored": []
++    },
+     "tools/test_human_grounded_gait.py": {
+       "wrote": [],
+       "wrote_ignored": []
+@@ -5850,6 +5874,10 @@
+       "wrote": [],
+       "wrote_ignored": []
+     },
++    "tools/test_human_natural_idle.py": {
++      "wrote": [],
++      "wrote_ignored": []
++    },
+     "tools/test_human_normal_probe_adapter.py": {
+       "wrote": [],
+       "wrote_ignored": []
+@@ -6126,6 +6154,10 @@
+       "wrote": [],
+       "wrote_ignored": []
+     },
++    "tools/test_parade_presence.mjs": {
++      "wrote": [],
++      "wrote_ignored": []
++    },
+     "tools/test_parked_transport_empty_scene.mjs": {
+       "wrote": [],
+       "wrote_ignored": []
+@@ -6278,10 +6310,26 @@
+       "wrote": [],
+       "wrote_ignored": []
+     },
++    "tools/test_standing_horse_eye_smooth_normals.py": {
++      "wrote": [],
++      "wrote_ignored": []
++    },
+     "tools/test_standing_horse_eye_uv_boundary.py": {
+       "wrote": [],
+       "wrote_ignored": []
+     },
++    "tools/test_standing_horse_quiet_head_neck.py": {
++      "wrote": [],
++      "wrote_ignored": []
++    },
++    "tools/test_standing_horse_upper_lid.py": {
++      "wrote": [],
++      "wrote_ignored": []
++    },
++    "tools/test_standing_horse_upper_orbital.py": {
++      "wrote": [],
++      "wrote_ignored": []
++    },
+     "tools/test_stone_occlusion_uv.py": {
+       "wrote": [],
+       "wrote_ignored": []
+@@ -6398,6 +6446,22 @@
+       "wrote": [],
+       "wrote_ignored": []
+     },
++    "tools/test_transport_clearance.mjs": {
++      "wrote": [],
++      "wrote_ignored": []
++    },
++    "tools/test_transport_interactions.mjs": {
++      "wrote": [],
++      "wrote_ignored": []
++    },
++    "tools/test_transport_loop.mjs": {
++      "wrote": [],
++      "wrote_ignored": []
++    },
++    "tools/test_transport_support.mjs": {
++      "wrote": [],
++      "wrote_ignored": []
++    },
+     "tools/test_travel_estimate.mjs": {
+       "wrote": [],
+       "wrote_ignored": []
+@@ -6414,6 +6478,10 @@
+       "wrote": [],
+       "wrote_ignored": []
+     },
++    "tools/test_working_driver_1904.mjs": {
++      "wrote": [],
++      "wrote_ignored": []
++    },
+     "tools/ticket.mjs": {
+       "wrote": [],
+       "wrote_ignored": [
+@@ -6545,70 +6613,6 @@
+     "{}": {
+       "wrote": [],
+       "wrote_ignored": []
+-    },
+-    "tools/human_natural_idle.py": {
+-      "wrote": [],
+-      "wrote_ignored": []
+-    },
+-    "tools/test_driven_assembly.mjs": {
+-      "wrote": [],
+-      "wrote_ignored": []
+-    },
+-    "tools/test_human_body_ray_grid.mjs": {
+-      "wrote": [],
+-      "wrote_ignored": []
+-    },
+-    "tools/test_human_driver_transfer.mjs": {
+-      "wrote": [],
+-      "wrote_ignored": []
+-    },
+-    "tools/test_human_frame_time.mjs": {
+-      "wrote": [],
+-      "wrote_ignored": []
+-    },
+-    "tools/test_human_natural_idle.py": {
+-      "wrote": [],
+-      "wrote_ignored": []
+-    },
+-    "tools/test_standing_horse_eye_smooth_normals.py": {
+-      "wrote": [],
+-      "wrote_ignored": []
+-    },
+-    "tools/test_standing_horse_quiet_head_neck.py": {
+-      "wrote": [],
+-      "wrote_ignored": []
+-    },
+-    "tools/test_standing_horse_upper_lid.py": {
+-      "wrote": [],
+-      "wrote_ignored": []
+-    },
+-    "tools/test_standing_horse_upper_orbital.py": {
+-      "wrote": [],
+-      "wrote_ignored": []
+-    },
+-    "tools/test_transport_clearance.mjs": {
+-      "wrote": [],
+-      "wrote_ignored": []
+-    },
+-    "tools/test_transport_interactions.mjs": {
+-      "wrote": [],
+-      "wrote_ignored": []
+-    },
+-    "tools/test_transport_loop.mjs": {
+-      "wrote": [],
+-      "wrote_ignored": []
+-    },
+-    "tools/test_transport_support.mjs": {
+-      "wrote": [],
+-      "wrote_ignored": []
+-    },
+-    "tools/test_working_driver_1904.mjs": {
+-      "wrote": [],
+-      "wrote_ignored": []
+-    },
+-    "tools/test_batch_instance.mjs": {
+-      "wrote": [],
+-      "wrote_ignored": []
+     }
+   }
+ }
