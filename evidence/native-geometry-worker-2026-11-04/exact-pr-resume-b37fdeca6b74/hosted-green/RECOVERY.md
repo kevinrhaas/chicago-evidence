@@ -1,0 +1,7 @@
+# Hosted validation complete, exact saved-PR resume
+
+Reviewed final feature commit `b37fdeca6b74d8e3c70945a75687140c0718f549` on existing draft PR219 https://github.com/kevinrhaas/polecat-platform/pull/219 . Both actual CI workflows on that exact head completed SUCCESS: https://github.com/kevinrhaas/polecat-platform/actions/runs/41752421848 and https://github.com/kevinrhaas/polecat-platform/actions/runs/41752413970 . Both head check-run objects read back success; native bounded watcher closed exit0, all children reaped, no cleanup.
+
+[Immutable four-file diff, committed source byte readbacks, all11 native CI groups, official15 Chromium cases/both viewports,337body hashes and preserved timing-red receipts](https://github.com/kevinrhaas/chicago-evidence/blob/0a6c4200f9818745690ba139d4acad609f31892c/evidence/native-geometry-worker-2026-11-04/exact-pr-resume-b37fdeca6b74/RECOVERY.md). Official Chromium smoke13.753s; native WebKit-not-installed warning preserved. All four source blob bodies were byte-read back from GitHub. Platform main unchanged; no new PR, main merge, dispatch, native run cancellation or Chicago source/ticket mutation.
+
+Parent reviewed the actual final diff and was sent exact commit plus both hosted success links. Only the root coordinator may authorize the subsequent saved Jail PR1683/T-2380 resume on original lane jail-native-20261103, explicit400calls. This supplement reports validation, not a dispatch or geometry completion.
