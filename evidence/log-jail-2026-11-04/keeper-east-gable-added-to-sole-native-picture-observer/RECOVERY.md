@@ -1,0 +1,11 @@
+# Keeper east-gable addition and three-claim history under one observer
+
+T2380 native41790140057 was added07:14:57UTC to EXISTING observerPID1008005, without another watcher. Original Mag/Saug rows were preserved exactly. Peer initial10sample monitor CLOSED07:13:14, properexit0/allchildrenreaped/no leftovers/PIDs1027817/1027818 absent; explicit handoff consumed. Sourceclosure5f058e42…/reaper4863df9a… exact hashes inADDED-JAIL-HANDOFF. Npublicclosure0a3222e1 and actualGO-before-singlePOST6ef02ae0 remain immutable.
+
+Initial Jail state really was OPEN/pending. Historical snapshot07:26:57 subsequently verifies ALL3 exact native claims: Mag417823, Saug417867, Jail417901, eachclaimed_run exactlyits actual GitHub URL, feature7b427/Ubuntu26.04. Jail acquired07:23:05.700Z. These are historical observations, not a claim all3 are still active now.
+
+Mag1698 then mergeda92 at07:26:42 and nativecompleted/releasedoriginalOPEN. Fullraw/current6198-log/native25 proof is PUBLICf4b9d153f87816d7a798c4ce492d56a452977a1e, prefixevidence/first-fort-2026-11-04/pr1698-merged-a92-actual-native25-and-explicit-followups/. ONLYcompletedMagrow was retired after that durable publication; fullSDK remains cached. Rowns exclusiveWsource/HOSTGPU docs+actual1812targetUI followup, not a new native bake. CURRENT-TWO-TASKS preserves active Saug+Jail and all prior proof fields.
+
+Nowns finalSaugqualification/review/ordinarymerge, using accepted7819/058/a850 geometry/fourcontrolledpairs and sharedcompletedSDKcache; no duplicatewatch/download. This coordinator owns Jailqualification, with root-authorized one mandatorygapscomment and temporaryDraft if requiredownROADMAP/newmaterialbodyBOTH/runtime genuinelyunmet, then READY/ordinarySHAguardedmergeoncequalified. No sourceactor branchwrites/cancel/force/newjobs. Old unchangedcredits maycarry by actualconsumedrowidentity; no unnecessaryrepeat/perfectionhold. Originals remainOPEN/PARTIAL.
+
+Observer180samples/55sec plus API time projects samplelimit around08:55–09:00 and hardtimeout09:06. Later Jail150minmax may outlast it. Renew onlyafteractualCLOSED/REAPERproperexit/allreaped/no leftovers/oldPIDsabsent, preserving currenttasks/proofs and all completedraw artifacts. Root alone writes globalCURRENT.
