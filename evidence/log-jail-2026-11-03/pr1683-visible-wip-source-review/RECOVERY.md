@@ -1,0 +1,13 @@
+# Visible WIP: native jail PR1683 initial source review
+
+[PR1683](https://github.com/kevinrhaas/chicago/pull/1683) is a visible incremental checkpoint, not a qualified release. At review it has one source commit `34e26cfb56887ddff25eb482e7d6b8fbe6eb6531`, parent `38119e64aed68b59e77b37ddd90575196330f642`, made2026-11-04T00:37:38UTC. It adds the keeper house, continuous palisade front and low framed/braced gate. Both canonical comparisons remain DIFFERS with core exposure, compound proportions and other discrepancies open. The native worker41734994705 is still active; source/check progress can continue.
+
+Twenty source/base file readbacks are authenticated by native Git blob identity and SHA256, including the two actual comparison JPGs and uploaded keeper MASTER/WEB. Actual keeper MASTER is431dc44f37bdcb2c7f705a5b17b65fe6a1cf748d077c337b699094c9b41752a8,70712bytes; WEB is15eb2fbad5e1b8f464c30f7135297047896b4eff95f9168de6084e75e86f710e,20632bytes. Both match records bind their actual camera and keeper bytes.
+
+Against its actual old parent381, the source registry adds one keeper row and changes exactly271 existing frame_dwelling rows ONLY in inputs_sha256. No existing asset is removed. Every non-frame foreign row and every existing WEB binding are exact to that parent. This is file/registry consistency; it does not establish the claimed native271 actual rebuild ledger. Those raw private-run receipts are not yet available externally.
+
+Builder changes are explicitly opted in by picture_layout keeper_gale_1902. Existing default branches retain their arithmetic. The shared gate renderer gets an opt-in braced_rail and a house-end jamb; all old mounting branches remain. The generator-half count is consciously re-budgeted1034→1035 assets with its reason, not removed. Full source/browser/genuine-build acceptance has not been established by this review. Some committed status/recovery prose still says checks are pending, and the PR body points to a future checklist; this is treated as WIP rather than a fabricated past pass or a failed PR. Actual same-head green source/both-viewport checks and truthful updated receipts are required before merge.
+
+Parent381 predates merged Green Tree, Sauganash and newer Pruyne frame work. Normal current-dev integration must preserve every foreign row and genuinely qualify the CURRENT Pruyne model with this frame producer if both changed; an old row overwrite or a predicted recipe stamp is insufficient. Pruyne asset key is pruyne_kimball_drugstore__frame_1830s.glb.
+
+The originalT2380 stays partial; no new photo tickets or full-match completion is claimed. No source/run/ticket/claim mutation was made by this read-only review. Actual direct pixel review and runtime acceptance remain separate.
