@@ -1,0 +1,17 @@
+Ticket: T-3041 · PR: https://github.com/kevinrhaas/chicago/pull/1698 · Outcome: merged
+
+**App:** chicago (owner-targeted run, `OWNER_TARGET_TICKET: T-3041`, lane `first-fort-magazine-native-20261104`). No queue picking — I worked only that ticket, and released it OPEN rather than closing it.
+
+**Preconditions checked before any write.** T-3041 was `open` with null `claimed_by`/`claimed_run`/`claimed_at`/`pr`, and no open PR carried it. The handoff's upstream dependency held exactly: cupola PR #1687 is merged into dev, and all three target files in dev are byte-identical to its head `52d6f63`, so the external patch composes with no rebase. The patch itself verified at SHA256 `661b69b2…f17f5`, 11,985 bytes, three files, and applied with zero fuzz.
+
+`claim` first refused, naming `steward/t3041-parade-presence-20261104`. I did not force past a live owner: that branch's PR #1696 merged into dev at 05:13:53Z and its remote head still equals that PR's head, with no claim anywhere. That is the stale-branch case the tool's own message points at, so I claimed with `--force` and wrote the evidence into the PR body.
+
+**What shipped.** The first fort's powder magazine gets the barrel vault the owner adopted on 2026-11-03, via an opt-in `barrel_vault` branch of the `fort_structure` archetype. I fetched and read both pinned pictures myself rather than trusting the prose — Whistler's no. 4 is drawn with an arched front, Currey's no. 8 with a rounded vault. The shape is adopted; the curve's depth is not. The rise (1.0286254881847008 m) is envelope conservation that holds the crown exactly where the old gable's peak stood, making a *shallow* segment where Whistler draws near a semicircle — stated as an open limit in the record, the liberty, STATUS and the PR, not quietly closed. The obsolete `roof_pitch_deg` leaves the record; invalid rises and unsupported fitting combinations are refused, never clamped (probed directly, including the `1e-320` subnormal).
+
+**Native build, before the first source commit.** 25 `fort_structure` defaults, 0 variants, all genuinely rebuilt on pinned sha256-verified Blender 4.5.3 under Ubuntu 26.04.1. Exactly one master moved a byte; the other 24 came back byte-identical, including the second fort's magazine and the cupola blockhouse. All 243 outbuilding masters, derivatives, registries and the NE pyramid untouched. Staleness clean.
+
+**Verification run.** `check.sh` parts 1/4, 2/4, 3/4 PASS (292 steps each). Part 4/4 had one red that is **not mine and I did not read it as a pass**: a horse-socket test dies on NumPy 2 removing 2-D `np.cross`. Nothing it reads is in the diff, it fails identically on unmodified files, and CI is green on dev — all written into the PR. Smoke stage 3 (the part covering this change's card, sources and liberties) PASS at **390×780 and 1280×800**, 107/107, zero page errors. Before/after is a real same-camera render through the Currey group camera; a pixel diff changes only this building.
+
+Dev moved under me once at merge time; I merged it in, resolved three derived-file conflicts by recompiling rather than hand-editing, re-gated part 1 green, and the hosted 8-part dev gate went green on the exact merged head before the merge.
+
+**Not claimed:** parent T-2387 stays split and unfinished, the Currey verdict stays `differs`, and the blockhouse cupolas and western gateway remain open. Two of thirteen differences are now fixed.

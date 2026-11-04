@@ -1,0 +1,1189 @@
+{
+  "rows": 884,
+  "tools": {
+    "Bash": 118,
+    "Read": 9
+  },
+  "calls": [
+    {
+      "event": 2,
+      "utc": "2026-11-04T05:57:46.405Z",
+      "name": "Bash",
+      "input": {
+        "command": "ls && echo \"--- docs ---\" && ls docs/ && echo \"--- env ---\" && echo \"GHREST=$GHREST\" && echo \"CLAIM_NOTICE=$CLAIM_NOTICE\" && echo \"BLENDER_CACHE=$BLENDER_CACHE\" && echo \"WORKSPACE=$GITHUB_WORKSPACE\"",
+        "description": "List repo and environment"
+      }
+    },
+    {
+      "event": 9,
+      "utc": "2026-11-04T05:57:51.960Z",
+      "name": "Bash",
+      "input": {
+        "command": "wc -l docs/AUTOMATION.md docs/MIGRATION.md docs/SHELL-API.md && git log --oneline -5",
+        "description": "Check doc sizes and git log"
+      }
+    },
+    {
+      "event": 11,
+      "utc": "2026-11-04T05:57:53.700Z",
+      "name": "Bash",
+      "input": {
+        "command": "cat docs/AUTOMATION.md",
+        "description": "Read AUTOMATION.md"
+      }
+    },
+    {
+      "event": 16,
+      "utc": "2026-11-04T05:57:56.630Z",
+      "name": "Bash",
+      "input": {
+        "command": "git show --stat HEAD | head -40",
+        "description": "Show last commit stat"
+      }
+    },
+    {
+      "event": 19,
+      "utc": "2026-11-04T05:57:59.915Z",
+      "name": "Bash",
+      "input": {
+        "command": "git clone --quiet https://github.com/kevinrhaas/chicago.git chicago-repo 2>&1 | tail -3; cd chicago-repo && git branch -a | head -20 && echo \"---\" && git log --oneline -3 && echo \"--- pipeline ---\" && ls .github/ && cat .github/pipeline.json 2>/dev/null",
+        "description": "Clone chicago repo"
+      }
+    },
+    {
+      "event": 33,
+      "utc": "2026-11-04T06:00:06.300Z",
+      "name": "Bash",
+      "input": {
+        "command": "git clone --quiet --depth 1 https://github.com/kevinrhaas/chicago-tickets.git /tmp/ct 2>&1 | tail -3; ls /tmp/ct | head && grep -rl \"T-3041\" /tmp/ct | head",
+        "description": "Clone tickets repo and find T-3041"
+      }
+    },
+    {
+      "event": 35,
+      "utc": "2026-11-04T06:00:10.331Z",
+      "name": "Bash",
+      "input": {
+        "command": "cat \"/tmp/ct/T-3000-3249/T-3041-match-the-first-fort-dearborn-buildings-against-.md\"",
+        "description": "Read ticket T-3041"
+      }
+    },
+    {
+      "event": 45,
+      "utc": "2026-11-04T06:00:21.268Z",
+      "name": "Bash",
+      "input": {
+        "command": "gh api \"repos/kevinrhaas/chicago/pulls?state=open&per_page=100\" --jq '.[] | \"\\(.number)\\t\\(.state)\\tdraft=\\(.draft)\\tbase=\\(.base.ref)\\thead=\\(.head.ref)\\t\\(.labels|map(.name)|join(\",\"))\\t\\(.title)\"' 2>&1 | head -60",
+        "description": "List open PRs on chicago"
+      }
+    },
+    {
+      "event": 50,
+      "utc": "2026-11-04T06:00:29.073Z",
+      "name": "Bash",
+      "input": {
+        "command": "for n in 1685 1687 1696; do gh api repos/kevinrhaas/chicago/pulls/$n --jq \"\\\"PR \\(.number): state=\\(.state) merged=\\(.merged) merge_commit=\\(.merge_commit_sha) base=\\(.base.ref) head=\\(.head.ref) headsha=\\(.head.sha) title=\\(.title)\\\"\"; done 2>&1",
+        "description": "Check PR states 1685 1687 1696"
+      }
+    },
+    {
+      "event": 57,
+      "utc": "2026-11-04T06:00:37.863Z",
+      "name": "Bash",
+      "input": {
+        "command": "cat /tmp/claude-1001/-home-runner-work-polecat-platform-polecat-platform/108d8ae4-3bcc-419a-8b7e-46e3b41f0b7a/tasks/b1lljrtr1.output 2>/dev/null | tail -5; echo \"exit?\"; ls -d /home/runner/work/polecat-platform/polecat-platform/chicago-repo 2>/dev/null && du -sh /home/runner/work/polecat-platform/polecat-platform/chicago-repo",
+        "description": "Check clone progress"
+      }
+    },
+    {
+      "event": 63,
+      "utc": "2026-11-04T06:00:42.061Z",
+      "name": "Bash",
+      "input": {
+        "command": "df -h /home/runner | tail -2; echo \"---\"; ls /home/runner/work/polecat-platform/polecat-platform/chicago-repo/ 2>/dev/null",
+        "description": "Check disk space"
+      }
+    },
+    {
+      "event": 72,
+      "utc": "2026-11-04T06:00:51.026Z",
+      "name": "Bash",
+      "input": {
+        "command": "for i in $(seq 1 18); do sleep 10; s=$(du -sm /home/runner/work/polecat-platform/polecat-platform/chicago-repo 2>/dev/null | cut -f1); n=$(ls /home/runner/work/polecat-platform/polecat-platform/chicago-repo | wc -l); echo \"$i: ${s}MB entries=$n\"; if [ \"$n\" -gt 2 ]; then echo CHECKOUT_STARTED; break; fi; done",
+        "description": "Monitor clone progress",
+        "timeout": 200000
+      }
+    },
+    {
+      "event": 77,
+      "utc": "2026-11-04T06:01:24.835Z",
+      "name": "Bash",
+      "input": {
+        "command": "for i in $(seq 1 30); do sleep 10; if [ ! -d /proc/$(pgrep -f \"git clone --quiet https://github.com/kevinrhaas/chicago.git\" | head -1) ] 2>/dev/null; then :; fi; if pgrep -f \"chicago.git chicago-repo\" >/dev/null; then echo \"$i still cloning $(du -sm /home/runner/work/polecat-platform/polecat-platform/chicago-repo|cut -f1)MB\"; else echo DONE; break; fi; done",
+        "description": "Wait for clone to finish",
+        "timeout": 330000
+      }
+    },
+    {
+      "event": 98,
+      "utc": "2026-11-04T06:06:32.571Z",
+      "name": "Bash",
+      "input": {
+        "command": "cat /tmp/claude-1001/-home-runner-work-polecat-platform-polecat-platform/108d8ae4-3bcc-419a-8b7e-46e3b41f0b7a/tasks/b1lljrtr1.output; echo \"=== df ===\"; df -h /home/runner | tail -1",
+        "description": "Read clone output"
+      }
+    },
+    {
+      "event": 104,
+      "utc": "2026-11-04T06:06:39.281Z",
+      "name": "Bash",
+      "input": {
+        "command": "cd /home/runner/work/polecat-platform/polecat-platform/chicago-repo && git checkout -q dev && git log --oneline -5 && echo \"--- head sha ---\" && git rev-parse HEAD && echo \"--- cupola merged in dev? ---\" && git merge-base --is-ancestor 52d6f631df788258a50a6e3271cca9e97ba960ac HEAD && echo \"YES cupola head ancestor of dev\" || echo \"NO\"",
+        "description": "Checkout dev and verify cupola ancestry"
+      }
+    },
+    {
+      "event": 113,
+      "utc": "2026-11-04T06:06:55.612Z",
+      "name": "Bash",
+      "input": {
+        "command": "mkdir -p /tmp/magpatch && cd /tmp/magpatch && curl -sSfL -o UNQUALIFIED-CANDIDATE.patch \"https://raw.githubusercontent.com/kevinrhaas/chicago-evidence/55a51a17a1abf95bcfbe7097973d10f0a6c7adb6/evidence/first-fort-2026-11-04/magazine-vault-prep-unqualified-raw/UNQUALIFIED-CANDIDATE.patch\" && sha256sum UNQUALIFIED-CANDIDATE.patch && wc -c UNQUALIFIED-CANDIDATE.patch && echo \"--- expected 661b69b2c544c73af8745be7f5b55bc142f3e2d338f6abd19a6cf8fddf4f17f5 / 11985 bytes ---\" && grep -E '^(diff|\\+\\+\\+|---) ' UNQUALIFIED-CANDIDATE.patch",
+        "description": "Fetch and verify candidate patch"
+      }
+    },
+    {
+      "event": 121,
+      "utc": "2026-11-04T06:07:05.232Z",
+      "name": "Bash",
+      "input": {
+        "command": "cd /home/runner/work/polecat-platform/polecat-platform/chicago-repo/chicago/4d && pip install --quiet jsonschema pyproj Pillow 2>&1 | tail -2; python3 -c \"import numpy,scipy;print('numpy',numpy.__version__,'scipy',scipy.__version__)\"; command -v blender; echo \"BLENDER_CACHE=$BLENDER_CACHE\"; ls $BLENDER_CACHE 2>/dev/null; grep -q \"case 'release'\" tools/ticket.mjs && echo \"GROUP_SUPPORT yes\" || echo \"GROUP_SUPPORT no\"",
+        "description": "Install deps and check tooling",
+        "timeout": 300000
+      }
+    },
+    {
+      "event": 123,
+      "utc": "2026-11-04T06:07:08.734Z",
+      "name": "Bash",
+      "input": {
+        "command": "bash tools/tickets.sh 2>&1 | tail -3 && node tools/ticket.mjs inflight 2>&1 | grep -i -A3 -B1 \"3041\\|RECOVERABLE\" | head -40",
+        "description": "Sync tickets and check inflight",
+        "timeout": 300000
+      }
+    },
+    {
+      "event": 130,
+      "utc": "2026-11-04T06:07:24.908Z",
+      "name": "Bash",
+      "input": {
+        "command": "node tools/ticket.mjs claim T-3041 2>&1 | tail -20",
+        "description": "Claim T-3041",
+        "timeout": 180000
+      }
+    },
+    {
+      "event": 144,
+      "utc": "2026-11-04T06:07:45.617Z",
+      "name": "Bash",
+      "input": {
+        "command": "cd /home/runner/work/polecat-platform/polecat-platform/chicago-repo && gh api repos/kevinrhaas/chicago/pulls/1696 --jq '\"merged_at=\\(.merged_at) head=\\(.head.sha) base=\\(.base.ref) merged_by=\\(.merged_by.login)\"'; echo \"--- remote branch head now ---\"; git ls-remote origin refs/heads/steward/t3041-parade-presence-20261104; echo \"--- any run jobs on that lane / t3041 ---\"; gh api \"repos/kevinrhaas/chicago/commits/818be0cbbe81ee5d1bad19eb5a49589d44979f5b\" --jq '.commit.message' | head -3",
+        "description": "Verify stale branch fully landed"
+      }
+    },
+    {
+      "event": 152,
+      "utc": "2026-11-04T06:07:53.283Z",
+      "name": "Bash",
+      "input": {
+        "command": "cd /home/runner/work/polecat-platform/polecat-platform/chicago-repo/chicago/4d && grep -n \"already being worked\\|--force\\|force\" tools/ticket.mjs | head -40",
+        "description": "Inspect claim force logic"
+      }
+    },
+    {
+      "event": 154,
+      "utc": "2026-11-04T06:07:55.830Z",
+      "name": "Bash",
+      "input": {
+        "command": "sed -n 880,900p tools/ticket.mjs && echo \"=== rival scan ===\" && sed -n 3255,3282p tools/ticket.mjs",
+        "description": "Read claim rival-scan rationale"
+      }
+    },
+    {
+      "event": 163,
+      "utc": "2026-11-04T06:08:04.039Z",
+      "name": "Bash",
+      "input": {
+        "command": "node tools/ticket.mjs claim T-3041 --force 2>&1 | tail -20",
+        "description": "Claim T-3041 past stale landed branch",
+        "timeout": 180000
+      }
+    },
+    {
+      "event": 165,
+      "utc": "2026-11-04T06:08:09.245Z",
+      "name": "Bash",
+      "input": {
+        "command": "cd /home/runner/work/polecat-platform/polecat-platform && bash \"$CLAIM_NOTICE\" 1 1 T-3041 \"Match the first Fort Dearborn buildings against every reference picture\" 2>&1 | tail -3; cd chicago-repo && git checkout -q -b steward/t3041-magazine-barrel-vault-native-20261104 && git rev-parse --abbrev-ref HEAD",
+        "description": "Announce claim and create branch",
+        "timeout": 120000
+      }
+    },
+    {
+      "event": 170,
+      "utc": "2026-11-04T06:08:13.641Z",
+      "name": "Bash",
+      "input": {
+        "command": "cat /tmp/magpatch/UNQUALIFIED-CANDIDATE.patch",
+        "description": "Read the candidate patch"
+      }
+    },
+    {
+      "event": 177,
+      "utc": "2026-11-04T06:08:23.059Z",
+      "name": "Bash",
+      "input": {
+        "command": "git apply --check -p1 --whitespace=nowarn /tmp/magpatch/UNQUALIFIED-CANDIDATE.patch && echo \"APPLIES CLEANLY (no fuzz)\" ; echo \"=== compare dev producer/params to cupola PR head 52d6f63 ===\"; for f in generators/archetypes/fort_structure.py generators/archetypes/fort_structure_params.py data/structures/first_fort_dearborn_magazine.json; do a=$(git hash-object chicago/4d/$f); b=$(gh api \"repos/kevinrhaas/chicago/contents/chicago/4d/$f?ref=52d6f631df788258a50a6e3271cca9e97ba960ac\" --jq .sha); echo \"$f dev=$a cupolahead=$b $([ \"$a\" = \"$b\" ] && echo SAME || echo DIFFER)\"; done",
+        "description": "Check patch applies and compare to cupola head"
+      }
+    },
+    {
+      "event": 183,
+      "utc": "2026-11-04T06:08:28.601Z",
+      "name": "Bash",
+      "input": {
+        "command": "cd /home/runner/work/polecat-platform/polecat-platform/chicago-repo/chicago/4d && ls tools/ && echo \"=== bake.sh ===\" && sed -n 1,60p tools/bake.sh",
+        "description": "List tools and read bake.sh head"
+      }
+    },
+    {
+      "event": 185,
+      "utc": "2026-11-04T06:08:30.548Z",
+      "name": "Bash",
+      "input": {
+        "command": "sed -n 1,80p tools/bake.sh",
+        "description": "Read bake.sh"
+      }
+    },
+    {
+      "event": 187,
+      "utc": "2026-11-04T06:08:32.567Z",
+      "name": "Bash",
+      "input": {
+        "command": "sed -n 80,200p tools/bake.sh",
+        "description": "Read rest of bake.sh"
+      }
+    },
+    {
+      "event": 193,
+      "utc": "2026-11-04T06:08:39.562Z",
+      "name": "Bash",
+      "input": {
+        "command": "grep -rl \"fort_structure\" data/structures/ | wc -l && echo \"--- ids ---\" && grep -rl \"fort_structure\" data/structures/ | sed 's#.*/##; s/\\.json$//' | sort | tee /tmp/fort_ids.txt && echo \"--- manifest has variants? ---\" && python3 -c \"\nimport json\nm=json.load(open('assets/manifest.json'))\nprint(type(m), list(m)[:8] if isinstance(m,dict) else len(m))\n\"",
+        "description": "Find fort_structure records"
+      }
+    },
+    {
+      "event": 198,
+      "utc": "2026-11-04T06:08:44.330Z",
+      "name": "Bash",
+      "input": {
+        "command": "python3 -c \"\nimport json\nm=json.load(open('assets/manifest.json'))\na=m['assets']\nprint('total assets',len(a))\nids=[l.strip() for l in open('/tmp/fort_ids.txt')]\nimport re\nhit=[k for k in a if any(k==i or k.startswith(i+'__') or k.startswith(i+'@') or k.startswith(i+'.') for i in ids)]\nprint('matching keys',len(hit))\nfor k in sorted(hit): print(' ',k)\n\" 2>&1 | head -40",
+        "description": "Inspect manifest keys for fort records"
+      }
+    },
+    {
+      "event": 214,
+      "utc": "2026-11-04T06:09:07.321Z",
+      "name": "Bash",
+      "input": {
+        "command": "mkdir -p /tmp/helpers /tmp/hashes && cd /home/runner/work/polecat-platform/polecat-platform/chicago-repo/chicago/4d && cat > /tmp/helpers/snap.py <<'EOF'\nimport hashlib, json, os, sys\nroot = os.getcwd()\nout = sys.argv[1]\nman = json.load(open('assets/manifest.json'))\nwebman = json.load(open('assets/manifest.web.json'))\ndef h(p):\n    if not os.path.exists(p): return None\n    return hashlib.sha256(open(p,'rb').read()).hexdigest()\nrecs = {}\nfor fn in sorted(os.listdir('data/structures')):\n    if not fn.endswith('.json'): continue\n    d = json.load(open('data/structures/'+fn))\n    recs[fn[:-5]] = d.get('archetype') or d.get('recipe') or d.get('model',{}).get('archetype')\nfam = {}\nfor sid, arch in recs.items():\n    fam.setdefault(arch, []).append(sid)\nsnap = {'families': {k: sorted(v) for k, v in sorted(fam.items())}, 'assets': {}, 'web': {}}\nfor k, v in man['assets'].items():\n    snap['assets'][k] = {'manifest': v, 'master_sha256': h('assets/gltf/'+k)}\nfor k, v in webman.get('assets', webman).items():\n    snap['web'][k] = {'rec': v, 'web_sha256': h('site/gltf/'+k) or h('assets/web/'+k)}\njson.dump(snap, open(out,'w'), indent=1, sort_keys=True)\nprint('families:', {k: len(v) for k, v in snap['families'].items()})\nEOF\npython3 -I /tmp/helpers/snap.py /tmp/hashes/before.json 2>&1 | tr ',' '\\n' | head -40",
+        "description": "Snapshot before-state hashes by family",
+        "timeout": 300000
+      }
+    },
+    {
+      "event": 219,
+      "utc": "2026-11-04T06:09:13.737Z",
+      "name": "Bash",
+      "input": {
+        "command": "python3 -c \"\nimport json\ns=json.load(open('/tmp/hashes/before.json'))\nn_null=sum(1 for v in s['assets'].values() if v['master_sha256'] is None)\nprint('assets',len(s['assets']),'null master sha',n_null)\nw=s['web']; nw=sum(1 for v in w.values() if isinstance(v,dict) and v.get('web_sha256') is None)\nprint('web',len(w),'null web sha',nw)\nk=list(w)[:3]; print(k)\n\"; echo \"--- where are web derivatives ---\"; ls assets/ ; echo; python3 -c \"\nimport json;m=json.load(open('assets/manifest.web.json'));print(list(m)[:6] if isinstance(m,dict) else len(m))\"",
+        "description": "Validate snapshot coverage"
+      }
+    },
+    {
+      "event": 221,
+      "utc": "2026-11-04T06:09:21.274Z",
+      "name": "Bash",
+      "input": {
+        "command": "cat > /tmp/helpers/snap2.py <<'EOF'\nimport hashlib, json, os, sys\nout = sys.argv[1]\nman = json.load(open('assets/manifest.json'))\nwebman = json.load(open('assets/manifest.web.json'))\ndef h(p):\n    return hashlib.sha256(open(p,'rb').read()).hexdigest() if os.path.exists(p) else None\nrecs = {}\nfor fn in sorted(os.listdir('data/structures')):\n    if fn.endswith('.json'):\n        d = json.load(open('data/structures/'+fn))\n        recs[fn[:-5]] = d.get('archetype') or d.get('recipe')\nfam = {}\nfor sid, arch in recs.items():\n    fam.setdefault(arch, []).append(sid)\nsnap = {'families': {k: sorted(v) for k, v in sorted(fam.items())},\n        'assets': {}, 'web_masters': webman['masters'],\n        'web_files': {}, 'records': {}}\nfor k, v in man['assets'].items():\n    snap['assets'][k] = {'manifest': v, 'master_sha256': h('assets/gltf/'+k)}\nfor dirpath, _d, files in os.walk('assets/web'):\n    for f in files:\n        p = os.path.join(dirpath, f)\n        snap['web_files'][os.path.relpath(p, 'assets/web')] = h(p)\nfor sid in recs:\n    snap['records'][sid] = h('data/structures/'+sid+'.json')\njson.dump(snap, open(out, 'w'), indent=1, sort_keys=True)\nprint('assets', len(snap['assets']), 'web_masters', len(snap['web_masters']), 'web_files', len(snap['web_files']))\nnul = [k for k, v in snap['assets'].items() if v['master_sha256'] is None]\nprint('missing masters:', nul)\nEOF\npython3 -I /tmp/helpers/snap2.py /tmp/hashes/before.json",
+        "description": "Snapshot full before-state",
+        "timeout": 300000
+      }
+    },
+    {
+      "event": 226,
+      "utc": "2026-11-04T06:09:27.567Z",
+      "name": "Bash",
+      "input": {
+        "command": "cd /home/runner/work/polecat-platform/polecat-platform && git -C chicago-repo apply -p1 --whitespace=nowarn /tmp/magpatch/UNQUALIFIED-CANDIDATE.patch && git -C chicago-repo status --porcelain && echo \"=== verify blender pin ===\" && cd chicago-repo/chicago/4d && cat generators/blender.pin && \"$BLENDER_CACHE/$(grep -oP 'BLENDER_DIR=\\K.*' generators/blender.pin | tr -d '\"')/blender\" --version | head -2 && sha256sum \"$BLENDER_CACHE/blender-4.5.3-linux-x64.tar.xz\" && lsb_release -d 2>/dev/null; cat /etc/os-release | grep -E \"^(VERSION|NAME)=\"",
+        "description": "Apply patch and verify pinned Blender",
+        "timeout": 180000
+      }
+    },
+    {
+      "event": 232,
+      "utc": "2026-11-04T06:09:33.603Z",
+      "name": "Bash",
+      "input": {
+        "command": "sed -n 540,585p generators/archetypes/fort_structure_params.py && grep -n \"^def \\|^class \" generators/archetypes/fort_structure_params.py | head -20",
+        "description": "Inspect params record loader"
+      }
+    },
+    {
+      "event": 234,
+      "utc": "2026-11-04T06:09:49.203Z",
+      "name": "Bash",
+      "input": {
+        "command": "cat > /tmp/helpers/probe.py <<'EOF'\nimport json, math, os, sys\nsys.path.insert(0, 'generators')\nfrom archetypes import fort_structure_params as fp\nids = [l.strip() for l in open('/tmp/fort_ids.txt')]\nok = 0\nfor sid in ids:\n    rec = json.load(open('data/structures/%s.json' % sid))\n    for ph in rec['phases']:\n        p = fp.from_phase(ph, rec)\n        ok += 1\n        if sid == 'first_fort_dearborn_magazine':\n            a = p.width_m / 2.0\n            h = p.barrel_rise_m\n            r = (a*a + h*h) / (2.0*h)\n            o = fp.BARREL_EAVE_M\n            print('MAGAZINE phase', ph.get('id'))\n            print('  roof_type      ', p.roof_type)\n            print('  width/depth/wall', p.width_m, p.depth_m, p.wall_height_m)\n            print('  barrel_rise_m  ', h)\n            print('  half-width a   ', a)\n            print('  radius         ', r)\n            print('  crown abs z    ', p.wall_height_m + h)\n            print('  old gable peak ', p.wall_height_m + min(p.width_m, p.depth_m)/2.0*math.tan(math.radians(34.0)))\n            print('  side eave z    ', (p.wall_height_m + h) - r + math.sqrt(r*r - (a+o)**2))\n            print('  old gable side eave z', p.wall_height_m - o*math.tan(math.radians(34.0)) if False else 'n/a')\n            print('  overhang_m     ', p.overhang_m)\nprint('resolved phases for all %d fort_structure records: %d' % (len(ids), ok))\n# refusal probes\ndef refuse(**kw):\n    base = dict(width_m=4.51, depth_m=3.05, kind='magazine', stories=1,\n                wall_height_m=2.6, roof_type='barrel_vault', construction='brick')\n    base.update(kw)\n    try:\n        fp.FortStructureParams(**base); return 'ACCEPTED'\n    except fp.ParamError as e: return 'refused: %s' % e\nfor label, kw in [\n    ('rise None',            dict(barrel_rise_m=None)),\n    ('rise 0',               dict(barrel_rise_m=0.0)),\n    ('rise negative',        dict(barrel_rise_m=-1.0)),\n    ('rise nan',             dict(barrel_rise_m=float('nan'))),\n    ('rise inf',             dict(barrel_rise_m=float('inf'))),\n    ('rise 1e-320 subnormal',dict(barrel_rise_m=1e-320)),\n    ('rise True (bool)',     dict(barrel_rise_m=True)),\n    ('rise >= half width',   dict(barrel_rise_m=2.255)),\n    ('rise ok',              dict(barrel_rise_m=1.0286254881847008)),\n    ('vault + chimney',      dict(barrel_rise_m=1.0286254881847008, chimneys=1)),\n    ('vault + 2 storeys',    dict(barrel_rise_m=1.0286254881847008, stories=2, wall_height_m=5.0)),\n    ('vault on quarters',    dict(barrel_rise_m=1.0286254881847008, kind='quarters')),\n    ('vault + loopholes',    dict(barrel_rise_m=1.0286254881847008, kind='magazine', loopholes=True)),\n    ('vault + lantern',      dict(barrel_rise_m=1.0286254881847008, lantern=True)),\n    ('vault + gallery',      dict(barrel_rise_m=1.0286254881847008, gallery=True)),\n    ('vault + cupola',       dict(barrel_rise_m=1.0286254881847008, cupola=True)),\n    ('rise set on gable',    dict(roof_type='gable', barrel_rise_m=1.0)),\n]:\n    print('%-24s %s' % (label, refuse(**kw)))\nEOF\npython3 -I /tmp/helpers/probe.py 2>&1 | tail -40",
+        "description": "Probe params math and refusals",
+        "timeout": 180000
+      }
+    },
+    {
+      "event": 241,
+      "utc": "2026-11-04T06:09:55.189Z",
+      "name": "Bash",
+      "input": {
+        "command": "grep -n \"    def \" generators/archetypes/fort_structure_params.py | sed -n 1,30p && echo \"---\" && awk 'NR>=400 && NR<=445' generators/archetypes/fort_structure_params.py | grep -n \"def \\|roof_type not in\" ",
+        "description": "Find validation method name"
+      }
+    },
+    {
+      "event": 243,
+      "utc": "2026-11-04T06:09:58.287Z",
+      "name": "Bash",
+      "input": {
+        "command": "sed -i 's/        fp.FortStructureParams(\\*\\*base); return .ACCEPTED./        q = fp.FortStructureParams(**base); q.validate(); return \"ACCEPTED\"/' /tmp/helpers/probe.py && grep -n \"q.validate\" /tmp/helpers/probe.py && python3 -I /tmp/helpers/probe.py 2>&1 | tail -20",
+        "description": "Re-probe refusals through validate()",
+        "timeout": 180000
+      }
+    },
+    {
+      "event": 254,
+      "utc": "2026-11-04T06:10:11.726Z",
+      "name": "Bash",
+      "input": {
+        "command": "grep -n \"SKIP_\\|CHECK_PART\\|--part\" tools/bake.sh tools/check.sh | head -30 && echo \"=== check.sh usage ===\" && sed -n 1,40p tools/check.sh",
+        "description": "Look for skip flags in bake.sh/check.sh"
+      }
+    },
+    {
+      "event": 262,
+      "utc": "2026-11-04T06:10:21.478Z",
+      "name": "Bash",
+      "input": {
+        "command": "IDS=$(paste -sd, /tmp/fort_ids.txt) && echo \"$IDS\" && mkdir -p /tmp/bakelogs && source generators/blender.pin && BIN=\"$BLENDER_CACHE/$BLENDER_DIR/blender\" && /usr/bin/time -v \"$BIN\" -b -noaudio --factory-startup --python generators/build.py -- --only \"$IDS\" --wrote /tmp/bakelogs/wrote.txt > /tmp/bakelogs/01-build.log 2>&1; echo \"build exit=$?\"; tail -25 /tmp/bakelogs/01-build.log; echo \"=== wrote ===\"; wc -l /tmp/bakelogs/wrote.txt; cat /tmp/bakelogs/wrote.txt",
+        "description": "Native Blender build of 25 fort structures",
+        "timeout": 595000
+      }
+    },
+    {
+      "event": 269,
+      "utc": "2026-11-04T06:10:33.380Z",
+      "name": "Bash",
+      "input": {
+        "command": "IDS=$(paste -sd, /tmp/fort_ids.txt) && for e in k01_emit k13_emit k16_emit k12_emit draft_emit haystack_emit lodge_camp_emit; do python3 generators/$e.py --only \"$IDS\" --wrote /tmp/bakelogs/wrote.txt >> /tmp/bakelogs/02-emit.log 2>&1; echo \"$e exit=$?\"; done; wc -l /tmp/bakelogs/wrote.txt; echo \"=== master byte deltas vs before ===\"; python3 -c \"\nimport hashlib,json,os\nb=json.load(open('/tmp/hashes/before.json'))\nch=[];same=[]\nfor k in [l.strip() for l in open('/tmp/bakelogs/wrote.txt')]:\n    p='assets/gltf/'+k\n    h=hashlib.sha256(open(p,'rb').read()).hexdigest()\n    (ch if h!=b['assets'][k]['master_sha256'] else same).append(k)\nprint('CHANGED',len(ch))\nfor k in ch: print('  *',k)\nprint('BYTE-IDENTICAL',len(same))\nfor k in same: print('  =',k)\n\"",
+        "description": "Run pure-python emitters and diff master bytes",
+        "timeout": 595000
+      }
+    },
+    {
+      "event": 277,
+      "utc": "2026-11-04T06:10:47.255Z",
+      "name": "Bash",
+      "input": {
+        "command": "/usr/bin/time -f \"web_derivatives elapsed %e s\" tools/web_derivatives.sh --only \"$(paste -sd, /tmp/bakelogs/wrote.txt)\" > /tmp/bakelogs/03-web.log 2>&1; echo \"exit=$?\"; tail -12 /tmp/bakelogs/03-web.log; echo \"=== web file deltas ===\"; python3 -c \"\nimport hashlib,json,os\nb=json.load(open('/tmp/hashes/before.json'))['web_files']\nch=[];new=[];gone=[]\ncur={}\nfor dp,_d,fs in os.walk('assets/web'):\n    for f in fs:\n        p=os.path.join(dp,f); cur[os.path.relpath(p,'assets/web')]=hashlib.sha256(open(p,'rb').read()).hexdigest()\nfor k,v in sorted(cur.items()):\n    if k not in b: new.append(k)\n    elif b[k]!=v: ch.append(k)\ngone=[k for k in b if k not in cur]\nprint('changed',len(ch),ch[:10]); print('new',len(new),new[:10]); print('gone',len(gone),gone[:10])\n\"",
+        "description": "Regenerate web derivatives for the 25 built masters",
+        "timeout": 595000
+      }
+    },
+    {
+      "event": 285,
+      "utc": "2026-11-04T06:11:44.117Z",
+      "name": "Bash",
+      "input": {
+        "command": "/usr/bin/time -f \"compile_scene elapsed %e s\" python3 tools/compile_scene.py --all > /tmp/bakelogs/04-sidecars.log 2>&1; echo \"sidecars exit=$?\"; tail -5 /tmp/bakelogs/04-sidecars.log; /usr/bin/time -f \"publish elapsed %e s\" tools/publish.sh > /tmp/bakelogs/05-publish.log 2>&1; echo \"publish exit=$?\"; tail -8 /tmp/bakelogs/05-publish.log; echo \"=== git status (source tree) ===\"; cd /home/runner/work/polecat-platform/polecat-platform/chicago-repo && git status --porcelain | head -40; git status --porcelain | wc -l",
+        "description": "Compile sidecars and publish mirror",
+        "timeout": 595000
+      }
+    },
+    {
+      "event": 292,
+      "utc": "2026-11-04T06:13:18.721Z",
+      "name": "Bash",
+      "input": {
+        "command": "tail -6 /tmp/bakelogs/05-publish.log; grep -c . /tmp/bakelogs/05-publish.log; echo \"=== git status ===\"; git status --porcelain; echo \"count: $(git status --porcelain | wc -l)\"",
+        "description": "Check publish result and git status"
+      }
+    },
+    {
+      "event": 297,
+      "utc": "2026-11-04T06:13:22.648Z",
+      "name": "Bash",
+      "input": {
+        "command": "git diff --stat && echo \"=== manifest.json diff ===\" && git diff chicago/4d/assets/manifest.json | head -60 && echo \"=== manifest.web.json diff ===\" && git diff chicago/4d/assets/manifest.web.json | head -30",
+        "description": "Inspect manifest diffs"
+      }
+    },
+    {
+      "event": 304,
+      "utc": "2026-11-04T06:13:29.323Z",
+      "name": "Bash",
+      "input": {
+        "command": "git diff chicago/4d/data/sidecars/1812/first_fort_dearborn_magazine.json",
+        "description": "Inspect sidecar diff"
+      }
+    },
+    {
+      "event": 312,
+      "utc": "2026-11-04T06:13:41.650Z",
+      "name": "Bash",
+      "input": {
+        "command": "cd /home/runner/work/polecat-platform/polecat-platform/chicago-repo/chicago/4d && for h in 2f6b2e1e0fd78cb91956d16a50af526886b67c0b5fdc0337610ca5ad331360a1f 4568caacfde738aa5273411ac27a61a2a350dc78b715ea75ee8eab66af72bfb1; do echo \"looking for $h\"; done; find . -path ./tickets -prune -o -type f \\( -name '*currey*' -o -name '*whistler*' \\) -print 2>/dev/null | head -20; echo \"=== library rows ===\"; grep -rn \"currey_1912_first_fort_birdseye\\|early-currey-1912-first-fort-birdseye\" data/*.json docs/ 2>/dev/null | head -5",
+        "description": "Locate Currey and Whistler images"
+      }
+    },
+    {
+      "event": 314,
+      "utc": "2026-11-04T06:13:47.903Z",
+      "name": "Bash",
+      "input": {
+        "command": "python3 -c \"\nimport json\nfor p in ['data/sources/currey_1912_first_fort_birdseye.json','data/sources/whistler_1808_fort_dearborn_draught.json']:\n    d=json.load(open(p)); print('==',p)\n    for k in ('id','asset','assets','local_asset','image','files','sha256','license','rights','tier'):\n        if k in d: print('  ',k,'=',json.dumps(d[k])[:400])\n\"; echo \"=== asset dirs ===\"; ls data/sources/assets/ | grep -i -E \"currey|whistler\" ; echo \"=== find by hash ===\"; find data/sources/assets data/reference_views -type f \\( -name '*.png' -o -name '*.jpg' \\) 2>/dev/null | xargs -r sha256sum 2>/dev/null | grep -E \"^(2f6b2e1e0fd78cb91956d16a50af526886b67c0b5fdc0337610ca5ad331360a1f|4568caacfde738aa5273411ac27a61a2a350dc78b715ea75ee8eab66af72bfb1)\"",
+        "description": "Locate pinned source images by hash",
+        "timeout": 300000
+      }
+    },
+    {
+      "event": 320,
+      "utc": "2026-11-04T06:13:53.453Z",
+      "name": "Bash",
+      "input": {
+        "command": "python3 -c \"\nimport json\nd=json.load(open('data/reference_views/first_fort_dearborn_pickets_outer/currey_1912_birdseye.json'))\nprint(json.dumps(d,indent=1)[:3000])\n\"",
+        "description": "Read Currey reference view record"
+      }
+    },
+    {
+      "event": 327,
+      "utc": "2026-11-04T06:13:59.252Z",
+      "name": "Bash",
+      "input": {
+        "command": "cd /home/runner/work/polecat-platform/polecat-platform/chicago-repo && ls -la chicago/reference/images/chicago/chicago_fort_dearborn_birdseye_1812.jpg 2>&1; sha256sum chicago/reference/images/chicago/chicago_fort_dearborn_birdseye_1812.jpg 2>/dev/null; find . -name \"chicago_fort_dearborn_birdseye_1812.jpg\" -not -path \"./.git/*\" 2>/dev/null | head",
+        "description": "Find the Currey bird's-eye image"
+      }
+    },
+    {
+      "event": 333,
+      "utc": "2026-11-04T06:14:04.360Z",
+      "name": "Bash",
+      "input": {
+        "command": "python3 -I -c \"\nfrom PIL import Image\nim = Image.open('chicago/reference/images/chicago/chicago_fort_dearborn_birdseye_1812.jpg')\nprint(im.size, im.mode)\nim.resize((im.width*2, im.height*2), Image.LANCZOS).save('/tmp/currey_full.png')\n\"",
+        "description": "Upscale Currey plate for viewing"
+      }
+    },
+    {
+      "event": 335,
+      "utc": "2026-11-04T06:14:06.990Z",
+      "name": "Bash",
+      "input": {
+        "command": "python3 -c \"\nfrom PIL import Image\nim = Image.open('chicago/reference/images/chicago/chicago_fort_dearborn_birdseye_1812.jpg')\nprint(im.size, im.mode)\nim.resize((im.width*2, im.height*2), Image.LANCZOS).save('/tmp/currey_full.png')\n\"",
+        "description": "Upscale Currey plate for viewing"
+      }
+    },
+    {
+      "event": 337,
+      "utc": "2026-11-04T06:14:08.646Z",
+      "name": "Read",
+      "input": {
+        "file_path": "/tmp/currey_full.png"
+      }
+    },
+    {
+      "event": 343,
+      "utc": "2026-11-04T06:14:15.893Z",
+      "name": "Bash",
+      "input": {
+        "command": "python3 -c \"\nfrom PIL import Image\nim = Image.open('chicago/reference/images/chicago/chicago_fort_dearborn_birdseye_1812.jpg')\nbox=(630,110,760,200)\nc=im.crop(box); c=c.resize((c.width*7,c.height*7), Image.LANCZOS); c.save('/tmp/currey_mag.png'); print(c.size)\n\"",
+        "description": "Crop magazine (label 8) region"
+      }
+    },
+    {
+      "event": 345,
+      "utc": "2026-11-04T06:14:17.494Z",
+      "name": "Read",
+      "input": {
+        "file_path": "/tmp/currey_mag.png"
+      }
+    },
+    {
+      "event": 354,
+      "utc": "2026-11-04T06:14:29.064Z",
+      "name": "Bash",
+      "input": {
+        "command": "python3 -c \"\nimport json\nd=json.load(open('chicago/4d/data/sources/whistler_1808_fort_dearborn_draught.json'))\nimport re\ns=json.dumps(d)\nfor k in ('local','image','asset','file','path','url','archived'):\n    for m in set(re.findall(r'\\\"[^\\\"]*'+k+r'[^\\\"]*\\\"\\s*:\\s*\\\"[^\\\"]*\\\"', s, re.I)): print(m[:220])\n\" | head -20; find . -path ./.git -prune -o -iname \"*whistler*\" -name \"*.jpg\" -print -o -path ./.git -prune -o -iname \"*whistler*\" -name \"*.png\" -print 2>/dev/null | head",
+        "description": "Locate Whistler draught image"
+      }
+    },
+    {
+      "event": 356,
+      "utc": "2026-11-04T06:14:33.241Z",
+      "name": "Bash",
+      "input": {
+        "command": "mkdir -p /tmp/whistler && cd /tmp/whistler && curl -sSfL -o plate.png \"https://www.gutenberg.org/files/69274/69274-h/images/fpage164_lg.png\" && sha256sum plate.png && python3 -c \"\nfrom PIL import Image\nim=Image.open('/tmp/whistler/plate.png'); print(im.size, im.mode)\nim.convert('L').resize((min(1400,im.width), int(im.height*min(1400,im.width)/im.width)), Image.LANCZOS).save('/tmp/whistler_full.png')\n\"",
+        "description": "Fetch Whistler 1808 plate",
+        "timeout": 180000
+      }
+    },
+    {
+      "event": 361,
+      "utc": "2026-11-04T06:14:35.528Z",
+      "name": "Read",
+      "input": {
+        "file_path": "/tmp/whistler_full.png"
+      }
+    },
+    {
+      "event": 368,
+      "utc": "2026-11-04T06:14:42.346Z",
+      "name": "Bash",
+      "input": {
+        "command": "cd /tmp/whistler && python3 -c \"\nfrom PIL import Image\nim=Image.open('plate.png')\nbox=(850,650,1030,790)\nc=im.crop(box); c=c.resize((c.width*6,c.height*6), Image.LANCZOS); c.save('/tmp/whistler_mag.png'); print(c.size)\n\"",
+        "description": "Crop Whistler magazine elevation"
+      }
+    },
+    {
+      "event": 370,
+      "utc": "2026-11-04T06:14:44.121Z",
+      "name": "Read",
+      "input": {
+        "file_path": "/tmp/whistler_mag.png"
+      }
+    },
+    {
+      "event": 380,
+      "utc": "2026-11-04T06:14:53.301Z",
+      "name": "Bash",
+      "input": {
+        "command": "cd /home/runner/work/polecat-platform/polecat-platform/chicago-repo/chicago/4d && ./tools/check.sh --part 1/4 > /tmp/bakelogs/gate-1.log 2>&1; echo \"PART1 exit=$?\"; tail -14 /tmp/bakelogs/gate-1.log",
+        "description": "Gate part 1 of 4",
+        "timeout": 595000
+      }
+    },
+    {
+      "event": 398,
+      "utc": "2026-11-04T06:22:18.809Z",
+      "name": "Bash",
+      "input": {
+        "command": "grep -n -i -B3 -A25 \"dataset (schema, provenance\" /tmp/bakelogs/gate-1.log | grep -v \"^.*self-test |\" | head -60",
+        "description": "Find dataset failure detail"
+      }
+    },
+    {
+      "event": 400,
+      "utc": "2026-11-04T06:22:22.708Z",
+      "name": "Bash",
+      "input": {
+        "command": "awk '/^.*== dataset \\(schema/,/^.*== /' /tmp/bakelogs/gate-1.log | grep -iE \"FAIL|ERROR|\u2717|magazine|barrel|roof_pitch|backlink\" | head -30; echo \"=== source-use backlinks section ===\"; awk '/Source-use backlinks match authored claims/,0' /tmp/bakelogs/gate-1.log | head -40",
+        "description": "Extract failure lines"
+      }
+    },
+    {
+      "event": 405,
+      "utc": "2026-11-04T06:22:26.614Z",
+      "name": "Bash",
+      "input": {
+        "command": "awk '/== dataset \\(schema/,/== Source-use backlinks/' /tmp/bakelogs/gate-1.log | tail -40",
+        "description": "Tail of dataset step"
+      }
+    },
+    {
+      "event": 407,
+      "utc": "2026-11-04T06:22:29.276Z",
+      "name": "Bash",
+      "input": {
+        "command": "grep -nE \"FAIL|refus|not published|STALE|stale\" /tmp/bakelogs/gate-1.log | grep -v \"self-test |\" | head -20",
+        "description": "Grep all FAIL lines in part 1"
+      }
+    },
+    {
+      "event": 415,
+      "utc": "2026-11-04T06:22:37.864Z",
+      "name": "Bash",
+      "input": {
+        "command": "grep -n \"L-first-fort-ne-house-pyramid-3041\" docs/LIBERTIES.md | head -3",
+        "description": "Find the NE pyramid liberty"
+      }
+    },
+    {
+      "event": 417,
+      "utc": "2026-11-04T06:22:40.891Z",
+      "name": "Bash",
+      "input": {
+        "command": "sed -n 40170,40240p docs/LIBERTIES.md; echo \"=== END OF FILE ===\"; tail -5 docs/LIBERTIES.md; wc -l docs/LIBERTIES.md; echo \"=== head of file (format rules) ===\"; sed -n 1,40p docs/LIBERTIES.md",
+        "description": "Read liberty template and file rules"
+      }
+    },
+    {
+      "event": 424,
+      "utc": "2026-11-04T06:22:46.943Z",
+      "name": "Bash",
+      "input": {
+        "command": "grep -n \"first_fort_dearborn_magazine\" docs/LIBERTIES.md | head -20",
+        "description": "Find magazine mentions in LIBERTIES"
+      }
+    },
+    {
+      "event": 434,
+      "utc": "2026-11-04T06:23:23.900Z",
+      "name": "Bash",
+      "input": {
+        "command": "ls tools/compile_liberties.py tools/compile_source_use.py && cat >> docs/LIBERTIES.md <<'EOF'\n\n### L-first-fort-magazine-barrel-vault-3041 \u2014 the magazine's vault, its rise and its profile\n\n**Covers:** `first_fort_dearborn_magazine.first_fort_1803.form.barrel_rise_m`\n\n**Supersedes:** L370's reconstructed `roof_pitch_deg` for `first_fort_dearborn_magazine` only.\nThat attribute no longer exists on the record: a curved roof has a varying tangent, so a single\npitch figure would state something the mesh does not contain. L370's historical entry stands\nunchanged, including this record's footprint and wall height and every other building in it.\nL370's claim on this record's `roof_type` has likewise stopped biting, because the owner's\nruling gives that attribute a picture and it is now `inferred` with its two sources \u2014 the same\nmove L-first-fort-ne-house-pyramid-3041 made for the north-east small house.\n\n**Decision:** The roof SHAPE is adopted, by the owner's ruling of 2026-11-03 (T-3335, carried\nout under T-3041), from two pictures that agree about it. Whistler's measured draught of\nJanuary 25, 1808 draws the magazine \u2014 his index no. 4 \u2014 in elevation with an arched front\nspringing from its side walls, and the bird's-eye printed at p. 27 of Currey's *The Story of\nOld Fort Dearborn* (1912) labels the same building 8 and draws it under a rounded vault. The\nattribute moves from `gable`/`reconstructed` to `barrel_vault`/`inferred`, and the archetype\nbuilds a circular segment whose axis runs along the building's depth. Nothing here is carried\nto the second fort's magazine, which is a separate record and keeps its gable.\n\n**What is invented, and stays invented \u2014 the whole profile.** Both pictures give a shape and\nno number. Neither dates the vault's completion, and neither measures a radius, a rise, a\nthickness, a colour or a roofing fabric. So:\n\n- The **rise of 1.0286254881847008 m** is not read from either picture. It is envelope\n  conservation: half of the shorter unchanged 3.05 m plan span times the tangent of the old\n  reconstructed 34-degree gable, which holds the crown at exactly the height the gable reached\n  (3.628625488184701 m over the seat). The old 34 degrees survives only inside that derivation\n  and is no longer a visitor-facing claim about any slope on the building.\n- The **radius of 2.9860699863584146 m** follows from that rise across the unchanged 4.51 m\n  front. It is therefore reconstructed twice over, and it makes a SHALLOW segment. Whistler\n  draws something much closer to a semicircle. We did not follow him there, because matching\n  his arch would raise the crown about 1.2 m above a height nothing attests and the only reason\n  to prefer the taller curve would be the draughtsman's hand. That gap between our curve and\n  the drawn one is a known, open difference, not a resolved one.\n- The **0.30 m roof projection** and the **0.07 m covering edge** are the archetype's existing\n  reconstructed figures, carried over so the change is the shape alone. Extending the same\n  circle out to that projection drops the side eave from the old gable's 2.397647445 m to\n  2.188061556 m, 0.209586 m lower. The overall footprint and the base-to-crown envelope are\n  unchanged; this one edge is not, and that is stated rather than hidden.\n- The **covering, material and colour** are the prior reconstruction, untouched. Both sources\n  are black-and-white line work and attest none of them. There are no ribs, no banding and no\n  per-strip paint: the vault carries one continuous height tone, which is a drawing decision of\n  this project's.\n- The mesh's **32 arc facets** are a resolution, not a count of anything historical.\n\n**What is not changed.** The surveyed seat and bearing; the phase and its date range; the\n4.51 m front width (half-measured) and the 3.05 m depth; the 2.6 m wall; the brick wall\nmaterial; the door, window and vent counts and positions; the two brick end walls below the\nspringing; every other building in the fort and the historical camera. No grade was promoted,\nno footprint moved and no date touched. An invalid rise, a non-finite derived radius, or a\nvault asked for with a chimney, a gallery, a cupola, a lantern, loopholes, a second storey or\non anything but a magazine is REFUSED by the parameter check rather than clamped to something\nthat would build.\n\n**How to resolve:** a contemporary section, a specification or an excavation of the magazine's\nfooting would settle the rise and the thickness. Nothing in hand does. Whistler's elevation is\ncontemporary but is not at the plan's scale and is not a measured section; Currey's plate is a\n1912 retrospective, after an 1899 newspaper sketch of an 1898 model, and its camera in this\nproject is `diagnostic_only` for that reason.\n\n**Ticket:** T-3041 (piece of T-2387).\n**Review:** `data/reference_views/first_fort_dearborn_pickets_outer/currey_1912_birdseye.match.json`.\n**Recorded:** 2026-11-04 (T-3041).\nEOF\necho \"appended\"; tail -3 docs/LIBERTIES.md",
+        "description": "Append magazine vault liberty"
+      }
+    },
+    {
+      "event": 436,
+      "utc": "2026-11-04T06:23:28.252Z",
+      "name": "Bash",
+      "input": {
+        "command": "python3 tools/compile_liberties.py 2>&1 | tail -5; echo \"liberties exit=$?\"; python3 tools/compile_source_use.py 2>&1 | tail -5; echo \"sourceuse exit=$?\"; cd .. /dev/null 2>/dev/null; cd /home/runner/work/polecat-platform/polecat-platform/chicago-repo && git status --porcelain",
+        "description": "Recompile liberties and source-use",
+        "timeout": 595000
+      }
+    },
+    {
+      "event": 447,
+      "utc": "2026-11-04T06:24:09.153Z",
+      "name": "Bash",
+      "input": {
+        "command": "cd /home/runner/work/polecat-platform/polecat-platform/chicago-repo/chicago/4d && ls tools/ | grep -iE \"render|compound|side_by_side|match\" | head -20; echo \"=== match record ===\"; python3 -c \"\nimport json\nd=json.load(open('data/reference_views/first_fort_dearborn_pickets_outer/currey_1912_birdseye.match.json'))\nprint(json.dumps({k:v for k,v in d.items() if k!='differences'},indent=1)[:1200])\nprint('--- differences:', len(d.get('differences',[])))\nfor x in d.get('differences',[]): print(' ', x.get('id'), '|', x.get('status'), '|', str(x.get('what'))[:110])\n\"",
+        "description": "Find render tooling and read match record"
+      }
+    },
+    {
+      "event": 452,
+      "utc": "2026-11-04T06:24:12.896Z",
+      "name": "Bash",
+      "input": {
+        "command": "node tools/photo_match_group.mjs --help 2>&1 | head -40",
+        "description": "photo_match_group usage",
+        "timeout": 180000
+      }
+    },
+    {
+      "event": 454,
+      "utc": "2026-11-04T06:24:15.558Z",
+      "name": "Bash",
+      "input": {
+        "command": "head -60 tools/photo_match_group.mjs",
+        "description": "Read photo_match_group header"
+      }
+    },
+    {
+      "event": 456,
+      "utc": "2026-11-04T06:24:18.378Z",
+      "name": "Bash",
+      "input": {
+        "command": "grep -n \"usage\\|process.argv\\|--view\\|--structure\" tools/photo_match.mjs | head -20",
+        "description": "photo_match.mjs CLI"
+      }
+    },
+    {
+      "event": 466,
+      "utc": "2026-11-04T06:24:27.884Z",
+      "name": "Bash",
+      "input": {
+        "command": "sed -n 60,130p tools/photo_match.mjs",
+        "description": "Read photo_match CLI body"
+      }
+    },
+    {
+      "event": 472,
+      "utc": "2026-11-04T06:24:37.088Z",
+      "name": "Bash",
+      "input": {
+        "command": "ls docs/RESEARCH/photo-match/first_fort_dearborn_pickets_outer/ 2>/dev/null; cp assets/gltf/first_fort_dearborn_magazine__first_fort_1803.glb /tmp/after_magazine.glb && git show HEAD:chicago/4d/assets/gltf/first_fort_dearborn_magazine__first_fort_1803.glb > assets/gltf/first_fort_dearborn_magazine__first_fort_1803.glb && sha256sum assets/gltf/first_fort_dearborn_magazine__first_fort_1803.glb && echo \"--- rendering BEFORE ---\" && node tools/photo_match.mjs data/reference_views/first_fort_dearborn_pickets_outer/currey_1912_birdseye.json --out /tmp/before_render > /tmp/bakelogs/06-before.log 2>&1; echo \"before exit=$?\"; tail -6 /tmp/bakelogs/06-before.log; ls /tmp/before_render 2>/dev/null",
+        "description": "Render BEFORE state with old magazine mesh",
+        "timeout": 595000
+      }
+    },
+    {
+      "event": 478,
+      "utc": "2026-11-04T06:24:45.848Z",
+      "name": "Bash",
+      "input": {
+        "command": "cp /tmp/after_magazine.glb assets/gltf/first_fort_dearborn_magazine__first_fort_1803.glb && sha256sum assets/gltf/first_fort_dearborn_magazine__first_fort_1803.glb && node tools/photo_match.mjs data/reference_views/first_fort_dearborn_pickets_outer/currey_1912_birdseye.json > /tmp/bakelogs/07-after.log 2>&1; echo \"after exit=$?\"; tail -6 /tmp/bakelogs/07-after.log; cd /home/runner/work/polecat-platform/polecat-platform/chicago-repo && git status --porcelain | tail -6",
+        "description": "Restore new mesh and render AFTER",
+        "timeout": 595000
+      }
+    },
+    {
+      "event": 483,
+      "utc": "2026-11-04T06:24:52.278Z",
+      "name": "Bash",
+      "input": {
+        "command": "cd /home/runner/work/polecat-platform/polecat-platform/chicago-repo/chicago/4d && python3 -c \"\nfrom PIL import Image\nfor tag,p in [('before','/tmp/before_render/currey_1912_birdseye-side-by-side.jpg'),('after','docs/RESEARCH/photo-match/first_fort_dearborn_pickets_outer/currey_1912_birdseye-side-by-side.jpg')]:\n    im=Image.open(p); print(tag, im.size)\n    im.save('/tmp/sbs_%s.png'%tag)\n\"",
+        "description": "Convert side-by-side images"
+      }
+    },
+    {
+      "event": 485,
+      "utc": "2026-11-04T06:24:56.315Z",
+      "name": "Bash",
+      "input": {
+        "command": "cd /tmp && python3 -c \"\nfrom PIL import Image\n# right half is the render; magazine at approx same place as photo (x 630-760, y110-200) offset by 913\nfor tag in ('before','after'):\n    im=Image.open('/tmp/sbs_%s.png'%tag)\n    c=im.crop((913+600,90,913+800,220)); c=c.resize((c.width*5,c.height*5), Image.LANCZOS); c.save('/tmp/mag_%s.png'%tag); print(tag,c.size)\n\"",
+        "description": "Crop render magazine before/after"
+      }
+    },
+    {
+      "event": 487,
+      "utc": "2026-11-04T06:24:58.096Z",
+      "name": "Read",
+      "input": {
+        "file_path": "/tmp/mag_before.png"
+      }
+    },
+    {
+      "event": 492,
+      "utc": "2026-11-04T06:25:01.827Z",
+      "name": "Bash",
+      "input": {
+        "command": "cd /tmp && python3 -c \"\nfrom PIL import Image\nim=Image.open('/tmp/sbs_after.png'); r=im.crop((913,0,1802,588)); r=r.resize((r.width*2,r.height*2), Image.LANCZOS); r.save('/tmp/render_after_full.png'); print(r.size)\"",
+        "description": "Extract render half of after image"
+      }
+    },
+    {
+      "event": 494,
+      "utc": "2026-11-04T06:25:03.358Z",
+      "name": "Read",
+      "input": {
+        "file_path": "/tmp/render_after_full.png"
+      }
+    },
+    {
+      "event": 501,
+      "utc": "2026-11-04T06:25:10.027Z",
+      "name": "Bash",
+      "input": {
+        "command": "cd /tmp && python3 -c \"\nfrom PIL import Image\nfor tag in ('before','after'):\n    im=Image.open('/tmp/sbs_%s.png'%tag)\n    c=im.crop((1480,95,1640,195)); c=c.resize((c.width*7,c.height*7), Image.LANCZOS); c.save('/tmp/magr_%s.png'%tag); print(tag,c.size)\"",
+        "description": "Crop magazine in render before/after"
+      }
+    },
+    {
+      "event": 503,
+      "utc": "2026-11-04T06:25:12.058Z",
+      "name": "Read",
+      "input": {
+        "file_path": "/tmp/magr_before.png"
+      }
+    },
+    {
+      "event": 508,
+      "utc": "2026-11-04T06:25:16.765Z",
+      "name": "Bash",
+      "input": {
+        "command": "cd /tmp && python3 -c \"\nfrom PIL import Image, ImageChops\nimport numpy as np\na=Image.open('/tmp/sbs_before.png').convert('RGB'); b=Image.open('/tmp/sbs_after.png').convert('RGB')\nd=np.abs(np.asarray(a,int)-np.asarray(b,int)).sum(2)\nys,xs=np.nonzero(d>12)\nprint('changed px',len(xs),'x',xs.min(),xs.max(),'y',ys.min(),ys.max())\n\"",
+        "description": "Diff before/after renders to locate change"
+      }
+    },
+    {
+      "event": 513,
+      "utc": "2026-11-04T06:25:21.689Z",
+      "name": "Bash",
+      "input": {
+        "command": "cd /tmp && python3 -c \"\nfrom PIL import Image\nfor tag in ('before','after'):\n    im=Image.open('/tmp/sbs_%s.png'%tag)\n    c=im.crop((1495,98,1615,188)); c=c.resize((c.width*9,c.height*9), Image.NEAREST); c.save('/tmp/magz_%s.png'%tag)\nprint('ok')\"",
+        "description": "Tight crop on changed region"
+      }
+    },
+    {
+      "event": 515,
+      "utc": "2026-11-04T06:25:23.232Z",
+      "name": "Read",
+      "input": {
+        "file_path": "/tmp/magz_before.png"
+      }
+    },
+    {
+      "event": 525,
+      "utc": "2026-11-04T06:25:35.159Z",
+      "name": "Bash",
+      "input": {
+        "command": "cd /home/runner/work/polecat-platform/polecat-platform/chicago-repo/chicago/4d && head -25 tools/render_structure_review.py | sed -n 1,25p; grep -n \"argparse\\|add_argument\" tools/render_structure_review.py | head -15",
+        "description": "Check render_structure_review usage"
+      }
+    },
+    {
+      "event": 535,
+      "utc": "2026-11-04T06:25:50.260Z",
+      "name": "Bash",
+      "input": {
+        "command": "cd /tmp && python3 -c \"\nfrom PIL import Image\nimport numpy as np\na=Image.open('/tmp/sbs_before.png').convert('RGB'); b=Image.open('/tmp/sbs_after.png').convert('RGB')\nbox=(1500,103,1600,182)\nca,cb=a.crop(box),b.crop(box)\nda=np.abs(np.asarray(ca,int)-np.asarray(cb,int)).sum(2)\nm=np.zeros(da.shape+(3,),'uint8'); m[...,0]=np.clip(da,0,255)\nZ=11\nout=Image.new('RGB',(ca.width*3*Z+40, ca.height*Z),(255,255,255))\nout.paste(ca.resize((ca.width*Z,ca.height*Z),Image.NEAREST),(0,0))\nout.paste(cb.resize((cb.width*Z,cb.height*Z),Image.NEAREST),(ca.width*Z+20,0))\nout.paste(Image.fromarray(m).resize((ca.width*Z,ca.height*Z),Image.NEAREST),(2*ca.width*Z+40,0))\nout.save('/tmp/mag_triptych.png'); print(out.size)\"",
+        "description": "Build before/after/diff triptych"
+      }
+    },
+    {
+      "event": 537,
+      "utc": "2026-11-04T06:25:51.959Z",
+      "name": "Read",
+      "input": {
+        "file_path": "/tmp/mag_triptych.png"
+      }
+    },
+    {
+      "event": 548,
+      "utc": "2026-11-04T06:26:03.055Z",
+      "name": "Bash",
+      "input": {
+        "command": "cd /home/runner/work/polecat-platform/polecat-platform/chicago-repo/chicago/4d && python3 -c \"\nimport json\nd=json.load(open('data/reference_views/first_fort_dearborn_pickets_outer/currey_1912_birdseye.match.json'))\nprint('verdict:',d.get('verdict'))\nprint('top keys:',[k for k in d])\nfor x in d['differences']:\n    if 'Magazine' in str(x.get('what','')): print(json.dumps(x,indent=1))\n    if x.get('status')=='fixed': print('FIXED EXAMPLE:',json.dumps(x,indent=1))\n\"",
+        "description": "Inspect match record difference schema"
+      }
+    },
+    {
+      "event": 550,
+      "utc": "2026-11-04T06:26:17.633Z",
+      "name": "Bash",
+      "input": {
+        "command": "mkdir -p docs/RESEARCH/photo-match/first_fort_dearborn_pickets_outer && cp /tmp/before_render/currey_1912_birdseye-side-by-side.jpg docs/RESEARCH/photo-match/first_fort_dearborn_pickets_outer/currey_1912_birdseye-side-by-side-before-magazine-vault-20261104.jpg && python3 - <<'PY'\nimport json, io\np='data/reference_views/first_fort_dearborn_pickets_outer/currey_1912_birdseye.match.json'\nd=json.load(open(p))\nnew=(\"Magazine (8): the drawing gives it a rounded, barrel-vaulted roof at the west end of the \"\n \"north side; ours stood in the same place with a gable roof. Whistler's elevation (his index \"\n \"no. 4) draws an arched front, which the record already noted 'may be a vault'. Owner, \"\n \"2026-11-03 (T-3335): adopt it; the fix belongs to T-3041. FIXED under T-3041: \"\n \"`first_fort_dearborn_magazine` now carries a barrel vault - a circular segment across the \"\n \"unchanged 4.51 m front, its axis running along the 3.05 m depth, springing from the unchanged \"\n \"2.6 m brick walls and closed at each end by a brick infill above them - built by an opt-in \"\n \"`barrel_vault` branch of the fort_structure archetype. Confirmed by eye on this side-by-side \"\n \"against the plate, and against the render made from the previous mesh through the same camera \"\n \"(`currey_1912_birdseye-side-by-side-before-magazine-vault-20261104.jpg`): the straight ridge \"\n \"and the two flat planes are gone and the roof reads as a continuous curve, which is what both \"\n \"pictures draw. A pixel comparison of the two renders changes only this building. \"\n \"THE SHAPE ALONE IS ADOPTED, and the curve's DEPTH is not matched: our rise of 1.0286 m is \"\n \"envelope conservation (it holds the old reconstructed gable's crown at 3.6286 m) and makes a \"\n \"SHALLOW segment, where Whistler draws something near a semicircle. Neither picture gives a \"\n \"radius, a rise, a thickness, a colour, a roofing fabric or a date for the vault. The surveyed \"\n \"seat and bearing, the footprint, the wall height, the brick material, the openings and every \"\n \"other building are unchanged; the side eave drops 0.2096 m as the same circle runs out to the \"\n \"existing 0.30 m projection. Nothing here is carried to the second fort's magazine \"\n \"(docs/LIBERTIES.md L-first-fort-magazine-barrel-vault-3041).\")\nhit=0\nfor x in d['differences']:\n    if str(x.get('what','')).startswith('Magazine (8)'):\n        x['what']=new; x['status']='fixed'; hit+=1\nassert hit==1, hit\nd['verdict']='differs'\njson.dump(d, open(p,'w'), indent=1, ensure_ascii=False)\nopen(p,'a').write('\\n')\nprint('marked fixed; verdict set to differs')\nprint('status counts:', {s: sum(1 for x in d['differences'] if x['status']==s) for s in sorted({x['status'] for x in d['differences']})})\nPY",
+        "description": "Mark the magazine difference fixed in the match record"
+      }
+    },
+    {
+      "event": 556,
+      "utc": "2026-11-04T06:26:23.249Z",
+      "name": "Bash",
+      "input": {
+        "command": "ls changelog.d/ && cat changelog.d/*.json 2>/dev/null | head -30; echo \"=== git show a recent entry ===\"; git log --oneline -3 -- changelog.d/ | head; git show --stat HEAD~2 -- changelog.d 2>/dev/null | head",
+        "description": "Inspect changelog.d entries"
+      }
+    },
+    {
+      "event": 558,
+      "utc": "2026-11-04T06:26:30.946Z",
+      "name": "Bash",
+      "input": {
+        "command": "cat > changelog.d/T-3041.json <<'EOF'\n{\n  \"title\": \"The first fort's powder magazine gets its vaulted roof\",\n  \"kind\": \"improvement\",\n  \"items\": [\n    \"The little brick magazine inside the first Fort Dearborn no longer wears a gable. Its roof is now a vault, curving across the front and running back along the depth of the building, the way the garrison's own commandant drew its arched front in January 1808 and the way Currey's 1912 bird's-eye draws it under the number 8.\",\n    \"Only the shape is taken from the pictures. How deep the curve is remains ours: the crown sits exactly where the old roof's peak did, and the Evidence panel now says so instead of quoting a pitch a curved roof does not have.\",\n    \"Nothing else moved \u2014 the same place, the same footprint, the same brick walls and doorway, and the second fort's magazine keeps its gable.\",\n    \"Two things the same picture shows are still missing from the first fort: the cupolas on both blockhouses and the western gateway beside the north-west one.\"\n  ]\n}\nEOF\nnode tools/changelog-entries.mjs --check 2>&1 | tail -5",
+        "description": "Add changelog entry and check"
+      }
+    },
+    {
+      "event": 564,
+      "utc": "2026-11-04T06:26:35.934Z",
+      "name": "Bash",
+      "input": {
+        "command": "grep -n \"T-3041\" docs/STATUS.md | head -10",
+        "description": "Find T-3041 in STATUS.md"
+      }
+    },
+    {
+      "event": 566,
+      "utc": "2026-11-04T06:26:38.341Z",
+      "name": "Bash",
+      "input": {
+        "command": "sed -n 15,45p docs/STATUS.md",
+        "description": "Read STATUS T-3041 section"
+      }
+    },
+    {
+      "event": 568,
+      "utc": "2026-11-04T06:26:57.346Z",
+      "name": "Bash",
+      "input": {
+        "command": "python3 - <<'PY'\np='docs/STATUS.md'\ns=open(p).read()\nanchor=\"## T-3041 \u2014 the first fort's north-east small house, and nothing else in that picture (2026-11-03)\"\nnew = \"\"\"## T-3041 \u2014 the first fort's magazine gets its vault, and nothing else in that picture (2026-11-04)\n\n`first_fort_dearborn_magazine` carries the barrel vault the owner adopted on 2026-11-03\n(T-3335): a circular segment across the unchanged 4.51 m front, its axis along the 3.05 m\ndepth, springing from the unchanged 2.6 m brick walls and closed at each end by a brick\ninfill above them. The roof attribute moves from `gable`/`reconstructed` to\n`barrel_vault`/`inferred`, cited to Whistler's measured draught of 25 January 1808 (his\nindex no. 4, drawn in elevation with an arched front) and to Currey's 1912 bird's-eye (its\nno. 8, drawn rounded). The obsolete `roof_pitch_deg` is gone from the record, because a\ncurved roof has a varying tangent and a single pitch figure would state something the mesh\ndoes not contain; an explicit reconstructed `barrel_rise_m` replaces it. The archetype grew\nan opt-in `barrel_vault` branch, and the parameter check REFUSES an invalid rise, a\nnon-finite derived radius, or a vault asked for with a chimney, a gallery, a cupola, a\nlantern, loopholes, a second storey or on anything but a magazine, rather than clamping to\nsomething that would build.\n\n**The shape is adopted; the curve's depth is not matched.** The rise of 1.0286254881847008 m\nis envelope conservation, not a measurement: it holds the crown at 3.628625488184701 m, where\nthe old reconstructed gable's peak stood. That makes a SHALLOW segment (radius\n2.9860699863584146 m), where Whistler draws something close to a semicircle. Neither picture\nsupplies a radius, rise, thickness, colour, roofing fabric or completion date, and none was\ninvented to fit one. The one edge that does move is the side eave: the same circle run out to\nthe existing 0.30 m projection sits at 2.188061556 m instead of the gable's 2.397647445 m,\n0.209586 m lower. Recorded in docs/LIBERTIES.md as\n`L-first-fort-magazine-barrel-vault-3041`.\n\n**What is NOT done.** T-3041 and its parent T-2387 are not finished and are released open.\nThe Currey view's verdict stays `differs`: the blockhouse cupolas and the western gateway are\nstill `open` on the match record, and the full first-fort acceptance (21 named records, nine\ncontext records, every listed picture) is untouched by this increment. Two differences of\nthirteen are now fixed. Nothing here is carried to the second fort's magazine, which is a\nseparate record and keeps its gable.\n\n**What was verified.** The producer change reaches 25 `fort_structure` defaults and 0\nvariants; all 25 were genuinely rebuilt on pinned, sha256-verified Blender 4.5.3 under Ubuntu\n26.04 BEFORE the first source commit, and the web derivatives were re-encoded from that build.\nExactly ONE master moved a byte \u2014 this magazine's \u2014 and the other 24 came back byte-identical,\nincluding the second fort's magazine and the cupola blockhouse. Their `inputs_sha256` rows all\nchange, because the archetype's own source is part of a mesh's inputs; that is a real\nfreshness hash from a real rebuild, not a hand-written one. All 243 outbuilding masters, their\nweb derivatives and registry rows, and the T-3041 north-east pyramid, are untouched. The\nbefore/after comparison is a genuine same-camera render through the existing fourteen-member\nCurrey group camera from the committed GLBs; a pixel comparison of the two renders changes\nonly this building, and the previous render is kept beside the new one at\n`docs/RESEARCH/photo-match/first_fort_dearborn_pickets_outer/currey_1912_birdseye-side-by-side-before-magazine-vault-20261104.jpg`.\n\n\"\"\"\nassert anchor in s\ns = s.replace(anchor, new + anchor, 1)\nopen(p,'w').write(s)\nprint('STATUS.md updated')\nPY\ngrep -n \"^## T-3041\" docs/STATUS.md | head -3",
+        "description": "Prepend new STATUS section"
+      }
+    },
+    {
+      "event": 573,
+      "utc": "2026-11-04T06:27:01.901Z",
+      "name": "Bash",
+      "input": {
+        "command": "./tools/check.sh --part 1/4 > /tmp/bakelogs/gate2-1.log 2>&1; echo \"PART1 exit=$?\"; tail -10 /tmp/bakelogs/gate2-1.log",
+        "description": "Gate part 1 of 4 (rerun)",
+        "timeout": 595000
+      }
+    },
+    {
+      "event": 591,
+      "utc": "2026-11-04T06:34:22.255Z",
+      "name": "Bash",
+      "input": {
+        "command": "grep -nE \"^  FAIL|  FAIL \" /tmp/bakelogs/gate2-1.log | head -10",
+        "description": "Find remaining dataset FAIL"
+      }
+    },
+    {
+      "event": 600,
+      "utc": "2026-11-04T06:34:31.082Z",
+      "name": "Bash",
+      "input": {
+        "command": "grep -n \"Resolved\" docs/LIBERTIES.md | head -20; echo \"=== how the compiler reads resolution ===\"; grep -n \"Resolved\\|resolved\" tools/compile_liberties.py | head -20",
+        "description": "Find Resolved mechanism"
+      }
+    },
+    {
+      "event": 610,
+      "utc": "2026-11-04T06:34:44.341Z",
+      "name": "Bash",
+      "input": {
+        "command": "cd /home/runner/work/polecat-platform/polecat-platform/chicago-repo && git log --oneline -3 22d624f3e5061dfaf54af0e3429e6278be60abe3 2>/dev/null | head -3; git show 22d624f3e5061dfaf54af0e3429e6278be60abe3 -- chicago/4d/docs/LIBERTIES.md | grep -E \"^[-+].*Covers\" | head -5 | cut -c1-300",
+        "description": "Check how PR 1685 edited L370 Covers"
+      }
+    },
+    {
+      "event": 615,
+      "utc": "2026-11-04T06:34:50.977Z",
+      "name": "Bash",
+      "input": {
+        "command": "cd /home/runner/work/polecat-platform/polecat-platform/chicago-repo/chicago/4d && python3 - <<'PY'\np='docs/LIBERTIES.md'\ns=open(p).read()\ndrop=[\"`first_fort_dearborn_magazine.first_fort_1803.form.roof_pitch_deg`, \",\n      \"`first_fort_dearborn_magazine.first_fort_1803.form.roof_type`, \"]\nfor d in drop:\n    assert s.count(d)==1, (d, s.count(d))\n    s=s.replace(d,'')\nopen(p,'w').write(s)\nprint('L370 Covers trimmed')\nPY\ngrep -c \"first_fort_dearborn_magazine.first_fort_1803\" docs/LIBERTIES.md; grep -o \"first_fort_dearborn_magazine\\.first_fort_1803\\.[a-z_.]*\" docs/LIBERTIES.md | sort -u; python3 tools/compile_liberties.py 2>&1 | tail -2",
+        "description": "Trim L370 covers and recompile"
+      }
+    },
+    {
+      "event": 619,
+      "utc": "2026-11-04T06:35:16.983Z",
+      "name": "Bash",
+      "input": {
+        "command": "./tools/check.sh --part 1/4 > /tmp/bakelogs/gate3-1.log 2>&1; echo \"PART1 exit=$?\"; tail -8 /tmp/bakelogs/gate3-1.log",
+        "description": "Gate part 1 of 4 (second rerun)",
+        "timeout": 595000
+      }
+    },
+    {
+      "event": 646,
+      "utc": "2026-11-04T06:42:31.927Z",
+      "name": "Bash",
+      "input": {
+        "command": "./tools/check.sh --part 2/4 > /tmp/bakelogs/gate3-2.log 2>&1; echo \"PART2 exit=$?\"; tail -6 /tmp/bakelogs/gate3-2.log; grep -nE \"^  FAIL\" /tmp/bakelogs/gate3-2.log | head -5",
+        "description": "Gate part 2 of 4",
+        "timeout": 595000
+      }
+    },
+    {
+      "event": 660,
+      "utc": "2026-11-04T06:47:59.210Z",
+      "name": "Bash",
+      "input": {
+        "command": "./tools/check.sh --part 3/4 > /tmp/bakelogs/gate3-3.log 2>&1; echo \"PART3 exit=$?\"; tail -6 /tmp/bakelogs/gate3-3.log; grep -nE \"^  FAIL\" /tmp/bakelogs/gate3-3.log | head -5",
+        "description": "Gate part 3 of 4",
+        "timeout": 595000
+      }
+    },
+    {
+      "event": 681,
+      "utc": "2026-11-04T06:56:37.546Z",
+      "name": "Bash",
+      "input": {
+        "command": "./tools/check.sh --part 4/4 > /tmp/bakelogs/gate3-4.log 2>&1; echo \"PART4 exit=$?\"; tail -6 /tmp/bakelogs/gate3-4.log; grep -nE \"^  FAIL\" /tmp/bakelogs/gate3-4.log | head -5",
+        "description": "Gate part 4 of 4",
+        "timeout": 595000
+      }
+    },
+    {
+      "event": 703,
+      "utc": "2026-11-04T07:03:41.205Z",
+      "name": "Bash",
+      "input": {
+        "command": "grep -n -A30 \"Selected upper-lid source preserves\" /tmp/bakelogs/gate3-4.log | head -50",
+        "description": "Read T-3088 failure detail"
+      }
+    },
+    {
+      "event": 721,
+      "utc": "2026-11-04T07:04:06.529Z",
+      "name": "Bash",
+      "input": {
+        "command": "cd /home/runner/work/polecat-platform/polecat-platform/chicago-repo && echo \"=== does my diff touch anything this test reads? ===\"; git status --porcelain | grep -iE \"transport|horse|socket|geometry-source-controls\" || echo \"NO \u2014 none of the test's inputs are in my diff\"; echo \"=== run the step standalone on the unmodified files ===\"; cd chicago/4d && python3 tools/test_standing_horse_upper_lid.py 2>&1 | tail -3; echo \"exit=$?\"; python3 -c \"import numpy; print('numpy', numpy.__version__)\"; echo \"=== CI on dev ===\"; cd /home/runner/work/polecat-platform/polecat-platform && gh api \"repos/kevinrhaas/chicago/actions/workflows/chicago-4d-check.yml/runs?branch=dev&per_page=3\" --jq '.workflow_runs[] | \"\\(.created_at) \\(.head_sha[0:9]) \\(.status)/\\(.conclusion)\"'",
+        "description": "Prove the red is pre-existing and environmental",
+        "timeout": 300000
+      }
+    },
+    {
+      "event": 731,
+      "utc": "2026-11-04T07:04:37.359Z",
+      "name": "Bash",
+      "input": {
+        "command": "cd /home/runner/work/polecat-platform/polecat-platform/chicago-repo && git add -A && git status --porcelain && git -c user.name=\"polecat-steward\" -c user.email=\"steward@polecat.live\" commit -q -F - <<'EOF'\nT-3041: the first fort's powder magazine gets its barrel vault\n\nReplace the first Fort Dearborn magazine's reconstructed gable with the vault\nform the owner adopted on 2026-11-03 (T-3335/T-3041), comparing the Currey 1912\nbird's-eye building by building against Whistler's measured plan.\n\nBoth pictures were read directly for this change, by their pinned hashes.\nWhistler's draught of January 25, 1808 draws the magazine -- his index no. 4 --\nin elevation with an arched front springing from its side walls. Currey's\nbird's-eye at p. 27 of The Story of Old Fort Dearborn (1912) labels the same\nbuilding 8 and draws it under a rounded vault. The record's roof_type moves from\ngable/reconstructed to barrel_vault/inferred, cited to both.\n\nTHE SHAPE IS ADOPTED; THE CURVE'S DEPTH IS NOT MATCHED. Neither picture gives a\nradius, a rise, a thickness, a colour, a roofing fabric or a completion date, and\nnone was invented to supply one. The explicit reconstructed barrel_rise_m of\n1.0286254881847008 m is envelope conservation: half the shorter unchanged 3.05 m\nplan span times tan(34 deg), which holds the crown at 3.628625488184701 m, exactly\nwhere the old gable's peak stood. That makes a shallow circular segment of radius\n2.9860699863584146 m, where Whistler draws something near a semicircle; the gap\nis stated, not closed. The obsolete roof_pitch_deg leaves the record, because a\ncurved roof has a varying tangent and one pitch figure would state something the\nmesh does not contain. The old 34 degrees survives only inside the derivation.\n\nThe one edge that moves is the side eave: the same circle run out to the existing\n0.30 m projection sits at 2.188061556 m rather than the gable's 2.397647445 m,\n0.209586 m lower. Footprint, surveyed seat, bearing, phase dates, 4.51 m front,\n3.05 m depth, 2.6 m wall, brick material, openings, covering and colour are all\nunchanged, and nothing here is carried to the second fort's magazine.\n\nThe archetype grew an opt-in barrel_vault branch with a closed covering --\nunderside, front and rear fascia, two outer side eaves, no internal ribs and one\ncontinuous height tone -- and brick end infills wound outward above the unchanged\nrectangular walls. The parameter check REFUSES an invalid rise, a non-finite\nderived radius, and a vault asked for with a chimney, gallery, cupola, lantern,\nloopholes, a second storey or on any kind but a magazine, rather than clamping.\n\nNATIVE REBUILD. The producer reaches 25 fort_structure defaults and 0 variants.\nAll 25 were genuinely rebuilt before this commit on pinned, sha256-verified\nBlender 4.5.3 under Ubuntu 26.04, and the web derivatives re-encoded from that\nbuild. Exactly one master moved a byte -- this magazine's -- and the other 24 came\nback byte-identical, the second fort's magazine and the cupola blockhouse among\nthem. Every fort asset's inputs_sha256 changes, because the archetype's source is\npart of a mesh's inputs; those are real freshness hashes from a real build. All\n243 outbuilding masters, their derivatives and registry rows, and the T-3041\nnorth-east pyramid, are untouched.\n\nThe before/after is a real same-camera render through the existing fourteen-member\nCurrey group camera from the committed GLBs; a pixel comparison of the two renders\nchanges only this building, and the previous render is kept beside the new one.\nThe magazine difference is marked fixed on the match record. The verdict stays\ndiffers: the blockhouse cupolas and the western gateway are still open, and the\nfull first-fort acceptance is untouched. T-3041 and parent T-2387 stay open.\n\nCo-Authored-By: Claude Opus 5 <noreply@anthropic.com>\nEOF\ngit log --oneline -1 && git push -q -u origin steward/t3041-magazine-barrel-vault-native-20261104 2>&1 | tail -3 && echo PUSHED",
+        "description": "Commit and push the unit",
+        "timeout": 595000
+      }
+    },
+    {
+      "event": 738,
+      "utc": "2026-11-04T07:04:44.636Z",
+      "name": "Bash",
+      "input": {
+        "command": "cd /home/runner/work/polecat-platform/polecat-platform/chicago-repo/chicago/4d && node tools/smoke_budget.mjs --for-diff 2>&1 | tail -40",
+        "description": "Smoke budget for this diff",
+        "timeout": 300000
+      }
+    },
+    {
+      "event": 740,
+      "utc": "2026-11-04T07:04:47.251Z",
+      "name": "Bash",
+      "input": {
+        "command": "node tools/smoke_budget.mjs --for-diff 2>&1 | head -40",
+        "description": "Head of smoke budget output",
+        "timeout": 300000
+      }
+    },
+    {
+      "event": 754,
+      "utc": "2026-11-04T07:05:41.703Z",
+      "name": "Bash",
+      "input": {
+        "command": "cd /home/runner/work/polecat-platform/polecat-platform && cat > /tmp/pr-body.md <<'EOF'\n## What\n\nThe first Fort Dearborn's powder magazine (`first_fort_dearborn_magazine`) gets the\n**barrel vault** the owner adopted on 2026-11-03 (T-3335/T-3041), replacing its\nreconstructed gable. One visible correction; nothing else in the fort moves.\n\n## Why, and what the pictures actually say\n\nBoth pinned images were fetched and **read directly** for this change, not taken on trust\nfrom the handoff prose:\n\n| source | sha256 | what it shows |\n|---|---|---|\n| Whistler's measured draught, 25 Jan 1808 (`whistler_1808_fort_dearborn_draught`, his index no. 4) | `4568caac\u202672bfb1` | the magazine in elevation with an **arched front** springing from its side walls, a doorway under it and a small square vent in the tympanum |\n| Currey, *The Story of Old Fort Dearborn* (1912), p. 27 (`currey_1912_first_fort_birdseye`, its no. 8) | `2f2b1e60\u202660a1f` | the same building under a **rounded vault**, at the west end of the north side |\n\n`roof_type` moves from `gable`/`reconstructed` to `barrel_vault`/`inferred`, cited to both.\n\n**The shape is adopted; the curve's depth is NOT matched, and the record says so.** Neither\npicture supplies a radius, a rise, a thickness, a colour, a roofing fabric or a completion\ndate, and none was invented to supply one:\n\n* `barrel_rise_m` = **1.0286254881847008 m**, `reconstructed`. This is *envelope\n  conservation*, not a measurement: half the shorter unchanged 3.05 m plan span times\n  tan(34\u00b0), which holds the crown at **3.628625488184701 m** \u2014 exactly where the old\n  reconstructed gable's peak stood.\n* That makes a **shallow** circular segment, radius **2.9860699863584146 m**. Whistler draws\n  something much closer to a semicircle. We did not follow him there, because matching his\n  arch would raise the crown ~1.2 m above a height nothing attests. **That gap is stated as\n  an open limit, not closed.**\n* The obsolete `roof_pitch_deg` **leaves the record**: a curved roof has a varying tangent,\n  so a single pitch figure would state something the mesh does not contain. The old 34\u00b0\n  survives only inside the derivation note.\n* The one edge that moves is the **side eave**: the same circle run out to the existing\n  0.30 m projection sits at 2.188061556 m instead of the gable's 2.397647445 m, **0.209586 m\n  lower**. Footprint and overall base-to-crown envelope are unchanged.\n\nUnchanged: surveyed seat, bearing, phase dates, 4.51 m front, 3.05 m depth, 2.6 m wall,\nbrick material, openings, covering, material and colour, every other building, and the\nhistorical camera. **Nothing is carried to the second fort's magazine**, which keeps its gable.\n\n## How\n\nAn **opt-in `barrel_vault` branch** in the `fort_structure` archetype: a closed covering\n(underside, front and rear fascia, the two outer side eaves \u2014 no internal ribs), one\ncontinuous height tone rather than per-strip paint, and brick end infills wound outward\n(front +Y, rear \u2212Y) above the unchanged rectangular walls. The 32 arc facets are a mesh\nresolution, not a historical count.\n\nThe parameter check **refuses rather than clamps**. Probed directly, every one of these is\nrejected: a rise that is `None`, zero, negative, NaN, inf, subnormal `1e-320`, a bool, or at\nor above half the width; a vault with a chimney, gallery, cupola, lantern, loopholes or a\nsecond storey; a vault on any kind but `magazine`; and `barrel_rise_m` set on a gable.\n\n## Native rebuild \u2014 done BEFORE the first source commit\n\nThe producer change reaches **25 `fort_structure` defaults and 0 variants** (roster derived\nfrom the records, and it matches the manifest exactly). All 25 were genuinely rebuilt on\n**pinned, sha256-verified Blender 4.5.3** (`975c58fc\u202672d845`) under **Ubuntu 26.04.1 LTS**,\nand the web derivatives re-encoded from that build.\n\n* **Exactly ONE master moved a byte** \u2014 this magazine's. The other **24 came back\n  byte-identical**, including the second fort's magazine (`fort_dearborn_magazine__brick_1816.glb`)\n  and the cupola blockhouse (`fort_dearborn_blockhouse__log_1816.glb`).\n* Re-deriving all 25 web outputs changed exactly **one** web file, so the 24 unchanged\n  masters keep their genuinely bound derivatives.\n* Every fort asset's `inputs_sha256` changes, because the archetype's own source is part of\n  a mesh's inputs. Those are **real freshness hashes from a real build**, never hand-written.\n* **All 243 outbuilding masters, their web derivatives and registry rows are untouched**, as\n  is the T-3041 north-east pyramid. No outbuilding, common, emit or pin edit; no unrelated\n  rebake. No foreign registry row moved.\n\n## Before/after, and the match record\n\nA real **same-camera** comparison through the existing fourteen-member Currey group camera\n(`first_fort_dearborn_pickets_outer`, scene 1812), rendered from the committed GLBs \u2014 the old\nmesh restored for the \"before\" leg and the new one for the \"after\". A pixel comparison of the\ntwo renders changes **only this building** (a single region, x 1512\u20131591, y 111\u2013174); the\nstraight ridge and two flat planes are gone and the roof reads as a continuous curve. The\nprevious render is kept beside the new one as\n`currey_1912_birdseye-side-by-side-before-magazine-vault-20261104.jpg`.\n\nOn `currey_1912_birdseye.match.json` the **magazine difference alone** moves to `fixed`.\n**Verdict stays `differs`.** Still `open`: the blockhouse cupolas and the western gateway.\nOwner-ruling rows are retained untouched.\n\n## Verification\n\n* `tools/check.sh --part 1/4`, `2/4`, `3/4` \u2014 **PASS**, 292 steps each, none red.\n* `tools/check.sh --part 4/4` \u2014 one red, **pre-existing and environmental, not from this\n  diff**: `Selected upper-lid source preserves 925/eyeUV/hoof ownership \u2026 (T-3088)` dies in\n  `tools/transport/horse_socket_interface_v1/socket_controls.py` with\n  `ValueError: Both input arrays must be (arrays of) 3-dimensional vectors` \u2014 NumPy 2 removed\n  2-D `np.cross`, and this runner has numpy 2.5.4. **No input that step reads is in this\n  diff**, it fails identically on the unmodified files, and this repo's own\n  `chicago-4d-check.yml` is green on `dev`. Reporting it rather than reading it as a pass.\n* Staleness is clean (`1034 asset(s) match their inputs, 0 stale`), so the bake and the\n  record agree.\n* `tools/changelog-entries.mjs --check` \u2014 OK.\n* Smoke by parts and both viewports: see the comment below.\n\n## Bookkeeping\n\n`docs/LIBERTIES.md` gains `L-first-fort-magazine-barrel-vault-3041`, which admits the rise,\nthe radius, the shallow-vs-semicircle gap, the projection, the covering edge and the facet\ncount. L370's two now-dangling claims on this record (`form.roof_pitch_deg`, `form.roof_type`)\nare dropped from its `Covers:` list and the reason is written into the new entry's\n**Supersedes:** note \u2014 the same move `L-first-fort-ne-house-pyramid-3041` made in PR #1685.\n`docs/STATUS.md` gains a T-3041 section stating the limits. `docs/ROADMAP.md` is the frozen\nreasoning archive and is deliberately not touched.\n\n## What this is NOT\n\n**T-3041 and parent T-2387 stay OPEN and PARTIAL.** This is one difference of thirteen on one\npicture. The full first-fort acceptance \u2014 21 named records, nine context records, every listed\npicture \u2014 is untouched. No whole-fort match is claimed, no photo follow-up ticket is filed, no\nsplit, no `done --anyway`. The ticket is released OPEN with its remaining differences.\n\n### A note on the claim\n\n`ticket.mjs claim T-3041` first refused, naming `steward/t3041-parade-presence-20261104` as a\nrival branch. That branch is a **landed leftover**: its PR #1696 merged into `dev` at\n2026-11-04T05:13:53Z and its remote head still equals that PR's head exactly, with no claim on\nthe ticket (`claimed_by`, `claimed_run`, `claimed_at`, `pr` all null) and no open PR carrying\nT-3041. That is the documented stale-branch case the tool's own message points at, so the\nclaim was taken with `--force` after checking \u2014 not past a live owner.\n\n\ud83e\udd16 Generated with [Claude Code](https://claude.com/claude-code)\nEOF\nbash \"$GHREST\" pr-create kevinrhaas/chicago steward/t3041-magazine-barrel-vault-native-20261104 dev \"T-3041: the first fort's powder magazine gets its barrel vault\" /tmp/pr-body.md 2>&1 | tail -5",
+        "description": "Open the PR into dev",
+        "timeout": 300000
+      }
+    },
+    {
+      "event": 762,
+      "utc": "2026-11-04T07:05:51.534Z",
+      "name": "Bash",
+      "input": {
+        "command": "cd /home/runner/work/polecat-platform/polecat-platform/chicago-repo/chicago/4d && node tools/smoke_budget.mjs 2>&1 | grep -nE \"^ *(part|[0-9]+)\" | head -25",
+        "description": "List smoke stages",
+        "timeout": 300000
+      }
+    },
+    {
+      "event": 770,
+      "utc": "2026-11-04T07:05:59.503Z",
+      "name": "Bash",
+      "input": {
+        "command": "SMOKE_VIEWPORT=mobile SMOKE_STAGE=3 node tools/smoke_renderer.mjs --published > /tmp/bakelogs/smoke-mobile-3.log 2>&1; echo \"MOBILE3 exit=$?\"; tail -12 /tmp/bakelogs/smoke-mobile-3.log",
+        "description": "Smoke mobile 390x780 stage 3",
+        "timeout": 595000
+      }
+    },
+    {
+      "event": 780,
+      "utc": "2026-11-04T07:09:09.704Z",
+      "name": "Bash",
+      "input": {
+        "command": "SMOKE_VIEWPORT=desktop SMOKE_STAGE=3 node tools/smoke_renderer.mjs --published > /tmp/bakelogs/smoke-desktop-3.log 2>&1; echo \"DESKTOP3 exit=$?\"; tail -8 /tmp/bakelogs/smoke-desktop-3.log; node tools/dev-smoke-state.mjs record /tmp/bakelogs/smoke-mobile-3.log 2>&1 | tail -2; node tools/dev-smoke-state.mjs record /tmp/bakelogs/smoke-desktop-3.log 2>&1 | tail -2",
+        "description": "Smoke desktop 1280x800 stage 3 and file readings",
+        "timeout": 595000
+      }
+    },
+    {
+      "event": 801,
+      "utc": "2026-11-04T07:16:26.239Z",
+      "name": "Bash",
+      "input": {
+        "command": "cd /home/runner/work/polecat-platform/polecat-platform && bash \"$GHREST\" 2>&1 | grep -iE \"comment|automerge|resume|branch-delete\" | head",
+        "description": "gh-rest usage"
+      }
+    },
+    {
+      "event": 803,
+      "utc": "2026-11-04T07:16:41.325Z",
+      "name": "Bash",
+      "input": {
+        "command": "python3 -c \"\nimport json,urllib.request,os,subprocess\nbody='''### Foreground verification on this head\n\n**Gate** (\\`tools/check.sh\\`, four parts, each a bounded foreground call on this exact tree):\n\n| part | result |\n|---|---|\n| 1/4 | **PASS** \u2014 292 steps, none red |\n| 2/4 | **PASS** \u2014 292 steps, none red |\n| 3/4 | **PASS** \u2014 292 steps, none red |\n| 4/4 | 291 pass, **1 red \u2014 pre-existing and environmental, not from this diff** |\n\nThat red is \\`Selected upper-lid source preserves 925/eyeUV/hoof ownership and qualifies the\nfixed socket interface (T-3088)\\`. It dies in\n\\`tools/transport/horse_socket_interface_v1/socket_controls.py:17\\` with\n\\`ValueError: Both input arrays must be (arrays of) 3-dimensional vectors, but they are 2 and\n2 dimensional instead\\` \u2014 NumPy 2 removed 2-D \\`np.cross\\`, and this runner carries numpy\n2.5.4. Nothing that step reads is in this diff, it fails identically on the unmodified files,\nand this repo'\\''s own \\`chicago-4d-check.yml\\` is green on \\`dev\\`. Reported rather than read as\na pass.\n\n**Smoke** \u2014 the parts \\`smoke_budget.mjs --for-diff\\` names for the record/card/liberties\nchange, at **both viewports**, each a bounded foreground call redirected to a file:\n\n| leg | result |\n|---|---|\n| \\`SMOKE_VIEWPORT=mobile SMOKE_STAGE=3\\` (390x780) | **SMOKE PASS** \u2014 107 passed, 0 failed, **zero page errors**, 3 m 05 s |\n| \\`SMOKE_VIEWPORT=desktop SMOKE_STAGE=3\\` (1280x800) | **SMOKE PASS** \u2014 107 passed, 0 failed, **zero page errors**, 7 m 12 s |\n\nBoth filed with \\`dev-smoke-state.mjs record\\` on \\`sha256:80af7948313c92ac\\`.\n\\`--for-diff\\` names parts 1-15 because a structure record and the manifests moved; stage 3 is\nthe one that draws this building'\\''s card, its sources and its liberties, which is what this\nchange alters. Four legs is the per-run ceiling and the whole 15-part gate at both viewports\nis CI'\\''s job, not a steward run'\\''s.\n\n**Native build**: pinned Blender 4.5.3, sha256 \\`975c58fc\u202672d845\\` verified against\n\\`generators/blender.pin\\`, on Ubuntu 26.04.1 LTS. 25 of 25 \\`fort_structure\\` masters rebuilt\nbefore the first source commit; 1 moved, 24 byte-identical; staleness clean\n(\\`1034 asset(s) match their inputs, 0 stale\\`).\n'''\nd=json.dumps({'body':body}).encode()\ntok=subprocess.check_output(['gh','auth','token']).decode().strip()\nr=urllib.request.Request('https://api.github.com/repos/kevinrhaas/chicago/issues/1698/comments',data=d,headers={'Authorization':'Bearer '+tok,'Accept':'application/vnd.github+json'})\nprint(urllib.request.urlopen(r).status)\n\"",
+        "description": "Post verification comment on PR",
+        "timeout": 300000
+      }
+    },
+    {
+      "event": 805,
+      "utc": "2026-11-04T07:16:46.095Z",
+      "name": "Bash",
+      "input": {
+        "command": "bash \"$GHREST\" pr-automerge kevinrhaas/chicago 1698 squash \"T-3041: the first fort's powder magazine gets its barrel vault (#1698)\" 2>&1 | tail -20; echo \"AUTOMERGE_EXIT=$?\"",
+        "description": "Merge PR 1698 on a green gate",
+        "timeout": 595000
+      }
+    },
+    {
+      "event": 812,
+      "utc": "2026-11-04T07:16:55.484Z",
+      "name": "Bash",
+      "input": {
+        "command": "cd /home/runner/work/polecat-platform/polecat-platform/chicago-repo && git fetch -q origin dev && git log --oneline HEAD..origin/dev | head -10 && echo \"=== merging dev ===\" && git -c user.name=\"polecat-steward\" -c user.email=\"steward@polecat.live\" merge origin/dev -m \"Merge dev into T-3041 magazine vault\" 2>&1 | tail -15",
+        "description": "Merge current dev into the branch",
+        "timeout": 595000
+      }
+    },
+    {
+      "event": 819,
+      "utc": "2026-11-04T07:17:02.301Z",
+      "name": "Bash",
+      "input": {
+        "command": "git checkout -- chicago/4d/tools/dev-smoke-state.json && git -c user.name=\"polecat-steward\" -c user.email=\"steward@polecat.live\" merge origin/dev -m \"Merge dev into T-3041 magazine vault\" 2>&1 | tail -15",
+        "description": "Retry merging dev",
+        "timeout": 595000
+      }
+    },
+    {
+      "event": 831,
+      "utc": "2026-11-04T07:17:17.266Z",
+      "name": "Bash",
+      "input": {
+        "command": "cd /home/runner/work/polecat-platform/polecat-platform/chicago-repo/chicago/4d && git checkout --theirs data/liberties.json data/sidecars/1835/sources/index.json docs/measurements/source_use_coverage.md 2>/dev/null; python3 tools/compile_liberties.py 2>&1 | tail -1; python3 tools/compile_source_use.py 2>&1 | tail -1; python3 tools/compile_scene.py --all > /tmp/bakelogs/08-sidecars2.log 2>&1; echo \"sidecars exit=$?\"; cd /home/runner/work/polecat-platform/polecat-platform/chicago-repo && git add -A && git status --porcelain | head -20 && git diff --cached --stat | tail -3",
+        "description": "Resolve conflicts by recompiling derived files",
+        "timeout": 595000
+      }
+    },
+    {
+      "event": 836,
+      "utc": "2026-11-04T07:18:10.013Z",
+      "name": "Bash",
+      "input": {
+        "command": "git -c user.name=\"polecat-steward\" -c user.email=\"steward@polecat.live\" commit -q -m \"Merge dev into T-3041 magazine vault; recompile liberties, source use and sidecars\n\nCo-Authored-By: Claude Opus 5 <noreply@anthropic.com>\" && git log --oneline -1 && git push -q origin steward/t3041-magazine-barrel-vault-native-20261104 && echo PUSHED && git diff origin/dev --stat -- chicago/4d/generators chicago/4d/data/structures | tail -5",
+        "description": "Commit merge and push",
+        "timeout": 595000
+      }
+    },
+    {
+      "event": 847,
+      "utc": "2026-11-04T07:18:22.998Z",
+      "name": "Bash",
+      "input": {
+        "command": "cd /home/runner/work/polecat-platform/polecat-platform/chicago-repo/chicago/4d && ./tools/check.sh --part 1/4 > /tmp/bakelogs/gate4-1.log 2>&1; echo \"PART1 exit=$?\"; tail -5 /tmp/bakelogs/gate4-1.log; grep -nE \"^  FAIL\" /tmp/bakelogs/gate4-1.log | head -5",
+        "description": "Re-gate part 1 on the merged head",
+        "timeout": 595000
+      }
+    },
+    {
+      "event": 866,
+      "utc": "2026-11-04T07:26:17.536Z",
+      "name": "Bash",
+      "input": {
+        "command": "cd /home/runner/work/polecat-platform/polecat-platform && bash \"$GHREST\" pr-automerge kevinrhaas/chicago 1698 squash \"T-3041: the first fort's powder magazine gets its barrel vault (#1698)\" > /tmp/automerge.log 2>&1; echo \"AUTOMERGE_EXIT=$?\"; tail -15 /tmp/automerge.log",
+        "description": "Merge PR 1698 on the hosted gate",
+        "timeout": 595000
+      }
+    },
+    {
+      "event": 873,
+      "utc": "2026-11-04T07:26:57.340Z",
+      "name": "Bash",
+      "input": {
+        "command": "bash \"$GHREST\" branch-delete kevinrhaas/chicago steward/t3041-magazine-barrel-vault-native-20261104 2>&1 | tail -2; cd chicago-repo/chicago/4d && node tools/ticket.mjs release T-3041 --why \"Partial increment MERGED to dev as a92e7c3d0 (PR https://github.com/kevinrhaas/chicago/pull/1698): the first fort's powder magazine now carries the barrel vault the owner adopted from Whistler's 1808 arched front and Currey's 1912 bird's-eye on 2026-11-03 (T-3335), built by an opt-in barrel_vault branch of the fort_structure archetype. All 25 affected fort_structure masters were genuinely rebuilt before the first source commit on pinned sha256-verified Blender 4.5.3 under Ubuntu 26.04; exactly one moved a byte, 24 came back byte-identical (the second fort's magazine and the cupola blockhouse among them), and all 243 outbuilding masters, their derivatives, registries and the T-3041 NE pyramid are untouched. THE SHAPE ALONE IS ADOPTED: the rise 1.0286254881847008 m is envelope conservation holding the old gable crown at 3.628625488184701 m, making a shallow segment where Whistler draws near a semicircle, and that gap is stated, not closed. That is the second of thirteen differences on data/reference_views/first_fort_dearborn_pickets_outer/currey_1912_birdseye.match.json marked fixed; verdict stays differs. STILL OPEN there: the blockhouse cupolas and the western gateway, plus the whole original acceptance (21 named records, 9 context records, every listed picture). Parent T-2387 stays split and unfinished; no image-match completion, photo follow-up or split is claimed. Verification: check.sh parts 1-3 green, part 4 one pre-existing environmental red (NumPy 2 removed 2-D np.cross in tools/transport/horse_socket_interface_v1/socket_controls.py, nothing that step reads is in the diff), smoke stage 3 PASS at both 390x780 and 1280x800 with zero page errors, and the hosted 8-part dev gate green on the exact merged head. Recovery: PR 1698, docs/STATUS.md T-3041 (2026-11-04), docs/LIBERTIES.md L-first-fort-magazine-barrel-vault-3041.\" 2>&1 | tail -5",
+        "description": "Delete branch and release T-3041 open",
+        "timeout": 595000
+      }
+    },
+    {
+      "event": 878,
+      "utc": "2026-11-04T07:27:07.169Z",
+      "name": "Bash",
+      "input": {
+        "command": "cd /home/runner/work/polecat-platform/polecat-platform && gh api repos/kevinrhaas/chicago/pulls/1698 --jq '\"PR 1698: state=\\(.state) merged=\\(.merged) base=\\(.base.ref) merge_sha=\\(.merge_commit_sha)\"'; cd chicago-repo/chicago/4d && node tools/ticket.mjs inflight 2>&1 | grep -A2 \"T-3041\" | head -6",
+        "description": "Confirm merge and ticket state",
+        "timeout": 300000
+      }
+    }
+  ]
+}
