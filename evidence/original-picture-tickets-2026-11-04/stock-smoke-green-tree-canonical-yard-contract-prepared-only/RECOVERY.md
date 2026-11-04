@@ -1,0 +1,13 @@
+# Stock smoke yard-contract repair prepared only
+
+Root requested a finite read-only diagnosis of actual stock418165 stage2 GreenTree yard and mobile stage9 shadow failures. No application source/Git/ticket/publication/GPU write was performed. SOURCE-BASELINE-AND-OWNER-REGRESSION.json binds the actual current source and MASTER/WEB bytes before/after exactly and records source HEAD.
+
+The canonical Andreas enclosed shoulder intentionally replaces the mutually-exclusive Trowbridge open bay. The actual generator discloses and omits the duplicate shed/coveredwagon. Existing stock smoke wrongly still requires those absent objects. Proposed UNAPPLIED yard contract patch uses exact closed=true plus positive actual native wall feet on two exposed edges, no duplicate shed/coveredwagon/ownedvertices and the exact refusal. Missing/wrong canonical choice remains on the original open-bay branch and fails the currently absent shed; original open-bay positive geometry/tilt/clearance/4.6m and adversarial owner checks remain intact. Closed-branch adversarial controls reject phantom shed and coveredwagon owners. This is a domain-contract repair proposal, not a 0-or-1 allowance or threshold waiver.
+
+Actual MASTER f213818f...270816B was decoded read-only and the exact existing building-feet.js sampled-edge algorithm replayed on all10primitives. The proposed wall probes found2exposedouterfeet and3endfeet, excluding connector/commoncorners. This is a native MASTER precheck only. Actual publishedWEB/browser feet, stage2 smoke, fullsourcegate, reviewer acceptance and merge are UNRUN/PENDING.
+
+A focused extension of the existing owner calls the real yard generator for both choices: closed=>no shed/no wagon/exactone refusal, open=>one shed/one correctly bound wagon/no refusal. Existing occupied-annex positive geometry fixture and proposed yard regression executed PASS2; rawlogs+properreaper retained. Node syntax PASS only, not runtime acceptance.
+
+Shadow diagnostic proposal is REJECTED/UNAPPROVED: modifying bias along with harness-only reach changes a second cause and could manufacture a delta. Actual mobileworst3<4 remains honestly RED; desktopworst5 passed, bothrestore0. No shadow threshold/camera/bias change is authorized by this packet. The local exploratory shadowpatch must NOT be applied from this recovery note.
+
+Reconstruct the proposed source from exact baseline+the two UNAPPLIED patches; preserve raw source bytes. Root/source owner must review and apply only after Wsourcelease is available. Full proof of actual published outcomes remains required. No photo follow-up ticket was opened.

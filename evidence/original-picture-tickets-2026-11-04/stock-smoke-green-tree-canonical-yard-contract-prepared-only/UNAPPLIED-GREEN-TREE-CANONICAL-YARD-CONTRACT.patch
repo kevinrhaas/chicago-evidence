@@ -1,0 +1,140 @@
+--- a/chicago/4d/tools/smoke_renderer.mjs
++++ b/chicago/4d/tools/smoke_renderer.mjs
+@@ -4275,6 +4275,30 @@
+       const wagons = y?.wagons ?? [];
+       const benches = y?.benches ?? [];
+       const sheds = y?.sheds ?? [];
++      // The canonical Andreas enclosed shoulder and Trowbridge's open wagon
++      // bay are competing readings. Require the one actually selected, not both.
++      const greenTree = window.__chicago4d.registry.get('green_tree_tavern')?.sidecar;
++      const closedShoulder = greenTree?.attributes?.enclosed_left_annex?.value?.shoulder_enclosed === true;
++      const shoulder = greenTree?.footprint?.additional_polygons?.find((p) => p.id === 'shoulder');
++      const connector = greenTree?.footprint?.additional_polygons?.find((p) => p.id === 'connector');
++      const shoulderFeet = window.__chicago4d.buildings.feetOf('green_tree_tavern');
++      let shoulderOuterFeet = 0;
++      let shoulderEndFeet = 0;
++      if (shoulder?.polygon?.length >= 3 && connector?.polygon?.length >= 3) {
++        const u0 = Math.min(...shoulder.polygon.map((p) => p[0]));
++        const u1 = Math.max(...shoulder.polygon.map((p) => p[0]));
++        const v0 = Math.min(...shoulder.polygon.map((p) => p[1]));
++        const exposedEnd = Math.min(...connector.polygon.map((p) => p[1]));
++        // Native GLB feet are [u,-v]. Read the exposed shoulder wall, excluding
++        // its connector's shared wall and corners; an open roof has no feet here.
++        shoulderOuterFeet = shoulderFeet.filter(([x, z]) => Math.abs(x-u1) <= .05
++          && -z > v0+.25 && -z < exposedEnd-.25).length;
++        shoulderEndFeet = shoulderFeet.filter(([x, z]) => Math.abs(-z-v0) <= .05
++          && x > u0+.25 && x < u1-.25).length;
++      }
++      const shoulderRefusal = (y?.records ?? []).flatMap((r) => r.wagons_refused ?? [])
++        .filter((r) => r.structure_id === 'green_tree_tavern'
++          && r.why === "the canonical enclosed shoulder occupies the open-bay ground; the separate shed/posts and its covered wagon are not drawn twice. Trowbridge's open bay remains a conflicting retrospective reading, not a dated conversion or a measured July1835 condition.");
+       // T-1960. The privies and stables in the house yards: measured by their OWN box,
+       // like the shed, so a 6 m stable is not read against a barrel's 0.75 m bar.
+       const outbuildings = (y?.outbuildings ?? []).map((ob) => ({
+@@ -4442,8 +4466,11 @@
+       if (unknownBench) unknownBench.objectId = '__not_a_yard_record__';
+       const misassigned = clonedSpans();
+       const misassignedBench = benchTag(misassigned);
+-      if (misassignedBench && sheds[0]) Object.assign(misassignedBench,
+-        { objectKind: 'shed', objectId: sheds[0].id });
++      if (misassignedBench) {
++        if (sheds[0]) Object.assign(misassignedBench,
++          { objectKind: 'shed', objectId: sheds[0].id });
++        else misassignedBench.id = '__not_the_record_host__';
++      }
+       const outside = clonedSpans();
+       const outsideSet = outside.find((set) => set.spans.some((span) => span.objectKind === 'bench'));
+       if (outsideSet) benchTag([outsideSet]).to = outsideSet.triangles + 1;
+@@ -4453,7 +4480,7 @@
+       const ownerControls = {
+         missingRejected: !!missingBench && resolveExactOwners(missing).errors.length > 0,
+         unknownRejected: !!unknownBench && resolveExactOwners(unknown).errors.length > 0,
+-        misassignmentRejected: !!misassignedBench && !!sheds[0] && resolveExactOwners(misassigned).errors.length > 0,
++        misassignmentRejected: !!misassignedBench && resolveExactOwners(misassigned).errors.length > 0,
+         outsideRejected: !!outsideSet && resolveExactOwners(outside).errors.length > 0,
+         overlapRejected: !!overlapSet && resolveExactOwners(overlap).errors.length > 0,
+       };
+@@ -4620,12 +4647,31 @@
+       });
+       if (tonguePoint) tonguePoint.e = tonguePoint.record.at_local_enu_m[0] + 10;
+       const displacedWagonBounds = measureOwnedWagon(displacedWagon);
+-      ownerControls.wagonCleanAccepted = acceptsOwnedWagon(ownedWagonBounds);
+-      ownerControls.wagonDisplacementRejected = !!tonguePoint
+-        && displacedWagonBounds.outsideBay > 0 && !acceptsOwnedWagon(displacedWagonBounds);
++      if (closedShoulder) {
++        // These owners must be rejected, not silently exempted when their
++        // corresponding objects are absent from the canonical scene.
++        const absentOwnerRejected = (kind, id) => {
++          const changed = clonedSpans();
++          const bench = benchTag(changed);
++          if (bench) Object.assign(bench, { objectKind: kind, objectId: id });
++          return !!bench && resolveExactOwners(changed).errors.length > 0;
++        };
++        ownerControls.absentShedRejected = absentOwnerRejected('shed', 'green_tree_tavern_wagon_shed');
++        ownerControls.absentCoveredWagonRejected = absentOwnerRejected('wagon', 'green_tree_tavern_shed_wagon');
++      } else {
++        ownerControls.wagonCleanAccepted = acceptsOwnedWagon(ownedWagonBounds);
++        ownerControls.wagonDisplacementRejected = !!tonguePoint
++          && displacedWagonBounds.outsideBay > 0 && !acceptsOwnedWagon(displacedWagonBounds);
++      }
+       const verts = geos.reduce(
+         (t, geo) => t + (geo.getAttribute('position')?.count ?? 0), 0);
+       return {
++        closedShoulder,
++        shoulderOuterFeet,
++        shoulderEndFeet,
++        shoulderRefusals: shoulderRefusal.length,
++        underShedWagons: wagons.filter((w) => w.under_shed).length,
++        ownedWagonPoints: ownedWagonPoints.length,
+         census: y?.census ?? null,
+         meshes: meshes.length,
+         mergedNames: merged.map((m) => m.name),
+@@ -4776,7 +4822,7 @@
+     check(`${label}: the yard layer stands the record's goods`,
+       goods.census?.frontages >= 20 && goods.items >= 120 && goods.verts > 0
+         && goods.census?.wagons >= 60 && goods.census?.benches === 1
+-        && goods.census?.sheds === 1,
++        && goods.census?.sheds === (goods.closedShoulder ? 0 : 1),
+       `${goods.items} object(s) on ${goods.census?.frontages} frontage(s) from `
+       + `${goods.census?.records} record(s), ${goods.census?.wagons} wagon(s), `
+       + `${goods.census?.benches} bench(es), ${goods.census?.sheds} shed(s), `
+@@ -4873,9 +4919,20 @@
+       `${goods.exactOwnerCount}/${goods.expectedOwnerCount} emitted owners; ${goods.exactOwnerErrors.join('; ')}`);
+     check(`${label}: exact owners reject missing, unknown, misassigned, overlapping and out-of-buffer ranges and displaced bench/wagon vertices`,
+       Object.values(goods.ownerControls).every(Boolean), JSON.stringify(goods.ownerControls));
+-    check(`${label}: every owned covered-wagon vertex stays within its original 4.6 m bound`,
+-      goods.ownedWagonAccepted,
+-      `actual ${JSON.stringify(goods.ownedWagonBounds)}; displaced outside-bay control ${JSON.stringify(goods.displacedWagonBounds)}`);
++    if (goods.closedShoulder) {
++      check(`${label}: the selected enclosed shoulder reaches the native GLB ground without a duplicate open shed or covered wagon`,
++        goods.shoulderOuterFeet >= 2 && goods.shoulderEndFeet >= 2
++          && goods.sheds === 0 && goods.underShedWagons === 0
++          && goods.ownedWagonPoints === 0 && goods.shedVerts === 0
++          && goods.shoulderRefusals === 1,
++        `${goods.shoulderOuterFeet} exposed outer-wall feet, ${goods.shoulderEndFeet} end-wall feet; `
++          + `${goods.sheds} sheds, ${goods.underShedWagons} under-shed wagons, `
++          + `${goods.ownedWagonPoints} covered-wagon points, ${goods.shoulderRefusals} explicit refusals`);
++    } else {
++      check(`${label}: every owned covered-wagon vertex stays within its original 4.6 m bound`,
++        goods.ownedWagonAccepted,
++        `actual ${JSON.stringify(goods.ownedWagonBounds)}; displaced outside-bay control ${JSON.stringify(goods.displacedWagonBounds)}`);
++    }
+     check(`${label}: the bench stands against the Green Tree's front wall`,
+       goods.benchVerts > 0 && goods.benchStray > 0 && goods.benchStray <= 1.0
+         && goods.benchInside >= -0.20,
+@@ -4886,6 +4943,7 @@
+     // The record claims a bay, two plate heights and a fall between them; a shed
+     // whose head is not above its eave is not a lean-to, and one whose eave does
+     // not clear the tilt is a shed the covered wagon cannot stand in.
++    if (!goods.closedShoulder) {
+     const tiltTop = 0.95 + 0.55 + 1.10;   // bed + body + the tilt's rise
+     check(`${label}: the Green Tree's wagon shed is a lean-to that clears its tilt`,
+       goods.sheds === 1 && goods.shed?.confidence === 'reconstructed'
+@@ -4910,6 +4968,7 @@
+       `${goods.shedVerts} vertices in the bay, ${goods.shedIn?.toFixed(3)} m behind `
+       + `the wall, ${goods.shedOut?.toFixed(3)} m out from it, `
+       + `${goods.shedSpan?.toFixed(2)} m tall against a ${goods.shed?.head_m} m head`);
++    } // the alternate open-bay reading retains every original positive check
+     // ---- T-0057: the other half of Ordinance 9 ---------------------------- //
+     //
+     // The ordinance names timber, stone, brick, boxes and barrels; T-0040 drew
