@@ -1,0 +1,6 @@
+<!-- steward-record: {"v":1,"run_id":"41740271907","run_url":"https://github.com/kevinrhaas/polecat-platform/actions/runs/41740271907","app":"chicago","slice":1,"slices":1,"status":"success","outcome":"resume","tickets_claimed":["T-2388"],"tickets_done":[],"tickets_split":[],"tickets_blocked":[],"tickets_filed":[],"branch":"steward/t2388-blockhouse-cupola-native-20261103","pr":1682,"pr_repo":"kevinrhaas/chicago","pr_url":"https://github.com/kevinrhaas/chicago/pull/1682","merge_sha":null,"held":false,"resumed":true,"branch_deleted":null,"tool_calls":188,"tool_errors":2,"turns":189,"cost_usd":24.35,"minutes":109.7,"result_subtype":"success","resumes":0,"api_5xx":false,"salvaged_branches":[]} -->
+**🟣 resume** · chicago
+
+| ticket | branch | PR | tool calls | turns | min | cost |
+|---|---|---|---|---|---|---|
+| T-2388 | `steward/t2388-blockhouse-cupola-native-20261103` | [kevinrhaas/chicago#1682](https://github.com/kevinrhaas/chicago/pull/1682) | 188 | 189 | 109.7 | $24.35 |
