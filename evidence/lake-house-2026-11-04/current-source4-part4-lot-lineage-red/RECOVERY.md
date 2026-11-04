@@ -1,0 +1,7 @@
+# Lake House source gate: real bounded lineage drift
+
+On exact staged tree41a26494/basea3a87caf, sourceparts1/2/3 passed350.6/287.7/366.9s with unchangedsource/properreapers. Part4 failed1of290 after309.0s: the native lot-building-material generator's documentary `function_sources` snapshot needs the newly joined existingFergus sourceID. All geometry/counts/positions/materials/confidence and otherJSON values remain exact; full measured diff is archived. This is NOT allfourgreen, an applicationcommit, PR or geometry failure.
+
+Both prepared auto-commit/PR and native-stage controllers correctly refused afterthe real red; no sourcecommit/push/PR/nativeStage3run occurred. Everyownedprocessreaped; no assertionwasweakened. Sourceowner is assessing the provenance qualification before regenerating. The originalfunctionnote clearly restricts Fergus's1876recollectionof1839 to laterhotelidentity/address, notJuly1835construction; the contemporaryprojectnotice remains support for the existingconstruction predicate.
+
+Full native generatedrule uses value/confidence/placement to choose the site and passes the function sourcebundle through as documentarylineage. No renderer consumes function_sources; material/layerexistence remainsreconstructedwith1833ordinanceandexistingrationale. No sourcecode/schema change or newgeometry is proposedbythis diagnosis. OriginalT2379 remainsOPEN/PARTIAL. CurrentnativeStage3both+namedhostedgate remainUNRUN.
