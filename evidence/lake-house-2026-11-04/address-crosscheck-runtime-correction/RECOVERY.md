@@ -1,0 +1,13 @@
+# Lake House runtime recovery: one unqualified attempt, corrected native popup probe
+
+The app working source remains the exact9paths saved at [working-source checkpoint62163c36](https://github.com/kevinrhaas/chicago-evidence/blob/62163c36e5e3b83b4251b7fb489c73f0a224c537/evidence/lake-house-2026-11-04/address-crosscheck-working-source-0118/RECOVERY.md). No app source commit, PR or completion has been claimed.
+
+The first actual default-world browser did not become ready within its unchanged240second bound while pinned to CPU2nice19 during the first-fort's four-core source gate. It reported zero page, network, console and server errors before that timeout. During failure-screenshot cleanup, only the owned custom-command reaper was sent SIGTERM. Every child was reaped; the custom receipt records signal15 and leftover cleanup. This is **UNQUALIFIED**, not a clean pass.
+
+Before a costly retry, the helper's new Sources assertions were corrected from Inspect markup to the actual native popup markup. A separate agent independently read the actual published popup.js and sidecar: table.attrs/function/th/value, sourceList before noteToggle, [data-toggle-note]/[data-note], and ol.cites match. The existing fullFergus1876/1839/holding/sourceURL and new qualifiednote requirements remain; no app code, timeout or test requirement was weakened. Root and the source CPU owner authorized CPU0–4nice19 for one corrected attempt, with600seconds per browser leg and nice0source-gate priority retained.
+
+The retry is protected as a whole foreground controller in `/tmp/lake-house-address-increment-finish-20261104/UI-OUTER-REAPER.json`, with regular-file stdout. Read its actual eventual verdict before using it. Current snapshot is RUNNING/UNQUALIFIED. UI-PLAN freezes the actual9uncommitted source paths and5,849published members. The realbuildtag96d remains unchanged; after allfour source parts, tested runtime bytes must be bound exactly to the qualified source commit before any merge claim.
+
+Prepared stage_exact.py stages only the9explicit paths by hashing without writes, testing object existence, writing only genuinely new blobs, and update-index. It refuses until actual custom and nativeStage3both107pass. run_source4.py refuses until an explicit root CPU4 lease file exists. Do not run source checks on top of the first-fort's heavy lease. No GC/repack or shared alternate-object deletion.
+
+Remaining: exactfour source parts, all actual scoped UI/nativechecks, root direct pixel review, qualified commit, ordinary PR todev, named whole hostedgate, ordinary merge, and originalT2379releasedOPEN/partial. No geometrybuild or photographicmatch is asserted.
