@@ -1,0 +1,9 @@
+# Jail delivery complete; two new bounded native jobs
+
+Jail1683MERGED934 andactualcurrent8/aggregate87cverified; live59ec53a actualSIXJailfiles/bothrows +GTWEB/cupolaWEB+JSONexact. Rootoriginal4784 +finalrecipe/liveaddenduma4e55 preserveOPEN/free/frontmatter/foreignprefix. Actualkeeperrecipe1c68 andMASTER431dc/WEB15eb delivered; oldprepared03aa/cbc historicalonly. Runtimeactual3f sixlegs+boundedmanualreview, final62f scopedcarry; no newruntime59ec/full15claim. WholeoriginalT2380partial. Wsource/GPUleasesreleased/Gitobjectsbranchesintact.
+
+Magazine417823 nativefort25/inferredvault: exactnormalclaim06:08, soleobserver1008005 active; no publicnativecheckpointobserved06:40. Originalimmutableorderbake.sh+fourparts beforefirstcommitmayexplainprivatework; no success/failure inferred. cbfclarifiesactualnativefirstthenUNQUALIFIEDsourcecheckpointbeforelonggates, gate requirements unchanged; clarificationproof5d481fb9e0b9eae9c05652a886fbd741bd6713ed.
+
+NEW Sauganash417867 dispatchedONCE/source59ec, actualpublicGOdf5f atimmutableeee9 BEFOREPOST; actualUbuntu26job126430399712. NativeoneHotelrecipe onlyifactual23+2ownerconfirms, preservesGT22+2/cupola/magazine/Jail. InitialNboundedSaug-onlymonitor first7samplesOPEN/free/no mismatch, laterexistingcoordinatorhandoffafterproperclosure. Rawpatch33d publicd0cc/finalprepfc3d, unchangedcontroller0a1bpeer9438, no historicalPR1695exceptionneeded. No duplicatejobs/observers.
+
+Observer samplelimit~08:52 earlierthanouter09:06; reviewactualCLOSED/REAPER/PIDs beforeonesuccessorifnewSaugneedscoverage. Originaltotal10/17done remains; sevenwholepicturematchespartial. RootalonewritesCURRENT. NewJailgablematerialremainingPREPonly, no nativeauthorization.
