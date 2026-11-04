@@ -1,0 +1,15 @@
+# Transport merge-endgame evidence, 4 November 2026
+
+Public garment source 6db8a69cc76cbb6a4527138f735b10cf8364b51a has completed hosted native eight-part gate plus aggregate and all 14 core contexts successfully. Native coverage is 1165 distinct checks and 402 self-tests on the recorded exact synthetic source. The original nine-job frame/memory workflow also completed all SUCCESS; 1904 mobile measured 399.4581 MiB under the unchanged 400 MiB limit. Downloaded ZIP digests and extracted measurements are saved; ZIP bodies are not duplicated. These successes do not assert full-world smoke acceptance.
+
+Joseph walking v2's actual targeted unit suite passed. Its original-source cold negative reproduced the 1.3 m unintended movement, while the candidate's actual-class controls passed. This is targeted runtime/unit evidence, not installed walking bodies, contact, riding or photographic acceptance.
+
+Read-only renderer attribution measured 4100 driver calls with exact agreement between the instrumentation and renderer counters. The packed geometry census found 3079 exact packed inputs, 3020 classes and 47 duplicate groups; actual kept geometry counts imply 53 potential instanced calls, not measured render savings. Its copied actual coalescer removed zero calls. Full-tier overlap is unknown. No new performance code was adopted. Earlier refusal census and bounded lifecycle review remain source-specific evidence.
+
+The effective E803 mobile baseline overlay completed a genuine unchanged Light-ratio NONPASS under the original 600-second bound: 4498 Full and 4100 Light calls, exactly matching the garment source's inherited failure. It also retained the pre-existing baseline console error. Its guarded overlay, consumption table and public E803 blob identities are preserved; this is not a native E803 publication. Desktop overlay is RUNNING at cutoff unless its CLOSED receipt is expressly present in the manifest. Active PROBE, log and state files are excluded.
+
+The same-owner garment lap renewal succeeded with the new marker and native expiry recorded in its actual closed receipts. The earlier wrong-ref premutation 404 attempt is preserved as a negative; no other-owner claim or marker was taken.
+
+Eight original smoke partitions were dispatched on exact public source 6db8. At this cutoff, mobile stages 1-4 passed 324/0; mobile stages 9-12 passed 69/0; mobile stages 5-8 completed 75/1, solely the legacy Light ratio 4100/4498. The other five partitions remain unqualified. Individual partitions are not monolithic unfiltered passes, and no all-smokes-green claim is made. The separately dispatched actual native E803 baseline stage-5 workflow 41841905735, both viewports, was RUNNING at cutoff with no passing verdict captured.
+
+All saved text has exact stored and decoded hashes; prior identical payloads use immutable evidence references. No old model bodies, ZIPs or active PROBE outputs are copied. This checkpoint writer made no application, ticket, claim, workflow or CI changes. Automatic Git maintenance remains disabled; concurrent public evidence history is preserved.
