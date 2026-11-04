@@ -1,0 +1,7 @@
+# Magazine current 1812 follow-up — started, not qualified
+
+PR1698 merged a92e7c3d; original T3041 is normally claimed for the missing current1812 body/Design/Sources checks and STATUS/ROADMAP follow-up. W source remains clean62f pending currentdevff182 materialization. The normal claim refused only our retained merged1696 branch; exact same-head/merged/free-original/openPR audit and successful guarded CLI override are preserved.
+
+Current import stopped safely at its resource guard:95 missing blobs/97.8MB raw from the newly merged foreign batch. Parent confirmed the unused Cobweb generated mirror may be disposed after a current fullfile SHA/size/symlink snapshot and publication. This is an explicit CURRENT DISPOSABLE snapshot, not past-run identity. Source/Git/assets/node_modules/SDK/screens are preserved. No code/data/geometry changes, native builds or GPU runs have occurred in this follow-up.
+
+Next: delete only the authenticated disposable generated mirror, import/authenticate current missing objects, normal new docs-only feature branch with raw-prefix-preserving STATUS/ROADMAP append and source checkpoint, official publication and bounded actual1812 magazine body/Design/Sources/GPU presence/ground review bothviewports. Exact new-head whole8+aggregate and ordinaryPR/devmerge still required. Historical107 stockruns were pre619/currentrenderer integration; do not present them as current619 or follow-up executions. Original remains partial/open.
