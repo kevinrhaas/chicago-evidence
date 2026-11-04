@@ -1,0 +1,21 @@
+Done — merged and verified.
+
+```
+Ticket: T-2374 · PR: https://github.com/kevinrhaas/chicago/pull/1690 · Outcome: merged
+```
+
+**App / unit.** Owner-targeted exact resume: `OWNER_TARGET_TICKET T-2374`, `OWNER_RESUME_PR 1690` on `kevinrhaas/chicago`. No other ticket taken, no replacement PR, branch `steward/t2374-cobweb-front-apertures` retained.
+
+**Ownership, verified before any write.** PR #1690 open on `dev`, head `e9d93bf38`, label `resume`, no `hold`. T-2374 `open`, `claimed_by: null`, `pr: null`; `inflight` showed the branch with **no lap lock**; `claims` held no lap lock for 1690. The previous worker (polecat-platform run 41746386858) was `completed`/`failure` at 02:38:37Z — not live. Claimed through the ordinary protocol and announced.
+
+**What shipped.** The root-reviewed defect was real and the diagnosis exact. `_compound_aperture` passed the bare `APERTURE_BACK_M` (0.004 m) to `openings.face`, which measures from the wall *plane*, while `openings.surround` reads its `back` from the wall *skin* and ran the reveal to 0.026 m — against a 0.022 m log relief. Both grounded apertures were crossed by log courses and read as striped ladders. Repaired with `w.skin + APERTURE_BACK_M`, the convention the same file's blind doorway already follows. `test_log_compound_apertures.py` now pins the invariant by reading the builder's source; I checked it both ways — reverting the expression makes it fail. No shared helper, schema, camera, grade or verdict touched.
+
+**Native.** Pinned sha256-verified Blender 4.5.3 on Ubuntu 26.04.1, all 82 `log_dwelling` masters in four bounded foreground batches before the first source commit; **81 byte-identical**. Cobweb MASTER `4f42207b → 1ddf548d`, WEB `1699d7aa → 99997b5f`. `manifest.json` moved in exactly 82 `inputs_sha256` lines, `manifest.web.json` in one. No foreign registry row disturbed.
+
+**Verification, all foreground.** `check.sh --part k/4` → 292/292/291/291 steps, all four PASS, none red, before the first source commit. Smoke `mobile 3-4` PASS (139/0) and `desktop 3` PASS (107/0). Controlled before/after at the retained private camera `07f94fa8` on source `624d8f1f`: rendering the two earlier meshes reproduced the review's own images **byte-for-byte**, and I looked at the repaired pixels directly — both lower faces are now uninterrupted dark recesses, upper light and body unchanged. Full hosted **eight-part `gate` green** on the merged head.
+
+**One red I did not hide.** The `mobile 1-2` leg failed five Green Tree wagon-shed checks. I ran the identical leg on a pristine `origin/dev` worktree: **identical 193/5 with the same five names.** It is dev's, belongs with T-2376/#1684, and both readings are filed with `dev-smoke-state.mjs record`.
+
+**Also.** Two dev integrations (`22d624f3e`, then `a5eee9a01`) into the same branch, conflicts resolved by keeping both sides and re-deriving. The first conflict is why no gate ran on `ee8529e2c` — GitHub cannot build a merge ref for a dirty PR. numpy pinned to 2.3.5 (environment only, per T-3368) because this runner's 2.5.4 removed `np.cross` on 2-vectors; reproduced directly, no assertion bypassed.
+
+Merged to `dev` as `05f37859`, branch deleted, `resume` label cleared. T-2374 **released back to OPEN / PARTIAL / DIFFERS** — the panorama's camera is still UNSOLVED and unenrolled, and compound width, wings, sub-roofs, roof junctions, clapboarding and finish still differ. No `done --pr`, no split, no photo follow-up. Receipts in chicago-evidence: [pre-gate WIP](https://github.com/kevinrhaas/chicago-evidence/tree/main/evidence/cobweb-2026-11-04/pr1690-exact-resume-depth-repair-wip-41766) (saved before any long gate) and [qualified](https://github.com/kevinrhaas/chicago-evidence/tree/main/evidence/cobweb-2026-11-04/pr1690-exact-resume-depth-repair-qualified-41766).
