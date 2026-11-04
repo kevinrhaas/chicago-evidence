@@ -1,0 +1,153 @@
+--- a/chicago/4d/renderers/web/js/people.js
++++ b/chicago/4d/renderers/web/js/people.js
+@@ -1005,12 +1005,8 @@
+   });
+ 
+   paint();
+-  // The citation join, the identity reviews and the directory crosswalks are what
+-  // a card renders a record WITH, and together they are a couple of megabytes.
+-  // Started now, after the list has painted, so the first card a visitor opens
+-  // is not waiting on them; `loadResidentJoins` caches, so opening a card before
+-  // this settles simply awaits the same promise.
+-  setTimeout(() => { loadResidentJoins(dataBase, sceneId, problems).catch(() => {}); }, 0);
++  // A card awaits its research joins in open(), using the same cached promise.
++  // Do not prefetch the address book and crosswalks before a visitor opens a card.
+ 
+   return {
+     people: rows.length,
+--- a/chicago/4d/tools/smoke_renderer.mjs
++++ b/chicago/4d/tools/smoke_renderer.mjs
+@@ -20989,8 +20989,12 @@
+           const tab = a.hud?.tab ?? null;
+           // T-2620: no selectTab('goto') to put the drawer back: Go to's tab retired with the
+           // drawer, and asking for it opens the Jaunts app's Go to instead.
+-          return { tabs, tiles, firms, tab, mounted: ['residents', 'people', 'businesses', 'fauna', 'plants', 'exclusions', 'population', 'orderBook']
+-            .filter((k) => a[k] != null) };
++          // T-2702: the later scene's public person-card adapter is not the
++          // 1835 drawer module. Every mountPeople return (including errors) has
++          // a numeric people count; the intentional scene adapter has only open.
++          return { tabs, tiles, firms, tab, personCardRoute: typeof a.people?.open === 'function',
++            mounted: ['residents', 'people', 'businesses', 'fauna', 'plants', 'exclusions', 'population', 'orderBook']
++              .filter((k) => k === 'people' ? Number.isInteger(a.people?.people) : a[k] != null) };
+         });
+         const gone = ['city', 'fauna', 'plants', 'exclusions', 'uncertain', 'population', 'orderbook'];
+         check(`${label}: the 1904 drawer offers none of the 1835 town's sections — no People, no Firms, no 1835 Evidence topic, no 1835 firm in Go to (T-1740)`,
+@@ -21000,7 +21004,7 @@
+           && ['travel', 'evidence', 'settings', 'controls', 'whatsnew'].every((t) => drawer.tabs.includes(t))
+           && gone.every((t) => !drawer.tiles.includes(t))
+           && ['grades', 'liberties', 'ground'].every((t) => drawer.tiles.includes(t))
+-          && drawer.firms === 0 && drawer.tab !== 'people' && drawer.mounted.length === 0,
++          && drawer.firms === 0 && drawer.tab !== 'people' && drawer.mounted.length === 0 && drawer.personCardRoute,
+           JSON.stringify(drawer));
+         // >>> T-2667: the 1904 hub is Guide › About this destination too — the same four cards,
+         // each holding a topic of its own (the ground is what lived and grew here), and no
+--- a/chicago/4d/renderers/web/js/businesses.js
++++ b/chicago/4d/renderers/web/js/businesses.js
+@@ -836,7 +836,7 @@
+       // join is megabytes and the card must not wait on it. A firm whose row the
+       // book has no seat for (the 62 unplaceable, the 32 owed) gets nothing here,
+       // which is the honest answer and not a degradation.
+-      state.seatPending = seatSlot(cardEl, r).catch(() => {});
++      state.seatPending = seatSlot(cardEl, r, seq).catch(() => {});
+     } catch (err) {
+       if (seq !== openSeq || signal?.aborted) return false;
+       problems.push(`businesses: ${err.message} — one business record is missing`);
+@@ -851,11 +851,12 @@
+    *  Keyed on `register_id`, the crosswalk `compile_businesses.py` commits
+    *  between a business record (`biz_*`) and the register row the address book
+    *  files it under (`business_*`); nothing here invents that mapping. */
+-  async function seatSlot(card, r) {
++  async function seatSlot(card, r, seq) {
+     if (!r.register_id) return;
+     const joins = await loadResidentJoins(dataBase, sceneId, problems);
+     const raw = joins.seatByBusiness?.get(r.register_id);
+     const row = raw ? readerCopy(raw, reader ?? await loadReaderText(dataBase, 'businesses', problems)) : raw;
++    if (seq !== openSeq || state.open !== r.id) return;
+     const slot = card.querySelector('.biz-seat-slot');
+     if (!row || !slot || card.hidden) return;
+     // The ladder's seat first, and the policy's dealt roof where the ladder
+--- /dev/null
++++ b/chicago/4d/tools/check_business_seat_lifetime.mjs
+@@ -0,0 +1,71 @@
++// SPDX-License-Identifier: GPL-3.0-or-later
++import fs from 'node:fs';
++import assert from 'node:assert/strict';
++const read = path => fs.readFileSync(new URL(path, import.meta.url), 'utf8');
++const source = read('../renderers/web/js/businesses.js');
++const tick = () => new Promise(resolve => setImmediate(resolve));
++function deferred() { let resolve; const promise = new Promise(r => { resolve = r; }); return { promise, resolve }; }
++function harness(source, joinPromise, overlayPromise = Promise.resolve({})) {
++  const start = source.indexOf('async function seatSlot(card, r');
++  const end = source.indexOf('\n  function close()', start);
++  assert(start >= 0 && end > start);
++  const method = source.slice(start, end);
++  const call = source.match(/state\.seatPending = seatSlot\(cardEl, r(?:, seq)?\)\.catch\(\(\) => \{\}\);/);
++  assert(call, 'Use the actual open-to-seat call site, including captured sequence');
++  let readerCalls = 0;
++  const build = new Function('loadResidentJoins', 'loadReaderText', 'readerCopy', `
++    let openSeq = 0, reader = null;
++    const state = { open: null, seatPending: null };
++    const dataBase = 'https://example.invalid/data/', sceneId = '1835', problems = [];
++    const registry = new Set(), goTarget = () => null;
++    const seatHtml = row => 'seat:' + row.id, buildingTitle = () => null, words = x => x;
++    ${method}
++    return { request(cardEl, r) {
++      const seq = ++openSeq; state.open = r.id;
++      ${call[0]}
++      return state.seatPending;
++    } };
++  `);
++  const api = build(() => joinPromise, () => { readerCalls++; return overlayPromise; }, x => x);
++  const slot = { innerHTML: 'initial' };
++  const card = { hidden: false, queries: 0, querySelector(selector) {
++    this.queries++;
++    if (selector === '.biz-seat-slot') return slot;
++    if (selector === '.biz-locs .biz-go') return null;
++    throw Error('Unexpected actual selector ' + selector);
++  } };
++  return { api, card, slot, readerCalls: () => readerCalls };
++}
++const A = { id: 'biz_A', register_id: 'register_A' }, B = { id: 'biz_B' };
++const joins = () => ({ seatByBusiness: new Map([['register_A', { id: 'address_A', rung: 'street' }]]) });
++async function coldJoinRace(source) {
++  const wait = deferred(), h = harness(source, wait.promise);
++  const a = h.api.request(h.card, A); await tick();
++  await h.api.request(h.card, B); h.slot.innerHTML = 'B:no seat'; h.card.queries = 0;
++  wait.resolve(joins()); await a;
++  return { content: h.slot.innerHTML, staleQueries: h.card.queries };
++}
++async function overlayRace(source) {
++  const wait = deferred(), h = harness(source, Promise.resolve(joins()), wait.promise);
++  const a = h.api.request(h.card, A); await tick();
++  assert.equal(h.readerCalls(), 1, 'A is genuinely suspended in its second await');
++  await h.api.request(h.card, B); h.slot.innerHTML = 'B:no seat'; h.card.queries = 0;
++  wait.resolve({}); await a;
++  return { content: h.slot.innerHTML, staleQueries: h.card.queries };
++}
++async function currentA(source) {
++  const wait = deferred(), h = harness(source, wait.promise);
++  const a = h.api.request(h.card, A); wait.resolve(joins()); await a;
++  return h.slot.innerHTML;
++}
++assert.deepEqual(await coldJoinRace(source), { content: 'B:no seat', staleQueries: 0 });
++assert.deepEqual(await overlayRace(source), { content: 'B:no seat', staleQueries: 0 });
++assert.equal(await currentA(source), 'seat:address_A', 'Current A still receives the real join');
++const early = source.replace('    if (seq !== openSeq || state.open !== r.id) return;\n', '')
++  .replace('    if (!r.register_id) return;', '    if (!r.register_id) return;\n    if (seq !== openSeq || state.open !== r.id) return;');
++assert.notEqual(early, source);
++assert.equal((await coldJoinRace(early)).content, 'seat:address_A', 'Planted guard-before-await fault is caught');
++const lostSeq = source.replace('seatSlot(cardEl, r, seq)', 'seatSlot(cardEl, r)');
++assert.notEqual(lostSeq, source);
++assert.equal(await currentA(lostSeq), 'initial', 'Planted missing sequence forwarding loses current seat and is caught');
++console.log(JSON.stringify({ scope: 'Actual shipped business seatSlot and open call site under asynchronous join/reader resolution; no browser claim', latestBusinessCardPreserved: true, noStaleSharedCardQueries: true, currentAStillShowsJoin: true, negativeControls: ['guard before awaits', 'lost captured-sequence forwarding'] }, null, 2));
+--- a/chicago/4d/tools/check.sh
++++ b/chicago/4d/tools/check.sh
+@@ -545,6 +545,8 @@
+   node tools/test_transport_loop.mjs
+ step "Driven assembly retains named drivers, vehicle ownership and exact current horse travel (T-2804)" \
+   node tools/test_driven_assembly.mjs
++step "A cold business address join cannot overwrite a later card" \
++  node tools/check_business_seat_lifetime.mjs
+ step "Driven-team clearance uses the complete occupied envelope and refuses blocked routes (T-2804)" \
+   node tools/test_transport_clearance.mjs
+ step "Driven-team support reads actual ground and preserves physical contact limits (T-2804)" \
