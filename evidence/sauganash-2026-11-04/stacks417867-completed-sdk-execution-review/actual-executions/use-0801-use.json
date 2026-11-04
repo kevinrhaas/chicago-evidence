@@ -1,0 +1,9 @@
+{
+  "line": 801,
+  "tool": "Bash",
+  "input": {
+    "command": "git fetch origin dev --quiet && MB=$(git merge-base origin/dev HEAD) && echo \"merge-base=$MB\" && echo \"--- 2/3 changelog entry ---\" && timeout 200 node tools/check-changelog-entry.mjs \"$MB\" HEAD 2>&1 | head -5; echo \"exit=$?\"; echo \"--- 3/3 id collisions ---\"; timeout 200 node tools/resolve_id_collisions.mjs --base origin/dev --check 2>&1 | head -5; echo \"exit=$?\"",
+    "description": "Run the two PR-only preflight questions",
+    "timeout": 600000
+  }
+}

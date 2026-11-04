@@ -1,0 +1,7 @@
+{
+  "line": 834,
+  "input": {
+    "command": "python3 - <<'PY'\np='chicago/4d/docs/LIBERTIES.md'\nlines=open(p).read().split('\\n')\ns=[i for i,l in enumerate(lines) if l.startswith('<<<<<<<')]\nm=[i for i,l in enumerate(lines) if l=='=======']\ne=[i for i,l in enumerate(lines) if l.startswith('>>>>>>>')]\nassert len(s)==1 and len(e)==1, (s,m,e)\nmm=[x for x in m if s[0]<x<e[0]]\nassert len(mm)==1\nours=lines[s[0]+1:mm[0]]\ntheirs=lines[mm[0]+1:e[0]]\nnew = lines[:s[0]] + theirs + [''] + ours + lines[e[0]+1:]\nopen(p,'w').write('\\n'.join(new))\nprint('ours lines', len(ours), 'theirs lines', len(theirs))\nPY\ngrep -c \"^### L-\" chicago/4d/docs/LIBERTIES.md; grep -n \"L-sauganash-ridge-end-stacks-2383\\|L-first-fort-magazine-barrel-vault-3041\" chicago/4d/docs/LIBERTIES.md | head; grep -n \"<<<<<<<\\|>>>>>>>\\|^=======\" chicago/4d/docs/LIBERTIES.md | head",
+    "description": "Resolve the LIBERTIES.md conflict append-only"
+  }
+}
