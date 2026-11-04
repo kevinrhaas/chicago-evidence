@@ -1,0 +1,7 @@
+# Reconstruct the staged source without duplicate GLBs
+
+Use a separate recovery checkout of kevinrhaas/chicago at public commit `a3a87cafe9321a2970a390cac77ae45be82680f5`. Verify its eight parent GLB SHA-256 and byte lengths against OMITTED-GLB-BYTES-AND-PUBLIC-PARENTS.json before changing them. Restore the22 exact text files from IMMUTABLE-STAGED-TEXT using SOURCE.json stored_path: decompress lossless_gzip entries before placing bytes at their original path, and verify each original SHA-256 and byte length. The original generator and all recipe/native/derivation metadata are included there.
+
+From recovered `chicago/4d`, run `python3 tools/human_seated_look.py --output /absolute/fresh/recovery-output` once. It reads the explicitly bound original parent payloads; do not overwrite parent GLBs before generation completes. Verify every generated child against this packet's exact eight child SHA-256 and byte lengths, then copy them into their corresponding application paths. Run `python3 tools/human_seated_look.py --check` to reproduce all eight outputs. Actual ROOT ran that unchanged check in1.424218729 seconds; it passed. This recipe is recovery guidance, not a new execution receipt.
+
+The source tree contains 30 changed paths:29 application paths plus generated liberties.json. Source-use coverage was rederived but remained byte-identical, so it is not another changed path. The independent review allows both generated report outputs. The full native gate was active and pending at packet collection; no passing verdict or app commit/push is claimed.
