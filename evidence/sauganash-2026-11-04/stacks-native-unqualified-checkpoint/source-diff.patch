@@ -1,0 +1,373 @@
+diff --git a/chicago/4d/changelog.d/T-2383-ridge-end-stacks.json b/chicago/4d/changelog.d/T-2383-ridge-end-stacks.json
+new file mode 100644
+index 000000000..b924e0059
+--- /dev/null
++++ b/chicago/4d/changelog.d/T-2383-ridge-end-stacks.json
+@@ -0,0 +1,10 @@
++{
++  "title": "The Sauganash Hotel's chimneys move out to the ridge ends",
++  "kind": "improve",
++  "items": [
++    "Andreas and Braunhold's 1884 plate of the hotel draws both main-block stacks close to the ends of the ridge — the near one right behind the gable peak. The model had them about 1.6 m further inboard on each side. They now stand where the picture puts them.",
++    "Only the along-ridge station moved. There are still two stacks, the same square brick shafts at the same height, and the roof, cornice, wing, openings, paint and the building's surveyed position are untouched.",
++    "The inset itself is ours, not a measurement: the engraving shows where the stacks sat relative to the roof and nothing about their size. docs/LIBERTIES.md records that.",
++    "The shafts' own proportions and heads are still squatter than the picture draws them, and the compound's roof silhouette and left gable still differ. Those stay open."
++  ]
++}
+diff --git a/chicago/4d/data/liberties.json b/chicago/4d/data/liberties.json
+index 5b013b4c7..1039745ed 100644
+--- a/chicago/4d/data/liberties.json
++++ b/chicago/4d/data/liberties.json
+@@ -3,7 +3,7 @@
+   "source": "docs/LIBERTIES.md",
+   "standard": "A visitor should be able to tell you which parts we made up.",
+   "note": "The confidence model covers attributes. These are the decisions that live above any single attribute: scope, omission, simplification, and the choices a visitor would otherwise have to reverse-engineer.",
+-  "count": 998,
++  "count": 999,
+   "names": [
+     {
+       "id": "agency_striker_log_house",
+@@ -67621,6 +67621,53 @@
+         "T-2376"
+       ]
+     },
++    {
++      "id": "L-sauganash-ridge-end-stacks-2383",
++      "title": "The Sauganash stacks move toward the ridge ends",
++      "section": "per_subject",
++      "subjects": [
++        "sauganash_hotel"
++      ],
++      "covers": [
++        {
++          "domain": "structure",
++          "structure": "sauganash_hotel",
++          "phase": "frame_1831",
++          "aspect": "form.chimney_placement"
++        }
++      ],
++      "recorded": "2026-11-04",
++      "revised": null,
++      "fields": [
++        {
++          "label": "Covers",
++          "text": "`sauganash_hotel.frame_1831.form.chimney_placement`."
++        },
++        {
++          "label": "Decision",
++          "text": "select the existing gable ends placement for the two main-block stacks. On the retained 9.92 m frontage their centres move from the generic 0.22/0.78 fractions (2.1824/7.7376 m) to the existing kit's 0.60 m end insets (0.60/9.32 m). Count, square shaft section, top height and material are retained. No new stack is added."
++        },
++        {
++          "label": "Why",
++          "text": "direct review of the credited public-domain Andreas/Braunhold 1884 plate and the current cornice comparison shows the stacks near the ridge ends in the picture and farther inward in the model. The retrospective plate supports relative disposition; the numeric inset is an explicit reconstruction from the existing kit, not a measurement. Petford and Trowbridge are related compositions, not independent corroboration, and no new geometry is derived from the colour reproduction. This scoped choice supersedes “Every chimney stands where the archetype puts it”'s generic frontage fractions for this Hotel phase alone."
++        },
++        {
++          "label": "Limits",
++          "text": "all metres, July 1835 continuity and exact historical station remain unestablished. Main/rear-wing silhouette, chimney caps/stock proportions, the left-gable details and whole compound remain open. A fixed diagnostic-camera horizontal projection is preparation, not a native render or image acceptance. The original this work remains partial/open; the separate Carpenter shop and the Hotel's earlier log phase remain their own records."
++        },
++        {
++          "label": "Sources",
++          "text": "\"THE SAUGANASH HOTEL.\" — wood engraving, in A. T. Andreas, History of Chicago…; existing held reproduction SHA256 `3884c16f72702fd3b1696663dd82b444ac26028b97472e03bd00a2fa75026afb`."
++        },
++        {
++          "label": "Recorded",
++          "text": "2026-11-04."
++        }
++      ],
++      "work_refs": [
++        "T-2383"
++      ]
++    },
+     {
+       "id": "L46",
+       "title": "The fort stands on a bank the model has no cut or fill for",
+diff --git a/chicago/4d/data/reference_views/philo_carpenter_log_shop/andreas-1884.match.json b/chicago/4d/data/reference_views/philo_carpenter_log_shop/andreas-1884.match.json
+index 5fa2cb75d..5dbc291e3 100644
+--- a/chicago/4d/data/reference_views/philo_carpenter_log_shop/andreas-1884.match.json
++++ b/chicago/4d/data/reference_views/philo_carpenter_log_shop/andreas-1884.match.json
+@@ -42,10 +42,10 @@
+         3.0999999999999943
+       ],
+       "rotation_y": 0,
+-      "glb_sha256": "08b77238df24e8481a3926a8670044efc9908d80029d91c6dd10f370e23a429b"
++      "glb_sha256": "16335b77d354996661cd5da85405b7cd51e76ed34088991f762b787be59f0d93"
+     }
+   ],
+-  "group_sha256": "109804337dfce98ab633b639ccc8a9469fb9835be956c122bb894d7763634cd1",
++  "group_sha256": "8740f16344972785805c6f3d6ea467c0f685de3495b73fe550bae0db410ce8ab",
+   "side_by_side": "docs/RESEARCH/photo-match/philo_carpenter_log_shop/andreas-1884-side-by-side.jpg",
+   "verdict": "matches",
+   "differences": [
+@@ -76,8 +76,8 @@
+   ],
+   "_how": "verdict is unreviewed | differs | matches, set by whoever compared the side-by-side with the picture; each difference is {what, status: open | fixed | not shown | within tolerance | owner ruling} — open only if a street visitor would notice it (over about 1 ft, missing, mis-shaped, miscounted, wrong material or colour), else within tolerance (T-3153); owner ruling where the owner asked the build to depart from the picture (T-3236). A ticket whose ## Image gate names this building does not close while it is not \"matches\" (tools/image_gate.mjs).",
+   "context_refresh_review": {
+-    "reviewed_at": "2026-11-04T02:20:00+00:00",
+-    "disposition": "This run directly viewed the new side-by-side against the picture, beside the image it replaced, before setting the verdict below.",
+-    "scope": "The only rendered input that moved is the Sauganash hotel's master, which gained the pictured boxed gable cornice and returns on its +x gable (T-2383). No camera, placement, photograph or other member changed. This review signs off neither the whole hotel nor T-2383, whose remaining roof silhouette and left-gable differences stay open."
++    "reviewed_at": "2026-11-04T07:00:00+00:00",
++    "disposition": "This run rendered the view from its own camera before and after the change and viewed both side-by-sides beside the picture itself before setting the verdict below.",
++    "scope": "The only rendered input that moved is the Sauganash hotel's master: its two main-block ridge stacks moved from the generic 0.22/0.78 frontage fractions to the existing gable_ends kit's 0.60 m end insets (T-2383). The Carpenter shop anchor's GLB is byte-identical, and no camera, placement or photograph changed. This review signs off neither the whole hotel nor T-2383, whose roof silhouette and left-gable differences stay open."
+   }
+ }
+diff --git a/chicago/4d/data/reference_views/philo_carpenter_log_shop/kurz-allison-1893-panel14.match.json b/chicago/4d/data/reference_views/philo_carpenter_log_shop/kurz-allison-1893-panel14.match.json
+index 28aa7c18b..913f9ccbf 100644
+--- a/chicago/4d/data/reference_views/philo_carpenter_log_shop/kurz-allison-1893-panel14.match.json
++++ b/chicago/4d/data/reference_views/philo_carpenter_log_shop/kurz-allison-1893-panel14.match.json
+@@ -42,10 +42,10 @@
+         3.0999999999999943
+       ],
+       "rotation_y": 0,
+-      "glb_sha256": "08b77238df24e8481a3926a8670044efc9908d80029d91c6dd10f370e23a429b"
++      "glb_sha256": "16335b77d354996661cd5da85405b7cd51e76ed34088991f762b787be59f0d93"
+     }
+   ],
+-  "group_sha256": "109804337dfce98ab633b639ccc8a9469fb9835be956c122bb894d7763634cd1",
++  "group_sha256": "8740f16344972785805c6f3d6ea467c0f685de3495b73fe550bae0db410ce8ab",
+   "side_by_side": "docs/RESEARCH/photo-match/philo_carpenter_log_shop/kurz-allison-1893-panel14-side-by-side.jpg",
+   "verdict": "matches",
+   "differences": [
+@@ -72,8 +72,8 @@
+   ],
+   "_how": "verdict is unreviewed | differs | matches, set by whoever compared the side-by-side with the picture; each difference is {what, status: open | fixed | not shown | within tolerance | owner ruling} — open only if a street visitor would notice it (over about 1 ft, missing, mis-shaped, miscounted, wrong material or colour), else within tolerance (T-3153); owner ruling where the owner asked the build to depart from the picture (T-3236). A ticket whose ## Image gate names this building does not close while it is not \"matches\" (tools/image_gate.mjs).",
+   "context_refresh_review": {
+-    "reviewed_at": "2026-11-04T02:20:00+00:00",
+-    "disposition": "This run directly viewed the new side-by-side against the picture, beside the image it replaced, before setting the verdict below.",
+-    "scope": "The only rendered input that moved is the Sauganash hotel's master, which gained the pictured boxed gable cornice and returns on its +x gable (T-2383). No camera, placement, photograph or other member changed. This review signs off neither the whole hotel nor T-2383, whose remaining roof silhouette and left-gable differences stay open."
++    "reviewed_at": "2026-11-04T07:00:00+00:00",
++    "disposition": "This run rendered the view from its own camera before and after the change and viewed both side-by-sides beside the picture itself before setting the verdict below.",
++    "scope": "The only rendered input that moved is the Sauganash hotel's master: its two main-block ridge stacks moved from the generic 0.22/0.78 frontage fractions to the existing gable_ends kit's 0.60 m end insets (T-2383). The Carpenter shop anchor's GLB is byte-identical, and no camera, placement or photograph changed. This review signs off neither the whole hotel nor T-2383, whose roof silhouette and left-gable differences stay open."
+   }
+ }
+diff --git a/chicago/4d/data/reference_views/philo_carpenter_log_shop/trowbridge-1902.match.json b/chicago/4d/data/reference_views/philo_carpenter_log_shop/trowbridge-1902.match.json
+index 283d4c6b4..ce4a1afb3 100644
+--- a/chicago/4d/data/reference_views/philo_carpenter_log_shop/trowbridge-1902.match.json
++++ b/chicago/4d/data/reference_views/philo_carpenter_log_shop/trowbridge-1902.match.json
+@@ -42,10 +42,10 @@
+         3.0999999999999943
+       ],
+       "rotation_y": 0,
+-      "glb_sha256": "08b77238df24e8481a3926a8670044efc9908d80029d91c6dd10f370e23a429b"
++      "glb_sha256": "16335b77d354996661cd5da85405b7cd51e76ed34088991f762b787be59f0d93"
+     }
+   ],
+-  "group_sha256": "109804337dfce98ab633b639ccc8a9469fb9835be956c122bb894d7763634cd1",
++  "group_sha256": "8740f16344972785805c6f3d6ea467c0f685de3495b73fe550bae0db410ce8ab",
+   "side_by_side": "docs/RESEARCH/photo-match/philo_carpenter_log_shop/trowbridge-1902-side-by-side.jpg",
+   "verdict": "matches",
+   "differences": [
+@@ -68,8 +68,8 @@
+   ],
+   "_how": "verdict is unreviewed | differs | matches, set by whoever compared the side-by-side with the picture; each difference is {what, status: open | fixed | not shown | within tolerance | owner ruling} — open only if a street visitor would notice it (over about 1 ft, missing, mis-shaped, miscounted, wrong material or colour), else within tolerance (T-3153); owner ruling where the owner asked the build to depart from the picture (T-3236). A ticket whose ## Image gate names this building does not close while it is not \"matches\" (tools/image_gate.mjs).",
+   "context_refresh_review": {
+-    "reviewed_at": "2026-11-04T02:20:00+00:00",
+-    "disposition": "This run directly viewed the new side-by-side against the picture, beside the image it replaced, before setting the verdict below.",
+-    "scope": "The only rendered input that moved is the Sauganash hotel's master, which gained the pictured boxed gable cornice and returns on its +x gable (T-2383). No camera, placement, photograph or other member changed. This review signs off neither the whole hotel nor T-2383, whose remaining roof silhouette and left-gable differences stay open."
++    "reviewed_at": "2026-11-04T07:00:00+00:00",
++    "disposition": "This run rendered the view from its own camera before and after the change and viewed both side-by-sides beside the picture itself before setting the verdict below.",
++    "scope": "The only rendered input that moved is the Sauganash hotel's master: its two main-block ridge stacks moved from the generic 0.22/0.78 frontage fractions to the existing gable_ends kit's 0.60 m end insets (T-2383). The Carpenter shop anchor's GLB is byte-identical, and no camera, placement or photograph changed. This review signs off neither the whole hotel nor T-2383, whose roof silhouette and left-gable differences stay open."
+   }
+ }
+diff --git a/chicago/4d/data/reference_views/sauganash_hotel/andreas-1884.match.json b/chicago/4d/data/reference_views/sauganash_hotel/andreas-1884.match.json
+index 483370fc6..b6e41d791 100644
+--- a/chicago/4d/data/reference_views/sauganash_hotel/andreas-1884.match.json
++++ b/chicago/4d/data/reference_views/sauganash_hotel/andreas-1884.match.json
+@@ -2,7 +2,7 @@
+   "structure_id": "sauganash_hotel",
+   "view": "andreas-1884",
+   "glb": "assets/gltf/sauganash_hotel__frame_1831.glb",
+-  "glb_sha256": "08b77238df24e8481a3926a8670044efc9908d80029d91c6dd10f370e23a429b",
++  "glb_sha256": "16335b77d354996661cd5da85405b7cd51e76ed34088991f762b787be59f0d93",
+   "camera_sha256": "276f2051fa8db6379236b5d642a6ca75c740f4e82ebf44819c72808917d55991",
+   "photo_sha256": "3884c16f72702fd3b1696663dd82b444ac26028b97472e03bd00a2fa75026afb",
+   "rendered_members": [
+@@ -23,7 +23,7 @@
+         0
+       ],
+       "rotation_y": 0,
+-      "glb_sha256": "08b77238df24e8481a3926a8670044efc9908d80029d91c6dd10f370e23a429b"
++      "glb_sha256": "16335b77d354996661cd5da85405b7cd51e76ed34088991f762b787be59f0d93"
+     },
+     {
+       "structure_id": "philo_carpenter_log_shop",
+@@ -45,10 +45,18 @@
+       "glb_sha256": "f3e26f650627f36879087d75f30db5c4553e0f5938ae5bd0d305480958549cfc"
+     }
+   ],
+-  "group_sha256": "4b0807f05e91d516f15a98cc894901a74538acf68002b2a23b1698a9b6c31400",
++  "group_sha256": "7f9b0deb5521bbe972c5d6e20a6018b5d2b2fe239bd814ff39fb34053745d6c9",
+   "side_by_side": "docs/RESEARCH/photo-match/sauganash_hotel/andreas-1884-side-by-side.jpg",
+   "verdict": "differs",
+   "differences": [
++    {
++      "what": "THE TWO RIDGE STACKS STOOD TOO FAR INBOARD. Andreas/Braunhold draws both main-block stacks close to the ridge ends — the near one immediately behind the visible gable peak, the far one well out toward the far end — while the model placed them at the generic 0.22/0.78 frontage fractions, about 1.6 m inboard of the picture's disposition on each side. The existing `gable_ends` kit is now selected, so on the retained 9.92 m block their centres are 0.60 m and 9.32 m. Measured on this same camera, the near stack's offset from the gable peak falls from about 0.19 to 0.08 of the visible ridge run against the picture's 0.04, and the far stack's rises from 0.57 to 0.67 against the picture's 0.65. The 0.60 m inset, the 0.90 m square shaft and the ridge + 0.55 m top are reconstructed generator choices; the plate supports the relative disposition and supplies no measurement. docs/LIBERTIES.md L-sauganash-ridge-end-stacks-2383.",
++      "status": "fixed"
++    },
++    {
++      "what": "The stacks' own proportions and heads still differ from the picture. Andreas draws slender brick shafts standing well clear of the ridge with a corbelled cap; the model carries squat 0.90 m square blocks ridge + 0.55 m with a plain top, which a visitor on the street would notice. Count (2), brick material and the ridge line are unchanged and are not in question. Only the along-ridge station moved here; shaft section, height and cap remain open on their own merits.",
++      "status": "open"
++    },
+     {
+       "what": "THE BOXED GABLE CORNICE AND ITS RETURNS. Andreas/Braunhold draws a boxed band following both rakes of the visible main gable and a short horizontal return turning the corner at each eaves end; the model had a bare rake there, which a visitor on the street would notice. Both are now built on the +x gable in the wall finish, hanging below the rake line. The three sections are reconstructed working choices, not measurements, and the picture's own scale datum supports a return anywhere in roughly 0.55-0.9 m; the remaining section uncertainty is within tolerance under T-3153. Occurrence on the opposite, unseen gable is not claimed and nothing is built there. docs/LIBERTIES.md L-sauganash-main-gable-cornice-2383.",
+       "status": "fixed"
+@@ -80,8 +88,8 @@
+   ],
+   "_how": "verdict is unreviewed | differs | matches, set by whoever compared the side-by-side with the picture; each difference is {what, status: open | fixed | not shown | within tolerance | owner ruling} — open only if a street visitor would notice it (over about 1 ft, missing, mis-shaped, miscounted, wrong material or colour), else within tolerance (T-3153); owner ruling where the owner asked the build to depart from the picture (T-3236). A ticket whose ## Image gate names this building does not close while it is not \"matches\" (tools/image_gate.mjs).",
+   "context_refresh_review": {
+-    "reviewed_at": "2026-11-04T02:20:00+00:00",
+-    "disposition": "This run directly viewed the new side-by-side against the picture, beside the image it replaced, before setting the verdict below.",
+-    "scope": "The only rendered input that moved is the Sauganash hotel's master, which gained the pictured boxed gable cornice and returns on its +x gable (T-2383). No camera, placement, photograph or other member changed. This review signs off neither the whole hotel nor T-2383, whose remaining roof silhouette and left-gable differences stay open."
++    "reviewed_at": "2026-11-04T07:00:00+00:00",
++    "disposition": "This run rendered the view from its own camera before and after the change and viewed both side-by-sides beside the picture itself before setting the verdict below.",
++    "scope": "The only rendered input that moved is the Sauganash hotel's master: its two main-block ridge stacks moved from the generic 0.22/0.78 frontage fractions to the existing gable_ends kit's 0.60 m end insets (T-2383). The Carpenter shop anchor's GLB is byte-identical, and no camera, placement or photograph changed. This review signs off neither the whole hotel nor T-2383, whose roof silhouette and left-gable differences stay open."
+   }
+ }
+diff --git a/chicago/4d/data/sidecars/1835/sauganash_hotel.json b/chicago/4d/data/sidecars/1835/sauganash_hotel.json
+index a44bb5344..74da709b1 100644
+--- a/chicago/4d/data/sidecars/1835/sauganash_hotel.json
++++ b/chicago/4d/data/sidecars/1835/sauganash_hotel.json
+@@ -306,6 +306,14 @@
+       ],
+       "note": "T-2383 bounded four-lower-front-sash correction. Direct comparison with the held Andreas/Braunhold1884 engraving shows tall narrow lower facade sash, with heads near the high entrance case, rather than the stock squat 0.85-by-1.35m rectangles. Keep their four existing bay stations, every upper and rear opening and all wall/roof/placement fields. The selected 0.70m width, 1.85m height and 0.90m sill put their heads at2.75m, below the unchanged storey division; open blue leaves follow these same four envelopes. These are reconstructed visual proportions, bounded by the separately reconstructed entrance and the retained provisional own-hotel camera, not historic measurements or an independent 1835 survey. The engraving and camera have unresolved perspective/date limits; no whole-hotel or compound match is claimed by this change."
+     },
++    "chimney_placement": {
++      "value": "gable_ends",
++      "confidence": "reconstructed",
++      "sources": [
++        "andreas_1884_sauganash_hotel_plate"
++      ],
++      "note": "T-2383 bounded ridge-end stack placement trial. Andreas/Braunhold's public-domain 1884 retrospective plate draws the two ridge stacks near the gable ends; the current comparison has them farther inward at the generic frontage fractions 0.22/0.78. Select the existing gable_ends kit instead. Its 0.60 m end inset, 0.90 m square shafts and ridge + 0.55 m tops are reconstructed generator choices, not dimensions measured from the engraving. The source supports relative disposition only; it supplies no coordinate, July 1835 fitting date, historical camera or independent metric calibration. Count 2, brick finish, shaft section/top, main roof/cornice/wing, openings, position and the separate Carpenter shop remain selected as before. The retained diagnostic-camera projection suggests improved horizontal placement but leaves vertical/roof and broader compound differences unresolved; no rendered acceptance or full image match is claimed by this data trial. docs/LIBERTIES.md L-sauganash-ridge-end-stacks-2383."
++    },
+     "function": {
+       "value": "tavern_inn",
+       "confidence": "attested",
+diff --git a/chicago/4d/data/structures/sauganash_hotel.json b/chicago/4d/data/structures/sauganash_hotel.json
+index 99ca2d0cc..7421ec818 100644
+--- a/chicago/4d/data/structures/sauganash_hotel.json
++++ b/chicago/4d/data/structures/sauganash_hotel.json
+@@ -387,6 +387,14 @@
+             "andreas_1884_sauganash_hotel_plate"
+           ],
+           "note": "T-2383 bounded four-lower-front-sash correction. Direct comparison with the held Andreas/Braunhold1884 engraving shows tall narrow lower facade sash, with heads near the high entrance case, rather than the stock squat 0.85-by-1.35m rectangles. Keep their four existing bay stations, every upper and rear opening and all wall/roof/placement fields. The selected 0.70m width, 1.85m height and 0.90m sill put their heads at2.75m, below the unchanged storey division; open blue leaves follow these same four envelopes. These are reconstructed visual proportions, bounded by the separately reconstructed entrance and the retained provisional own-hotel camera, not historic measurements or an independent 1835 survey. The engraving and camera have unresolved perspective/date limits; no whole-hotel or compound match is claimed by this change."
++        },
++        "chimney_placement": {
++          "value": "gable_ends",
++          "confidence": "reconstructed",
++          "sources": [
++            "andreas_1884_sauganash_hotel_plate"
++          ],
++          "note": "T-2383 bounded ridge-end stack placement trial. Andreas/Braunhold's public-domain 1884 retrospective plate draws the two ridge stacks near the gable ends; the current comparison has them farther inward at the generic frontage fractions 0.22/0.78. Select the existing gable_ends kit instead. Its 0.60 m end inset, 0.90 m square shafts and ridge + 0.55 m tops are reconstructed generator choices, not dimensions measured from the engraving. The source supports relative disposition only; it supplies no coordinate, July 1835 fitting date, historical camera or independent metric calibration. Count 2, brick finish, shaft section/top, main roof/cornice/wing, openings, position and the separate Carpenter shop remain selected as before. The retained diagnostic-camera projection suggests improved horizontal placement but leaves vertical/roof and broader compound differences unresolved; no rendered acceptance or full image match is claimed by this data trial. docs/LIBERTIES.md L-sauganash-ridge-end-stacks-2383."
+         }
+       },
+       "change_note": "Two-story frame block built onto the log core at the Lake and Market corner, 1831; the whole then known as the Sauganash Hotel, Chicago's first hotel."
+diff --git a/chicago/4d/docs/LIBERTIES.md b/chicago/4d/docs/LIBERTIES.md
+index 6e07ef088..8fd808a6b 100644
+--- a/chicago/4d/docs/LIBERTIES.md
++++ b/chicago/4d/docs/LIBERTIES.md
+@@ -40367,3 +40367,19 @@ Nothing else moves. The peak stays below the unchanged 5.0 m main-block wall hea
+ 
+ **Ticket:** T-2376.
+ **Recorded:** 2026-11-04.
++
++
++### L-sauganash-ridge-end-stacks-2383 — The Sauganash stacks move toward the ridge ends
++
++**Covers:** `sauganash_hotel.frame_1831.form.chimney_placement`.
++
++**Decision:** select the existing `gable_ends` placement for the two main-block stacks. On the retained 9.92 m frontage their centres move from the generic 0.22/0.78 fractions (2.1824/7.7376 m) to the existing kit's 0.60 m end insets (0.60/9.32 m). Count, square shaft section, top height and material are retained. No new stack is added.
++
++**Why:** direct review of the credited public-domain Andreas/Braunhold 1884 plate and the current cornice comparison shows the stacks near the ridge ends in the picture and farther inward in the model. The retrospective plate supports relative disposition; the numeric inset is an explicit reconstruction from the existing kit, not a measurement. Petford and Trowbridge are related compositions, not independent corroboration, and no new geometry is derived from the colour reproduction. This scoped choice supersedes L26's generic frontage fractions for this Hotel phase alone.
++
++**Limits:** all metres, July 1835 continuity and exact historical station remain unestablished. Main/rear-wing silhouette, chimney caps/stock proportions, the left-gable details and whole compound remain open. A fixed diagnostic-camera horizontal projection is preparation, not a native render or image acceptance. The original T-2383 remains partial/open; the separate Carpenter shop and the Hotel's earlier log phase remain their own records.
++
++**Sources:** `andreas_1884_sauganash_hotel_plate`; existing held reproduction SHA256 `3884c16f72702fd3b1696663dd82b444ac26028b97472e03bd00a2fa75026afb`.
++
++**Ticket:** T-2383.
++**Recorded:** 2026-11-04.
+diff --git a/chicago/4d/docs/RESEARCH/photo-match/philo_carpenter_log_shop/andreas-1884-side-by-side.jpg b/chicago/4d/docs/RESEARCH/photo-match/philo_carpenter_log_shop/andreas-1884-side-by-side.jpg
+index 5f230c8e8..1fcec33a6 100644
+Binary files a/chicago/4d/docs/RESEARCH/photo-match/philo_carpenter_log_shop/andreas-1884-side-by-side.jpg and b/chicago/4d/docs/RESEARCH/photo-match/philo_carpenter_log_shop/andreas-1884-side-by-side.jpg differ
+diff --git a/chicago/4d/docs/RESEARCH/photo-match/philo_carpenter_log_shop/kurz-allison-1893-panel14-side-by-side.jpg b/chicago/4d/docs/RESEARCH/photo-match/philo_carpenter_log_shop/kurz-allison-1893-panel14-side-by-side.jpg
+index 2adc342b6..9166caea0 100644
+Binary files a/chicago/4d/docs/RESEARCH/photo-match/philo_carpenter_log_shop/kurz-allison-1893-panel14-side-by-side.jpg and b/chicago/4d/docs/RESEARCH/photo-match/philo_carpenter_log_shop/kurz-allison-1893-panel14-side-by-side.jpg differ
+diff --git a/chicago/4d/docs/RESEARCH/photo-match/philo_carpenter_log_shop/trowbridge-1902-side-by-side.jpg b/chicago/4d/docs/RESEARCH/photo-match/philo_carpenter_log_shop/trowbridge-1902-side-by-side.jpg
+index afe4942af..552a18ea2 100644
+Binary files a/chicago/4d/docs/RESEARCH/photo-match/philo_carpenter_log_shop/trowbridge-1902-side-by-side.jpg and b/chicago/4d/docs/RESEARCH/photo-match/philo_carpenter_log_shop/trowbridge-1902-side-by-side.jpg differ
+diff --git a/chicago/4d/docs/RESEARCH/photo-match/sauganash_hotel/README.md b/chicago/4d/docs/RESEARCH/photo-match/sauganash_hotel/README.md
+index 07d34c845..d5c189f01 100644
+--- a/chicago/4d/docs/RESEARCH/photo-match/sauganash_hotel/README.md
++++ b/chicago/4d/docs/RESEARCH/photo-match/sauganash_hotel/README.md
+@@ -49,3 +49,38 @@ This study omits app terrain, streets and people. Published desktop/phone body,
+ card and entrance checks are separate release evidence. The other original
+ hotel pictures and eventual full signoff remain on T-2383; no follow-up ticket
+ or full completion is filed. Original T-2383 stays open after partial release.
++
++## The ridge-end stacks — 2026-11-04
++
++A second bounded increment on the same comparison. The plate draws both
++main-block stacks close to the ridge ends; the model carried them at the
++generic 0.22/0.78 frontage fractions, roughly 1.6 m further inboard on each
++side. `form.chimney_placement` now selects the existing `gable_ends` kit, so on
++the retained 9.92 m block their centres read 0.60 m and 9.32 m. Nothing else in
++the record moved: count 2, square brick shafts, ridge + 0.55 m tops, the roof
++and its new boxed gable cornice, the cross wing, every opening, the paint and
++the surveyed position are all as they were, and the Carpenter shop is untouched.
++
++The inset, the shaft section and the top height are the kit's reconstructed
++choices. The engraving supports the relative disposition and nothing more: no
++coordinate, no metre, no July 1835 fitting date, no historical camera. Petford
++and Trowbridge are related compositions, not independent corroboration.
++`docs/LIBERTIES.md` L-sauganash-ridge-end-stacks-2383 records the decision, the
++reasoning and these limits.
++
++Measured on this same camera, the near stack's offset from the visible gable
++peak falls from about 0.19 to 0.08 of the ridge run against the picture's 0.04,
++and the far stack's rises from 0.57 to 0.67 against the picture's 0.65. That is
++a comparison of the before and after renders with the picture, directly viewed;
++it is not a survey and not an acceptance. The hotel's own verdict stays
++**differs**.
++
++The stacks' own proportions and heads remain **open**: Andreas draws slender
++shafts standing clear of the ridge under a corbelled cap, and the model's are
++squat blocks with a plain top. The compound roof silhouette and the left-gable
++questions are unchanged and stay open. The three Carpenter shop views were
++re-rendered from their own cameras because the hotel stands behind the shop in
++all three; the shop's master is byte-identical, each refreshed pair was viewed
++beside its picture, and all three keep **matches**.
++
++Original T-2383 remains open and partial after this increment.
+diff --git a/chicago/4d/docs/RESEARCH/photo-match/sauganash_hotel/andreas-1884-side-by-side.jpg b/chicago/4d/docs/RESEARCH/photo-match/sauganash_hotel/andreas-1884-side-by-side.jpg
+index 59806b375..528ac610b 100644
+Binary files a/chicago/4d/docs/RESEARCH/photo-match/sauganash_hotel/andreas-1884-side-by-side.jpg and b/chicago/4d/docs/RESEARCH/photo-match/sauganash_hotel/andreas-1884-side-by-side.jpg differ
+diff --git a/chicago/4d/docs/STATUS.md b/chicago/4d/docs/STATUS.md
+index d14e7530e..06feec5d4 100644
+--- a/chicago/4d/docs/STATUS.md
++++ b/chicago/4d/docs/STATUS.md
+@@ -1,3 +1,27 @@
++## T-2383 — the Sauganash's ridge-end stacks (2026-11-04)
++
++Andreas/Braunhold draws both main-block stacks close to the ends of the ridge: the near one
++sits immediately behind the visible gable peak, the far one well out toward the far end. The
++record carried the generic `chimney_placement` default, which puts them at 0.22/0.78 of the
++frontage — about 1.6 m further inboard on each side, and inboard enough on a 9.92 m block for
++a visitor on the street to see it. `sauganash_hotel.frame_1831.form.chimney_placement` now
++selects the existing `gable_ends` kit, so the two centres read 0.60 m and 9.32 m. No producer,
++archetype or kit code changed: this is a data selection of geometry the generator already had.
++
++**Honest limits.** The 0.60 m inset, the 0.90 m square shaft and the ridge + 0.55 m top are
++the kit's reconstructed choices, not dimensions read off the plate; the engraving supports the
++relative disposition and supplies no coordinate, no metre, no July 1835 fitting date and no
++historical camera (`docs/LIBERTIES.md` L-sauganash-ridge-end-stacks-2383). Measured on the
++hotel's own camera, the near stack's offset from the gable peak falls from about 0.19 to 0.08
++of the visible ridge run against the picture's 0.04, and the far stack's rises from 0.57 to
++0.67 against the picture's 0.65 — a reading of the before and after renders beside the picture,
++not a survey. Exactly one asset was stale and exactly one was rebuilt on the pinned Blender;
++nothing else in the frame-tavern family moved, because no producer did. The stacks' own
++proportions and heads stay **open** — the plate draws slender shafts under a corbelled cap
++where the model has squat blocks with a plain top — as do the compound roof silhouette and the
++left-gable questions. The hotel's comparison still reads **differs**; the three Carpenter-shop
++comparisons were re-rendered from their own cameras, directly reviewed and retain **matches**
++with the shop anchor byte-identical. T-2383 stays open and partial.
+ ## T-2383 — the Sauganash's boxed gable cornice (2026-11-04)
+ 
+ Andreas/Braunhold draws a boxed cornice down both rakes of the hotel's visible main gable
