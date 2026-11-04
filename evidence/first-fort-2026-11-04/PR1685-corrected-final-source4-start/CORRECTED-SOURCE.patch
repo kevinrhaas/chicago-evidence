@@ -1,0 +1,50 @@
+diff --git a/chicago/4d/docs/ROADMAP.md b/chicago/4d/docs/ROADMAP.md
+index 68874e5bf1..8369cd0c26 100644
+--- a/chicago/4d/docs/ROADMAP.md
++++ b/chicago/4d/docs/ROADMAP.md
+@@ -22,8 +22,11 @@ liberty.
+ 
+ What it cost. `outbuilding.py`'s bytes are hashed into every outbuilding's mesh inputs, so
+ one branch staled all 243 committed masters and all 243 were regenerated on the pinned
+-Blender before the source was committed. 180 moved bytes by float noise alone and one web
+-derivative — the house that actually changed — moved at all.
++Blender before the source was committed. Of 180 changed MASTER blobs, one is the NE
++house's roof change and 179 are unused UV repacks: their positions, normals, colours,
++indices, materials and topology are exact, and none binds a texture or image. Only the
++NE house's WEB derivative changed; the other WEB blobs stayed exact. The original
++attribution to hardware float noise was incorrect; the independent audit is on PR1685.
+ 
+ What it did not buy. One of thirteen differences on that picture. T-3041 and T-2387 stay open.
+ 
+diff --git a/chicago/4d/docs/STATUS.md b/chicago/4d/docs/STATUS.md
+index ee1c566c98..b6f9d3e976 100644
+--- a/chicago/4d/docs/STATUS.md
++++ b/chicago/4d/docs/STATUS.md
+@@ -15,14 +15,19 @@ magazine's barrel vault and the western gateway are all still `open` on the matc
+ record, and the full first-fort acceptance (21 named records, nine context records,
+ every listed picture) is untouched by this increment. One difference of thirteen moved.
+ 
+-**What was verified, and what was not.** `check.sh` ran in its four parts and the smoke
+-by the parts `smoke_budget.mjs --for-diff` named for this diff; the whole fifteen-case
+-smoke was not re-run and is not claimed. Changing `outbuilding.py` staled all 243
+-committed outbuilding masters, every one of which was regenerated on the pinned Blender
+-4.5.3 (sha-verified) before the first source commit: 180 came back with different bytes
+-— sub-millimetre float noise from a different machine, not moved geometry — and 63 were
+-byte-identical. Re-encoding those 180 moved exactly ONE web derivative, the NE small
+-house's, because the quantised derivatives absorb that noise. No freshness hash was
++**What was verified, and what was not.** The original worker's source qualification
++was incomplete: parts 1–3 passed, part 4 failed on the liberties register, and only the
++failed validator step was rerun after its repair. That is not a complete four-part pass;
++final integration source checks and actual app smoke are recorded on PR1685. The original
++worker did not rerun the whole fifteen-case smoke. Changing `outbuilding.py` staled all
++243 committed outbuilding masters; all 243 were regenerated on the pinned, sha-verified
++Blender 4.5.3 before the first source commit. Of 180 changed MASTER blobs, one is this
++house's intended roof change and 179 have only unused UV coordinates repacked. An
++independent accessor audit found all 179 default meshes' positions, normals, colours,
++indices, materials and topology exact, with no texture or image bindings. The remaining
++63 masters were byte-identical. Re-encoding the 180 changed masters moved exactly ONE
++WEB derivative, the NE small house's; every other WEB blob stayed exact. The earlier
++attribution to sub-millimetre hardware float noise was incorrect. No freshness hash was
+ written by hand.
+ 
+ ## T-3262 — deferred verge buffers
