@@ -1,0 +1,49 @@
+--- approved-candidate/salvage.sh
++++ final-candidate/salvage.sh
+@@ -207,14 +207,17 @@
+   # does not exist and the two-dot form has nothing to subtract — it would
+   # report the repo's whole history as unpushed.
+   git -C "$repo" fetch origin "$branch" --quiet 2>/dev/null
+-  ahead=$(git -C "$repo" rev-list --count HEAD --not --remotes 2>/dev/null || echo 0)
+   if [ "$archive_only" = true ]; then
++    # An unreadable graph is not proof that HEAD is already durable. Preserve
++    # actual HEAD when the count is unknown, without touching its source ref.
++    ahead=$(git -C "$repo" rev-list --count HEAD --not --remotes 2>/dev/null) || ahead=1
+     if ! archive_targeted "$repo" "$dirty" "${ahead:-0}"; then
+       failed=$((failed + 1))
+       echo "::warning::salvage could not verify an UNQUALIFIED archive for ${name}; recovery is not confirmed"
+     fi
+     continue
+   fi
++  ahead=$(git -C "$repo" rev-list --count HEAD --not --remotes 2>/dev/null || echo 0)
+   if [ "${ahead:-0}" -gt 0 ]; then
+     echo "  ${ahead} commit(s) not on origin — pushing ${branch}"
+     if run git -C "$repo" push -u origin "$branch"; then
+--- approved-candidate/test-salvage.sh
++++ final-candidate/test-salvage.sh
+@@ -273,6 +273,25 @@
+ check "pre-branch dirty WIP survives on an unqualified archive" "$(git -C "$TMP/n.git" show "refs/heads/$archive:wip.txt")" "prebranch"
+ check "partial resume context fails closed to archive-only" "$(record_archives)" "$archive"
+ 
++# ── 15. An unreadable commit count must not discard clean private HEAD ──────
++newrepo o
++git -C "$TMP/o" checkout -q -b "$source_branch"
++git -C "$TMP/o" push -q -u origin "$source_branch"
++source_sha=$(git -C "$TMP/o" rev-parse HEAD)
++echo private > "$TMP/o/f.txt"; git -C "$TMP/o" add -A; git -C "$TMP/o" commit -q -m private
++private_sha=$(git -C "$TMP/o" rev-parse HEAD)
++cat > "$TMP/bin/git" <<'GIT'
++#!/usr/bin/env bash
++case "$*" in *'rev-list --count HEAD --not --remotes'*) exit 1 ;; esac
++exec "$REAL_GIT" "$@"
++GIT
++out=$(PATH="$TMP/bin:$PATH" runnative "$TMP/o" cancelled)
++expected_archive="steward/salvage/unqualified/12345/$private_sha"
++check "unreadable commit count leaves the PR source unchanged" "$(git -C "$TMP/o.git" rev-parse "refs/heads/$source_branch")" "$source_sha"
++check "unreadable commit count archives actual clean private HEAD" "$(git -C "$TMP/o.git" rev-parse "refs/heads/$expected_archive")" "$private_sha"
++check "unreadable commit count journals the verified archive" "$(record_archives)" "$expected_archive"
++check "unreadable commit count never claims no private work" "$(grep -c 'no unpushed commits\|salvage found nothing unpushed' <<<"$out")" "0"
++
+ echo
+ if [ "$fail" -eq 0 ]; then printf '\033[32mSALVAGE SELF-TEST PASS\033[0m — %d checks\n' "$pass"; exit 0
+ else printf '\033[31mSALVAGE SELF-TEST FAIL\033[0m — %d passed, %d failed\n' "$pass" "$fail"; exit 1; fi
