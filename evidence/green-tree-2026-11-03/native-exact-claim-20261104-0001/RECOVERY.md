@@ -1,0 +1,9 @@
+# Green Tree exact native trial worker actually owns T2376
+
+[Run41742893188](https://github.com/kevinrhaas/polecat-platform/actions/runs/41742893188), reviewed featureaa9/nativeUbuntu26, CLAIMED **T-2376** at **2026-11-04T00:01:18.671Z**. Actual claimed_run is exactly the intended job URL. The protected read-only claimobserver closed0/all children reaped/no cleanup, with no ownership mismatch.
+
+This is native ownership proof, not a useful dormer change, geometry qualification, accepted image, source gate, source PR or merge. The trial remains data-only4.50→4.85m/reconstructed, actual unchanged-camera beforeafter required, one candidate/atmostonejustifiedadjustment, appunchanged if it does not visibly improve the result. Full original coverage and source/proportion/date conflicts remain open.
+
+[Exactdispatch/preservednativehandoff/finished-branchguard audit](https://github.com/kevinrhaas/chicago-evidence/blob/58fd7bb66ad2762d567b9ecf93d642fce35e7edc/evidence/green-tree-2026-11-03/native-exact-dormer-worker-dispatched-2353/RECOVERY.md) · [Current source/native-parameter/actual-picture readiness](https://github.com/kevinrhaas/chicago-evidence/blob/094485bf376bd33cac9ff087eeef76b041ff672b/evidence/green-tree-2026-11-03/native-dormer-peak-readiness-current42b/RECOVERY.md).
+
+It is the fourth distinct native task; Jail/frame, firstfort/outbuilding and secondfort/fort_structure runs remain separate. Coordinator now consolidates GreenTree into the one protected lightweight source/result observer, preserving all earlier observation windows. All genuine affected geometry and actualWEB/source4 beforefirstsourcecommit, both viewport source/credit/body/entry checks and rootdirectpixels/hostgreen/ordinarydevPR/partialrelease requirements remain. No newphoto tickets or forced completion.
