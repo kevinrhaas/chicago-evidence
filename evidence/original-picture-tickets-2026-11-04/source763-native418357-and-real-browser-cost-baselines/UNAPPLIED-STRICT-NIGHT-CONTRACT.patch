@@ -1,0 +1,67 @@
+--- a/chicago/4d/tools/smoke_renderer.mjs
++++ b/chicago/4d/tools/smoke_renderer.mjs
+@@ -706,12 +706,15 @@
+  * reach assertions below remain unchanged. The new glass predicate must be
+  * verified by the actual published stage 8 runs before this change can merge.
+  */
+-const STRUCTURE_BATCHES = 6;
++// T-3332/T-3333: the intended owned night-window shader is an additional opaque
++// class. Actual1c census at both detail levels identifies it separately from
++// ordinary walls; this is an exact material contract, not a draw-cost allowance.
++const STRUCTURE_BATCHES = 7;
+ /**
+- * Four of those six are the two roof coverings and two wall substrates. The
++ * Four of those seven are the two roof coverings and two wall substrates. The
+  * total alone could pass after losing a relief map and splitting an unrelated
+  * surface instead; this holds the mapped groups, while the live glass predicate
+- * below holds the one separate translucent class and the five opaque groups.
++ * below holds the one separate translucent class and the six opaque groups.
+  */
+ const TEXTURED_STRUCTURE_BATCHES = 4; // two roof coverings (T-1488) + clapboard and log walls (T-1963)
+ /**
+@@ -12218,6 +12221,14 @@
+         batches: bs.length, values: seen.size, min, max,
+         textured: bs.filter((b) => b.material?.normalMap).length,
+         opaque: bs.filter((b) => !b.material?.transparent).length,
++        plainUnmappedOpaque: bs.filter((b) => !b.material?.transparent
++          && !b.material?.normalMap && !b.material?.userData?.nightWindows).length,
++        nightBuckets: bs.filter((b) => b.material?.userData?.nightWindows).map((b) => {
++          const owners = [...new Set((b.userData.batchIndex ?? []).filter(Boolean))].sort();
++          return { tag: b.material.userData.nightWindows,
++            opaque: !b.material.transparent, mapped: Boolean(b.material.normalMap), owners,
++            realOwners: owners.every((id) => window.__chicago4d.registry.get(id)?.sidecar?.id === id) };
++        }),
+         normalMode: !window.__chicago4d.confidenceView,
+         translucent: bs.filter((b) => b.material?.transparent).map((b) => ({
+           owners: [...new Set((b.userData.batchIndex ?? []).filter(Boolean))].sort(),
+@@ -12226,20 +12237,27 @@
+         })),
+       };
+     });
+-    check(`${label}: the opaque town stays merged beside its four relief groups and separate lantern glass`,
++    check(`${label}: the opaque town keeps its four relief groups, owned night windows and separate lantern glass`,
+       batchCensus.batches === STRUCTURE_BATCHES
+         && batchCensus.textured === TEXTURED_STRUCTURE_BATCHES,
+       `${batchCensus.batches} structure batch(es), want ${STRUCTURE_BATCHES}, of which `
+       + `${batchCensus.textured} carry a relief map, want ${TEXTURED_STRUCTURE_BATCHES}`);
++    const nightBucket = batchCensus.nightBuckets[0];
++    check(`${label}: one owned night-window bucket stays opaque and separate from ordinary unmapped walls`,
++      batchCensus.plainUnmappedOpaque === 1 && batchCensus.nightBuckets.length === 1
++        && nightBucket.tag === 'night-windows-v2' && nightBucket.opaque && !nightBucket.mapped
++        && nightBucket.owners.length > 0 && nightBucket.realOwners,
++      `${batchCensus.plainUnmappedOpaque} ordinary unmapped opaque bucket; `
++      + `night ${JSON.stringify(nightBucket ?? null)}`);
+     const lanternGlass = batchCensus.translucent[0];
+     check(`${label}: only the lighthouse's separate glass batch keeps its declared 0.18 opacity`,
+-      batchCensus.normalMode && batchCensus.opaque === 5
++      batchCensus.normalMode && batchCensus.opaque === 6
+         && batchCensus.translucent.length === 1
+         && lanternGlass.owners.length === 1
+         && lanternGlass.owners[0] === 'chicago_lighthouse_1832'
+         && !lanternGlass.mapped && Number.isFinite(lanternGlass.opacity)
+         && Math.abs(lanternGlass.opacity - 0.18) <= 1e-6,
+-      `${batchCensus.opaque} opaque batch(es), want 5; `
++      `${batchCensus.opaque} opaque batch(es), want 6; `
+       + `${batchCensus.translucent.length} translucent, want one unmapped lighthouse batch; `
+       + `owners ${JSON.stringify(lanternGlass?.owners ?? [])}, `
+       + `opacity ${lanternGlass?.opacity ?? 'missing'} (want 0.18 ± 1e-6), `
