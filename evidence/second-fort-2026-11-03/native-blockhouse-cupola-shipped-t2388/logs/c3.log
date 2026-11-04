@@ -1,0 +1,748 @@
+ a row is owned by the single source it cites
+   self-test |   ok:   a row citing two sources is owned by neither
+   self-test |   ok:   a row citing an unclaimed source is unowned
+   self-test |   ok:   a pass writing its own group leaves the other group alone
+   self-test |   ok:   …and the civic pass rewriting its own group does not move the land group
+   self-test |   ok:   the group order is OWNERS' order and not the order the passes ran in
+   self-test |   ok:   a pass writing an empty group removes its own rows and only those
+   self-test |   ok:   an unclaimed row is carried through rather than deleted
+   self-test |   ok:   `mine` sees only the caller's rows
+   self-test |   ok:   a third owner writing its group leaves the first two alone
+   self-test |   ok:   …and an earlier owner rewriting its group does not move the third's
+   self-test |   ok:   every owned source names exactly one owner
+   self-test |   ok:   the first write lands in the slot after `sources`, not at the end
+   self-test |   ok:   a second identical write changes nothing
+   self-test |   ok:   a write by the other owner changes the card once
+   self-test |   ok:   …and is idempotent too
+   self-test |   0 failure(s)
+
+[1m== …and that pass writes two fields, moves no grade and repeats without drift[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | land tract sales self-test: ok
+
+[1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |   ok    a hand-edited people.json is caught
+   self-test |   ok    a hand-edited receptions.json is caught
+   self-test |   ok    a hand-edited 1879 registry cell is caught
+   self-test |   ok    a deleted 1879 transcription is caught
+   self-test |   ok    a hand-edited crosswalk.json is caught
+   self-test |   ok    a claim quoting something the transcription does not carry is caught
+   self-test |   ok    a source id that does not resolve is caught
+   self-test |   ok    a deleted output is caught
+   self-test | OK: the old-settlers gate's assertions still fire
+
+[1m== …and an initial, a rank and an ambiguous forename still fire nothing[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | spend_person_sex_age self-test: 0 assertion(s) failed
+
+[1m== …and a half brother flattened to a brother, a one-sided tie and a lost claim all still fire[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |   ok   a kinship claim nobody has ruled on is an error
+   self-test |   ok   a ruling with no reason is an error
+   self-test |   ok   a ruling with no verdict is an error
+   self-test |   ok   a ruling answering a claim that no longer states kinship is an error
+   self-test |   ok   'tie' with no kin row on the record is an error
+   self-test |   ok   'tie' with both reciprocal rows present passes
+   self-test |   ok   a tie written on one card only is an error
+   self-test |   ok   a written row that does not cite the book is an error
+   self-test |   ok   a written row that does not name its claim is an error
+   self-test |   ok   a book_kin row no ruling writes is an error
+   self-test |   ok   a relation validate.py knows no inverse for is refused
+   self-test |   ok   a half brother mirrored as a plain brother is refused
+   self-test |   ok   a tie from one household to itself is refused
+   self-test |   ok   a ruling quoting a reading the claim no longer carries is an error
+   self-test |   ok   the marriage verb is in the vocabulary the survey's pattern cannot see
+   self-test |   ok   'family' is NOT — a counted family is the reconstruction programme's
+   self-test |   ok   a merge rewrites a book name to the resident it names
+   self-test |   ok   a refused pair is blocked however well the names fold
+   self-test |   ok   a book name nothing has identified resolves to nobody
+   self-test |   ok   the writable relations are exactly validate.py's declared inverses
+   self-test | 
+   self-test | 0 failure(s)
+
+[1m== the namesake rule's own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | namesake --self-test: 13 naming cases and 4 collision cases hold
+
+[1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |    WARN  the #1055 commits are not in this clone (shallow?) — the fixture pair went unasked
+   self-test |    fires: one entry removed from the tree under test
+   self-test |    fires: a swap — one judgement out, one in, and the total never moves
+   self-test |    passes: the same ruling RETIRED — a move between the counted arrays
+   self-test |    passes: a ruling WITHDRAWN with a reason and the ticket that decided it
+   self-test |    fires: the same withdrawal with no reason written
+   self-test |    — resident_rulings.json
+   self-test |      fires: one judgement out of ruled[]  (213 adjudication(s) registered)
+   self-test |      passes: the same judgement withdrawn into withdrawn[] with a reason
+   self-test |      fires: the same withdrawal with nothing written
+   self-test |    — trade_census_1835_spend_rulings.json
+   self-test |      fires: one judgement out of classes_ruled[]  (36 adjudication(s) registered)
+   self-test |      passes: the same judgement withdrawn into withdrawn[] with a reason
+   self-test |      fires: the same withdrawal with nothing written
+   self-test |    — trade_class_rulings.json
+   self-test |      fires: one judgement out of trade_rulings[]  (149 adjudication(s) registered)
+   self-test |      passes: the same judgement withdrawn into withdrawn[] with a reason
+   self-test |      fires: the same withdrawal with nothing written
+   self-test |    — place_vocabulary.json
+   self-test |      fires: one judgement out of places[]  (128 adjudication(s) registered)
+   self-test |      passes: the same judgement withdrawn into withdrawn[] with a reason
+   self-test |      fires: the same withdrawal with nothing written
+   self-test |    — fergus_1839_lots_corrections.json
+   self-test |      fires: one judgement out of lots[]  (120 adjudication(s) registered)
+   self-test |      passes: the same judgement withdrawn into withdrawn[] with a reason
+   self-test |      fires: the same withdrawal with nothing written
+   self-test |    — card_merge_rulings.json
+   self-test |      fires: one judgement out of clusters[].rulings[]  (146 adjudication(s) registered)
+   self-test |      passes: the same judgement withdrawn into withdrawn[] with a reason
+   self-test |      fires: the same withdrawal with nothing written
+   self-test |    ok: every refused file is still in the tree, and refused for one reason
+   self-test |    ok: the gate workflow still fetches a base ref and requires one
+   self-test |    self-test: a lost judgement fails, a moved or stated one does not
+
+[1m== the land tracts still resolve to the same ground, and the same roofs stand on them[0m
+the land-tract join re-derives: 346 tracts on the ground, 135 structures reached
+
+[1m== …and its crosswalk to the 1835 residents rebuilds too[0m
+fergus crosswalk: matches the committed file
+
+[1m== …and the trade table counted off it rebuilds too[0m
+  1,655 entries, 1,583 carrying a printed trade
+  mapped 1,377 (87.0%) onto 88 trades; refused 206
+  13 trade(s) the 1835 vocabulary has no word for
+     152  0.110   clerk
+     133  0.097   carpenter
+      73  0.053   labourer
+      65  0.047   grocer
+      54  0.039   builder
+      48  0.035   blacksmith
+      45  0.033   attorney
+      45  0.033   dry_goods_merchant
+      42  0.030   tailor
+      41  0.030   merchant
+      41  0.030   teamster
+      30  0.022  *drayman
+    refused   64  a_firm_style
+    refused   61  no_rule_reaches_it
+    refused   28  not_legible
+    refused   25  an_employer_or_a_name
+    refused   21  a_house_not_a_trade
+    refused    7  an_address
+
+[1m== the 1837 charter election rebuilds from its committed text, at the declared counts[0m
+fergus 1839 election: 765 claims (706 voters), and they match the committed text at the counts coverage.json declares
+
+[1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | fergus 1839 city register: 3 assertions fire when broken
+
+[1m== …and the bidders' crosswalk to the pools of 1835 names rebuilds too[0m
+fergus 1839 lots crosswalk: matches the committed file
+
+[1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |   fires: a hand-edited entry
+   self-test |   fires: a birth year graded above inferred
+   self-test |   fires: an entry claiming the scene year
+   self-test |   fires: a match quietly dropped from the crosswalk
+   self-test |   fires: a text copy that has drifted from its cache
+   self-test |   fires: a coverage count that no longer matches the text
+   self-test |   fires: a reading with no coverage declaration
+   self-test | read_fergus_obits self-test: all assertions fire
+
+[1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |   fires: a record whose as_read has been tidied — records/entries_vol_04.json nbi_v04_0001: as_read is not what the committed text says at its locator
+   self-test |   fires: a reading upgraded to scan_verified — records/entries_vol_04.json nbi_v04_0001: reading is 'scan_verified' — a machine's reading of a photostat of a
+   self-test |   fires: a locator pointing past the end of the committed text — records/entries_vol_04.json nbi_v04_0001: locator names lines [1, 10000000], which vol_04_locality_cards.txt d
+   self-test |   fires: a card whose localities no longer re-derive from its body — records/entries_vol_04.json nbi_v04_0001: the localities do not re-derive from the committed body line
+   self-test |   fires: a records file citing another source — records/entries_vol_04.json: cites source_id 'andreas_1884_v1', not 'newberry_genealogical_index'
+   self-test |   fires: the committed text edited by hand after extraction — records/entries_vol_01.json: vol_01_locality_cards.txt does not hash to what MANIFEST says it does — the commi
+   self-test |   fires: MANIFEST naming the wrong Internet Archive item — MANIFEST names ia_item 'wrong', not the identifier the owner uploaded the volumes under
+   self-test |   fires: a column sliver the records no longer mark — records/entries_vol_01.json nbi_v01_0695: a column sliver of nbi_v01_0699 that the records do not mark — the d
+   self-test |   fires: a card marked a sliver of one it does not truncate — records/entries_vol_04.json nbi_v04_0001: marked a sliver of nbi_v04_0001, and the committed text does not mak
+   self-test |   fires: a volume counting its slivers as cards — records/entries_vol_01.json: counts.cards says 2397, and the file holds 2397 records of which 3 are column sli
+   self-test |   fires: a reading nobody scanned for column slivers — records/entries_vol_01.json: no sliver_scan — this reading has never been scanned for column slivers, and coun
+   self-test |   fires: a sliver scan that no longer re-derives from the committed text — records/entries_vol_01.json: sliver_scan.boundary_pairs says 1113 and the committed text gives 1112
+   self-test |   fires: a bled-in body the records no longer mark — records/entries_vol_01.json nbi_v01_0832: opens with the tail of nbi_v01_0826 in the column to its left and th
+   self-test |   fires: a card marked a bled-in body off one whose tail it does not open with — records/entries_vol_01.json nbi_v01_0002: marked a bled-in body off nbi_v01_0001, and the committed text does 
+   self-test |   fires: a volume counting its bled-in bodies as cards — records/entries_vol_01.json: counts.cards says 2394, and the file holds 2397 records of which 3 are column sli
+   self-test |   fires: a bleed_run shortened to something the two cards do not share — records/entries_vol_01.json nbi_v01_0832: bleed_run is not the run the committed text shares with nbi_v01_0826
+   self-test |   fires: a merge in the crosswalk — crosswalk.json carries a merge — an index entry is a surname and nothing else, and a surname-only merge is alw
+   self-test |   fires: committed leads that no longer re-derive from their inputs — leads.json does not re-derive from its inputs: the layers, the WORKS table or the committed card text have mov
+   self-test |   fires: committed leads with no re-derivation fingerprint at all — leads.json carries no derives_from.fingerprint — it was written before the re-derivation gate; re-run tools/re
+   self-test |   fires: a lead candidate with no rule — leads.json lead_v01_abbott_census_1840: a candidate with no rule — 'Samuel E. Abbot'
+   self-test |   fires: a lead that calls itself a match — leads.json lead_v01_abbott_census_1840: a lead that does not say it is a lead
+   self-test |   fires: more lead cards than cards on a work — follow_up.json andreas_history_of_chicago: more lead cards than cards
+   self-test |   fires: a precision figure restated above its own verdicts — precision_sample.json: the counts do not add up to the verdicts under them
+   self-test |   fires: a sampled card that is no longer in the records — precision_sample.json nbi_v01_0246: the card it adjudicates is no longer in the records — re-draw the sample, 
+   self-test |   fires: a person graded off the finding aid — data/residents/hh_x.json cites newberry_genealogical_index — the Newberry index is a finding aid published in 
+   self-test |   fires: two OCR shards stitch into one volume and assemble
+   self-test |   fires: shards read at two different dpi stitched into one volume — pages_0002-0002.json.gz was read with different settings from pages_0001-0001.json.gz — two ranges read differ
+   self-test |   fires: shards read off two different pdfs stitched into one volume — pages_0002-0002.json.gz read a different pdf from pages_0001-0001.json.gz
+   self-test |   fires: a volume assembled with a page range missing — pages 2 have no shard — the volume is not read yet (2 of 3)
+   self-test |   fires: a volume assembled with no shard at all — no OCR shards for volume 4 under /tmp/nbi_ocr_u6cf025z — run --extract --ocr --pages A-B first
+   self-test |   fires: an OCR shard MANIFEST names that is not committed — volume 1: MANIFEST names OCR shard pages_0001-0001.json.gz, which is not committed
+   self-test |   fires: an OCR shard edited after the volume was assembled off it — volume 1: OCR shard pages_0001-0001.json.gz does not hash to what MANIFEST says it does
+   self-test |   fires: an OCR shard committed that MANIFEST does not name — volume 1: OCR shard pages_0009-0009.json.gz is committed but MANIFEST does not name it — the committed text wa
+   self-test |   holds: the state banner absorbed as a card body (nbi_v02_1675)
+   self-test |   holds: the banner in the OCR's own spelling (nbi_v02_1027)
+   self-test |   holds: a call-number column wrecked down to the stroke
+   self-test |   holds: a call number standing where the locality would (nbi_v02_1106)
+   self-test |   holds: the regnal Calendarium, which REGNAL already refused
+   self-test |   holds: the regnal Calendarium with its regnal year wrecked (nbi_v03_0614, T-0766)
+   self-test |   holds: the same series where the title itself is wrecked (nbi_v01_hibald, T-0766)
+   self-test |   holds: a county history the Calendarium rule must not take (T-0766's measured cost)
+   self-test |   holds: the regnal Calendarium with its regnal year wrecked (T-0766)
+   self-test |   holds: the same series where the title itself is wrecked (T-0766)
+   self-test |   holds: a county history the Calendarium rule must not take (T-0766's measured cost)
+   self-test |   holds: a wrapped locality, which the call-number rule must not touch
+   self-test |   holds: a wrecked reading that still carries its date (nbi_v01_1796's class)
+   self-test |   holds: an ordinary Cook County card
+   self-test |   holds: a page list that reaches page 111 (nbi_v01_1054)
+   self-test |   holds: the illustration note, page 203 illustrated (nbi_v01_1707)
+   self-test |   holds: Chicago with its trailing o read as a nought (nbi_v02_0809)
+   self-test |   holds: Chicago wrecked to a stop and a nought (nbi_v02_1144)
+   self-test |   holds: a page list the OCR ran into the word before it, kept on purpose (nbi_v03_0596)
+   self-test | SELF-TEST PASS — 52 case(s)
+
+[1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | self-test — every assertion, broken on purpose:
+   self-test |   ok   a record deleted by hand
+   self-test |   ok   a coverage count that undercounts the list
+   self-test |   ok   the records file deleted
+   self-test |   ok   a cached page whose columns are gone
+   self-test |   ok   a row lost from the page
+   self-test |   ok   a domain text copy that has drifted
+   self-test | 6 of 6 assertions fired
+
+[1m== the Second Presbyterian roll rebuilds, and no line of it is an 1835 fact[0m
+second presbyterian roll: 964 records and 82 matched residents rebuild
+
+[1m== every newspaper claim resolves, quotes verbatim, and the gazetteer is compiled[0m
+  ok    86 extraction file(s), 1189 claim(s), deposit present
+  ok    1188 quote(s) reassembled from the transcription and identical
+  ok    2667 person(s), 3 place(s), 193 business(es), compile deterministic and committed
+  ok    264 declared identity merge(s): 200 person, 50 firm, 2 place, 12 proprietor — each one carrying its reason
+  ok    5 name(s) declared a place rather than a person, each with its reason and none of them letter-list-only
+  ok    4 house(s) hold two proprietors of one surname apart, each with the sentence that tells them apart
+  ok    314 placement reading(s) kept with their own dates, 62 house(s) printed with more than one, 4 whose anchor CHANGES on a date — every reading of those accounted for, the live one computed from the scene date
+  ok    2 house(s) whose live address a later printing outranks and which are REFUSED a change, each naming an anchor it will not be reordered by and a kind the readings themselves confirm
+  ok    22 firm group(s) refused rather than merged, each naming the printings the refusal rests on
+  ok    1 business(es) declared another's premises or department rather than merged into it, each naming the printings the relation rests on
+  ok    1 agency relation(s): 2 holding(s) and 1 refused, 1 minted record(s) retired — a house that holds an agency gains a line and not a roof
+  ok    86 issue(s) inside 19 declared coverage range(s), none missing
+  ok    88 transcription(s) resolve their columns, 0 unreadable here, 1 unsegmented by nature
+
+[1m== every business carries a census class, and the December 1835 count re-derives[0m
+the December 1835 trade count re-derives: 229 businesses classified, none left out
+
+[1m== the trade-census gap is spent from the layers that hold it, and nobody is invented[0m
+the trade-census spend re-derives: 26 practitioners on 5 classes, 17 of 44 still not reached
+
+[1m== no house is placed by a printing that gave no address[0m
+  ok    no house is placed by a printing that gave no address; 13 house(s) take a later printing's, 0 WAIT on a judgement nobody has made, 2 have an `anchor_changes` rule written, 2 are declared REFUSED one with the kind checked, 0 are outranked only by a printing after the scene date, 0 are placed by nothing printed on or before it, and 3 were never given any ground by any printing of their own
+
+[1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |   ok    83 self-test case(s)
+
+[1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | self-test: 24/24 assertions hold
+
+[1m== …and an unmapped class, a quota past its heads and a borrowed style are refused[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | OK: 21 assertions of the business reconstruction still fire
+
+[1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |   fires: a record that grows a lot field
+   self-test |   fires: a record that fills the lot field it declares
+   self-test |   fires: a record that stops declaring `claims_lot: false`
+   self-test |   fires: a record that makes its order a claim
+   self-test |   fires: an adoption on a roof this project does not hold
+   self-test |   fires: an adoption on a roof that does not front its street
+   self-test |   fires: a home split that books an inferred roof as named
+   self-test |   fires: a home split that books a named roof as inferred
+   self-test |   fires: a corner adoption that calls itself a lot front
+   self-test |   fires: an adoption reaching its street only by the declined centreline band
+   self-test |   fires: two businesses on one roof
+   self-test |   fires: an adoption citing no printing of its street
+   self-test |   fires: a widening that deals one corner roof to two shopfronts
+   self-test |   fires: a widening whose seat count runs ahead of the roofs it dealt
+   self-test |   fires: a business seated in a yard building
+   self-test |   fires: a business seated in a roof the inferred-household layer holds
+   self-test |   fires: a business seated in a roof raised to answer a slot request
+   self-test |   fires: a second business seated in an authored trade workplace: recon_1835_canal_trade_c3_001
+   self-test |   fires: a second business seated in an authored trade workplace: recon_1835_canal_trade_c4_002
+   self-test |   fires: a second business seated in an authored trade workplace: recon_1835_canal_trade_w1_003
+   self-test |   fires: a second business seated in an authored trade workplace: recon_1835_canal_trade_w2_004
+   self-test |   fires: a business moved into a dwelling while its own shop roof stands free
+   self-test |   fires: a record that misstates its roof's family
+   self-test |   fires: a record that misstates its trade's kind of premises
+   self-test |   fires: a record that misstates whether its roof fits its trade
+   self-test |   fires: a record that misstates the band its roof's family is in
+   self-test |   ok:    every adoptable roof reads `reconstructed` from its own phase (529 roofs), which is what limit 2 re-reads
+   self-test |   holds: lot front only                     31 seated on 31 roofs town-wide; per face it would seat 31 and deal 0 roof(s) twice
+   self-test |   holds: a corner side is a face            45 seated on 45 roofs town-wide; per face it would seat 47 and deal 4 roof(s) twice
+   self-test |   holds: a corner side or the band is a face 46 seated on 46 roofs town-wide; per face it would seat 48 and deal 4 roof(s) twice
+   self-test |   ok:    the per-face ledger would double-deal 8 roof(s) across the costed readings, so the town-wide one is doing work
+   self-test |   holds: the bootmaker and the auctioneer still share one surname set, so the collapse would still reach them
+   self-test |   holds: identity.json still rules that surname `two_houses`
+   self-test |   holds: the ruling separates the two trades
+   self-test |   holds: two headings of the SAME trade inside a ruled group still collide
+   self-test |   holds: and without the ruling they would collapse, so the ruling is what does the work
+   self-test |   holds: a surname the corpus has NOT ruled is keyed on the surname alone (146 businesses)
+   self-test | SELF-TEST PASS — all six limits, all three roof refusals (both halves of the household one, the yard building, and the roof raised to answer a slot request), both edges of the 2026-08-30 face ruling, both directions of the home split (T-1632) and both readings of the one-roof-one-business ledger fire when broken, and refusal 3 still obeys identity.json's two_houses rulings (20 cases)
+
+[1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |   fires: a duplicated business -> business_id is not unique
+   self-test |   fires: a pending roof that acquires a seat -> business_collins_caton: structure_pending, yet it seats on 'first_fort_dearborn_pickets_inner'
+   self-test |   fires: a seat the dataset does not hold -> business_a_filer_co: model_seat 'a_building_nobody_holds' is not a committed structure
+   self-test |   fires: an adopted roof that stops being substitutable -> business_a_filer_co: an adopted seat that is not substitutable — clause 3 says the roof is not the claim
+   self-test |   fires: an adopted business whose evidence reach climbs to the roof -> business_a_filer_co: an adopted business whose evidence reach is 'structure', not the street the paper named
+   self-test |   fires: an unseated street-only business that acquires a roof -> business_a_garrett_auctioneer: unseated, yet it seats on 'first_fort_dearborn_pickets_inner'
+   self-test |   fires: an unplaceable business that reaches ground -> business_a_chicago_stove_and_hollow_ware_dealer_august_1835: unplaceable, yet it reaches ground
+   self-test |   fires: an unplaceable business with no printed reason -> business_a_chicago_stove_and_hollow_ware_dealer_august_1835: unplaceable with no printed reason
+   self-test |   fires: a business that changes published limit -> business_a_chicago_stove_and_hollow_ware_dealer_august_1835: grade 'street_only_unseated' does not refine the published limit 'unplaceable' — a business may not move between the limits without a new source
+   self-test |   fires: a published limit that falls without a source -> the 'unplaceable' grades total 60, not the published 59 — clause 4 says a limit falls only on a new source
+   self-test |   fires: a declared move between the limits -> a business moved between the published limits; clause 4 requires a new source or reading for that, and this pass reads none
+   self-test |   fires: a retention whose guard has expired -> T-1087: its guard has expired — the committed data it stood on has changed (data/research/newspapers/place_vocabulary.json). Re-read the ticket and re-state the retention; a gate may not count this as a pass.
+   self-test |   fires: a retention that claims to hold and does not -> T-0251: its guard has expired — the committed data it stood on has changed (data/structures/first_presbyterian_church.json). Re-read the ticket and re-state the retention; a gate may not count this as a pass.
+   self-test |   fires: a retention that goes missing -> the retentions do not name T-0251, T-0305, T-0386 and T-1087
+   self-test |   fires: a retention with no route out -> T-0305: retained with no route out
+   self-test | all 15 assertions fire when broken
+
+[1m== …and each of those rules moves when its input moves[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |   ok   a role the roles tool covers reaches the day
+   self-test |   ok   the same role with the flag down does not
+   self-test |   ok   a role with no flag at all does not reach
+   self-test |   ok   a home resolved at the scene date reaches
+   self-test |   ok   the same home, limited, does not
+   self-test |   ok   the same home, dated off the scene date, does not
+   self-test |   ok   a later home address can never reach
+   self-test |   ok   a later workplace address can never reach
+   self-test |   ok   a business premises reaches on the firm's own present_at_scene_date
+   self-test |   ok   and does not when the firm is not standing on the day
+   self-test |   ok   an axis with a reaching row is `reaches`
+   self-test |   ok   an axis with rows and no reach is `limited`
+   self-test |   ok   an axis with no rows at all is `none`
+   self-test |   ok   an axis holding only a `no_claim` row is `none`, not `limited`
+   self-test |   ok   …and one live claim beside a `no_claim` row still decides the axis
+   self-test |   ok   a present household is present
+   self-test |   ok   an uncertain household is not
+   self-test |   ok   a person with a reaching role and a resolved home reaches both axes
+   self-test |   ok   …and his work and other axes stay `none`
+   self-test |   ok   …and his uncertain presence is carried, not converted into an axis
+   self-test |   ok   the same person with the flags down is `limited` on both, never `none`
+   self-test | self-test: 21/21 assertions hold
+
+[1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |    fires: an apportionment across weights that sum to zero
+   self-test |    fires: an apportionment of a negative total
+   self-test |    fires: an inverted range
+   self-test |    fires: a figure with no range at all
+   self-test |    fires: an input file the book cannot read
+   self-test |    fires: a bucket filled past its quota
+   self-test |    fires: a fill that names no ticket
+   self-test |    fires: two tickets overfilling one bucket between them
+   self-test |    fires: the book's known and T-1386's presence rulings disagree
+   self-test |    fires: a presence rulings file with no rulings in it
+   self-test |    fires: a book whose remainder would order a town outside the model's range
+   self-test |    fires: a re-family move that names no person
+   self-test |    fires: a re-family move that names no rule that chose the head
+   self-test |    fires: a re-family move naming a rule that is not a rung of the cost ladder
+   self-test |    fires: a re-family move standing on a rung the rule refuses on
+   self-test |    fires: a re-family move that does not say which adoptions travel with the head
+   self-test |    fires: a re-family move that leaves and enters the same bucket
+   self-test |    fires: a re-family move into a bucket that is not in this book
+   self-test |    fires: one person re-familied twice
+   self-test |    fires: a bucket re-familying out more heads than were ever drawn in it
+   self-test |    fires: a re-family move that would re-sex the head
+   self-test |    fires: a re-family move into a bucket with no order left to fill
+   self-test |    fires: more heads landed in a shrunk order than the committed book carried
+   self-test |    fires: a delta row whose NOT A CHECK sentence no longer matches its flag
+   self-test |    fires: a delta row summing a matrix group that does not exist
+   self-test |    fires: a bracket is a comparison, so those two rulings contradict
+   self-test |    fires: does not say how many of its houses opened after the scene date
+   self-test |    fires: cannot be subtracted from a count of men
+   self-test |    fires: a bucket with work left ordered by a done ticket
+   self-test |    fires: a bucket with work left ordered by a split ticket
+   self-test |    fires: a bucket with work left ordered by a withdrawn ticket
+   self-test |    fires: a bucket ordered by an id that is not a ticket at all
+   self-test |    fires: an unsettled re-family step ordered by a done ticket
+   self-test |    fires: an unsettled re-family step ordered by a withdrawn ticket
+   self-test |    fires: an unsettled re-family step ordered by an id that is not a ticket at all
+   self-test |    fires: an unsettled re-family step ordered by nobody at all
+   self-test |    fires: a split re-family programme whose every piece has closed
+   self-test |    fires: a split re-family programme with no pieces at all
+   self-test |    fires: a split re-family programme whose split piece's pieces have all closed
+   self-test |    fires: a programme step the ledger does not state at all
+   self-test |    fires: a programme settled while the rule still yields a move
+   self-test |    fires: a programme unsettled at the rule's own fixpoint
+   self-test |    fires: a programme whose remainder disagrees with the moves the ledger has spent
+   self-test |    fires: a programme whose count of the held disagrees with the book's own surplus
+   self-test |    fires: a programme that does not say which refusal holds every one of the held
+   self-test |    fires: a programme settled over more refused buckets than the book refuses
+   self-test |    fires: a programme settled with people still held and no the_finish_line
+   self-test |    fires: a programme settled with people still held and no the_ruling_that_set_it
+   self-test |    fires: a programme settled with people still held and no what_becomes_of_them
+   self-test |    fires: a programme settled with people still held and no what_would_reopen_it
+   self-test |    fires: a cell cut into one band, which is not a cut
+   self-test |    fires: a cell cut with two remainder bands, so its order would be ordered twice
+   self-test |    fires: a closed band whose id prefix matches no standing record
+   self-test |    fires: a closed band that names its members by prefix and still claims an order
+   self-test |    fires: a closed band that says nothing about what closed it
+   self-test |    fires: a band carrying no owning ticket
+   self-test |    fires: a band that names its members neither by prefix nor as the rest of the cell
+   self-test |    fires: a closed band whose prefix reaches a roof in another division
+   self-test |    fires: bands that do not add back up to their cell, which would be a quiet re-budget
+   self-test |    fires: a band whose own target, standing and order do not close
+   self-test |    fires: a seating pass whose seated and owed miss its own scope
+   self-test |    fires: a seating pass whose adoptions and slots miss its own seated count
+   self-test |    fires: a second seating pass offered rows the first did not hand on
+   self-test |    fires: a slot count that disagrees with the slot rows carried beside it
+   self-test |    fires: a seats file with no counts at all
+   self-test |    fires: a withdrawn house takes more from a cell than the ruling ordered there
+   self-test |    fires: the ruling's houses fill past an order its withdrawals cut
+   self-test | build_order_book_1835 self-tests pass (67 guards fired, 221 buckets, child share 0.266 inside 0.2-0.2702, no record named)
+
+[1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |    self-test | FAIL as intended: a ledger move the rule never yielded
+   self-test |    self-test | FAIL as intended: one person moved twice
+   self-test |    self-test | FAIL as intended: a move landing in a bucket that is itself refused
+   self-test |    self-test | FAIL as intended: a move leaving a bucket the book does not refuse
+   self-test |    self-test | FAIL as intended: a bucket sending out more people than it still holds
+   self-test |    self-test | FAIL as intended: a rule whose town does not converge to its own standing plus owed
+   self-test |    self-test | FAIL as intended: a town converging outside the model's own range
+   self-test |    self-test | FAIL as intended: a settled programme whose residue is not the one this report ends on
+   self-test |    self-test | FAIL as intended: an order book that says nothing about where the programme finishes
+   self-test |    self-test | FAIL as intended: a programme step that does not say what becomes of the people it holds
+   self-test | OK: 10 refusal(s) fired as intended, and the arithmetic closes both ways
+
+[1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |   ok    stops on the first lap that moves nothing: 2
+   self-test |   ok    an already-settled tree takes one lap and moves nothing: 0
+   self-test |   ok    refuses a lap that returns to an earlier lap's state: ('refused', 'lap 3 returned to the state lap 1 left: the cycle oscillates')
+   self-test |   ok    …including the state it started from: ('refused', 'lap 2 returned to the state lap 0 left: the cycle oscillates')
+   self-test |   ok    refuses a cycle that runs out of laps: ('refused', 'did not settle in 3 laps')
+   self-test |   ok    a lap that set the rule aside is not a fixpoint even if nothing moved: ('refused', 'lap 1 set the rule aside and changed nothing')
+   self-test |   ok    a stale-rule refusal from women-and-children may be set aside: True
+   self-test |   ok    the same words from a stage that carries no moves may not: False
+   self-test |   ok    a refusal about the town is never set aside: False
+   self-test |   ok    the prelude takes the owner gate off and nothing else: True
+   self-test |   ok    the set-aside deal drops only the moves that no longer fit a house: True
+   self-test |   ok    the rule is rebuilt after the first deal and before the second: True
+   self-test |   ok    only the first deal of a lap may set the rule aside: ['women', 'trades']
+   self-test |   ok    a snapshot puts back a changed, a removed and an added file: (True, True)
+   self-test | OK: settle_family_cycle self-test
+
+[1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | build_staffing_model_1835 self-tests pass (2 guards fired, 34 classes, 65–199–411 staff implied over 176 houses, nobody written)
+
+[1m== …and each of its five assertions still fires when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | OK: all eleven assertions of the reconstructed seating fire when broken
+
+[1m== …and each of its seven assertions still fires when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | OK: all twenty assertions of the employment coverage fire when broken
+
+[1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |   ok    a house over its crowded ceiling is refused
+   self-test |   ok    a person seated twice is refused
+   self-test |   ok    an invented name a real person bears is refused
+   self-test |   ok    a lodging house counted into a cell the book has not got is refused
+   self-test |   ok    a lodging house counted past what its cell orders is refused
+   self-test |   ok    every lodging household record is counted once, and only those
+   self-test |   ok    the committed book carries a fill row for every lodging house cell
+   self-test |   ok    what this stage refuses for want of a division mints nobody
+   self-test |   ok    a house every division source is silent about resolves to no division
+   self-test |   ok    a roof reconciled into the fort district is not given a civil division
+   self-test |   ok    a division read off the layer is not overturned by the reconciliation
+   self-test |   ok    only a roof this programme raised is given a keeper
+   self-test |   ok    the mix sends a professional trade to the ticket's own named houses
+   self-test |   ok    no lodger is drawn under ten
+   self-test |   ok    no boarder is dealt a trade
+   self-test |   ok    every working lodger carries a dealt trade, and none a keeper's
+   self-test |   ok    every lodging place's keeper row says who owes the rest of the household
+   self-test |   ok    every child drawn is the kin of a named keeper on a named house
+   self-test |   ok    a child standing free in a lodging cell is refused
+   self-test |   ok    every child is ordered out of an `under_10` lodging cell
+   self-test |   ok    children take no ordinary bed; physical vacancies do not cancel overflow
+   self-test |   ok    every child the model wanted is either drawn or refused in writing
+   self-test |   ok    two builds over one layer write the same bytes
+   self-test |   ok    a re-cut of the book moves nobody this stage has already dealt
+   self-test |   ok    a re-cut the basis stands against is stated in `re_cut_since`
+   self-test |   ok    the committed basis is read back as the room the deal was dealt against
+   self-test |   ok    a bucket re-cut below its own draw is refused
+   self-test |   ok    a bucket dropped from under a fill is refused
+   self-test |   28 case(s), 0 failure(s)
+   self-test |   ok    persisted authorization is consumed by later occupancy, not by children
+   self-test |   ok    ordinary recut preserves identities/seats/current capacities and fixed point
+   self-test |   ok    persisted dates, crowded occupancy and class changes refuse
+
+[1m== …and a boarder, a lodging roof and a count past the order are refused[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |    self-test | ok   a boarder is never counted as a household
+   self-test |    self-test | ok   a lodging-house roof is never counted
+   self-test |    self-test | ok   a record the book does not count as awaiting is never counted
+   self-test |    self-test | ok   the dealt roof is taken before the seated family, then the larger family
+   self-test |    self-test | ok   the walk stops at the division's room and says why for the rest
+   self-test |    self-test | ok   the count does not depend on the order its inputs are read in
+   self-test |    self-test | ok   fires: a household seated twice
+   self-test |    self-test | ok   fires: a seat in a division with no family_dwelling order
+   self-test |    self-test | ok   the room is the order less every OTHER stage's fill, never this stage's own
+   self-test |    self-test | ok   a cell the re-cut refused is read at the re-cut's want, not the held number
+   self-test |    self-test | ok   a household beyond the index is counted, after the held heads of its rung
+   self-test |    self-test | ok   a boarder, a lodger and a lodging-house bed beyond the index are beds, never houses
+   self-test |    self-test | ok   a lodging or institutional household is its own stage's fill, never counted again
+   self-test |    self-test | ok   a card the town does not hold on 1 July is never counted
+   self-test |    self-test | ok   a keeper over a store is a store household, never a family dwelling
+   self-test |    self-test | ok   a present card nothing holds is reported, not hidden
+   self-test |    self-test | ok   fires: a household that is both a held head record and beyond the index
+   self-test |    self-test | 0 failure(s)
+
+[1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |    fires: the American of 13 June no longer saying 'some hundreds more'
+   self-test |    fires: the 1843 census row that counts transients separately being renamed
+   self-test |    fires: an 1843 return with more transient persons than people
+   self-test |    fires: a land-sale crosswalk that can place nobody
+   self-test |    fires: a land-sale register with no entry
+   self-test |    fires: a camp ground graded documented that cites no claim
+   self-test |    fires: a camp ground graded outside the vocabulary
+   self-test |    fires: a camp ground that authors its own polygon
+   self-test |    fires: a camp ground resolving from a file that is not in the tree
+   self-test |    fires: a camp grounds file that offers no candidate
+   self-test |    fires: a vessels file that has acquired a crew complement
+   self-test |    fires: a hull that carries a crew
+   self-test |    fires: a hull moored to a landing no source gives it
+   self-test |    fires: a hull that authors its own coordinate
+   self-test |    fires: a hull entered on words the shipping column does not carry
+   self-test |    fires: a master the corroborating column of 20 June does not name
+   self-test |    fires: a hull graded documented that cites no claim
+   self-test |    fires: a hull entered on an undated line
+   self-test |    fires: a vessels file that enters no hull
+   self-test |    fires: a reach resolving from a file that is not in the tree
+   self-test |    fires: a port reading that puts no hull at Chicago on the scene date
+   self-test |    fires: a town model that no longer carries the July population
+   self-test |    fires: a figure that states no method
+   self-test |    fires: a figure derived from no file
+   self-test |    fires: an inverted range
+   self-test |    fires: a point reading outside its range
+   self-test |    fires: a refusal that takes more than one sentence
+   self-test |    fires: an input tree the model cannot read
+   self-test |    fires: the port figure follows the hulls rather than a typed constant
+   self-test | model_transients_1835 self-tests pass (29 guards fired, 3 sections, no point reading adopted, no record named)
+
+[1m== the lot-and-block address re-derives, and seating it promotes no roof[0m
+lot addresses: 1 seated, 1 in the ledger
+
+[1m== the 1840 census line-to-serial crosswalk re-derives from the page readings[0m
+  813 lines read on 27 pages · 324 unique · 363 ambiguous · 126 none · 324 of 964 households named
+
+[1m== the cross-domain identity master re-derives, and no grade stands above its rung[0m
+  ok    data/research/residents/identity_master.json re-derives
+  ok    data/research/residents/source_coverage.json re-derives
+  ok    data/research/residents/grading_proposal.json re-derives
+  ok    data/research/residents/ladder_coverage.json re-derives
+  ok    4 card(s) ruled on for gathering two men — 3 reading(s) held off the card they were folded onto, and every ruling still says what the master says
+  ok    1 declared reading merge(s) in data/research/directories/reading_merge_crosswalk.json join 1 identit(ies) and every one still resolves
+  ok    6949 identities over 11121 appearances; 1638 stand in two or more domains; 1913 refusals, every one with a rule
+  ok    the policy doc carries every rung of the ratified ladder
+  ok    data/residents/index.json carries all 12 rung(s) verbatim, so the card can print what a rung says
+
+[1m== the mints' consultation of the identity master is the master's own rules[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |   ok    M1 — the same name letter for letter is the same man
+   self-test |   ok    M2 — 'G. S. Hubbard' attaches to the one Gurdon on a card
+   self-test |   ok    M3 — a bare 'Gurdon Hubbard' folds onto the one middle initial
+   self-test |   ok    a surname the town does not carry resolves onto nothing
+   self-test |   ok    a name that names nobody resolves onto nothing
+   self-test |   ok    R3 — an initial with two rival full forenames is never guessed at
+   self-test |   ok    R2 — a different initial of the same surname is a different man
+   self-test |   ok    …and the exact forename of one rival still resolves
+   self-test |   ok    a rival the town wrote no card for still holds the merge apart
+   self-test |   ok    M3 refuses when a rival carries a different middle initial
+   self-test |   ok    a card the pass is blind to is not a card it may be refused for
+   self-test |   ok    an identity already holding two cards still answers with a visible one
+   self-test |   ok    the refusal sentence names the card, the reading and the rule
+
+[1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | Wright 1834 'L. House' glyph, resource pixel 2941, 1604
+   self-test |   recomputed local ENU    +1055.59 E    +172.54 N
+   self-test |   recomputed UTM 16N     448128.29  4637568.34
+   self-test |   record carries         448128.29  4637568.34
+   self-test |   record drift from the reading   0.004 m
+   self-test |   trace's own derived point drift 0.004 m
+   self-test |   position graded 'inferred' on wright_1834, andreas_1884_v1
+   self-test | FAIL: chicago_lighthouse_1832.json stands 4.996 m from the glyph it cites. The coordinate and the reading are the same statement; move one and you must move the other, or say in the note that the record no longer comes from the sheet.
+   self-test | FAIL: wright_1834_lighthouse_glyph.json's own `derived` block is 2.996 m from what its pixel recomputes to
+   self-test | FAIL: the position is derived from the Wright sheet and does not cite 'wright_1834'
+   self-test | FAIL: a glyph centre read off a lithograph through a 17.5 m RMS affine is not an attested coordinate — the sheet locates the tower, it does not survey it
+   self-test | self-test: 5 assertion(s) fire
+
+[1m== …and its own refusals still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |    self-test | ok: the register's own agencies pass the gate
+   self-test |    self-test | FAIL as designed: the relation goes missing entirely
+   self-test |    self-test | FAIL as designed: the caveat is rewritten into a trade
+   self-test |    self-test | FAIL as designed: a holding is kept with no printing behind it
+   self-test |    self-test | FAIL as designed: a man is seated on a roof
+   self-test |    self-test | FAIL as designed: a refusal stops saying why
+   self-test | self-test ok
+
+[1m== …and a picture, a camera, a ruling or an invention still decides what it should[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | OK: pictures, cameras, rulings, existence and the street maps each decide what they should
+
+[1m== the Guide's glossary and FAQ use the locked terms exactly, within their lengths and grade 9[0m
+OK: 7 locked terms and 2 answers, every one within its lengths, reading grade at most 6.0, and every claim resting on files that exist
+
+[1m== the 1904 houses' former residents re-derive from the Blue Book and census readings (T-3266)[0m
+former residents: up to date
+
+[1m== arrival telemetry: four named lamps on their boot phases, YEARS TO GO to 0, the deck's log lines (T-2612)[0m
+ARRIVAL TELEMETRY PASS — four named lamps on real phases, YEARS TO GO to 0, deck log lines, faults and skips
+
+[1m== no path, id, snake_case, 'tier', 'ticket' or 'order book' in what a visitor reads (T-2668)[0m
+  read 452 table string(s), 652 page string(s), 902 goto string(s), 248641 records string(s)
+VISITOR UI PASS — no path, id, snake_case, tier, ticket or order book a visitor reads (0 held by the allowlist for the ticket that owns the fix)
+
+[1m== the page says every record as the gate reads it, and no card it renders leaks (T-2825)[0m
+   ok   flora: the page finds all 100 of the overlay's entries in its records
+   ok   flora: the 123 strings the page rewrites carry no ticket, id or path
+   ok   flora: saying a record for a reader leaves the record itself as it was
+   ok   flora: no clean sentence shares a key with a rewritten one
+   ok   fauna: the page finds all 62 of the overlay's entries in its records
+   ok   fauna: the 69 strings the page rewrites carry no ticket, id or path
+   ok   fauna: saying a record for a reader leaves the record itself as it was
+   ok   fauna: no clean sentence shares a key with a rewritten one
+   ok   residents_index: the page finds all 19 of the overlay's entries in its records
+   ok   residents_index: the 19 strings the page rewrites carry no ticket, id or path
+   ok   residents_index: saying a record for a reader leaves the record itself as it was
+   ok   residents_index: no clean sentence shares a key with a rewritten one
+   ok   residents: the page finds all 8500 of the overlay's entries in its records
+   ok   residents: the 36997 strings the page rewrites carry no ticket, id or path
+   ok   residents: saying a record for a reader leaves the record itself as it was
+   ok   residents: no clean sentence shares a key with a rewritten one
+   ok   businesses: the page finds all 856 of the overlay's entries in its records
+   ok   businesses: the 6439 strings the page rewrites carry no ticket, id or path
+   ok   businesses: saying a record for a reader leaves the record itself as it was
+   ok   businesses: no clean sentence shares a key with a rewritten one
+   ok   structures_1812: the page finds all 270 of the overlay's entries in its records
+   ok   structures_1812: the 470 strings the page rewrites carry no ticket, id or path
+   ok   structures_1812: saying a record for a reader leaves the record itself as it was
+   ok   structures_1812: no clean sentence shares a key with a rewritten one
+   ok   structures_1835: the page finds all 3446 of the overlay's entries in its records
+   ok   structures_1835: the 14062 strings the page rewrites carry no ticket, id or path
+   ok   structures_1835: saying a record for a reader leaves the record itself as it was
+   ok   structures_1835: no clean sentence shares a key with a rewritten one
+   ok   structures_1904: the page finds all 2861 of the overlay's entries in its records
+   ok   structures_1904: the 3877 strings the page rewrites carry no ticket, id or path
+   ok   structures_1904: saying a record for a reader leaves the record itself as it was
+   ok   structures_1904: no clean sentence shares a key with a rewritten one
+   ok   jaunts_1812: the page finds all 11 of the overlay's entries in its records
+   ok   jaunts_1812: the 22 strings the page rewrites carry no ticket, id or path
+   ok   jaunts_1812: saying a record for a reader leaves the record itself as it was
+   ok   jaunts_1812: no clean sentence shares a key with a rewritten one
+   ok   jaunts_1835: the page finds all 112 of the overlay's entries in its records
+   ok   jaunts_1835: the 203 strings the page rewrites carry no ticket, id or path
+   ok   jaunts_1835: saying a record for a reader leaves the record itself as it was
+   ok   jaunts_1835: no clean sentence shares a key with a rewritten one
+   ok   jaunts_1904: the page finds all 51 of the overlay's entries in its records
+   ok   jaunts_1904: the 73 strings the page rewrites carry no ticket, id or path
+   ok   jaunts_1904: saying a record for a reader leaves the record itself as it was
+   ok   jaunts_1904: no clean sentence shares a key with a rewritten one
+   ok   a newspaper notice is its paper and its date
+   ok   household cards: 1459 rendered, no ticket, id or path in what they show
+   ok   household cards: said, they list 11581 citations; as authored, 11581
+   ok   building cards, 1812: 59 rendered, no ticket, id or path in what they show
+   ok   building titles, 1812: 59 rendered, no ticket, id or path in what they show
+   ok   building cards, 1835: 686 rendered, no ticket, id or path in what they show
+   ok   building titles, 1835: 686 rendered, no ticket, id or path in what they show
+   ok   building cards, 1904: 284 rendered, no ticket, id or path in what they show
+   ok   building titles, 1904: 284 rendered, no ticket, id or path in what they show
+   ok   the plants topic: 1 rendered, no ticket, id or path in what they show
+   ok   the wildlife topic: 1 rendered, no ticket, id or path in what they show
+
+READER TEXT PASS — the page says every record the way the gate reads it
+
+[1m== …and its own refusals still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | ok   a clean row passes
+   self-test | ok   an undeclared kind
+   self-test | ok   a structure rung on a name no structure carries
+   self-test | ok   an empty place
+   self-test | ok   a street rung on a roof
+   self-test | ok   a division that is not one
+   self-test | ok   an attested row with no source
+   self-test | ok   a reconstructed row that cites one
+   self-test | ok   an empty note
+   self-test | ok   a date that is not one
+   self-test | ok   both ends null and no admission
+   self-test | ok   an undated row that carries a date
+   self-test | ok   from after to
+   self-test | ok   from after the scene date
+   self-test | ok   an unknown key
+   self-test | ok   a tract rung on ground the survey layer holds
+   self-test | ok   a tract rung on ground it does not
+   self-test | ok   a tract rung on a roof
+   self-test | ok   a second source that resolves
+   self-test | ok   a second source that does not
+   self-test | ok   a second source that repeats the first
+   self-test | ok   an empty list of second sources
+   self-test | ok   a second source on a reconstructed row
+   self-test | ok   a basis with a rule and its words (T-2261)
+   self-test | ok   a basis with no words
+   self-test | ok   a basis with a key it does not hold
+   self-test | ok   a basis that is not an object
+   self-test | ok   a basis with an empty id
+   self-test | ok   a next rung with its words
+   self-test | ok   a next rung with no words
+   self-test | ok   a next rung with a key it does not hold
+   self-test | ok   the same relationship written twice
+   self-test | ok   an empty list
+   self-test | ok   the reader names the home row's roof
+   self-test | ok   the reader skips a home the source closes before the scene
+   self-test | ok   the reader skips a home that reaches only a street
+   self-test | ok   the reader names a workplace and no home from a premises row
+   self-test | ok   the reader ignores the singular pair
+   self-test | 0 failure(s)
+
+[1m== …and its own refusals still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | ok   an argued reconstruction passes
+   self-test | ok   a drawn reconstruction passes
+   self-test | ok   a not-asserted value reads unknown
+   self-test | ok   an attested attribute passes
+   self-test | ok   a tier that is not one
+   self-test | ok   a tier promoted above its confidence
+   self-test | ok   a reconstructed tier over a not-asserted value
+   self-test | ok   an unknown tier over a real invention
+   self-test | ok   a reconstruction with no basis
+   self-test | ok   a basis of no declared kind
+   self-test | ok   a basis that names no rule
+   self-test | ok   a basis that states no reasoning
+   self-test | ok   a basis carrying an unknown key
+   self-test | ok   a drawn value with no seed
+   self-test | ok   an argued value carrying a seed
+   self-test | ok   a reconstruction with no replacement rule
+   self-test | ok   a replacement of no declared kind
+   self-test | ok   a replacement that names no evidence
+   self-test | ok   a replacement carrying an unknown key
+   self-test | ok   an attested attribute carrying a seed
+   self-test | ok   the reconstruction fields with no tier at all
+   self-test | ok   the old shape, untouched
+   self-test | ok   the lift keeps a writer's own basis
+   self-test | ok   the lift keeps a writer's own seed
+   self-test | ok   the lift keeps a writer's own replacement rule
+   self-test | ok   derives a null value under reconstructed
+   self-test | ok   derives the trade sentinel
+   self-test | ok   derives an invented value
+   self-test | ok   derives an inferred value
+   self-test | ok   derives an attested value
+   self-test | ok   derives something that is not a claim block
+   self-test | ok   a dropped tier is re-derived by the lift
+   self-test | 0 failure(s)
+
+[1m== …and its own derivation still answers each case[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | ok   a null value under reconstructed
+   self-test | ok   the trade sentinel
+   self-test | ok   an empty string
+   self-test | ok   a value somebody supplied
+   self-test | ok   an inferred value
+   self-test | ok   an attested value
+   self-test | ok   a tier already written on the card wins
+   self-test | ok   a tier that is not one is ignored
+   self-test | ok   something that is not a claim block
+   self-test | ok   nothing at all
+   self-test | ok   the walker names a block nested in a list
+   self-test | 0 failure(s)
+
+[32mCHECK PASS[0m — part 3/4: 288 steps, none red.
+  99 of them are self-tests that prove a gate by breaking it; their
+  assertions fire on purpose and every line of it is prefixed 'self-test |'.
+  This is part 3 of 4; the other 851 steps are in the other parts. The gate is
+  green only when every part is: tools/check.sh --part 1/4 through --part 4/4.
