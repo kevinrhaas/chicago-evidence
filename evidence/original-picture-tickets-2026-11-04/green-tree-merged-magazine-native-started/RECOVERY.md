@@ -1,0 +1,13 @@
+# Further dev delivery and native handoff
+
+Originals remain10/17done; sevenwhole-picture tickets partial. GreenTree1684 merged26f at05:53:54, finalbdd current8+namedgateSUCCESS. Fullproof37facc34d6030a69832e5f8e94b5712eb323c223 validates actualONEcombinednativeexport/WEB beforef330sourcecommit and preserves interruptedouter124 + targetQAabortsRED; genericboth actuallyranf330, no falsefinalbddtargetUIclaim. CurrentSaug22otherdefaults+allversions exact.
+
+Secondfort1687 merged5aef, public6bfea816f195698095308a069967f6861b726652 validates genuine12+13nativeoutputs reused/current25allsourcebindings exact, final52d genericboth+whole8 green, preciseearliersource4 attribution and no newresume targetDOM claim. Parade1696 merged818/releaseda87/live492. ExistingSauganash1692/Lake1694/Cobweb1690 increments remain verified.
+
+Jail1683 now pushed62f4546 aftercurrentGTintegration. Allfivefreshowners/strict272+243/currentframeTavern23 actualrecipes pass. Tested Jail6publishedfiles exact3f and bothimage rows equalactualv4capture, wholepublication differs. Peer62faddendumPASS; native/currentfull8run41782679351 stillneeded. Frozen3fsixruntime executed, rootbody+manualphonecardsapproved withlimits; no newexecution on62f. PRbody corrected. Automaticdev4b fold onlytwochangelogpaths, no newnative/runtimeinputs.
+
+NEWmagazine T3041 nativejob41782312201 dispatchedONCE from26f withfeature7b427/defaultmodel/max400. ActualUbuntu26job126416452239 runningsteward, claimstillOPEN/unclaimedfirstsnapshots, notfailure. InitialNmonitorproperclosed06:02:07; ONLYsuccessorobserverPID1008005 start06:02:59/expiry~09:06, publicownerproofb81e191272c7facc7f7be628a32b2057a8746cbb. Prior945235 naturallyclosed05:56:34/allreaped; do not launchduplicates. PREP327a029 and rawpatch55a51 immutable; exactrootGO068f enablesboundedvault nativefort25 beforefirstsourcecommit, preservescurrentcupola andall243outbuilding, nofullfortclosure. ActualGO/dispatchreceipt+executionauthorization beingattached by N.
+
+Rpreparingone externaldata-onlySauganashchimney-placement increment; no claim/sourcewrites/nativeauthorization yet. CURRENT.json is the root-maintained detailedstate.
+
+Addendum: magazine actualROOTGO/onePOST/response/run/freshguard and initialclosure now publicab803bc75c3ce0d97ba868c4a4308e25c196a0eb; normal T3041executionGRANTED9faa05a90af48c979de00c91b3c550aebdc7e715 supersedes earlierawaitsGO withoutchangingfrontmatter/foreignprefix. Jailcurrent62f full37filerecovery74a1dadc2fe5609c3ed762525eee6ea89c352644, actualwhole8 stillpending. Important: devbranchprotectionnull/rulesempty; gh--auto couldmergewithoutpolicychecks, so retainmanualSHAguardedmergeafteractualwhole8+aggregateSUCCESS.
