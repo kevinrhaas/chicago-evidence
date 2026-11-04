@@ -1,0 +1,13 @@
+# Jail keeper east gable — actual native272 saved; final qualification remains
+
+The genuine Blender4.5.3 build rebuilt all272 frame_dwelling defaults (zero formal variants), wrote272, and independently measured271 byte-identical MASTERs. One existing east-end roof triangle now uses the existing wall material. The one changed WEB was genuinely produced before the first source checkpoint c453 at07:28:17, roughly five minutes after claim. Latest saved source34a includes comparison and derived-liberties fixes.
+
+Independent actual-GLB review proves all full vertex attributes and all winding-preserving full-attribute triangles exact when material is ignored. Exactly one x=6.4 triangle moves roof_shingle→wall. Complete Git compare confirms271 other family MASTERs unchanged,272 recipe rows refreshed, and nonfamily recipe/WEB bindings preserved. Both actual canonical pairs and saved before/after crops were directly viewed: bounded finish change accepted, whole compound remains DIFFERS; the key end is almost edge-on.
+
+The native worker stopped at the provider weekly limit without a PR. Full raw ZIP, SHA-verified identity, paired native/check events, exact saved source blobs and independent audit are included. The early source branch c453 is public; later source34a is in the run's named unqualified salvage ref. Do not redo the272 build merely to finish this saved increment.
+
+Source1 was RED for derived liberties, then the owner corrected data/liberties.json without a rerun. Source2/3 passed292. Source4 remains an actual inherited NumPy2.5.4/Python3.14.4 cross2D RED; resolve it honestly through actual current-head named8-part CI under the established supported environment, not a fabricated localPASS. Mobile3-4 really passed139/0; no explicit publish invocation appears in87 Bash calls, so its current-candidate publication provenance is unproven. Desktop, new east-material body in BOTH screen sizes, and target UI/ground acceptance remain missing. Own append-only ROADMAP note is still required.
+
+Claim used the actual --force stale-branch exception after listing only unrelated openPRs and verifying old keeperPR1683 was merged. This is documented, not relabeled as a no-force claim or confused with forcepush. OriginalT2380 remains OPEN/partial and still authentically claimed by the now-ended run at observer closure; no fabricated release.
+
+The sole observer naturally closed08:13:11 with exit0/all children reaped. No duplicate observer or native job was started. Root coordinates a source/GPU followthrough lease; this evidence publication changes no application branch, claim, camera, historical grade or ticket completion.
