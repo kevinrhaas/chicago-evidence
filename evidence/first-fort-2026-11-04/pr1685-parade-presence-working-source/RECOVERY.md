@@ -1,0 +1,9 @@
+# PR1685 — loaded parade ground presence repair, unqualified working source
+
+The actual 1812 desktop check on a7f7942 reported the parade ground missing, although its 2244-byte earth GLB loaded and the T-3320 ground owner supplies the surface. This working patch records successfully loaded, nonempty, finite, wholly delegated earth-only parades separately from direct building batches. It invents no bounding box or standing building. Failed/empty/malformed assets remain missing; mixed earth/sundial geometry still requires actual batching, and unknown ground owners keep their own model. The ground itself already drew independently.
+
+Actual createBuildings regression passes for the loaded case, null/empty/invalid-index/nonfinite-position/nonfinite-transform/degenerate inputs, mixed sundial, unknown owner/kind and shared material-role caching. The existing fort-gate test passes54 checks unchanged. These are bounded unit results, not full source or runtime acceptance. All proper reaper receipts are in the archive. STATUS and ROADMAP retain every preexisting raw byte and add honest pending-qualification notes.
+
+This patch changes no generator, data geometry, MASTER or WEB asset. The genuine243 native outputs and the previously qualified pyramid source remain saved in the existing PR. New renderer source still requires all four local source parts, the actual both-viewport UI/smoke and the final named hosted gate before ordinary dev merge. Earlier actual desktop runtime remains a failure, public64cc6a8423a7175cef6714012ba312dd5bc64808. Original first-fort image acceptance remains open; no new photo ticket or done override.
+
+Base/head a7f7942fc030d302730709ae9b006d1b7ccb0539. Full seven postimages, exact diff/binding, unit outputs and raw-prefix preservation are retained below for another agent. Root owns CPU/GPU scheduling; no heavy checks or browser run was started by this patch recovery.
