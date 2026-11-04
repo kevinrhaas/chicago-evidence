@@ -1,0 +1,7 @@
+# Exact new Sauganash SOURCE/native GO
+
+Root directly reviewed localSOURCE763649ae843c913326949a001482cf064e5838eb/tree59498f3729cae3ba08f4e2b705c812b1dd1b880a, cleanownbranch, exactly12paths, approvedV2postimages, alltrackedassets exacte803 and fullrawSTATUS/ROADMAParchivespreserved. Independently verified11actualfast/derivedownerlogSHAs andfinalproper0reaper. LiteralnativeFAIL25 expected and retained, no native/source4/UI PASS claimed.
+
+ROOT-EXACT-763649-NEW-GO.json authorizes onlynormalownfeatureSOURCEpush, supersedingONLYitsresultingexactownpushnative run withactualterminalcancellation, thena separatefreshguardedONEscoped23ID/25outputmanualnativePOST underreviewed8afacontroller. PublicGO+intent mustreadbackexact BEFOREmutation. UnknownPOSTneverretry. Two570sproperforegroundlegs; no workflowedits/hostBlender/productionpromotion.
+
+Parent1705 DRAFT/unarmed. Genuine25native/24legacycontrolbyteidentity andfullsource/current8+aggregate/actualBOTH/sourceimage acceptance remain future gates before ordinarydevmerge. Sourcehalf allowedAGENTS877–879. NreleasesW/GPU afterproperkick whileimmutableworker runs, enablingRsmokeunblock concurrently. Alloriginalimagegates remainstrict.
