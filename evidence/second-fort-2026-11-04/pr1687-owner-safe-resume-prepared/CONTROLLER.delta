@@ -1,0 +1,74 @@
+--- previous-reviewed-controller.py
++++ owner-safe-controller.py
+@@ -5,15 +5,15 @@
+ from pathlib import Path
+ import argparse,base64,concurrent.futures,datetime,hashlib,json,os,re,subprocess,time
+ P=Path(__file__).resolve().parent
+-FEATURE='b37fdeca6b74d8e3c70945a75687140c0718f549'
++FEATURE='7b427d130a2cca6ed82c183c74605b965aee1d4e'
+ REF='steward/chicago-native-exact-ticket-20261103'
+-HEAD='cdac604e34b1b3ba3ed981ebfcfd0d0efc1e8f2f'
++HEAD='1355732edb4925beeacf33e8f0910b2a09c3499d'
+ LANE='fort-cupola-native-20261103'
+ PLATFORM='repos/kevinrhaas/polecat-platform/'
+ APP='repos/kevinrhaas/chicago/'
+ TICKET='repos/kevinrhaas/chicago-tickets/contents/T-2250-2499/T-2388-match-the-second-fort-dearborn-1835-to-its-pictu.md'
+-OLD_RUN=41740271907
+-HOSTED=[41752421848,41752413970]
++OLD_RUN=41755970879
++HOSTED=[41768392703,41768399310]
+ REQUEST={'ref':REF,'inputs':{'app':'chicago','target_ticket':'T-2388','resume_pr':'1687','slice':'1','slices':'1','lane':LANE,'max_turns':'400'}}
+ WORKFLOW='.github/workflows/steward-improve.yml'
+ W=Path('/tmp/wolf-poster-source-20261103/chicago/4d')
+@@ -66,6 +66,16 @@
+  with concurrent.futures.ThreadPoolExecutor(max_workers=3)as pool:checks=list(pool.map(one,PATHS))
+  return {'dev':dev,'tree':commit['tree']['sha'],'guarded_paths':checks}
+ 
++FEATURE_GUARDS={'.github/steward/salvage.sh':'b675d2403cae2048da37f1941e5eed65f2b268a2a5d332a46e49a228cced65af','.github/steward/run-record.mjs':'f96017acc1e12f6d414da78f2d4e792aec02a458891ca6f25ce41f4db2dba322','.github/steward/test-salvage.sh':'e71c0fdd4909f0f3098013a61b53fbdae1eddf28b50705b5ff8b29a7b6d8e27c'}
++def feature_guards():
++ result=[]
++ for path,want in FEATURE_GUARDS.items():
++  row=api(PLATFORM+'contents/'+path+'?ref='+FEATURE);data=base64.b64decode(row['content']);actual=hashlib.sha256(data).hexdigest()
++  assert actual==want,{'path':path,'wanted':want,'actual':actual}
++  assert hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()==row['sha']
++  result.append({'path':path,'sha256':actual,'git_blob':row['sha']})
++ return result
++
+ def audit(require_green=False):
+  emit('preflight-start',hosted_green_required=require_green)
+  assert api(PLATFORM+'git/ref/heads/'+REF)['object']['sha']==FEATURE,'Feature branch moved'
+@@ -74,9 +84,11 @@
+  assert b'resume_pr:' in workflow_bytes and b'timeout-minutes: 150' in workflow_bytes
+  r=api(APP+'pulls/1687');assert r['state']=='open'and r['head']['sha']==HEAD and r['head']['ref']=='steward/t2388-blockhouse-cupola-native-20261103'and r['base']['ref']=='dev'
+  assert 'resume'in[x['name']for x in r['labels']]
++ assert not r.get('auto_merge'),'Do not dispatch a runtime-incomplete PR with auto-merge armed'
+  old=api(PLATFORM+'actions/runs/'+str(OLD_RUN));assert old['status']=='completed' and old['conclusion']=='success'
+  t,data,f=current_ticket();assert f.get('state')=='open'and f.get('claimed_run')=='null'and f.get('claimed_by')=='null'and f.get('pr')=='null',f
+  assert b'## Exact existing-PR recovery' in data and b'UNQUALIFIED working-source plus raw log/hash checkpoints' in data
++ if require_green:assert b'## Owner-safe exact PR1687 continuation' in data,'Publish reviewed current continuation handoff before dispatch'
+  matches=[]
+  for page in range(1,11):
+   prs=api(APP+f'pulls?state=open&per_page=100&page={page}')
+@@ -85,11 +97,12 @@
+   if len(prs)<100:break
+  else:raise AssertionError('Open PR pagination incomplete')
+  assert set(matches)=={1687},matches
++ fg=feature_guards()
+  active=active_runs();conflicts=[{k:x[k]for k in ['id','display_title','status','head_sha']}for x in active if LANE in x['display_title']or re.search(r'(?i)T-?2388',x['display_title'])]
+  assert not conflicts,conflicts
+  before=api(PLATFORM+'actions/workflows/steward-improve.yml/runs?event=workflow_dispatch&per_page=100')['workflow_runs']
+  laps=lap();sources=source_state();ci=hosted(require_green)
+- result={'utc':now(),'feature_sha':FEATURE,'workflow_blob':workflow['sha'],'workflow_sha256':hashlib.sha256(workflow_bytes).hexdigest(),'pr':1687,'pr_head':HEAD,'pr_branch':r['head']['ref'],'ticket_blob':t['sha'],'ticket_fields':f,'ticket_body_sha256':hashlib.sha256(data).hexdigest(),'old_run_completed_success':True,'only_matching_open_pr':matches,'no_active_target_lane':True,'active_run_count':len(active),'lap':laps,'source':sources,'hosted':ci,'prior_dispatch_run_ids':[x['id']for x in before]}
++ result={'utc':now(),'feature_sha':FEATURE,'workflow_blob':workflow['sha'],'workflow_sha256':hashlib.sha256(workflow_bytes).hexdigest(),'pr':1687,'pr_head':HEAD,'pr_branch':r['head']['ref'],'ticket_blob':t['sha'],'ticket_fields':f,'ticket_body_sha256':hashlib.sha256(data).hexdigest(),'old_run_completed_success':True,'only_matching_open_pr':matches,'no_active_target_lane':True,'active_run_count':len(active),'lap':laps,'source':sources,'hosted':ci,'feature_owner_guard':fg,'prior_dispatch_run_ids':[x['id']for x in before]}
+  emit('preflight-passed',dev=sources['dev'],hosted=ci)
+  return result
+ 
+@@ -110,7 +123,7 @@
+  dump('FRESH-PREFLIGHT.json',fresh)
+  # The final remote guards run after source/CI reads and immediately before the one POST.
+  t,data,f=current_ticket();assert t['sha']==fresh['ticket_blob'] and f['state']=='open'and f['claimed_run']=='null'
+- assert api(APP+'pulls/1687')['head']['sha']==HEAD
++ final_pr=api(APP+'pulls/1687');assert final_pr['head']['sha']==HEAD and not final_pr.get('auto_merge')
+  assert api(PLATFORM+'git/ref/heads/'+REF)['object']['sha']==FEATURE
+  assert api(APP+'git/ref/heads/dev')['object']['sha']==fresh['source']['dev']
+  assert not[x for x in active_runs()if LANE in x['display_title']or re.search(r'(?i)T-?2388',x['display_title'])]

@@ -1,0 +1,7 @@
+# Second-fort owner-safe exact resume preparation
+
+No dispatch, app edit, ticket edit or lap claim has occurred. Existing PR1687 head135 is ready for bounded continuation. Private092 qualification tolive135 is authenticated: directchild, sole path tools/dev-smoke-state.json. Actual raw source4 and107/139 runtimeevent receipts saved, scoped toold a3 integration. Currentruntime/rootpixels/finalwholegate still required.
+
+Controller derives prior root-reviewed exact1687 controller. Changes: pin feature7b427 (reviewedarchive-onlysalvage), livehead135, completedoldexactrun41755970879, actualnewhostCI41768392703/41768399310. Read actual3feature guard files and verify approvedSHA256+Gitblob. Refuse armedauto_merge. Dispatchrequires reviewed newcontinuationheader in preservedticketbody plus exactticketblobguard, rootauthorizationbinding exactrequest. Existing finalPR/feature/dev/active-target/lap checks and atomicexclusive singlePOST reservation retained. No retries ofambiguousPOST. Model/effort/processor/runtime defaultsunchanged; existingPR1687/originallane/max400 only.
+
+prepare() isread-only and succeeded with featurepushCIgreen/PRCIrunning at03:43. It isNOT authorization. ROOT-GO.jsonabsent, templatefalse. Root mustreview full7KBappend/controllerdelta, authorize metadataappend normal exactprefix, requirebothhostedCIgreen, reprepare latestsourceguards afterticketpublish, thenauthorize onlyonePOST. No rootGo implies no dispatch.
