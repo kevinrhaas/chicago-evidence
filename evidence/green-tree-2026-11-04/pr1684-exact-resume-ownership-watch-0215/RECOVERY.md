@@ -1,0 +1,5 @@
+# Green Tree exact-resume ownership watch closed
+
+Read-only protected watcher observed through 2026-11-04T02:15:26.904857+00:00: run41759074130 dedicatedUbuntu26 job queued; PR1684 laprefpresent=False, ouractualPRlap=False, foreignlap=False. No nativeclaim or PRownership is asserted unless the actual proof says so. All6snapshots completed; native watcher closed exit0/allchildrenreaped/no cleanup. No extraPOST/jobmutation/ticketwrite/sourcechange.
+
+[Immutable single accepted dispatch, approved request/controller hashes, actual source/freelapguards and whole-body-preserving metadata receipts](https://github.com/kevinrhaas/chicago-evidence/blob/7d14371045b993a3f9b99ea0e99cd6480045b1d9/evidence/green-tree-2026-11-04/pr1684-exact-resume-dispatched-41759074130/RECOVERY.md). This is a timestamped observation, not a future ownership reservation. A legitimate ordinary worker may later take the lap; exactnativeworker must honor refusal without force/cancel/duplicate job. Root can continue central read-only monitoring from the preserved run/controller/request. No platformmainmerge; Wmetadata lease remainsreleased.
