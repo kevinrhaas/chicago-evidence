@@ -1,0 +1,6 @@
+<!-- steward-record: {"v":1,"run_id":"41742893188","run_url":"https://github.com/kevinrhaas/polecat-platform/actions/runs/41742893188","app":"chicago","slice":1,"slices":1,"status":"success","outcome":"resume","tickets_claimed":["T-2376"],"tickets_done":[],"tickets_split":[],"tickets_blocked":[],"tickets_filed":[],"branch":"steward/t2376-dormer-peak-native-20261104","pr":1684,"pr_repo":"kevinrhaas/chicago","pr_url":"https://github.com/kevinrhaas/chicago/pull/1684","merge_sha":null,"held":false,"resumed":true,"branch_deleted":null,"tool_calls":126,"tool_errors":2,"turns":127,"cost_usd":11.19,"minutes":99.8,"result_subtype":"success","resumes":0,"api_5xx":false,"salvaged_branches":[]} -->
+**🟣 resume** · chicago
+
+| ticket | branch | PR | tool calls | turns | min | cost |
+|---|---|---|---|---|---|---|
+| T-2376 | `steward/t2376-dormer-peak-native-20261104` | [kevinrhaas/chicago#1684](https://github.com/kevinrhaas/chicago/pull/1684) | 126 | 127 | 99.8 | $11.19 |

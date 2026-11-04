@@ -1,0 +1,113 @@
+[
+  {
+    "call": {
+      "event": 512,
+      "name": "Bash",
+      "input": {
+        "command": "time timeout 560 node /tmp/scripts/qa_t2376.mjs ../../site/4d /tmp/t2376/qa mobile > /tmp/t2376/qa-mobile.log 2>&1; echo \"EXIT=$?\"; cat /tmp/t2376/qa-mobile.log",
+        "description": "Run mobile QA leg",
+        "timeout": 600000
+      }
+    },
+    "result_event": 513,
+    "is_error": false,
+    "result": "real\t0m0.051s\nuser\t0m0.047s\nsys\t0m0.011s\nEXIT=1\nnode:internal/modules/package_json_reader:314\n  throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);\n        ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find package 'playwright' imported from /tmp/scripts/qa_t2376.mjs\n    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:314:9)\n    at packageResolve (node:internal/modules/esm/resolve:772:81)\n    at moduleResolve (node:internal/modules/esm/resolve:859:18)\n    at defaultResolve (node:internal/modules/esm/resolve:989:11)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:747:20)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:724:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:320:38)\n    at ModuleJob._link (node:internal/modules/esm/module_job:182:49) {\n  code: 'ERR_MODULE_NOT_FOUND'\n}\n\nNode.js v22.23.4"
+  },
+  {
+    "call": {
+      "event": 520,
+      "name": "Bash",
+      "input": {
+        "command": "cp /tmp/scripts/qa_t2376.mjs /home/runner/work/polecat-platform/polecat-platform/qa-t2376-tmp.mjs && cd /home/runner/work/polecat-platform/polecat-platform/chicago/chicago/4d && time timeout 560 node /home/runner/work/polecat-platform/polecat-platform/qa-t2376-tmp.mjs ../../site/4d /tmp/t2376/qa mobile > /tmp/t2376/qa-mobile.log 2>&1; echo \"EXIT=$?\"; cat /tmp/t2376/qa-mobile.log",
+        "description": "Run mobile QA leg",
+        "timeout": 600000
+      }
+    },
+    "result_event": 524,
+    "is_error": false,
+    "result": "real\t0m48.166s\nuser\t0m4.420s\nsys\t0m1.106s\nEXIT=0\nserving /home/runner/work/polecat-platform/polecat-platform/chicago/site/4d on 8731\n\n=== mobile 390x780 ===\n  boot: ready\n  green tree in scene: {\"found\":false,\"nodeCount\":0,\"anchor\":null}\n  shot: mobile-normal.png\n  shot: mobile-bygrade.png\n  pageerrors 0, console errors 0, network 0, server 404s 0\n\nQA PASS \u2014 zero page, console, network and server errors"
+  },
+  {
+    "call": {
+      "event": 536,
+      "name": "Bash",
+      "input": {
+        "command": "cd /home/runner/work/polecat-platform/polecat-platform && python3 - <<'PY'\nimport io\np='qa-t2376-tmp.mjs'\ns=io.open(p).read()\ns=s.replace(\"\"\"    console.log('  boot: ready');\n    await page.waitForTimeout(6000);\"\"\",\"\"\"    console.log('  boot: ready');\n    await page.evaluate(async () => {\n      if (!document.getElementById('gate')?.hasAttribute('hidden')) {\n        const w = window.__chicago4d.welcome;\n        if (w) {\n          const deadline = Date.now() + 90000;\n          while (w.state !== 'world' && Date.now() < deadline) {\n            if (w.state === 'welcome') w.enter('spawn');\n            if (w.state !== 'world') await new Promise(r => setTimeout(r, 100));\n          }\n        } else document.getElementById('home-roam')?.click();\n        await new Promise(r => setTimeout(r, 200));\n        document.exitPointerLock?.();\n      }\n      const help = document.getElementById('control-help');\n      if (help && !help.hasAttribute('hidden')) document.getElementById('control-help-gotit')?.click();\n    });\n    console.log('  entered the town');\n    await page.waitForTimeout(12000);\"\"\")\ns=s.replace(\"\"\"      const a = window.__chicago4d;\n      const out = {found:false};\n      const names = [];\n      a.scene?.traverse?.(o => {\"\"\",\"\"\"      const a = window.__chicago4d;\n      const out = {found:false};\n      const names = [];\n      const root = a.world ?? a.scene ?? a.renderer?.scene ?? a.three?.scene ?? null;\n      out.keys = Object.keys(a).slice(0,40);\n      root?.traverse?.(o => {\"\"\")\nio.open(p,'w').write(s)\nprint('patched')\nPY\ncd /home/runner/work/polecat-platform/polecat-platform/chicago/chicago/4d && time timeout 560 node /home/runner/work/polecat-platform/polecat-platform/qa-t2376-tmp.mjs ../../site/4d /tmp/t2376/qa mobile > /tmp/t2376/qa-mobile.log 2>&1; echo \"EXIT=$?\"; cat /tmp/t2376/qa-mobile.log",
+        "description": "Patch QA to enter town and rerun mobile",
+        "timeout": 600000
+      }
+    },
+    "result_event": 542,
+    "is_error": false,
+    "result": "patched\n\nreal\t1m55.235s\nuser\t0m4.855s\nsys\t0m1.051s\nEXIT=0\nserving /home/runner/work/polecat-platform/polecat-platform/chicago/site/4d on 8731\n\n=== mobile 390x780 ===\n  boot: ready\n  entered the town\n  green tree in scene: {\"found\":false,\"keys\":[\"version\",\"three\",\"year\",\"ready\",\"error\",\"scene\",\"datum\",\"registry\",\"player\",\"problems\",\"budget\",\"census\",\"liberties\",\"loadLiberties\",\"welcome\",\"roll\",\"structureVersion\",\"residency\",\"textureResidency\",\"researcher\",\"crashGuard\",\"positionsInMetres\",\"confidenceOf\",\"blackbox\",\"boot\",\"journey\",\"fieldLog\",\"fieldLogView\",\"recall\",\"gesture\",\"audio\",\"whyTips\",\"arrival\",\"telemetry\",\"t\n  shot: mobile-normal.png\n  shot: mobile-bygrade.png\n  pageerrors 0, console errors 0, network 0, server 404s 0\n\nQA PASS \u2014 zero page, console, network and server errors"
+  },
+  {
+    "call": {
+      "event": 579,
+      "name": "Bash",
+      "input": {
+        "command": "cd /home/runner/work/polecat-platform/polecat-platform && python3 - <<'PY'\nimport io\np='qa-t2376-tmp.mjs'\ns=io.open(p).read()\ns=s.replace(\"\"\"    console.log('  entered the town');\n    await page.waitForTimeout(12000);\"\"\",\"\"\"    console.log('  entered the town');\n    await page.waitForTimeout(4000);\n    const went = await page.evaluate(() => window.__chicago4d.goTo('green_tree'));\n    console.log('  goTo green_tree:', went);\n    await page.waitForTimeout(14000);\n    const pose = await page.evaluate(() => ({...window.__chicago4d.player}));\n    console.log('  pose:', JSON.stringify(pose));\"\"\")\nio.open(p,'w').write(s)\nprint('patched')\nPY\ncd /home/runner/work/polecat-platform/polecat-platform/chicago/chicago/4d && time timeout 560 node /home/runner/work/polecat-platform/polecat-platform/qa-t2376-tmp.mjs ../../site/4d /tmp/t2376/qa mobile > /tmp/t2376/qa-mobile.log 2>&1; echo \"EXIT=$?\"; cat /tmp/t2376/qa-mobile.log",
+        "description": "Patch QA to go to the Green Tree and rerun mobile",
+        "timeout": 600000
+      }
+    },
+    "result_event": 585,
+    "is_error": false,
+    "result": "patched\n\nreal\t1m49.402s\nuser\t0m4.817s\nsys\t0m1.064s\nEXIT=0\nserving /home/runner/work/polecat-platform/polecat-platform/chicago/site/4d on 8731\n\n=== mobile 390x780 ===\n  boot: ready\n  entered the town\n  goTo green_tree: true\n  pose: {\"e\":-49.91,\"n\":-121.52,\"y\":2.718039963722229,\"bearingDeg\":33.30000000000001,\"pitchDeg\":0,\"speed\":0,\"moving\":false,\"altitude\":0,\"flying\":false}\n  green tree in scene: {\"found\":false,\"keys\":[\"version\",\"three\",\"year\",\"ready\",\"error\",\"scene\",\"datum\",\"registry\",\"player\",\"problems\",\"budget\",\"census\",\"liberties\",\"loadLiberties\",\"welcome\",\"roll\",\"structureVersion\",\"residency\",\"textureResidency\",\"researcher\",\"crashGuard\",\"positionsInMetres\",\"confidenceOf\",\"blackbox\",\"boot\",\"journey\",\"fieldLog\",\"fieldLogView\",\"recall\",\"gesture\",\"audio\",\"whyTips\",\"arrival\",\"telemetry\",\"t\n  shot: mobile-normal.png\n  shot: mobile-bygrade.png\n  pageerrors 0, console errors 0, network 0, server 404s 0\n\nQA PASS \u2014 zero page, console, network and server errors"
+  },
+  {
+    "call": {
+      "event": 611,
+      "name": "Bash",
+      "input": {
+        "command": "cd /home/runner/work/polecat-platform/polecat-platform/chicago/chicago/4d && time timeout 560 node /home/runner/work/polecat-platform/polecat-platform/qa-t2376-tmp.mjs ../../site/4d /tmp/t2376/qa desktop > /tmp/t2376/qa-desktop.log 2>&1; echo \"EXIT=$?\"; cat /tmp/t2376/qa-desktop.log; python3 -c \"\nfrom PIL import Image\nim=Image.open('/tmp/t2376/qa/desktop-normal.png'); print(im.size)\n\"",
+        "description": "Run desktop QA leg",
+        "timeout": 600000
+      }
+    },
+    "result_event": 619,
+    "is_error": true,
+    "result": "Exit code 1\n\nreal\t2m46.606s\nuser\t0m3.895s\nsys\t0m1.159s\nEXIT=1\nserving /home/runner/work/polecat-platform/polecat-platform/chicago/site/4d on 8732\n\n=== desktop 1280x800 ===\n  boot: ready\n  entered the town\n  goTo green_tree: true\n  pose: {\"e\":-49.91,\"n\":-121.52,\"y\":2.718039963722229,\"bearingDeg\":33.30000000000001,\"pitchDeg\":0,\"speed\":0,\"moving\":false,\"altitude\":0,\"flying\":false}\n  green tree in scene: {\"found\":false,\"keys\":[\"version\",\"three\",\"year\",\"ready\",\"error\",\"scene\",\"datum\",\"registry\",\"player\",\"problems\",\"budget\",\"census\",\"liberties\",\"loadLiberties\",\"welcome\",\"roll\",\"structureVersion\",\"residency\",\"textureResidency\",\"researcher\",\"crashGuard\",\"positionsInMetres\",\"confidenceOf\",\"blackbox\",\"boot\",\"journey\",\"fieldLog\",\"fieldLogView\",\"recall\",\"gesture\",\"audio\",\"whyTips\",\"arrival\",\"telemetry\",\"t\n  THREW: TimeoutError: page.screenshot: Timeout 30000ms exceeded.\nCall log:\n  - taking page screenshot\n  - waiting for fonts to load...\n  - fonts loaded\n\n  pageerrors 0, console errors 0, network 0, server 404s 0\n\nQA FAIL (1)\nTraceback (most recent call last):\n  File \"<string>\", line 3, in <module>\n    im=Image.open('/tmp/t2376/qa/desktop-normal.png'); print(im.size)\n  File \"/home/runner/.local/lib/python3.14/site-packages/PIL/Image.py\", line 3654, in open\n    fp = builtins.open(filename, \"rb\")\nFileNotFoundError: [Errno 2] No such file or directory: '/tmp/t2376/qa/desktop-normal.png'"
+  },
+  {
+    "call": {
+      "event": 623,
+      "name": "Bash",
+      "input": {
+        "command": "sed -i 's|const page = await ctx.newPage();|const page = await ctx.newPage();\\n  page.setDefaultTimeout(150000);|' qa-t2376-tmp.mjs && sed -i 's|await page.screenshot({path: path.join(OUT, `${tag}-normal.png`)});|await page.screenshot({path: path.join(OUT, `${tag}-normal.png`), timeout: 150000});|' qa-t2376-tmp.mjs && sed -i 's|await page.screenshot({path: path.join(OUT, `${tag}-bygrade.png`)});|await page.screenshot({path: path.join(OUT, `${tag}-bygrade.png`), timeout: 150000});|' qa-t2376-tmp.mjs && sed -i 's|await page.screenshot({path: path.join(OUT, `${tag}-normal-again.png`)});|await page.screenshot({path: path.join(OUT, `${tag}-normal-again.png`), timeout: 150000});|' qa-t2376-tmp.mjs && grep -n \"screenshot\\|setDefaultTimeout\" qa-t2376-tmp.mjs",
+        "description": "Raise screenshot timeouts"
+      }
+    },
+    "result_event": 624,
+    "is_error": false,
+    "result": "42:  page.setDefaultTimeout(150000);\n99:    await page.screenshot({path: path.join(OUT, `${tag}-normal.png`), timeout: 150000});\n104:    await page.screenshot({path: path.join(OUT, `${tag}-bygrade.png`), timeout: 150000});\n108:    await page.screenshot({path: path.join(OUT, `${tag}-normal-again.png`), timeout: 150000});"
+  },
+  {
+    "call": {
+      "event": 625,
+      "name": "Bash",
+      "input": {
+        "command": "cd /home/runner/work/polecat-platform/polecat-platform/chicago/chicago/4d && time timeout 560 node /home/runner/work/polecat-platform/polecat-platform/qa-t2376-tmp.mjs ../../site/4d /tmp/t2376/qa desktop > /tmp/t2376/qa-desktop.log 2>&1; echo \"EXIT=$?\"; cat /tmp/t2376/qa-desktop.log",
+        "description": "Rerun desktop QA leg",
+        "timeout": 600000
+      }
+    },
+    "result_event": 638,
+    "is_error": false,
+    "result": "real\t5m2.621s\nuser\t0m4.833s\nsys\t0m1.173s\nEXIT=0\nserving /home/runner/work/polecat-platform/polecat-platform/chicago/site/4d on 8732\n\n=== desktop 1280x800 ===\n  boot: ready\n  entered the town\n  goTo green_tree: true\n  pose: {\"e\":-49.91,\"n\":-121.52,\"y\":2.718039963722229,\"bearingDeg\":33.30000000000001,\"pitchDeg\":0,\"speed\":0,\"moving\":false,\"altitude\":0,\"flying\":false}\n  green tree in scene: {\"found\":false,\"keys\":[\"version\",\"three\",\"year\",\"ready\",\"error\",\"scene\",\"datum\",\"registry\",\"player\",\"problems\",\"budget\",\"census\",\"liberties\",\"loadLiberties\",\"welcome\",\"roll\",\"structureVersion\",\"residency\",\"textureResidency\",\"researcher\",\"crashGuard\",\"positionsInMetres\",\"confidenceOf\",\"blackbox\",\"boot\",\"journey\",\"fieldLog\",\"fieldLogView\",\"recall\",\"gesture\",\"audio\",\"whyTips\",\"arrival\",\"telemetry\",\"t\n  shot: desktop-normal.png\n  shot: desktop-bygrade.png\n  pageerrors 0, console errors 0, network 0, server 404s 0\n\nQA PASS \u2014 zero page, console, network and server errors"
+  },
+  {
+    "call": {
+      "event": 808,
+      "name": "Bash",
+      "input": {
+        "command": "rm -f /home/runner/work/polecat-platform/polecat-platform/qa-t2376-tmp.mjs; cd /home/runner/work/polecat-platform/polecat-platform && gh api repos/kevinrhaas/chicago/pulls/1684 --jq '\"state=\\(.state) merged=\\(.merged) mergeable=\\(.mergeable) labels=\\([.labels[].name]|join(\",\"))\"' 2>&1 | tail -2",
+        "description": "Confirm final PR state and clean up",
+        "timeout": 120000
+      }
+    },
+    "result_event": 809,
+    "is_error": false,
+    "result": "state=open merged=false mergeable=null labels=resume"
+  }
+]
