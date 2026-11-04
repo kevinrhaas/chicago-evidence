@@ -1,0 +1,29 @@
+--- frozen-V3-original-192.mjs
++++ V4-dense1536.mjs
+@@ -17,7 +17,7 @@
+ assert.equal(cfg.ROOT_EXPLICIT_GARMENT_DIAGNOSTIC_GO, true);
+ assert.equal(cfg.protocol, 'NATIVE_SEATED_COVERAGE_DIAGNOSTIC_V1_NOT_ACCEPTANCE');
+ assert.deepEqual(cfg.phases_seconds, [0, 2, 4, 6]);
+-assert.equal(cfg.sample_count_per_body_mesh, 192);
++assert.equal(cfg.sample_count_per_body_mesh, 1536);
+ assert.equal(cfg.ray_half_length_m, 0.08);
+ const sha = bytes => createHash('sha256').update(bytes).digest('hex');
+ for (const [file, digest] of Object.entries(cfg.input_pins)) assert.equal(sha(await fs.readFile(file)), digest, file);
+@@ -25,7 +25,7 @@
+ const report = { status: 'ACTIVE_NATIVE_COVERAGE_DIAGNOSTIC_NOT_PASS',
+   scope: 'Finite CPU ray comparisons on native posed geometry; no new asset, garment acceptance, GPU, world or photographic claim.',
+   config_sha256: sha(await fs.readFile(configFile)), input_pins: cfg.input_pins,
+-  sample_plan: { phases_seconds: cfg.phases_seconds, samples_per_body_mesh: 192,
++  sample_plan: { phases_seconds: cfg.phases_seconds, samples_per_body_mesh: 1536,
+     selection: 'Uniform deterministic triangle indices across the entire LOD3 body, before reference-coverage eligibility; no favourable region filtering.',
+     ray_half_length_m: 0.08, ray_range_is_search_extent_not_quality_tolerance: true },
+   original_1032_motion_controls_replaced_or_weakened: false, cases: [], errors: [] };
+@@ -162,7 +162,7 @@
+       for (let mi = 0; mi < coarse.meshes.length; mi++) {
+         const source = coarse.meshes[mi], flat = coarseFlat[mi];
+         if (!materialNames(source).includes('skin')) continue;
+-        const count = flat.geometry.index.count / 3, N = Math.min(192, count), position = flat.geometry.attributes.position;
++        const count = flat.geometry.index.count / 3, N = Math.min(1536, count), position = flat.geometry.attributes.position;
+         for (let sample = 0; sample < N; sample++) {
+           const fi = Math.floor((sample + .5) * count / N);
+           const ids = [0, 1, 2].map(k => flat.geometry.index.getX(fi * 3 + k));
