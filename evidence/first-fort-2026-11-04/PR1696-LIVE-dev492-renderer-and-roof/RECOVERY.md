@@ -1,0 +1,11 @@
+# PR1696: merged repair and NE roof verified live on dev
+
+The dev preview https://chicago.polecat.live/4d/dev/ now serves build **492f285c**, verified as one commit ahead of and containing the normal PR1696 merge **818be0cbbe81ee5d1bad19eb5a49589d44979f5b**. It is marked tier dev.
+
+Actual HTTPS reads with normal certificate/proxy trust matched the qualified bytes for both renderer modules, the north-east house sidecar, the real 21,588-byte NE WEB GLB, the parade ground-owner record and its real 2,244-byte WEB GLB. The NE roof's type is pyramid and its confidence remains inferred. This completes the earlier merged roof increment's delivery check as well as delivery of the parade-accounting repair. It is static delivery verification, not a new live-browser execution or full-fort image acceptance.
+
+The apparent delay came from the normal automatic pipeline: the dev-push refresh-previews job delegates the actual Pages rebuild to the existing main workflow. That downstream run41778108725 rebuilt the preview; main source stayed at099db643 and no production promotion or manual dispatch was made. Initial ee4 reads and pending snapshots remain archived rather than being called a pass. The verification controller later closed exit0 with all children reaped and no leftovers.
+
+Actual source qualification and normal merge/partial release: evidence22cc1b5ee2599c7a54033998b66542a792c4c739, prefix evidence/first-fort-2026-11-04/PR1696-MERGED818-partial-release-a87/. All eight exact-b647 source parts plus aggregate passed. The scoped four-leg runtime belongs to executed05366ebe, carried forward only under its explicit Lake/Cobweb limits; native1835 ran the older pre-Cobweb scene. Root accepted the eight actual cards with their clipping limits. Runtime and images: d2d1a4203849bc597338d6a08a1cbd7da0727a6d and f73332e4c9f02ffcea1edb4c0e4343a279448c9f.
+
+T-3041 remains OPEN/PARTIAL, normally released with its queue place retained at tickets a87daf8668e9692be48056c03c322e395449c9e5. Our lap is removed. No original picture gate was closed; roof body and whole-fort comparison remain unfinished. All source is committed/pushed, R is clean, and no W/N source or publication was changed by the metadata closeout. No further renderer changes or GPU run are pending for this bounded repair.

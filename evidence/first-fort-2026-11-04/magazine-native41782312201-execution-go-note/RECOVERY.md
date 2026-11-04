@@ -1,0 +1,7 @@
+# Execution GO clarified on originalT3041, no local claim
+
+Actualnative41782312201 is authorized by root exactGO068f, publicly visible at https://raw.githubusercontent.com/kevinrhaas/chicago-evidence/ab803bc75c3ce0d97ba868c4a4308e25c196a0eb/evidence/first-fort-2026-11-04/magazine-native41782312201-authorized-dispatch/ROOT-GO.json . That immutablepacket includes onePOST reservation/response/actualrun/FRESHsource26 and properinitialmonitorclosure.
+
+Normalappend-only chicago-tickets commit **9faa05a90af48c979de00c91b3c550aebdc7e715**/blobf2ea90363194292d0967977c9d8b35a1990e2dc8 explicitly tells the already-running worker exactGO IS GRANTED and earlierawaitsGO was a preparation snapshot. Fullsource/artifacthashes/publicGOURL/nativeonlyscope and normalclaim requirements included. Freshfrontmatter and allforeignbodybytes preserved; actualstate remainedOPEN/free atCAS. No localclaim, appsourcewrite or secondnative dispatch. Metadataappend proper0/allreaped/noleftovers/readbackexact.
+
+Native_progress_after_reset is soleobserver, PID1008005, after properclosed initialmonitor(PIDs1004927/1004928). Claim stillpendingatthatclosure; no claim/nativequalification/matches approval inferred from dispatch. Preparer makes no further statusAPIwatch. Affectednativefort25+actualvariants only, preserveall243outbuilding+cupola; currentallsource/runtime/image gates/normaldevPR/partialoriginalrelease remain required.

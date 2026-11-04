@@ -1,0 +1,9 @@
+# Jail3f progress: desktopcards535PASS + actualmobileNative107PASS + phonecapturev4approved
+
+The actual desktop-cards-v3 leg passed in535.62s under560native/600outer, all children reaped/no leftovers, zero page/network/console/server errors and pre-teardown aborts, exact frozen3f source/full publication. All8 actual desktop card JPG BYTES and raw results/geometry checks are included. Sources correctly differ: coreAndreas1884; keeperGale/Trowbridge1902. BOTH current published records have1identical LINK_ONLY Gale1902 picture, noheldviewer; their compiled rows were read dynamically. Earlier keeper0 wording was stale prepublish data, explicitly corrected here.
+
+Original actual mobile nativeStage3 passed107/0 in166.28s, SMOKE PASS, proper inner/outer0/allreaped. Full15 was not run or claimed. Original desktopnative is currentlyRUNNING, not qualified by this packet.
+
+Phone-cards-v3 stopped in137.62s on overly broad wholeLI visibility geometry. Its physical failure screenshot actually shows fullAndreas1884citation/source link; root directly verified that, so it is not labelled product clipping. All3reds164/200/137 remain failed/preserved, with0producterrors and exact source guards, never relabelledPASS.
+
+Root and peer approved separate phone-onlyv4 exacthelpers4dc64680/bfc4802a. Strict citation/officialURL/currentpicture/title/creator/holder/publicdomain/data/error/source/publication/reaper assertions remain; real textRange/anchor fragments are saved as geometry diagnostics BEFORE assertions. Results explicitlyCAPTURE_COMPLETE_VISUAL_REVIEW_PENDING, requiring direct ROOT4credit+Record/Images SHAapproval before final qualification. No phonev4runtime has begun yet; it follows the original nativepair. Desktop535/body396+222 will not be rerun or relabelled with newhelpers. OriginalT2380 stays partial/open and historical fullmatch is not claimed.

@@ -1,0 +1,11 @@
+# PR1683 merge-ready recovery: actual current gate still running
+
+Frozen current source62f4546114e252c867dc2b43f2e6cac5503b0577/tree6c8baae9f38833e6fa7266c9426bf7af1eab7544. Root and independent peers have accepted the bounded source/native/consumer/runtime carry; current-source proof74a1dadc2fe5609c3ed762525eee6ea89c352644. Actual keeper MASTER431dc44f37bdcb2c7f705a5b17b65fe6a1cf748d077c337b699094c9b41752a8 and WEB15eb2fbad5e1b8f464c30f7135297047896b4eff95f9168de6084e75e86f710e, not older prepared03aa/cbc.
+
+At06:14 currentwhole8run41782679351 has fiveSUCCESS parts, one running, twoqueued. NO whole8PASS or merge yet. Do not rerun source checks or targetUI solely for the automaticchangelogfold.
+
+Root reviewed the SHA-guarded squash protocol: require exactcurrenthead all8namedparts+aggregateSUCCESS, currentclean source/owners/native/peerproof, ownlap3b194, freshPRmergeability, currentdevdifferences limited to automaticT2376fold. Preflight recomputes exactsource6c8b and forecasts mergedtreecbaca5ec8f74f5eecbec9cb4c77e6c5bce97629d against dev4b0868f. Recompute fresh at actualmerge and verify returnedtree+parent. No auto-merge: this repository exposes no branch/ruleset enforcement, so requiredgate must be manually checked.
+
+Prepared helper merge_qualified62f.py is not executed yet. Root full-reviewed protocol, then the explicit durable intent marker was added to satisfy root uncertainty requirement. It saves MERGE-ATTEMPT-INTENT immediately before one ordinarySHA-guardedPUT and refuses any subsequent invocation if intent/response exists. If response lost, READ ACTUAL PR/GitHub and recover result; NEVER repeatPUT blindly. A new dev change outside the approvedfold requires scoped assessment with root before dependentmerge. Do not force/skip protection.
+
+Afteractualmerge: prove exactmergedtree/source/nativeassetmapping, save actualgate/merge/deploy receipts, normallyrelease ONLY ownlap ifmarkerSHA3b194 still exact. Original T2380 remains OPEN/pr:null/free; root owns normalCASappend of finalpartialcheckpoint preserving foreignhistory, not this Wcodeagent. No ticket done call/newfollowup. Finalbody accurately states remainingUNREVIEWED/DIFFERS/image/material/visibility limits and allsixactualruntime scopes; full15NOTRUN.

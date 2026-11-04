@@ -1,0 +1,1587 @@
+﻿2026-11-04T06:07:15.1284431Z ##[group]Run timeout --kill-after=5s 600s ./tools/check.sh --part "6/8"
+2026-11-04T06:07:15.1285019Z [36;1mtimeout --kill-after=5s 600s ./tools/check.sh --part "6/8"[0m
+2026-11-04T06:07:15.1302796Z shell: /usr/bin/bash -e {0}
+2026-11-04T06:07:15.1303246Z env:
+2026-11-04T06:07:15.1303599Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-11-04T06:07:15.1304123Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib/pkgconfig
+2026-11-04T06:07:15.1304596Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-11-04T06:07:15.1305043Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-11-04T06:07:15.1305467Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-11-04T06:07:15.1305882Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib
+2026-11-04T06:07:15.1306354Z   C4D_GATE_REQUIRE_READERS: 1
+2026-11-04T06:07:15.1306674Z   C4D_GATE_REQUIRE_BASE: 1
+2026-11-04T06:07:15.1306981Z   CHECK_JOBS: 4
+2026-11-04T06:07:15.1307256Z ##[endgroup]
+2026-11-04T06:07:33.2830326Z 
+2026-11-04T06:07:33.2832686Z [1m== Smoke input hashes retain page changes and hash published release metadata with the notes (T-2380)[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:07:33.2880447Z    self-test | PASS clean fixture has two hashes
+2026-11-04T06:07:33.2881501Z    self-test | PASS build stamp changes neither partition
+2026-11-04T06:07:33.2882423Z    self-test | PASS actual release value "1-4" changes only notes
+2026-11-04T06:07:33.2883545Z    self-test | PASS actual release value "wrong" changes only notes
+2026-11-04T06:07:33.2884589Z    self-test | PASS actual release value "3-1" changes only notes
+2026-11-04T06:07:33.2885395Z    self-test | PASS actual release value "" changes only notes
+2026-11-04T06:07:33.2886243Z    self-test | PASS missing page change invalidates global input hash
+2026-11-04T06:07:33.2886996Z    self-test | PASS duplicate page change invalidates global input hash
+2026-11-04T06:07:33.2887806Z    self-test | PASS renamed page change invalidates global input hash
+2026-11-04T06:07:33.2888500Z    self-test | PASS attributes page change invalidates global input hash
+2026-11-04T06:07:33.2889364Z    self-test | PASS html page change invalidates global input hash
+2026-11-04T06:07:33.2889950Z    self-test | PASS canonical notes change only their partition
+2026-11-04T06:07:33.2890496Z    self-test | PASS unstaged chicago/4d/renderers/web/js/town.js cannot license reuse
+2026-11-04T06:07:33.2891362Z    self-test | PASS staged chicago/4d/renderers/web/js/town.js changes global hash
+2026-11-04T06:07:33.2892219Z    self-test | PASS unstaged chicago/4d/data/town.json cannot license reuse
+2026-11-04T06:07:33.2893023Z    self-test | PASS staged chicago/4d/data/town.json changes global hash
+2026-11-04T06:07:33.2893790Z    self-test | PASS unstaged chicago/4d/assets/town.glb cannot license reuse
+2026-11-04T06:07:33.2894576Z    self-test | PASS staged chicago/4d/assets/town.glb changes global hash
+2026-11-04T06:07:33.2895470Z    self-test | PASS unstaged chicago/4d/tools/smoke_renderer.mjs cannot license reuse
+2026-11-04T06:07:33.2896481Z    self-test | PASS staged chicago/4d/tools/smoke_renderer.mjs changes global hash
+2026-11-04T06:07:33.2897478Z    self-test | PASS restored fixture returns to exact original hashes
+2026-11-04T06:07:33.2898175Z    self-test | 21 smoke-input partition checks passed
+2026-11-04T06:07:33.2898591Z 
+2026-11-04T06:07:33.2899472Z [1m== The flora walk in GLSL carries flora.js's own walk constants (T-2697)[0m
+2026-11-04T06:07:33.2928069Z PASS — six placement shader zero buffers preserve count/values; actual shader position-read control refused
+2026-11-04T06:07:33.2930040Z PASS — the shader walk carries flora.js's 9 walk constants (hash3 0x27d4eb2du 0x165667b1u 0x9e3779b1u · 0x85ebca6bu 0xc2b2ae35u; stream 0x68bc21ebu; STRAT_SALT 0x7f4a7c15u; block shift 2)
+2026-11-04T06:07:33.2931253Z 
+2026-11-04T06:07:33.2931867Z [1m== the compact-bounds gate refuses bounds rounded to nearest[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:07:33.2974559Z    self-test | FAIL 1. every stored box and sphere contains three's own, within float32 steps
+2026-11-04T06:07:33.2975888Z    self-test |      geometry 0: sphere 0.10250067710876465 does not hold three's (needs 0.10250069945391119)
+2026-11-04T06:07:33.2977528Z    self-test | ok   2. the Box3 and Sphere objects are gone, and a second compaction is a no-op
+2026-11-04T06:07:33.2979148Z    self-test | ok   3. with the positions gone, the getters answer and the cull keeps what it kept
+2026-11-04T06:07:33.2980285Z    self-test | ok   4. setGeometryAt drops the row; a later geometry and a stale id are three's
+2026-11-04T06:07:33.2981290Z    self-test | ok   5. the rounding helpers round outward and keep exact values
+2026-11-04T06:07:33.2982170Z    self-test | self-test ok: nearest rounding refused (1 check(s) red)
+2026-11-04T06:07:33.2983615Z 
+2026-11-04T06:07:33.2986507Z [1m== The distant base and the streets' surfaces cut in Node are byte-identical build to build, batch exactly as the page's own spatialBatch does, the street trig is portable-math.js's, the base carries the key of the footprints it was laid over in the format the page reads (T-2709), and a prebuild from changed inputs is refused (T-2703)[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:07:33.3023972Z    self-test | ok   base: 1 scene(s) built
+2026-11-04T06:07:33.3025020Z    self-test | ok   1835: two base builds are byte-identical (3909436 bytes, 1 meshes, 7503 pieces)
+2026-11-04T06:07:33.3026462Z    self-test | ok   1835: every base mesh batched from the file equals the page's own spatialBatch of it, attribute for attribute (1)
+2026-11-04T06:07:33.3027943Z    self-test | ok   1835: the base input hash covers its code, the kernel and its data
+2026-11-04T06:07:33.3029135Z    self-test | ok   1835: the base is laid over frontage's crossing footprints (111)
+2026-11-04T06:07:33.3030213Z    self-test | ok   1835: the index carries the key of the footprints frontage publishes (9e3557d5:111)
+2026-11-04T06:07:33.3030948Z    self-test | ok   1835: a footprint fewer is another key
+2026-11-04T06:07:33.3031464Z    self-test | ok   base: the page reads the format this tool writes (2 = 2)
+2026-11-04T06:07:33.3031945Z    self-test | ok   base: a fresh build is current
+2026-11-04T06:07:33.3032791Z    self-test | ok   base: an index built from other inputs is refused: 1835: built from inputs that have since changed (assets/textures/chicago_1835_pbr/walls/clapboard_board_face/material.json)
+2026-11-04T06:07:33.3033729Z    self-test | ok   base: a buffer its index did not hash is refused
+2026-11-04T06:07:33.3034143Z    self-test | ok   streets: 1 scene(s) built
+2026-11-04T06:07:33.3035083Z    self-test | ok   1835: two streets builds are byte-identical (30385004 bytes, 6 meshes, 1189 pieces)
+2026-11-04T06:07:33.3035851Z    self-test | ok   1835: every streets mesh batched from the file equals the page's own spatialBatch of it, attribute for attribute (6)
+2026-11-04T06:07:33.3036635Z    self-test | ok   1835: the streets input hash covers its code, the kernel and its data
+2026-11-04T06:07:33.3037249Z    self-test | ok   1835: streets.js lays its surfaces with no engine-dependent Math function
+2026-11-04T06:07:33.3037847Z    self-test | ok   portable-math.js is within 2 ulp of Math's sin, cos, atan2 and acos
+2026-11-04T06:07:33.3038422Z    self-test | ok   1835: the streets carry both layouts (3 surfaces each)
+2026-11-04T06:07:33.3039287Z    self-test | ok   1835: the ridge layout is not the light one
+2026-11-04T06:07:33.3040055Z    self-test | ok   1835: each layout has its own buffer and its counters (light 10204208 B, 8677 panels; full 20180796 B, 8677 panels)
+2026-11-04T06:07:33.3040681Z    self-test | ok   1835: only the full layout is laid on the ridge
+2026-11-04T06:07:33.3041181Z    self-test | ok   streets: the page reads the format this tool writes (2 = 2)
+2026-11-04T06:07:33.3041686Z    self-test | ok   streets: a fresh build is current
+2026-11-04T06:07:33.3042416Z    self-test | ok   streets: an index built from other inputs is refused: 1835: built from inputs that have since changed (data/sidecars/1835/index.json)
+2026-11-04T06:07:33.3043363Z    self-test | ok   streets: a buffer its index did not hash is refused
+2026-11-04T06:07:33.3043762Z 
+2026-11-04T06:07:33.3044377Z [1m== A K03 brick wall's per-brick shuffle reads the library's own bonds, and every shipped brick panel is shuffled (T-3295)[0m
+2026-11-04T06:07:33.3074665Z OK: brick-bond.js shuffles 3 panels as profiles.json lays them; shipped: common_buff_common_6, rough_red_brown_running
+2026-11-04T06:07:33.3076779Z 
+2026-11-04T06:07:33.3078129Z [1m== …and a bronze that is a darker gold, a drifted token or an unreadable ink is refused (T-2671)[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:07:33.3119783Z    self-test | self-test: the real palette passes ok
+2026-11-04T06:07:33.3120813Z    self-test | self-test: a bronze that is only a darker gold is refused ok
+2026-11-04T06:07:33.3121579Z    self-test | self-test: a stylesheet token drifting from GRADE_COLORS is refused ok
+2026-11-04T06:07:33.3122634Z    self-test | self-test: a light-theme ink too pale to read is refused ok
+2026-11-04T06:07:33.3123884Z    self-test | self-test: a silver that has drifted to gold is refused ok
+2026-11-04T06:07:33.3124923Z    self-test | self-test: a grade chip painted from a literal colour is refused ok
+2026-11-04T06:07:33.3125403Z 
+2026-11-04T06:07:33.3126272Z [1m== The black box keeps the page's last steps in local storage, and the next page shows a cut-off page's on the crash card (T-2826)[0m
+2026-11-04T06:07:33.3166378Z ok  the black box keeps the page's last steps, shows a cut-off page's, and never throws (T-2826), with its bytes (T-2828)
+2026-11-04T06:07:33.3169222Z 
+2026-11-04T06:07:33.3170593Z [1m== Full active Ghost views use their measured envelope; ordinary and lower-tier ceilings restore unchanged (T-2981)[0m
+2026-11-04T06:07:33.3211141Z PASS Full active Ghost uses independently measured draw and triangle pins
+2026-11-04T06:07:33.3211896Z PASS the resolver does not mutate or drop other base policy fields
+2026-11-04T06:07:33.3212893Z PASS Normal, Tint and inactive Ghost keep the original base object and limits
+2026-11-04T06:07:33.3213896Z PASS Balanced and Light preserve their exact ceilings with Ghost enabled
+2026-11-04T06:07:33.3215046Z PASS a higher inspection allowance is preserved in either dimension
+2026-11-04T06:07:33.3215822Z PASS actual confidence view enables the allowance only while Ghost is active
+2026-11-04T06:07:33.3216418Z PASS multiple Ghost grades restore only when the last visible Ghost ends
+2026-11-04T06:07:33.3217021Z PASS detail transitions return to the original lower-tier and ordinary policies
+2026-11-04T06:07:33.3217542Z render-budget: 8 policy/transition checks passed
+2026-11-04T06:07:33.3217816Z 
+2026-11-04T06:07:33.3218672Z [1m== …and a token drifted toward its panel, or the device's overrides removed, is refused (T-2656)[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:07:33.3255142Z    self-test |    self-test | ok   the tree as it stands passes
+2026-11-04T06:07:33.3256245Z    self-test |    self-test | ok   without the Navigator’s overrides the faint ink fails
+2026-11-04T06:07:33.3257271Z    self-test |    self-test | ok   …Retro Future’s light accent fails
+2026-11-04T06:07:33.3258299Z    self-test |    self-test | ok   …the wash under Deep Space’s light accent fails
+2026-11-04T06:07:33.3259628Z    self-test |    self-test | ok   …and the two signal keys fail
+2026-11-04T06:07:33.3260308Z    self-test |    self-test | ok   a dim ink drifted toward the panel is refused
+2026-11-04T06:07:33.3260936Z    self-test |    self-test | ok   re-colouring the signal itself is refused (RECALL stays the machine's red)
+2026-11-04T06:07:33.3261657Z    self-test |    self-test | ok   contrast() is WCAG’s: black on white is 21:1
+2026-11-04T06:07:33.3262211Z    self-test |    self-test | 0 failure(s)
+2026-11-04T06:07:33.3262614Z 
+2026-11-04T06:07:33.3263834Z [1m== Every 'Why this default' is one line and a 'Why?' bubble of 40 words at most that opens by tap, click or key and closes on Escape or an outside tap; the full essay is Researcher mode's (T-2658)[0m
+2026-11-04T06:07:33.3302122Z SHORT WHY PASS — three researched settings, each one line and a "Why?" bubble of 40 words at most that opens by tap, click or key and closes on Escape or an outside tap; the full essay is Researcher mode's
+2026-11-04T06:07:33.3304358Z 
+2026-11-04T06:07:33.3306424Z [1m== Each Jaunt card shows a credited plate of its own stops or none, its keepsake once earned, and an outing in progress pinned on top with Continue (T-2631)[0m
+2026-11-04T06:07:33.3347267Z test_nav_jaunt_cards: credited plates of the stops or none, keepsakes, and Continue pinned on top
+2026-11-04T06:07:33.3349243Z 
+2026-11-04T06:07:33.3350463Z [1m== Inspect's Photos tab shows each picture's year, caption and credit by date, the 12 best first and All N, and From this spot only where a solved camera stood (T-2645)[0m
+2026-11-04T06:07:33.3390495Z   ok the year is the data's own: one year, a range, one end open, or Undated
+2026-11-04T06:07:33.3391462Z   ok the caption is templated from the view and kind, never the archival title
+2026-11-04T06:07:33.3392512Z   ok the credit is the creator, else the holder's first clause, else nothing
+2026-11-04T06:07:33.3393623Z   ok a spot is carried into the field as walker.js turns a footprint, and none without one
+2026-11-04T06:07:33.3395068Z   ok a picture with a spot ranks first, and a second viewpoint takes its turn before the eleventh front
+2026-11-04T06:07:33.3395991Z   ok within a view: in-period before later, nearer the scene year first, photographs before drawings
+2026-11-04T06:07:33.3396769Z   ok the tab shows the held, credited pictures by date, the best 12 by date, and lists the rest as links
+2026-11-04T06:07:33.3397619Z   ok the pane draws 12 tiles with year, caption and credit; All N shows every one; From this spot only on a spot
+2026-11-04T06:07:33.3398365Z   ok link-only cards keep sourced identity warnings and creator plus holder without changing captions
+2026-11-04T06:07:33.3399524Z   ok Glessner House: more than 12 pictures, 12 best by date, every one credited, a spot only where a solved camera names it
+2026-11-04T06:07:33.3400339Z   ok Inspect draws its Photos tab with renderPhotos, and the page offers From this spot through Show me
+2026-11-04T06:07:33.3400893Z test_nav_photos: OK (11 checks)
+2026-11-04T06:07:33.3401165Z 
+2026-11-04T06:07:33.3401677Z [1m== The building card prints no '[object Object]' and no other year's law (T-2609)[0m
+2026-11-04T06:07:33.3434338Z ok   glessner_house still carries an object-valued bay_dining to test against
+2026-11-04T06:07:33.3435148Z    self-test | ok   the old String() formatter prints '[object Object]' for bay_dining
+2026-11-04T06:07:33.3435770Z    self-test | 0 failure(s)
+2026-11-04T06:07:33.3436343Z ok   bay_dining prints no '[object Object]'
+2026-11-04T06:07:33.3437358Z ok   a structured value prints no value at all (null: the row keeps its chip, sources and why)
+2026-11-04T06:07:33.3438386Z ok   no attribute of 10866 across data/structures/ prints '[object Object]'
+2026-11-04T06:07:33.3439075Z ok   a list of objects prints no value
+2026-11-04T06:07:33.3439445Z ok   true prints "yes"
+2026-11-04T06:07:33.3439747Z ok   false prints "no"
+2026-11-04T06:07:33.3440196Z ok   null prints "—"
+2026-11-04T06:07:33.3440466Z ok   3 prints "3"
+2026-11-04T06:07:33.3440811Z ok   "gable_roof" prints "gable roof"
+2026-11-04T06:07:33.3441178Z ok   [3.9,3.6,3.4] prints "3.9, 3.6, 3.4"
+2026-11-04T06:07:33.3441506Z ok   ["s"] prints "s"
+2026-11-04T06:07:33.3441826Z ok   [] prints "none"
+2026-11-04T06:07:33.3442257Z ok   HAY_LIMITS.year (1835) is the year the file was derived for
+2026-11-04T06:07:33.3442740Z ok   the 1835 limit serves the 1835 scene
+2026-11-04T06:07:33.3443153Z ok   …and not the 1904 scene
+2026-11-04T06:07:33.3443515Z ok   …nor the 1812 scene
+2026-11-04T06:07:33.3443900Z ok   …nor an undated one
+2026-11-04T06:07:33.3444255Z ok   on 1904 the loader returns null
+2026-11-04T06:07:33.3444911Z ok   …without fetching the file
+2026-11-04T06:07:33.3445331Z ok   …and without reporting a problem
+2026-11-04T06:07:33.3445763Z ok   on 1835 the loader returns the limits
+2026-11-04T06:07:33.3446390Z ok   a file re-derived for another date does not reach 1835 through the path's name
+2026-11-04T06:07:33.3446841Z 0 failure(s)
+2026-11-04T06:07:33.3447034Z 
+2026-11-04T06:07:33.3447455Z [1m== Street travel keeps each pace on its surface and clears buildings (T-2496)[0m
+2026-11-04T06:07:33.3478197Z STREET TRAVEL PASS — sidewalks, roadways, street bends, thin walls, Glessner frontage, high-speed obstacle-safe movement and no teleport fallback
+2026-11-04T06:07:33.3480184Z WATER STRUCTURE FRAMING PASS — actual main closures, rotated bounds/water datum, synthetic frontage, both viewports, house/camp/enclosure controls
+2026-11-04T06:07:33.3481237Z 
+2026-11-04T06:07:33.3482040Z [1m== loading evidence refuses promoted or unrelated facts (T-1275)[0m
+2026-11-04T06:07:33.3523347Z .....
+2026-11-04T06:07:33.3524027Z ----------------------------------------------------------------------
+2026-11-04T06:07:33.3524455Z Ran 5 tests in 3.231s
+2026-11-04T06:07:33.3524631Z 
+2026-11-04T06:07:33.3524769Z OK
+2026-11-04T06:07:33.3526066Z 
+2026-11-04T06:07:33.3526957Z [1m== Packed normal frame recovery preserves raw target limits and refuses invalid frames[0m
+2026-11-04T06:07:33.3567115Z .......
+2026-11-04T06:07:33.3567990Z ----------------------------------------------------------------------
+2026-11-04T06:07:33.3568697Z Ran 7 tests in 0.399s
+2026-11-04T06:07:33.3569118Z 
+2026-11-04T06:07:33.3569362Z OK
+2026-11-04T06:07:33.3569776Z 
+2026-11-04T06:07:33.3570934Z [1m== Catalogue Brougham preserves physical masters, exact optical delivery, lamps, contacts and scoped Full/HEAD policy (T-3084)[0m
+2026-11-04T06:07:33.3611030Z {
+2026-11-04T06:07:33.3611944Z   "scope": "Actual main declaration/selector policy isolation only; no renderer/world/FPS claim",
+2026-11-04T06:07:33.3613021Z   "main_sha256": "a3d9e79bd63e0608cc7906ff41384a2abd6d25d60cbe1d050bfeef5fbf7aa4fd",
+2026-11-04T06:07:33.3613571Z   "policy": {
+2026-11-04T06:07:33.3613904Z     "ordinary": {
+2026-11-04T06:07:33.3614249Z       "full": 3470000,
+2026-11-04T06:07:33.3614581Z       "balanced": 2625000,
+2026-11-04T06:07:33.3614961Z       "light": 1190000
+2026-11-04T06:07:33.3615271Z     },
+2026-11-04T06:07:33.3615568Z     "inspection": {
+2026-11-04T06:07:33.3615918Z       "full": 4700000,
+2026-11-04T06:07:33.3616233Z       "balanced": 2625000,
+2026-11-04T06:07:33.3616526Z       "light": 1270000
+2026-11-04T06:07:33.3616824Z     }
+2026-11-04T06:07:33.3617079Z   },
+2026-11-04T06:07:33.3617355Z   "controls": [
+2026-11-04T06:07:33.3617615Z     {
+2026-11-04T06:07:33.3617962Z       "name": "Inspection Full unauthorized extra triangle",
+2026-11-04T06:07:33.3618622Z       "correctly_rejected": "Only measured selected Full allowance\n+ actual - expected\n\n+ 4700001\n- 4700000\n        ^\n"
+2026-11-04T06:07:33.3619596Z     },
+2026-11-04T06:07:33.3619971Z     {
+2026-11-04T06:07:33.3620384Z       "name": "Inspection Light increase",
+2026-11-04T06:07:33.3621262Z       "correctly_rejected": "Selected Light floor unchanged\n+ actual - expected\n\n+ 1270001\n- 1270000\n        ^\n"
+2026-11-04T06:07:33.3622376Z     },
+2026-11-04T06:07:33.3622622Z     {
+2026-11-04T06:07:33.3622950Z       "name": "Ordinary Light increase",
+2026-11-04T06:07:33.3623494Z       "correctly_rejected": "Ordinary Light unchanged\n+ actual - expected\n\n+ 1190001\n- 1190000\n        ^\n"
+2026-11-04T06:07:33.3623970Z     },
+2026-11-04T06:07:33.3624277Z     {
+2026-11-04T06:07:33.3624543Z       "name": "Balanced increase",
+2026-11-04T06:07:33.3625080Z       "correctly_rejected": "Balanced unchanged\n+ actual - expected\n\n+ 2625001\n- 2625000\n        ^\n"
+2026-11-04T06:07:33.3625531Z     },
+2026-11-04T06:07:33.3625768Z     {
+2026-11-04T06:07:33.3626110Z       "name": "Ordinary Full increase",
+2026-11-04T06:07:33.3626698Z       "correctly_rejected": "Ordinary driver triangle ceiling unchanged\n+ actual - expected\n\n+ 3470001\n- 3470000\n        ^\n"
+2026-11-04T06:07:33.3627440Z     },
+2026-11-04T06:07:33.3627683Z     {
+2026-11-04T06:07:33.3627975Z       "name": "Selected Full shadow reach",
+2026-11-04T06:07:33.3629037Z       "correctly_rejected": "full original shadowReachM unchanged\n\n241 !== 240\n"
+2026-11-04T06:07:33.3629617Z     },
+2026-11-04T06:07:33.3629982Z     {
+2026-11-04T06:07:33.3630373Z       "name": "Selected Light shadow reach",
+2026-11-04T06:07:33.3631007Z       "correctly_rejected": "light original shadowReachM unchanged\n\n121 !== 120\n"
+2026-11-04T06:07:33.3631468Z     },
+2026-11-04T06:07:33.3631742Z     {
+2026-11-04T06:07:33.3632092Z       "name": "Selected Full furniture shadows",
+2026-11-04T06:07:33.3632636Z       "correctly_rejected": "full original furnitureCastsShadow unchanged\n\nfalse !== true\n"
+2026-11-04T06:07:33.3633118Z     },
+2026-11-04T06:07:33.3633387Z     {
+2026-11-04T06:07:33.3633716Z       "name": "General draw-call increase",
+2026-11-04T06:07:33.3634256Z       "correctly_rejected": "General driver draw-call ceiling unchanged\n\n7801 !== 7800\n"
+2026-11-04T06:07:33.3634712Z     }
+2026-11-04T06:07:33.3635004Z   ],
+2026-11-04T06:07:33.3635290Z   "pass": true
+2026-11-04T06:07:33.3635578Z }
+2026-11-04T06:07:33.3766810Z {
+2026-11-04T06:07:33.3767373Z   "pass": true,
+2026-11-04T06:07:33.3768171Z   "scope": "Actual directory HEAD timing/body/error handling and unchanged GET cache; no browser claim",
+2026-11-04T06:07:33.3769471Z   "controls": [
+2026-11-04T06:07:33.3769781Z     {
+2026-11-04T06:07:33.3770139Z       "name": "Discarded HEAD body",
+2026-11-04T06:07:33.3770775Z       "rejected": "The actual zero-byte body is consumed\n\n0 !== 1\n"
+2026-11-04T06:07:33.3771295Z     },
+2026-11-04T06:07:33.3771551Z     {
+2026-11-04T06:07:33.3771914Z       "name": "Unawaited HEAD body",
+2026-11-04T06:07:33.3772518Z       "rejected": "Do not publish success before body completion\n\ntrue !== false\n"
+2026-11-04T06:07:33.3773107Z     }
+2026-11-04T06:07:33.3773348Z   ]
+2026-11-04T06:07:33.3773590Z }
+2026-11-04T06:07:33.3778060Z {"pass": true, "detail": "near", "triangles": 45338, "raw_sha256": "206cd7a9141896361abd312ce73cd4de0e0868eca532b097a995a0488fa3dfe4", "indexed_sha256": "3d2f3a802f4b32dba6a3e61f2c188dddce4db05cecfcbba81e1e8d369d5dfe89", "protected": {"protected_occurrences": 475, "changed_body_occurrences": 5, "added_piping_occurrences": 1, "accepted_V18_lamps_exact": true, "contacts_frames_proxy_exact": true}, "negative_controls": {"protected final hub geometry": true, "owned front position deformation": true, "accepted lamp glazing": true, "named hitch frame": true}, "front_curve": {"source_height_bearings": 15, "interval_samples": 462, "max_finite_difference_slope_jump": 9.42765362843545e-06, "landmarks_exact": true, "interval_overshoot": false, "extrapolation_refused": true}, "photographic_accepted": false, "world_budget_accepted": false}
+2026-11-04T06:07:33.3787941Z {"pass": true, "detail": "mid", "triangles": 23062, "raw_sha256": "560373980cc70524c4f85071fb4e3df6bc29df8a884f3dc17960fabcaa625f9d", "indexed_sha256": "d5cdd34e981d29db41634ac780c22526742f6a20527b5866d2349c727a67400d", "protected": {"protected_occurrences": 309, "changed_body_occurrences": 5, "added_piping_occurrences": 1, "accepted_V18_lamps_exact": true, "contacts_frames_proxy_exact": true}, "negative_controls": {"protected final hub geometry": true, "owned front position deformation": true, "accepted lamp glazing": true, "named hitch frame": true}, "front_curve": {"source_height_bearings": 15, "interval_samples": 462, "max_finite_difference_slope_jump": 9.42765362843545e-06, "landmarks_exact": true, "interval_overshoot": false, "extrapolation_refused": true}, "photographic_accepted": false, "world_budget_accepted": false, "near_triangles": 45338, "mid_triangles": 23062, "all_physical_occurrences_preserved": true, "strict_mid_proxy_containment": true}
+2026-11-04T06:07:33.3804095Z {"pass": true, "scope": "Strict serialized identity and canonical regeneration only; no renderer or world acceptance", "producer_sha256": "8ba09b8e97ca1bfd987f88738a48cad427bc1c7c13c470aba3ae3cbd3d2b3ea5", "rows": [{"detail": "near", "source_sha256": "3d2f3a802f4b32dba6a3e61f2c188dddce4db05cecfcbba81e1e8d369d5dfe89", "delivery_sha256": "b5b183b4f115c5c7779ba0cb4ccba83fbffb62349647a9a6487f50cde49aef77", "triangles": 45338, "entire_BIN_and_geometry_layout_scene_and_materials0_6_exact": true, "negative_controls": [{"control": "BIN corruption", "rejected": "Every BIN/index/position/normal byte must remain exact"}, {"control": "protected lamp material", "rejected": "No geometry/layout/scene/material0-6 or other JSON change is permitted"}, {"control": "body node transform", "rejected": "No geometry/layout/scene/material0-6 or other JSON change is permitted"}, {"control": "wrong alpha opacity", "rejected": "No geometry/layout/scene/material0-6 or other JSON change is permitted"}, {"control": "wrong geometry count", "rejected": "No geometry/layout/scene/material0-6 or other JSON change is permitted"}, {"control": "wrong triangle statistic", "rejected": "No geometry/layout/scene/material0-6 or other JSON change is permitted"}, {"control": "wrong source attribution", "rejected": "Exact indexed source attribution"}, {"control": "wrong producer attribution", "rejected": "Exact canonical producer attribution"}, {"control": "transmission restored", "rejected": "No geometry/layout/scene/material0-6 or other JSON change is permitted"}]}, {"detail": "mid", "source_sha256": "d5cdd34e981d29db41634ac780c22526742f6a20527b5866d2349c727a67400d", "delivery_sha256": "16daaf1d5003aae3ea64de9d037962aaabf2a5c8638ac77a5a2e037564ef2d63", "triangles": 23062, "entire_BIN_and_geometry_layout_scene_and_materials0_6_exact": true, "negative_controls": [{"control": "BIN corruption", "rejected": "Every BIN/index/position/normal byte must remain exact"}, {"control": "protected lamp material", "rejected": "No geometry/layout/scene/material0-6 or other JSON change is permitted"}, {"control": "body node transform", "rejected": "No geometry/layout/scene/material0-6 or other JSON change is permitted"}, {"control": "wrong alpha opacity", "rejected": "No geometry/layout/scene/material0-6 or other JSON change is permitted"}, {"control": "wrong geometry count", "rejected": "No geometry/layout/scene/material0-6 or other JSON change is permitted"}, {"control": "wrong triangle statistic", "rejected": "No geometry/layout/scene/material0-6 or other JSON change is permitted"}, {"control": "wrong source attribution", "rejected": "Exact indexed source attribution"}, {"control": "wrong producer attribution", "rejected": "Exact canonical producer attribution"}, {"control": "transmission restored", "rejected": "No geometry/layout/scene/material0-6 or other JSON change is permitted"}]}], "canonical_regeneration_byte_exact": true}
+2026-11-04T06:07:33.3812489Z 
+2026-11-04T06:07:33.3813208Z [1m== Pending horse eye-normal child protects all parent source data and admits no old certificate (T-3088)[0m
+2026-11-04T06:07:33.3813756Z .......
+2026-11-04T06:07:33.3814121Z ----------------------------------------------------------------------
+2026-11-04T06:07:33.3814500Z Ran 7 tests in 12.236s
+2026-11-04T06:07:33.3814645Z 
+2026-11-04T06:07:33.3814750Z OK
+2026-11-04T06:07:33.3814857Z 
+2026-11-04T06:07:33.3815375Z [1m== Resident hair validates decoded runtime geometry, texture and skin attributes (T-1789)[0m
+2026-11-04T06:07:33.3816110Z PASS 11 runtime positive/negative contracts; synthetic decoded objects, actual exported files not yet available
+2026-11-04T06:07:33.3816513Z 
+2026-11-04T06:07:33.3816893Z [1m== Hierarchy control refuses nonidentity frames and object animation before mutation[0m
+2026-11-04T06:07:33.3817286Z ......
+2026-11-04T06:07:33.3817596Z ----------------------------------------------------------------------
+2026-11-04T06:07:33.3817915Z Ran 6 tests in 0.008s
+2026-11-04T06:07:33.3818051Z 
+2026-11-04T06:07:33.3818126Z OK
+2026-11-04T06:07:33.3818228Z 
+2026-11-04T06:07:33.3818639Z [1m== Driven-team clearance uses the complete occupied envelope and refuses blocked routes (T-2804)[0m
+2026-11-04T06:07:33.3819624Z transport clearance: whole-team / swept thin wall / actual-state gate / visitor / disposal-independent readers PASS
+2026-11-04T06:07:33.3820077Z 
+2026-11-04T06:07:33.3820361Z [1m== the merge drivers this clone needs are registered (T-1548)[0m
+2026-11-04T06:07:33.3843302Z MERGE DRIVERS NOT REGISTERED in this clone: merge.queue.driver merge.changelog.driver merge.generated.driver merge.smokestate.driver
+2026-11-04T06:07:33.3844034Z 
+2026-11-04T06:07:33.3844490Z   /.gitattributes routes changelog.js through merge=changelog. Unregistered,
+2026-11-04T06:07:33.3845370Z   every branch that ships a changelog entry conflicts and is resolved by hand
+2026-11-04T06:07:33.3846373Z   — the same edit merge-changelog.mjs makes for free. Four such resolutions
+2026-11-04T06:07:33.3847221Z   were paid in one session on 2026-09-24.
+2026-11-04T06:07:33.3847552Z 
+2026-11-04T06:07:33.3847788Z   Register them once per clone (it writes .git/config, nothing to commit):
+2026-11-04T06:07:33.3848244Z       bash chicago/4d/tools/setup-merge-drivers.sh
+2026-11-04T06:07:33.3848460Z 
+2026-11-04T06:07:33.3848686Z (warning only; set CHECK_DRIVERS_STRICT=1 to make this a failure)
+2026-11-04T06:07:33.3849287Z 
+2026-11-04T06:07:33.3849637Z [1m== the tickets are here (kevinrhaas/chicago-tickets, cloned at tickets/)[0m
+2026-11-04T06:07:33.3888508Z tickets: cloned https://github.com/kevinrhaas/chicago-tickets.git → tickets/ (3230 tickets)
+2026-11-04T06:08:38.4703456Z 
+2026-11-04T06:08:38.4704791Z [1m== publish the mirror the gate measures (site/4d/ is generated, T-0938)[0m
+2026-11-04T06:08:38.4750178Z Glessner v4 package verified; 3 missing GLB(s) materialized.
+2026-11-04T06:08:38.4752722Z shipped derivatives: 1035 pair(s) carry the master's triangles, node identity and contract attributes; worst bounding-box disagreement 2.68 of 4 rungs; 0 asset(s) lose their material identity to the publish path (banked, K36(b)); 5 master passthrough(s), all of them decided (K38); and every one of them records the master it was made from, which is still the master in the tree (K39)
+2026-11-04T06:08:38.4755048Z Prairie Avenue browser published: /home/runner/work/chicago/chicago/site/4d/prairie-1904
+2026-11-04T06:08:38.4755643Z published 15 map images + viewer + media to site/pre-fire
+2026-11-04T06:08:38.4756155Z    prairie-1904/maps/  3.85 MB served from /prairie-1904/maps/
+2026-11-04T06:08:38.4756840Z    prairie-1904/research/public/  39.30 MB served from /prairie-1904/research/public/, 4 file(s) not at the root kept here
+2026-11-04T06:08:38.4757484Z    pre-fire/maps/images/  41.88 MB served from /pre-fire/maps/images/
+2026-11-04T06:08:38.4757953Z    pre-fire/media/  5.68 MB served from /pre-fire/media/
+2026-11-04T06:08:38.4758398Z    reference browsers: 90.71 MB not shipped twice (T-1828)
+2026-11-04T06:08:38.4759074Z    changelog.js published to site/4d/js/changelog.js (T-0722)
+2026-11-04T06:08:38.4759534Z    changelog.js published to site/4d/walk/js/changelog.js (T-0722)
+2026-11-04T06:08:38.4759956Z    sheets: 54 shared by 55 GLB(s), 210.607 -> 90.364 MiB
+2026-11-04T06:08:38.4760716Z household notes deferred: 1960 household(s) on 370 record(s) → sidecars/<scene>/households/<id>.json
+2026-11-04T06:08:38.4761485Z boot sidecars packed: 1812 — 59 record(s) in 2 part(s), sharing 246 value(s) → sidecars/1812/boot/
+2026-11-04T06:08:38.4762221Z boot sidecars packed: 1835 — 687 record(s) in 14 part(s), sharing 1467 value(s) → sidecars/1835/boot/
+2026-11-04T06:08:38.4762947Z boot sidecars packed: 1904 — 284 record(s) in 6 part(s), sharing 301 value(s) → sidecars/1904/boot/
+2026-11-04T06:08:38.4763763Z letter-list cohort: 773 records packed from 9.31 MiB of per-record files to 4.61 MiB in 23 shard(s) and a 666-string roster (T-0438)
+2026-11-04T06:08:38.4765089Z strip_page_comments: walk/index.html 77,874 -> 59,654 bytes (82 developer comments out, 0 placeholder(s) kept)
+2026-11-04T06:08:38.4766135Z entry pages: index.html, 1812/index.html, 1835/index.html, 1880/index.html, 1904/index.html
+2026-11-04T06:08:38.4767614Z 1835: ground built in 718 ms — 232 tiles, 10036 pieces, 30895134 bytes, 65 inputs → /home/runner/work/chicago/chicago/site/4d/data/prebuilt/1835
+2026-11-04T06:08:38.4769868Z 1835: base built in 137 ms — 1 meshes, 7503 pieces, 3909436 bytes, 71 inputs → /home/runner/work/chicago/chicago/site/4d/data/prebuilt/1835
+2026-11-04T06:08:38.4771615Z 1835: streets built in 1442 ms — 6 meshes, 1189 pieces, 30385004 bytes, 65 inputs → /home/runner/work/chicago/chicago/site/4d/data/prebuilt/1835
+2026-11-04T06:08:38.4773301Z 1835: yards built in 1774 ms — 5 surfaces, 937 pieces, 29092284 bytes, 86 inputs → /home/runner/work/chicago/chicago/site/4d/data/prebuilt/1835
+2026-11-04T06:08:38.4774302Z 1835: frontage built in 905 ms — 127 meshes, 63558720 bytes, 73 inputs → /home/runner/work/chicago/chicago/site/4d/data/prebuilt/1835
+2026-11-04T06:08:38.4774892Z    build 1302b4090  Nov 4, 2026, 12:08 AM CT
+2026-11-04T06:08:38.4775180Z    pack 1812: 2776 files, 184.8 MB
+2026-11-04T06:08:38.4775576Z    pack 1835: 5013 files, 264.8 MB
+2026-11-04T06:08:38.4775959Z    pack 1904: 3296 files, 291.9 MB
+2026-11-04T06:08:38.4776375Z published ../../site/4d  (28.96 MB)
+2026-11-04T06:08:38.5056185Z [33m   note: this clone has not registered the custom merge driver(s): queue changelog generated smokestate[0m
+2026-11-04T06:08:38.5057512Z [33m         those paths will conflict the old way until you run:[0m
+2026-11-04T06:08:38.5058452Z [33m           bash chicago/4d/tools/setup-merge-drivers.sh[0m
+2026-11-04T06:10:58.8171859Z 
+2026-11-04T06:10:58.8173512Z [1m== Glessner copper follows the low hood and both adjoining roof planes (T-2220)[0m
+2026-11-04T06:10:58.8224320Z PASS: 96 planar nonoverlapping hood facets; exact shared roof edges; host cut coverage; attached Full/Light stock
+2026-11-04T06:10:58.8225567Z PASS: 2000 independent copper-return rays; no overlapping tiles/hood, no lifted sheet; Full/Light stock seated on host
+2026-11-04T06:10:58.8226628Z PASS: 1500 independent dormer host samples, clear glazing, section eave and Full/Light bell silhouette
+2026-11-04T06:10:58.8227182Z 
+2026-11-04T06:10:58.8227917Z [1m== Glessner stacks meet both roof pitches and retain deep open flues (T-2222)[0m
+2026-11-04T06:10:58.8272603Z PASS: seven retained stacks, two roof pitches, jointed masonry caps and open deep flues in Full/Light
+2026-11-04T06:10:58.8274647Z 
+2026-11-04T06:10:58.8275849Z [1m== every Glessner tier's stone occlusion was baked from its committed atlas, so a bake on any CPU reproduces it (T-2431)[0m
+2026-11-04T06:10:58.8322557Z stone occlusion atlas: every tier was baked from its committed atlas — full d900a4fbd41414e8 = granite_stone_occlusion_2048.npz; light b146fa1c32b07533 = granite_stone_occlusion_1024.npz; web d900a4fbd41414e8 = granite_stone_occlusion_2048.npz
+2026-11-04T06:10:58.8323676Z 
+2026-11-04T06:10:58.8325044Z [1m== …and the draft builder still fits rectangles inside a part, reads the notation and refuses a hand edit[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:58.8367720Z    self-test | draft_prairie_1904 --self-test: ok (8 of 8 cases)
+2026-11-04T06:10:58.8370406Z 
+2026-11-04T06:10:58.8371616Z [1m== …and the post-deploy URL smoke still fires on a 404 (T-0968)[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:58.8411918Z    self-test | PASS  /ok  200  61 bytes  (1 attempt)
+2026-11-04T06:10:58.8413422Z    self-test | FAIL  T-0968 URL check: /missing-on-purpose returned HTTP 404 after 4 attempt(s) over 3s — expected 200 and a body containing 'a body signal nothing serves'
+2026-11-04T06:10:58.8415357Z    self-test | ::error::T-0968 URL check: /missing-on-purpose returned HTTP 404 after 4 attempt(s) over 3s — expected 200 and a body containing 'a body signal nothing serves'
+2026-11-04T06:10:58.8416708Z    self-test | --- self-test fired annotation:
+2026-11-04T06:10:58.8418076Z    self-test | ::error::T-0968 URL check: /missing-on-purpose returned HTTP 404 after 4 attempt(s) over 3s — expected 200 and a body containing 'a body signal nothing serves'
+2026-11-04T06:10:58.8419700Z    self-test | SELF-TEST PASS — the check passes a good page and fires ::error:: on a known 404.
+2026-11-04T06:10:58.8420495Z 
+2026-11-04T06:10:58.8421081Z [1m== …and the seal still clamps, marks and shouts a rung typed too high (T-0135)[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:58.8458435Z    self-test |   ok    a table that is already a ladder passes through untouched and silent
+2026-11-04T06:10:58.8459538Z    self-test |   ok    a rung typed above the one above it runs clamped under it, marked, and shouted
+2026-11-04T06:10:58.8460410Z    self-test |   ok    equal rungs are not a ladder either — they are pushed strictly under
+2026-11-04T06:10:58.8461267Z    self-test |   ok    a level in the order and not in the table is loud, not silent
+2026-11-04T06:10:58.8461880Z    self-test |   0 failure(s)
+2026-11-04T06:10:58.8462122Z 
+2026-11-04T06:10:58.8463353Z [1m== …and promote_version.mjs makes a version the default in one diff, reversibly (T-1727)[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:58.8505770Z    self-test |    self-test | ok   a label with no version record is refused
+2026-11-04T06:10:58.8506631Z    self-test |    self-test | ok   a --keep-as that breaks the label rule is refused
+2026-11-04T06:10:58.8507453Z    self-test |    self-test | ok   …and a refusal moved nothing
+2026-11-04T06:10:58.8508142Z    self-test |    self-test | ok   --dry-run lists the moves and changes nothing
+2026-11-04T06:10:58.8508755Z    self-test |    self-test | ok   the promotion runs
+2026-11-04T06:10:58.8509693Z    self-test |    self-test | ok   the version is now the canonical record, without its version block
+2026-11-04T06:10:58.8510665Z    self-test |    self-test | ok   the old default is kept as version pre-v2, labelled and summarised
+2026-11-04T06:10:58.8511159Z    self-test |    self-test | ok   the promoted version file is gone
+2026-11-04T06:10:58.8511715Z    self-test |    self-test | ok   the meshes swapped places — master and derivative both
+2026-11-04T06:10:58.8512211Z    self-test |    self-test | ok   the emptied version mesh directories are removed
+2026-11-04T06:10:58.8512724Z    self-test |    self-test | ok   the build records moved with the meshes, hashes intact
+2026-11-04T06:10:58.8513222Z    self-test |    self-test | ok   promoting the kept default straight back works
+2026-11-04T06:10:58.8513862Z    self-test |    self-test | ok   …and restores the original canonical record byte for byte (90.0 stays 90.0)
+2026-11-04T06:10:58.8514319Z    self-test |    self-test | 0 failure(s)
+2026-11-04T06:10:58.8514508Z 
+2026-11-04T06:10:58.8514833Z [1m== the South Branch below Twelfth still carries what its generator writes[0m
+2026-11-04T06:10:58.8550341Z OK south_branch_below_twelfth.geojson: 85 vertices a bank, N -2110.0 to past -3800.0, channel 23.4-67.2 m
+2026-11-04T06:10:58.8555119Z 
+2026-11-04T06:10:58.8555901Z [1m== the 1812 Hardscrabble site re-derives from its readings (T-2501)[0m
+2026-11-04T06:10:58.8597857Z ok: data/terrain/1812_hardscrabble_site.json re-derives from its readings
+2026-11-04T06:10:58.8600204Z 
+2026-11-04T06:10:58.8601270Z [1m== the 1904 Illinois Central lake edge still re-traces from its sheets (T-1250)[0m
+2026-11-04T06:10:58.8642073Z OK the 1904 IC edge holds: 1911 stands 18.4 m / 19.9 m east of 1886 at the two overlaps; the scene line is reconstructed inside that band, re-traced from the sheets
+2026-11-04T06:10:58.8646025Z 
+2026-11-04T06:10:58.8647335Z [1m== the 1904 poles, crossarms and wires refuse to run into a building (T-3225)[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:58.8685890Z    self-test | ok   the committed placement: nothing intersects
+2026-11-04T06:10:58.8687592Z    self-test | ok   a pole stood in a building: pole.alley.indiana_prairie_16_18#00: its pole stands in context block 44 (big_block) (built 16.00 m high there); pole.alley.indiana_prairie_16_18#00: its crossarm reaches context block 44 (big_block) (built 16.00 m high there)
+2026-11-04T06:10:58.8690832Z    self-test | ok   a gable under the crossarm: pole.alley.indiana_prairie_16_18#00: its crossarm reaches self-test gable (built 10.50 m high there); line pole.alley.indiana_prairie_16_18#00 -> pole.alley.indiana_prairie_16_18#01: a wire runs through self-test gable 0.0 m along (wire 10.29 m, built 10.50 m)
+2026-11-04T06:10:58.8692554Z    self-test | ok   a roof under a span: line pole.alley.indiana_prairie_16_18#00 -> pole.alley.indiana_prairie_16_18#01: a wire runs through self-test roof 15.5 m along (wire 9.88 m, built 10.05 m)
+2026-11-04T06:10:58.8693289Z    self-test | ok   a fence under a span (passes): nothing intersects
+2026-11-04T06:10:58.8694908Z    self-test | ok   a building under the trolley span: trolley_span pole.trolley.indiana_prairie_21_22.n#00 -> pole.trolley.indiana_prairie_21_22.s#00: a wire runs through self-test block 4.2 m along (wire 6.29 m, built 8.00 m); trolley_contact pole.trolley.indiana_prairie_21_22.n#00-pole.trolley.indiana_prairie_21_22.s#00 / pole.trolley.indiana_prairie_21_22.n#01-pole.trolley.indiana_prairie_21_22.s#01: a wire runs through self-test block 0.0 m along (wire 5.60 m, built 8.00 m)
+2026-11-04T06:10:58.8696317Z    self-test | all four faults caught, the clear cases passed
+2026-11-04T06:10:58.8696554Z 
+2026-11-04T06:10:58.8697164Z [1m== …and its sight-line and storey-height rules hold (T-3008)[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:58.8731639Z    self-test | census_prairie_1904_background: self-test ok
+2026-11-04T06:10:58.8734098Z 
+2026-11-04T06:10:58.8735680Z [1m== …and a bare surface, an invented source, a report made to attest or a range that misses still fails it[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:58.8776560Z    self-test |    ok   a carriageway the grid draws with no surface is refused
+2026-11-04T06:10:58.8777471Z    self-test |    ok   an alley named that the grid does not have is refused
+2026-11-04T06:10:58.8778155Z    self-test |    ok   a tier outside the three is refused
+2026-11-04T06:10:58.8778979Z    self-test |    ok   an invented source id is refused
+2026-11-04T06:10:58.8779754Z    self-test |    ok   an attested surface resting only on a bounding report is refused
+2026-11-04T06:10:58.8780779Z    self-test |    ok   a reconstructed surface with no liberty is refused
+2026-11-04T06:10:58.8781619Z    self-test |    ok   a liberty number that is not in LIBERTIES.md is refused
+2026-11-04T06:10:58.8782327Z    self-test |    ok   a range that ends before the scene date is refused
+2026-11-04T06:10:58.8782749Z    self-test |    ok   a range that starts after the scene date is refused
+2026-11-04T06:10:58.8783129Z    self-test |    ok   a range with no basis is refused
+2026-11-04T06:10:58.8783510Z    self-test |    ok   a band with no surface on any face is refused
+2026-11-04T06:10:58.8783933Z    self-test |    ok   a piece that cuts at a street the grid lacks is refused
+2026-11-04T06:10:58.8784354Z    self-test |    ok   a material with no texture directory is refused
+2026-11-04T06:10:58.8784882Z    self-test |    ok   a year alone reads least generously: 'from 1904' holds, 'to 1904' holds, 'from 1905' fails
+2026-11-04T06:10:58.8785373Z    self-test |    ok   the committed surfaces pass
+2026-11-04T06:10:58.8785771Z    self-test |    ok   an OpenGL-handed normal map passes the handedness rule
+2026-11-04T06:10:58.8786219Z    self-test |    ok   a DirectX map filed as normal_gl is refused (T-2296)
+2026-11-04T06:10:58.8786607Z    self-test |    ok   a map with red mirrored is refused
+2026-11-04T06:10:58.8786986Z    self-test |    ok   the committed normal maps are OpenGL-handed
+2026-11-04T06:10:58.8787227Z 
+2026-11-04T06:10:58.8788072Z [1m== …and a hole, an inward face, a doubled face, a roof through its gable, a floating return or a low parapet still fails it[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:58.8820445Z    self-test |    self-test | ok   a missing triangle opens the roof: the 'closed' rule refuses it
+2026-11-04T06:10:58.8821292Z    self-test |    self-test | ok   a face wound inward: the 'closed' rule refuses it
+2026-11-04T06:10:58.8822278Z    self-test |    self-test | ok   a face laid twice: the 'doubled' rule refuses it
+2026-11-04T06:10:58.8823268Z    self-test |    self-test | ok   a cross gable laid without the union: planes through planes: the 'crossing' rule refuses it
+2026-11-04T06:10:58.8824818Z    self-test |    self-test | ok   a stepped gable laid without the union: the roof through its parapet: the 'crossing' rule refuses it
+2026-11-04T06:10:58.8825820Z    self-test |    self-test | ok   a return lifted off its eave: the 'one shell' rule refuses it
+2026-11-04T06:10:58.8826414Z    self-test |    self-test | ok   a stepped parapet built 0.05 m clear, held to 0.3: the 'parapet' rule refuses it
+2026-11-04T06:10:58.8827083Z    self-test |    self-test | ok   a flat roof's parapets built 0.05 m clear of its deck, held to 0.3: the 'parapet' rule refuses it
+2026-11-04T06:10:58.8827779Z    self-test |    self-test | ok   a flat roof laid without the union: the deck through its parapets: the 'crossing' rule refuses it
+2026-11-04T06:10:58.8828404Z    self-test |    self-test | ok   a hip roof declared with two valleys: the 'graph' rule refuses it
+2026-11-04T06:10:58.8829211Z    self-test |    self-test | ok   a mansard's lower face at 85 degrees: the 'pitch' rule refuses it
+2026-11-04T06:10:58.8829735Z    self-test |    self-test | ok   a hip at 20 degrees: the 'pitch' rule refuses it
+2026-11-04T06:10:58.8830278Z    self-test |    self-test | ok   an element's interior face left in the union: the 'hidden' rule refuses it
+2026-11-04T06:10:58.8830842Z    self-test |    self-test | ok   a hip over a 10-triangle budget: the 'budget' rule refuses it
+2026-11-04T06:10:58.8831337Z    self-test |    self-test | ok   a stale specimen: the 'specimen' rule refuses it
+2026-11-04T06:10:58.8831785Z    self-test |    self-test | ok   the unbroken kit holds every rule
+2026-11-04T06:10:58.8832160Z    self-test | ok   K05 roof kit self-test: 17/17
+2026-11-04T06:10:58.8832359Z 
+2026-11-04T06:10:58.8832769Z [1m== a K08 round tower carries a corbelled upper stage and a sized finial (T-1890)[0m
+2026-11-04T06:10:58.8865363Z ok   the staged tower's storey lines run on through its stage ([0.0, 5.0, 8.9, 10.9])
+2026-11-04T06:10:58.8866326Z ok   the shaft stands on its own ring (1.100-1.100 m against 1.1)
+2026-11-04T06:10:58.8867099Z ok   the stage stands on the wider ring (1.850-1.850 m against 1.85)
+2026-11-04T06:10:58.8868040Z ok   five corbel courses step 0.75 m back to the shaft, 0.125 m each (at most 0.130)
+2026-11-04T06:10:58.8868944Z ok   the lowest course at 7.9 m bears on the shaft
+2026-11-04T06:10:58.8869946Z ok   the corbel courses stand between the lowest course and the stage's floor
+2026-11-04T06:10:58.8870654Z ok   the shaft is capped: no eaves at its top
+2026-11-04T06:10:58.8871294Z ok   the cone is the stage's: its eaves 2.15 m out, none under the stage's wall top
+2026-11-04T06:10:58.8872089Z ok   a stage on corbel courses that cannot carry it (2 courses for 0.75 m): refused (test|staged: 2 corbel courses cannot carry its stage 0.750 m out (each oversails...)
+2026-11-04T06:10:58.8872979Z ok   a stage narrower than its shaft: refused (test|staged: its stage stands on one of its storey lines, wider than its shaft, ...)
+2026-11-04T06:10:58.8874071Z ok   a stage on no storey line: refused (test|staged: its stage stands on one of its storey lines, wider than its shaft, ...)
+2026-11-04T06:10:58.8874686Z ok   the record's finial stands 2.4 m over the cone's apex (to 20.175 m)
+2026-11-04T06:10:58.8875194Z ok   under the corbel the ring is closed across the shaft's junctions (s 8.410..10.590)
+2026-11-04T06:10:58.8875627Z ok   over it, across the stage's (s 7.656..11.344)
+2026-11-04T06:10:58.8876238Z ok   a stage 1.9 m wider than its shaft: refused (bays: test_tower's stage takes from_storey (one of its storey lines), radius_m (...)
+2026-11-04T06:10:58.8876991Z ok   a stage from grade: refused (bays: test_tower's stage takes from_storey (one of its storey lines), radius_m (...)
+2026-11-04T06:10:58.8877741Z ok   a stage on an octagonal tower: refused (bays: test_tower's stage takes from_storey (one of its storey lines), radius_m (...)
+2026-11-04T06:10:58.8878621Z ok   a finial 5 m tall: refused (bays: test_tower's finial sizes its cap's own finial by height_m (0.3-3.5 m) and...)
+2026-11-04T06:10:58.8879690Z ok   a finial on a cap that has none: refused (bays: test_tower's finial sizes its cap's own finial by height_m (0.3-3.5 m) and...)
+2026-11-04T06:10:58.8880198Z test_k08_tower_stage: all passed
+2026-11-04T06:10:58.8880371Z 
+2026-11-04T06:10:58.8880828Z [1m== a K01 brick front's door may be cut round-headed under its round lights' arch band (T-3283)[0m
+2026-11-04T06:10:58.8910288Z ok   1945's record cuts its door round-headed (the 1928 photograph)
+2026-11-04T06:10:58.8911014Z ok   1945's door is K07's round-headed double door
+2026-11-04T06:10:58.8911631Z ok   the door opening is marked round-headed
+2026-11-04T06:10:58.8912265Z ok   entrance_kit.opening_m sizes the hole: 1.3 by 3.4 m
+2026-11-04T06:10:58.8912975Z ok   its hole is cut round, springing a half span under the crown
+2026-11-04T06:10:58.8913826Z ok   the hole's curve rises to the door's crown and no further
+2026-11-04T06:10:58.8914429Z ok   1945 builds
+2026-11-04T06:10:58.8914890Z ok   without it the door is a rectangular hole, as before
+2026-11-04T06:10:58.8915353Z ok   refused: door named as anything but true
+2026-11-04T06:10:58.8915735Z ok   refused: a round door with no key to stand on its arch band
+2026-11-04T06:10:58.8916100Z ok   refused: a round door on a segmental head
+2026-11-04T06:10:58.8916474Z ok   refused: a round door hung with a flat-headed K07 entrance
+2026-11-04T06:10:58.8916942Z ok   refused: entrance_kit.opening_m on a door neither arched nor round-headed
+2026-11-04T06:10:58.8917212Z 
+2026-11-04T06:10:58.8917304Z all checks pass
+2026-11-04T06:10:58.8917439Z 
+2026-11-04T06:10:58.8917901Z [1m== a K08 tower stands on a K01 rear wing's wall past the wing's eave, closed over its wall top (T-2842)[0m
+2026-11-04T06:10:58.8954326Z ok   1604 rear range (flat deck), round tower, north: wall top 10.00 m stands 1.0 m past the wing's 8.80 m
+2026-11-04T06:10:58.8955624Z ok   1604 rear range (flat deck), round tower, north: the cap stands over the wing's roof (apex 13.75 m, roof 9.10 m)
+2026-11-04T06:10:58.8956887Z ok   1604 rear range (flat deck), round tower, north: the ring is closed over the wing's wall top, facing the wing (2.62 of 2.62 m2)
+2026-11-04T06:10:58.8958125Z ok   1604 rear range (flat deck), round tower, north: ...across the ring's junctions at s 4.909..7.091
+2026-11-04T06:10:58.8959588Z ok   1604 rear range (flat deck), round tower, north: the wing's wall is open behind the tower (0 triangle(s) inside it: [])
+2026-11-04T06:10:58.8960684Z ok   1604 rear range (flat deck), round tower, north: the wing's lights behind it are dropped (0 left)
+2026-11-04T06:10:58.8961466Z ok   1604: the two north lights at s 6.0 are dropped (12 -> 10)
+2026-11-04T06:10:58.8961952Z ok   1604: the main walls keep every light
+2026-11-04T06:10:58.8962506Z ok   1604 rear range, round tower, south (its string course stopped): wall top 10.00 m stands 1.0 m past the wing's 8.80 m
+2026-11-04T06:10:58.8963278Z ok   1604 rear range, round tower, south (its string course stopped): the cap stands over the wing's roof (apex 13.75 m, roof 9.10 m)
+2026-11-04T06:10:58.8964518Z ok   1604 rear range, round tower, south (its string course stopped): the ring is closed over the wing's wall top, facing the wing (2.62 of 2.62 m2)
+2026-11-04T06:10:58.8965735Z ok   1604 rear range, round tower, south (its string course stopped): ...across the ring's junctions at s 4.309..6.491
+2026-11-04T06:10:58.8966974Z ok   1604 rear range, round tower, south (its string course stopped): the wing's wall is open behind the tower (0 triangle(s) inside it: [])
+2026-11-04T06:10:58.8968255Z ok   1604 rear range, round tower, south (its string course stopped): the wing's lights behind it are dropped (0 left)
+2026-11-04T06:10:58.8969541Z ok   1604 rear range, octagonal tower, north: wall top 10.00 m stands 1.0 m past the wing's 8.80 m
+2026-11-04T06:10:58.8971050Z ok   1604 rear range, octagonal tower, north: the cap stands over the wing's roof (apex 13.58 m, roof 9.10 m)
+2026-11-04T06:10:58.8972225Z ok   1604 rear range, octagonal tower, north: the ring is closed over the wing's wall top, facing the wing (2.56 of 2.56 m2)
+2026-11-04T06:10:58.8973371Z ok   1604 rear range, octagonal tower, north: ...across the ring's junctions at s 4.932..7.068
+2026-11-04T06:10:58.8974385Z ok   1604 rear range, octagonal tower, north: the wing's wall is open behind the tower (0 triangle(s) inside it: [])
+2026-11-04T06:10:58.8975372Z ok   1604 rear range, octagonal tower, north: the wing's lights behind it are dropped (0 left)
+2026-11-04T06:10:58.8976353Z ok   1811 rear section (stone, slated hip), round tower: wall top 10.00 m stands 1.0 m past the wing's 8.40 m
+2026-11-04T06:10:58.8977466Z ok   1811 rear section (stone, slated hip), round tower: the cap stands over the wing's roof (apex 13.75 m, roof 10.55 m)
+2026-11-04T06:10:58.8978699Z ok   1811 rear section (stone, slated hip), round tower: the ring is closed over the wing's wall top, facing the wing (3.49 of 3.49 m2)
+2026-11-04T06:10:58.8979951Z ok   1811 rear section (stone, slated hip), round tower: ...across the ring's junctions at s 1.059..3.241
+2026-11-04T06:10:58.8981108Z ok   1811 rear section (stone, slated hip), round tower: the wing's wall is open behind the tower (0 triangle(s) inside it: [])
+2026-11-04T06:10:58.8982162Z ok   1811 rear section (stone, slated hip), round tower: the wing's lights behind it are dropped (0 left)
+2026-11-04T06:10:58.8983522Z ok   a tower whose wall top (9.0 m) is not 1 m past the wing's 8.8 m: refused (bays: test_tower is a tower whose wall top 9.00 m is not 1.0 m over the eave (8.80 m); a s...)
+2026-11-04T06:10:58.8984898Z ok   a canted bay on a wing's wall: refused (bays: test_tower is a bay on k01.wall.wing.rear_range.north; a rear wing's wall carries a ...)
+2026-11-04T06:10:58.8986440Z ok   an oriel on a wing's wall whose wall top is not a metre under its eave: refused (bays: test_tower's wall top 8.50 m is not a metre under the eave (8.80 m), or it stands un...)
+2026-11-04T06:10:58.8987916Z ok   a tower on a gable end: refused (bays: test_tower stands on k01.wall.wing.rear_range.north, a gable end: the gable's wallin...)
+2026-11-04T06:10:58.8989174Z ok   a tower where the west block stands on the range's rear: refused (bays: test_tower meets k01.wall.wing.rear_range.rear at s 0.9091..3.0909, within 0.3 m of ...)
+2026-11-04T06:10:58.8990439Z ok   a tower nearer the wing's corner than the pier: refused (bays: test_tower meets k01.wall.wing.rear_range.north at s -0.091..2.091, closer than 0.3 ...)
+2026-11-04T06:10:58.8991810Z ok   a wall no wing has: refused (bays: k01.wall.wing.east_range.north is not a wall of one of this house's rear wings...)
+2026-11-04T06:10:58.8992996Z ok   1801: p_gable is a projection on r3's wall, read against r3's wall top
+2026-11-04T06:10:58.8993436Z ok   1801: r3's lights behind p_gable are dropped
+2026-11-04T06:10:58.8993810Z ok   1801: r3 is hipped along v and stands past the cornice
+2026-11-04T06:10:58.8994256Z ok   1801: r3's front is closed over the host's 8.9 m top (35.58 of 16.80 m2)
+2026-11-04T06:10:58.8994909Z ok   a bow on a wing's wall: refused (bays: test_bow is a bay on k01.wall.wing.r3.south; a rear wing's wall carries a K08 tower,...)
+2026-11-04T06:10:58.8995420Z test_k01_wing_tower: all passed
+2026-11-04T06:10:58.8995574Z 
+2026-11-04T06:10:58.8996061Z [1m== a mansard face holds two storeys; a K08 pavilion past the eave is closed behind it (T-2843)[0m
+2026-11-04T06:10:58.9008256Z ok   1801 resolves: a mansard over an 8.90 m cornice
+2026-11-04T06:10:58.9009315Z ok   a 6.4 m face that names no second storey: refused (mansard.lower_rise_m 6.4: a face holding 1 storey(s) rises 2.0-4.5 m...)
+2026-11-04T06:10:58.9010489Z ok   a face holding three storeys: refused (mansard.storeys 3: a face holds 1 storey (an attic) or 2...)
+2026-11-04T06:10:58.9011689Z ok   a two-storey face rising 7.8 m: refused (mansard.lower_rise_m 7.8: a face holding 2 storey(s) rises 4.5-7.5 m...)
+2026-11-04T06:10:58.9013127Z ok   a two-storey face rising 4.0 m: refused (mansard.lower_rise_m 4.0: a face holding 2 storey(s) rises 4.5-7.5 m...)
+2026-11-04T06:10:58.9014168Z ok   p_south: closed over the eave on the wall plane (11.36 of 11.36 m2, less 6 recesses)
+2026-11-04T06:10:58.9015067Z ok   p_south: shallow, its recesses open through the plane and no cap's end over its wall top (13.60 m)
+2026-11-04T06:10:58.9015797Z ok   p_south: no eave box or covering in front of its 0.1 m face
+2026-11-04T06:10:58.9016367Z ok   p_south: nor in its recesses' 0.50 m behind the plane
+2026-11-04T06:10:58.9016974Z ok   p_south: and no gutter across it (0 vertices)
+2026-11-04T06:10:58.9017436Z ok   p_flank: closed over the eave on the wall plane (20.97 of 20.97 m2, less 6 recesses)
+2026-11-04T06:10:58.9018035Z ok   p_flank: shallow, its recesses open through the plane and no cap's end over its wall top (12.40 m)
+2026-11-04T06:10:58.9018552Z ok   p_flank: no eave box or covering in front of its 0.1 m face
+2026-11-04T06:10:58.9019121Z ok   p_flank: nor in its recesses' 0.50 m behind the plane
+2026-11-04T06:10:58.9019494Z ok   p_flank: and no gutter across it (0 vertices)
+2026-11-04T06:10:58.9019876Z ok   p_pier: a pier, its top (8.34 m) under the eave (8.90 m)
+2026-11-04T06:10:58.9020356Z ok   p_se_gable: closed over the eave on the wall plane (1.63 of 1.63 m2, less 2 recesses)
+2026-11-04T06:10:58.9020956Z ok   p_se_gable: shallow, its recesses open through the plane and no cap's end over its wall top (10.10 m)
+2026-11-04T06:10:58.9021510Z ok   p_se_gable: the eave box runs on across its 0.1 m face, no covering over it
+2026-11-04T06:10:58.9021969Z ok   p_se_gable: the main cornice runs on across it, not dying into it
+2026-11-04T06:10:58.9022388Z ok   p_se_gable: nor in its recesses' 0.50 m behind the plane
+2026-11-04T06:10:58.9022751Z ok   p_se_gable: and no gutter across it (0 vertices)
+2026-11-04T06:10:58.9023126Z ok   1812's projection, at its eave: no back added (0.00 m2)
+2026-11-04T06:10:58.9023627Z ok   the wing slate is the main roof's fabric and still its own material (dedup keeps its name)
+2026-11-04T06:10:58.9024020Z ok   1801 lays both slates
+2026-11-04T06:10:58.9024433Z ok   1801's pavilion chamfers its corner 1.3 m along its front, back to 1.4 m behind it
+2026-11-04T06:10:58.9024942Z ok   the front cut from 9.787 m to the corner, the side wall back to 1.4 m
+2026-11-04T06:10:58.9025454Z ok   no masonry of the house stands outside the canted face under the soffit (0 vertices)
+2026-11-04T06:10:58.9026015Z ok   1801's pavilion carries one light on its canted face, over the eave ([(9.4, 10.85, None)])
+2026-11-04T06:10:58.9026576Z ok   the cant's light (9.40-10.85 m) sees 0.5 m into its recess past nothing of the house's
+2026-11-04T06:10:58.9027329Z ok   a light on the canted face under the eave: refused (p_south: a light on its canted face stands under the eave at 8.9 m, where the ho...)
+2026-11-04T06:10:58.9028025Z ok   1801's canted face stops at 11.65 m, over its light's head (10.85 m) and under its wall top
+2026-11-04T06:10:58.9028614Z ok   over 11.65 m the cant carries no bay stone (0 vertices) and the mansard's slate covers it (True)
+2026-11-04T06:10:58.9029579Z ok   without its top the cant's wall stands over 11.65 m in front of that slate (6 vertices): the check bites
+2026-11-04T06:10:58.9030341Z ok   a canted face stopped at 11.05 m: refused (kimball_house_1801_prairie|p_south: its canted face stops 0.4 m over its lights'...)
+2026-11-04T06:10:58.9031127Z ok   a canted face stopped at 13.00 m: refused (kimball_house_1801_prairie|p_south: its canted face stops 0.4 m over its lights'...)
+2026-11-04T06:10:58.9032020Z ok   a chamfer on the corner the pavilion is not flush with: refused (bays: p_south's chamfer takes corner (left or right), along_m and behind_m (and top_m), on...)
+2026-11-04T06:10:58.9033210Z ok   a chamfer on a pavilion that is not shallow: refused (bays: p_south's chamfer takes corner (left or right), along_m and behind_m (and top_m), on...)
+2026-11-04T06:10:58.9034292Z ok   a chamfer a round bay stands on, 1.8 m behind the wall: refused (bays: p_south's chamfer runs 0.2-2.0 m (and at most half of its width) along its front and...)
+2026-11-04T06:10:58.9036064Z ok   a chamfer a round bay stands on, 2.2 m along the front: refused (bays: p_south's chamfer runs 0.2-2.0 m (and at most half of its width) along its front and...)
+2026-11-04T06:10:58.9037161Z ok   a bare chamfer 0.8 m behind the wall: refused (bays: p_south's chamfer runs 0.2-1.0 m (and at most a quarter of its width) along its fron...)
+2026-11-04T06:10:58.9038232Z ok   a bare chamfer 1.3 m along the front: refused (bays: p_south's chamfer runs 0.2-1.0 m (and at most a quarter of its width) along its fron...)
+2026-11-04T06:10:58.9039531Z ok   a second bay on a bow, not a chamfer: refused (bays: x stands on_chamfer: a bow on grade, on the chamfer of a projection laid before it o...)
+2026-11-04T06:10:58.9040400Z ok   a round bay wider than its cant allows: refused (bays: sw_round meets its chamfer at s 0.043..1.942, closer than 0.15 m to an end of its 1....)
+2026-11-04T06:10:58.9041058Z ok   the round bay stands on the 1.9849 m cant, over the front's last 1.3 m
+2026-11-04T06:10:58.9041457Z test_k01_pavilion_past_eave: all passed
+2026-11-04T06:10:58.9041659Z 
+2026-11-04T06:10:58.9042066Z [1m== a K01 wall gable's pinnacle stops under its block in scaled stone (T-3064)[0m
+2026-11-04T06:10:58.9054669Z ok    1811's north shaft stops below the face's eave, under its block, under scaled stone
+2026-11-04T06:10:58.9055366Z ok    the north shaft's top 10.58 m stands under the face's eave 11.09 m
+2026-11-04T06:10:58.9055772Z ok    its stone rises from the cap to the block's foot
+2026-11-04T06:10:58.9056121Z ok    the stone is laid in 5 courses (6 levels)
+2026-11-04T06:10:58.9056443Z ok    the south shaft keeps its dome
+2026-11-04T06:10:58.9056745Z ok    a plain stone under the block builds
+2026-11-04T06:10:58.9057822Z ok    refused: the eave's end leaving the stone (the wall gable's eave leaves its pinnacle's stone under the block: its end 0.050 m past the shaft's centre at 10.876 m)
+2026-11-04T06:10:58.9059653Z ok    refused: a shaft stopping below the eave with no block (dormer.wall_gable.pinnacles.heads[0]: a shaft stops below the face's eave only under a block, its pyramid's tip at the block's foot (within 0.05 m))
+2026-11-04T06:10:58.9060849Z ok    refused: a dome under the block (dormer.wall_gable.pinnacles.heads[0]: a shaft stops below the face's eave only under a block, its pyramid's tip at the block's foot (within 0.05 m))
+2026-11-04T06:10:58.9062014Z ok    refused: a stone stopping short of the block's foot (dormer.wall_gable.pinnacles.heads[0]: a shaft stops below the face's eave only under a block, its pyramid's tip at the block's foot (within 0.05 m))
+2026-11-04T06:10:58.9063263Z ok    refused: a shaft stopping within 0.5 m of the wall head (dormer.wall_gable.pinnacles.heads[0]: a shaft rises past the face's eave (at most 4 m), or under a block at least 0.5 m over the wall head, under a 0.1-1.2 m spire)
+2026-11-04T06:10:58.9064363Z ok    refused: a spire K01 does not name (dormer.wall_gable.pinnacles.heads[0] takes top_m, spire (pyramid, scaled_pyramid or dome), spire_m and block)
+2026-11-04T06:10:58.9064953Z test_k01_pinnacle_under_block: all passed
+2026-11-04T06:10:58.9065138Z 
+2026-11-04T06:10:58.9065595Z [1m== the K10 cornice kit turns every corner and seats every bracket, rail, coping, dormer and bar (T-2316)[0m
+2026-11-04T06:10:58.9098901Z ok   K10 cornice kit: 8 variants, 180 pieces seated or rooted, no doubled face, corner returns, projections, bracket courses, balustrade, roof, cresting, budgets and the specimen hold
+2026-11-04T06:10:58.9101335Z 
+2026-11-04T06:10:58.9102462Z [1m== the K12 coach-house kit closes every elevation, cuts every opening through and sets its ramp and stair on grade (T-2320)[0m
+2026-11-04T06:10:58.9145104Z ok   K12 coach-house kit: 21 variant(s), 3491 pieces seated or rooted, no doubled face, every elevation closed, every opening cut through, ramp and stair at grade, no ventilator, budgets and the specimen hold
+2026-11-04T06:10:58.9147565Z 
+2026-11-04T06:10:58.9149457Z [1m== every drop-in library sheet carries its KTX2: its web map's size, a full mip chain, no orphans (T-2582)[0m
+2026-11-04T06:10:58.9191438Z ok   42 KTX2 sheet(s): present, their web map's size, full mip chains, no orphans; lake_michigan_dune_sand luma sidecar matches its master
+2026-11-04T06:10:58.9195415Z 
+2026-11-04T06:10:58.9196968Z [1m== …and an undecided block, a harbour work carried back or a breached isthmus still fails it[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:58.9237367Z    self-test |    ok   the committed spec passes
+2026-11-04T06:10:58.9238237Z    self-test |    ok   a block added to the 1834 spec and not decided for 1812 fails
+2026-11-04T06:10:58.9239109Z    self-test |    ok   a disposition with no reason fails
+2026-11-04T06:10:58.9239545Z    self-test |    ok   carrying the bridge approaches into 1812 fails
+2026-11-04T06:10:58.9240113Z    self-test |    ok   carrying the 1834 cut's reach into 1812 fails
+2026-11-04T06:10:58.9240752Z    self-test |    ok   replacing with a block nobody wrote fails
+2026-11-04T06:10:58.9241643Z    self-test |    ok   an authored height citing a zone the dossier lacks fails
+2026-11-04T06:10:58.9242151Z    self-test |    ok   an authored height graded inferred fails
+2026-11-04T06:10:58.9242528Z    self-test |    ok   a source that does not resolve fails
+2026-11-04T06:10:58.9242876Z    self-test |    ok   an undecided isthmus fails
+2026-11-04T06:10:58.9243246Z    self-test |    ok   an isthmus lower than the spit (a breach) fails
+2026-11-04T06:10:58.9243642Z    self-test |    ok   an isthmus wider than zone 7 allows fails
+2026-11-04T06:10:58.9244021Z    self-test |    ok   an outlet as deep as the main stem fails
+2026-11-04T06:10:58.9244407Z    self-test |    ok   an undecided west bank left at inferred fails
+2026-11-04T06:10:58.9244834Z    self-test |    ok   a west-bank band that stops short of the outlet fails
+2026-11-04T06:10:58.9245248Z    self-test |    ok   a ruling that weighs only two readings fails
+2026-11-04T06:10:58.9245628Z    self-test |    ok   a run renamed onto nothing fails
+2026-11-04T06:10:58.9246015Z    self-test |    ok   an 1812 block that shadows a carried 1834 block fails
+2026-11-04T06:10:58.9246465Z    self-test |    ok   a graded 1812 block the Evidence panel does not list fails
+2026-11-04T06:10:58.9246903Z    self-test |    ok   a graded 1812 block with no CONSUMED entry fails
+2026-11-04T06:10:58.9247346Z    self-test |    ok   a west band narrower than Harrison's worst separation fails
+2026-11-04T06:10:58.9247791Z    self-test |    ok   keeping the 1835 boarding house's keep-clear fails
+2026-11-04T06:10:58.9248204Z    self-test |    ok   removing the reconstructed outer join fails
+2026-11-04T06:10:58.9248620Z    self-test |    ok   outer lake join has no inlet or northing reversal
+2026-11-04T06:10:58.9249396Z    self-test |    ok   outer lake join is continuous with both retained shores
+2026-11-04T06:10:58.9249903Z    self-test |    ok   river bend and southern outlet retain their pre-correction positions
+2026-11-04T06:10:58.9250371Z    self-test |    ok   every lower-spit trace vertex is retained
+2026-11-04T06:10:58.9250608Z 
+2026-11-04T06:10:58.9251015Z [1m== Wright's whole sheet still counts one watercourse that is not the river[0m
+2026-11-04T06:10:58.9281973Z the Wright watercourse audit re-derives: 2 bank picks through the fit, 45 centreline stations, 1 watercourse drawn that is not the river
+2026-11-04T06:10:58.9284157Z 
+2026-11-04T06:10:58.9285582Z [1m== …and the clip, the precedence clause and both refusals still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:58.9325604Z    self-test | OK clipper exact on 6 constructed cases; precedence clause fires on 1 parcel(s) and is withheld on 4; both refusals still stand
+2026-11-04T06:10:58.9327678Z 
+2026-11-04T06:10:58.9329124Z [1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:58.9370269Z    self-test | exact-sum gate self-test: 0 failure(s)
+2026-11-04T06:10:58.9372434Z 
+2026-11-04T06:10:58.9373819Z [1m== the build-product and smoke-ledger merge drivers do what .gitattributes promises[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:58.9413252Z    self-test | 
+2026-11-04T06:10:58.9413818Z    self-test | merge-generated (the five build products)
+2026-11-04T06:10:58.9414336Z    self-test |   ok    a conflicting build product does not fail the merge
+2026-11-04T06:10:58.9415210Z    self-test |   ok    …and OURS is what survives, byte for byte
+2026-11-04T06:10:58.9415925Z    self-test |   ok    BOARD.md is told to regenerate with ticket.mjs board
+2026-11-04T06:10:58.9416648Z    self-test |   ok    build.json is told to regenerate with publish.sh
+2026-11-04T06:10:58.9417570Z    self-test |   ok    an unlisted path still keeps ours and exits 0
+2026-11-04T06:10:58.9418157Z    self-test | 
+2026-11-04T06:10:58.9418476Z    self-test | merge-smoke-state (the append-only smoke ledger)
+2026-11-04T06:10:58.9419226Z    self-test |   ok    two sides that each recorded a reading merge cleanly
+2026-11-04T06:10:58.9419771Z    self-test |   ok    …and BOTH new readings survive — the whole point
+2026-11-04T06:10:58.9420225Z    self-test |   ok    …theirs' reading is the one appended
+2026-11-04T06:10:58.9420775Z    self-test |   ok    NO reading is dropped when both sides appended — keeping ours would lose two
+2026-11-04T06:10:58.9421292Z    self-test |   ok    a reading carried down both sides is held once, not twice
+2026-11-04T06:10:58.9421776Z    self-test |   ok    two readings differing only inside a NESTED object are both kept
+2026-11-04T06:10:58.9422232Z    self-test |   ok    an unparseable side is REFUSED, not guessed at
+2026-11-04T06:10:58.9422758Z    self-test |   ok    a side with no readings[] is REFUSED — this driver knows one shape
+2026-11-04T06:10:58.9423270Z    self-test |   ok    …and a readings that is not an array is refused too
+2026-11-04T06:10:58.9423768Z    self-test |   ok    identical sides merge to themselves, so a firing above means something
+2026-11-04T06:10:58.9424205Z    self-test |   ok    ours' hand-written note is kept
+2026-11-04T06:10:58.9424603Z    self-test |   ok    …without costing theirs a reading
+2026-11-04T06:10:58.9424893Z    self-test | 
+2026-11-04T06:10:58.9425152Z    self-test | end to end, through a real git merge
+2026-11-04T06:10:58.9425593Z    self-test |   ok    a real merge where BOTH sides rewrote a build product no longer conflicts
+2026-11-04T06:10:58.9426105Z    self-test |   ok    …ours survives it, ready to be regenerated
+2026-11-04T06:10:58.9426670Z    self-test |   ok    …and the ledger beside it keeps BOTH sides’ readings rather than picking one
+2026-11-04T06:10:58.9427069Z    self-test | 
+2026-11-04T06:10:58.9427300Z    self-test | 20 passed, 0 failed
+2026-11-04T06:10:58.9427473Z 
+2026-11-04T06:10:58.9427901Z [1m== …and its validator refuses bad ground[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:58.9458333Z    self-test | PASS self-test: refuses a roof moved into North Water Street
+2026-11-04T06:10:58.9459173Z    self-test | PASS self-test: refuses a roof straddling the next lot
+2026-11-04T06:10:58.9459877Z    self-test | PASS self-test: refuses a warehouse turned to face the alley
+2026-11-04T06:10:58.9460674Z    self-test | PASS self-test: refuses a family the recipe did not order
+2026-11-04T06:10:58.9461095Z 
+2026-11-04T06:10:58.9462008Z [1m== Canal trade occupancy preserves identities and lodging constraints[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:58.9503694Z    self-test | Canal occupancy: identity/trade refusal mutations, compiler joins, four schemas and unchanged lodging bed gate pass
+2026-11-04T06:10:58.9505799Z 
+2026-11-04T06:10:58.9506903Z [1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:58.9547128Z    self-test | self-test: 11/11 assertions hold
+2026-11-04T06:10:58.9550124Z 
+2026-11-04T06:10:58.9551368Z [1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:58.9593492Z    self-test | self-test: a changed scan, a region off the paper, a duplicated numeral, an 80 ft West Division frontage, a broken east-west/north-south closure, a silent refusal, an under-graded figure and a tier at odds with its blocks all break the gate, as they must
+2026-11-04T06:10:58.9594981Z 
+2026-11-04T06:10:58.9595946Z [1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:58.9636432Z    self-test | wabansia water lots self-test: 18 broken inputs, each caught by its own assertion
+2026-11-04T06:10:58.9638452Z 
+2026-11-04T06:10:58.9639278Z [1m== …and the strip still reads the same off the sheet[0m
+2026-11-04T06:10:58.9680268Z kinzie_addition_water_lots.json: re-read from the raster, byte for byte the same
+2026-11-04T06:10:58.9682797Z 
+2026-11-04T06:10:58.9684011Z [1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:58.9724231Z    self-test |   ok   grades tally the persons, household by household and in total
+2026-11-04T06:10:58.9725033Z    self-test |   ok   a flag is written only when it is true
+2026-11-04T06:10:58.9725544Z    self-test |   ok   projected_resident comes off the person's resident_subtype
+2026-11-04T06:10:58.9726139Z    self-test |   ok   every derived count is the tally of the cards, not of the old file
+2026-11-04T06:10:58.9727135Z    self-test |   ok   a {value, confidence} block contributes its value, the home comes off the record's home row, and an unstated one reads as None
+2026-11-04T06:10:58.9728219Z    self-test |   ok   review_required is a bool on every row, stated or not
+2026-11-04T06:10:58.9728726Z    self-test |   ok   key order is canonical, whatever order the card carried
+2026-11-04T06:10:58.9729361Z    self-test |   ok   rows are ordered by id, not by the filesystem
+2026-11-04T06:10:58.9729746Z    self-test |   ok   a rebuild of a rebuild is a no-op
+2026-11-04T06:10:58.9730194Z    self-test |   ok   an authored count is carried through untouched, in its own place
+2026-11-04T06:10:58.9730688Z    self-test |   ok   a name off a letter list, placed nowhere, awaits a household
+2026-11-04T06:10:58.9731438Z    self-test |   ok   …and so does one carrying a trade word and nothing else — the ruling says a trade WITH A PREMISES
+2026-11-04T06:10:58.9732068Z    self-test |   ok   …and so does one whose only street is a later directory's
+2026-11-04T06:10:58.9732494Z    self-test |   ok   a stated dwelling makes it a house
+2026-11-04T06:10:58.9732860Z    self-test |   ok   a stated premises makes it a house
+2026-11-04T06:10:58.9733459Z    self-test |   ok   a singular lives_at/works_at with no row behind it is not read — the rows are the claim (T-2277)
+2026-11-04T06:10:58.9733955Z    self-test |   ok   two NAMED people make it a house
+2026-11-04T06:10:58.9734586Z    self-test |   ok   …but a drawn second person does not: a seated reconstruction is not a source giving the record a shape
+2026-11-04T06:10:58.9735118Z    self-test |   ok   a stated kinship makes it a house
+2026-11-04T06:10:58.9735522Z    self-test |   ok   a civil division makes it a house, and `unplaced` is not one
+2026-11-04T06:10:58.9736103Z    self-test |   ok   a household with no named person at all is one the programme built, and is a house by construction
+2026-11-04T06:10:58.9736801Z    self-test |   ok   an empty card is neither — it is not a house and there is nobody in it to await one
+2026-11-04T06:10:58.9737385Z    self-test |   ok   the clause is read in order, so the strongest reading is the one the row carries
+2026-11-04T06:10:58.9737905Z    self-test |   ok   the two units sum to the record count, and neither is the other
+2026-11-04T06:10:58.9738439Z    self-test |   ok   the row carries the clause, and a record awaiting a household carries no key at all
+2026-11-04T06:10:58.9739314Z    self-test |   ok   a manifest that matches its cards reports nothing
+2026-11-04T06:10:58.9739748Z    self-test |   ok   a row whose grade disagrees with its card is caught
+2026-11-04T06:10:58.9740221Z    self-test |   ok   a card with no manifest row is caught
+2026-11-04T06:10:58.9740578Z    self-test |   ok   a manifest row with no card is caught
+2026-11-04T06:10:58.9740963Z    self-test |   ok   a row key no derivation emits is named, not ignored
+2026-11-04T06:10:58.9741360Z    self-test |   ok   a flag written when it is false is caught
+2026-11-04T06:10:58.9742227Z    self-test |   ok   each of the 10 derived counts is caught when moved (households, persons, by_grade, letter_list_only, projected_residents, census_1840_linked, civic_mint, merged_away, houses, awaiting_a_household)
+2026-11-04T06:10:58.9743066Z    self-test |   ok   the drift report is capped, and says how many it did not print
+2026-11-04T06:10:58.9743738Z    self-test |   ok   a redirect row is the retired record's own merged_into block, and the retired name is read off the superseded card beneath it
+2026-11-04T06:10:58.9744370Z    self-test |   ok   redirect rows are ordered by the retired id, and tallied
+2026-11-04T06:10:58.9745009Z    self-test |   ok   a pass that retires no card keeps the committed redirect table instead of deriving an empty one out of its silence
+2026-11-04T06:10:58.9745560Z    self-test |   ok   a sound layer's redirects all arrive
+2026-11-04T06:10:58.9745959Z    self-test |   ok   a redirect to a household that is not a card is refused
+2026-11-04T06:10:58.9746407Z    self-test |   ok   a redirect that points at another retired card is refused
+2026-11-04T06:10:58.9746916Z    self-test |   ok   a redirect to a person who is in no household card is refused
+2026-11-04T06:10:58.9747361Z    self-test |   ok   a retired id that is also a live card is refused
+2026-11-04T06:10:58.9747754Z    self-test |   ok   a redirect that states no rule is refused
+2026-11-04T06:10:58.9748376Z    self-test |   ok   a retired record with no redirect row is caught, and the sentence says the id resolves to nothing (hh_vanderbogart_h, T-0842)
+2026-11-04T06:10:58.9749413Z    self-test |   ok   a redirect row whose rule disagrees with its record is caught (hh_blanchard_gantry, T-0993)
+2026-11-04T06:10:58.9749998Z    self-test |   ok   a redirect row with no record behind it is caught
+2026-11-04T06:10:58.9750627Z    self-test |   ok   a typo'd --write is REFUSED, not silently read as a check
+2026-11-04T06:10:58.9751110Z    self-test |   ok   ...and an unrecognised flag of any kind is refused too
+2026-11-04T06:10:58.9751626Z    self-test |   ok   --check still passes on the committed manifest
+2026-11-04T06:10:58.9752125Z    self-test | 
+2026-11-04T06:10:58.9752454Z    self-test | 0 failure(s)
+2026-11-04T06:10:58.9752671Z 
+2026-11-04T06:10:58.9753241Z [1m== …and both halves of that ownership contract fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:58.9767828Z    self-test |    OK: the ownership contract's assertions fire on both halves
+2026-11-04T06:10:58.9770743Z 
+2026-11-04T06:10:58.9771089Z [1m== every clapboard wall's stock re-derives from its deal[0m
+2026-11-04T06:10:58.9813109Z verified: 32 named frame building(s) carry a stock; 4 stocks in the set
+2026-11-04T06:10:58.9813969Z   town: 351 clapboard wall(s); 82 of 694 pairs standing within 60 m share a stock (11.8%)
+2026-11-04T06:10:58.9815472Z 
+2026-11-04T06:10:58.9816825Z [1m== …and that measurement's own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:58.9858676Z    self-test | self-test: the assertions hold, and still fire when broken
+2026-11-04T06:10:58.9860959Z 
+2026-11-04T06:10:58.9861878Z [1m== the lot-line yard fences re-derive from the rule that chose their lots and types[0m
+2026-11-04T06:10:58.9903418Z verified 253 fenced lot(s) of 263 improved (32 board, 81 picket, 140 split rail) in 649 run(s); 10 lot(s) refused for want of room
+2026-11-04T06:10:58.9905396Z 
+2026-11-04T06:10:58.9906256Z [1m== the business signboards re-derive from the rule that chose their frontages[0m
+2026-11-04T06:10:58.9947994Z verified 80 business signs (42 frontage(s) refused with a reason)
+2026-11-04T06:10:58.9950435Z 
+2026-11-04T06:10:58.9951913Z [1m== every door is read once, its apron re-derives, and no two holes on a front run together (T-1984)[0m
+2026-11-04T06:10:58.9993673Z entrances: 657 doors on 653 buildings, each with its apron; no two holes on a read front run together
+2026-11-04T06:10:58.9995956Z 
+2026-11-04T06:10:58.9996663Z [1m== the woodpiles re-derive from the yard-by-household rule[0m
+2026-11-04T06:10:59.0038026Z verified 399 woodpiles at 400 dwellings (1 refused for want of room) — {'cabin': 42, 'cottage': 175, 'house': 92, 'keeper': 21, 'merchant': 37, 'shanty': 32}
+2026-11-04T06:10:59.0039668Z 
+2026-11-04T06:10:59.0040272Z [1m== the fort wood re-derives from the palisade and the apron it stands off[0m
+2026-11-04T06:10:59.0081560Z verified 11 stems of salix_nigra at 9.3-11.4 m, 13 of 24 grid points refused
+2026-11-04T06:10:59.0084010Z 
+2026-11-04T06:10:59.0085033Z [1m== the bake's command-line half still makes no geometry[0m
+2026-11-04T06:10:59.0125242Z ok    generators/build.py imports no archetype and no shared builder, and touches bpy only as bpy.app — the geometry is all in generators/emit.py, which is the module the input hash covers
+2026-11-04T06:10:59.0127363Z 
+2026-11-04T06:10:59.0128939Z [1m== first-fort explicit fronts preserve positional defaults and keep supports off apertures[0m
+2026-11-04T06:10:59.0170468Z PASS fort fronts: legacy16 positionals/keyword-only opt-ins and tower outline; support clearance, deterministic count, empty-front/default fallback and refusal; all five canopy joints, unchanged roofs/posts/decks and Float32 contact
+2026-11-04T06:10:59.0171459Z 
+2026-11-04T06:10:59.0172778Z [1m== …and that still fires when a board's street face goes missing[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:59.0212918Z    self-test |   built 357 phases: frame_dwelling 272, frame_storefront 61, frame_tavern 24
+2026-11-04T06:10:59.0214738Z    self-test |   FAIL: carpenter_south_water_store/frame_1833: 3 trim face(s) lie on a wall with no street face — y=6.096 trim (1.992, 2.46)..(5.3232, 2.74) on wall (0.011 m²)
+2026-11-04T06:10:59.0216846Z    self-test |   FAIL: chicago_american_office/frame_1835: 3 trim face(s) lie on a wall with no street face — y=7.62 trim (3.6176, 2.66)..(8.5744, 2.94) on wall (0.011 m²)
+2026-11-04T06:10:59.0218208Z    self-test |   FAIL: chicago_democrat_office/frame_1833: 3 trim face(s) lie on a wall with no street face — y=7.62 trim (3.6176, 2.41)..(8.5744, 2.69) on wall (0.011 m²)
+2026-11-04T06:10:59.0219570Z    self-test |   FAIL: frederick_thomas_shop/frame_1835: 3 trim face(s) lie on a wall with no street face — y=6.096 trim (2.8048, 2.46)..(6.136, 2.74) on wall (0.011 m²)
+2026-11-04T06:10:59.0220571Z    self-test |   FAIL: goss_cobb_saddlery/shop_1833: 3 trim face(s) lie on a wall with no street face — y=6.096 trim (2.8048, 2.46)..(6.136, 2.74) on wall (0.011 m²)
+2026-11-04T06:10:59.0221536Z    self-test |   FAIL: h_jones_store/frame_1833: 3 trim face(s) lie on a wall with no street face — y=7.62 trim (3.6176, 3.05)..(8.5744, 3.33) on wall (0.011 m²)
+2026-11-04T06:10:59.0222516Z    self-test |   FAIL: harmon_loomis_store/frame_1833: 3 trim face(s) lie on a wall with no street face — y=7.62 trim (3.6176, 2.41)..(8.5744, 2.69) on wall (0.011 m²)
+2026-11-04T06:10:59.0223494Z    self-test |   FAIL: inf_grocery_west/inferred_1835: 3 trim face(s) lie on a wall with no street face — y=9.144 trim (1.5856, 3.05)..(4.9168, 3.33) on wall (0.011 m²)
+2026-11-04T06:10:59.0224735Z    self-test |   FAIL: jh_kinzie_forwarding_store/frame_1830s: 3 trim face(s) lie on a wall with no street face — y=7.62 trim (3.6176, 3.05)..(8.5744, 3.33) on wall (0.011 m²)
+2026-11-04T06:10:59.0226280Z    self-test |   FAIL: john_holbrook_store/frame_1835: 3 trim face(s) lie on a wall with no street face — y=7.62 trim (2.8048, 2.46)..(6.136, 2.74) on wall (0.011 m²)
+2026-11-04T06:10:59.0228180Z    self-test |   FAIL: peck_store/frame_1833: 3 trim face(s) lie on a wall with no street face — y=7.62 trim (3.6176, 2.41)..(8.5744, 2.69) on wall (0.011 m²)
+2026-11-04T06:10:59.0230215Z    self-test |   FAIL: pruyne_kimball_drugstore/frame_1830s: 3 trim face(s) lie on a wall with no street face — y=6.096 trim (1.992, 2.46)..(5.3232, 2.74) on wall (0.011 m²)
+2026-11-04T06:10:59.0231192Z    self-test |   … and 195 more
+2026-11-04T06:10:59.0231936Z    self-test | self-test OK — the assertions fire when a board's street face goes missing.
+2026-11-04T06:10:59.0232429Z 
+2026-11-04T06:10:59.0232969Z [1m== the anonymous roofs re-audit against the programme the step above re-derived[0m
+2026-11-04T06:10:59.0257750Z OK: the anonymous-roof redeal re-derives — 560 audited, 560/0/0 keep/refamily/retire
+2026-11-04T06:10:59.0260265Z 
+2026-11-04T06:10:59.0260906Z [1m== the migrated roof ids re-derive, and nothing still names an old one[0m
+2026-11-04T06:10:59.0303191Z verified 11 migrated phase-one South roof ids, no committed file naming an old one
+2026-11-04T06:10:59.0305249Z 
+2026-11-04T06:10:59.0306282Z [1m== a refused block is short of control, or was never a block[0m
+2026-11-04T06:10:59.0346414Z block                       street           gap m    wet   of  class
+2026-11-04T06:10:59.0347169Z blk_south_water_clinton     south_water        325     20   65  never_platted
+2026-11-04T06:10:59.0347478Z 
+2026-11-04T06:10:59.0347971Z   blk_south_water_clinton: south_water is 325 m away and 20 of 65 samples between them are water. The two are on opposite banks; no trace joins them.
+2026-11-04T06:10:59.0348441Z 
+2026-11-04T06:10:59.0348618Z BLOCK GATING PASS
+2026-11-04T06:10:59.0349156Z 
+2026-11-04T06:10:59.0349618Z [1m== nothing unpermitted stands on reserved ground[0m
+2026-11-04T06:10:59.0390750Z        ok   blk_randolph_lasalle  cook_county_courthouse_1835  1/4 corners in
+2026-11-04T06:10:59.0391559Z        ok   blk_randolph_lasalle  estray_pen  4/4 corners in
+2026-11-04T06:10:59.0392217Z        ok   blk_randolph_lasalle  log_jail  4/4 corners in
+2026-11-04T06:10:59.0392878Z        ok   blk_randolph_lasalle  log_jail_keeper_house  4/4 corners in
+2026-11-04T06:10:59.0393695Z    4 structure(s) on reserved ground, 0 of them unpermitted
+2026-11-04T06:10:59.0394060Z 
+2026-11-04T06:10:59.0395013Z [1m== the south bank at the Dearborn reach still carries no ground outside its own street[0m
+2026-11-04T06:10:59.0419196Z 
+2026-11-04T06:10:59.0420324Z [1m== the bridge-head timber still stands where the decks and the ground put it[0m
+2026-11-04T06:10:59.0443231Z 
+2026-11-04T06:10:59.0444788Z [1m== …and that assertion fires when a roof leaves the frontage line[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:59.0484304Z    self-test | north_bank_shed_dearborn_w__shed_1835: committed 5.050 m (ok=True), moved 3 m north 8.050 m (ok=False)
+2026-11-04T06:10:59.0485401Z    self-test | OK  the assertion fires when a roof leaves the frontage line.
+2026-11-04T06:10:59.0486768Z 
+2026-11-04T06:10:59.0488179Z [1m== the West Division's tiers, and Carroll's midpoint still inside its own bracket[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:59.0528429Z    self-test | SELF-TEST PASS — the West Division's tiers, the band they imply and Carroll's bracket (13 cases)
+2026-11-04T06:10:59.0531098Z 
+2026-11-04T06:10:59.0532448Z [1m== the School Section's Monroe-Adams tier re-derives from the committed grid and the 1833 register[0m
+2026-11-04T06:10:59.0572027Z ok school_section_second_tier_lots.json re-derives
+2026-11-04T06:10:59.0574671Z 
+2026-11-04T06:10:59.0576108Z [1m== …and its five assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:59.0615195Z    self-test |   the five assertions, broken in memory against the committed policy
+2026-11-04T06:10:59.0615987Z    self-test | 
+2026-11-04T06:10:59.0616572Z    self-test |   ok    the committed policy passes all five — clean
+2026-11-04T06:10:59.0618191Z    self-test |   ok    a clause citing a record this tree does not hold is caught — commercial_front cites `no_such_store_on_south_water`, which is not a committed record
+2026-11-04T06:10:59.0620114Z    self-test |   ok    an inferred clause that states no reasoning is caught — bank_landing is tier `inferred` and states no reasoning
+2026-11-04T06:10:59.0621198Z    self-test |   ok    an unexplained outlier is caught — agency_striker_log_house (D1) stands against every clause of its letter and nothing here says why: moved onto a light street, in memory
+2026-11-04T06:10:59.0622468Z    self-test |   ok    …and a reason left behind by an outlier that went away is caught — OUTLIER_REASONS explains `a_store_that_was_never_here`, which is no longer an outlier — delete the reason or find out what moved
+2026-11-04T06:10:59.0623529Z    self-test |   ok    a family letter left without a clause is caught — family C4 has no clause: the seating tickets would place it on instinct
+2026-11-04T06:10:59.0624591Z    self-test |   ok    a module carrying its own copy of a shared constant is caught — tools/placement_policy_1835.py no longer defines STREET_LINE_M, which `street_line_m` is declared to feed
+2026-11-04T06:10:59.0625715Z    self-test |   ok    a clause naming a function refuses a brickyard by the water and accepts a lumber shed there — is a brickyard, and lumber_landing seats a lumber shed
+2026-11-04T06:10:59.0626280Z    self-test | 
+2026-11-04T06:10:59.0626499Z    self-test | SELF-TEST PASS
+2026-11-04T06:10:59.0626659Z 
+2026-11-04T06:10:59.0627141Z [1m== …and its sums and ceilings still refuse when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:59.0659890Z    self-test | ok   an owed household dropped from the rungs: the owed households do not add up to their rungs
+2026-11-04T06:10:59.0660718Z    self-test | ok   a tract's area inflated: the tracts carry 1003732700.0 m² of West ground but the grid read 3732700.0
+2026-11-04T06:10:59.0661464Z    self-test | ok   the farm ground inflated: the farm ground is not the unsubdivided ground outside the limits
+2026-11-04T06:10:59.0662452Z    self-test | ok   the ground ceiling raised: the ground ceiling is not the whole forties of the farm ground
+2026-11-04T06:10:59.0663482Z    self-test | ok   the programme ceiling raised: the programme ceiling exceeds the West's remaining D1 or A2
+2026-11-04T06:10:59.0664601Z    self-test | ok   no West ground: no West ground was read — the branches or the box moved
+2026-11-04T06:10:59.0664896Z 
+2026-11-04T06:10:59.0665255Z [1m== every family's footprint, eave, pitch and ridge bands are satisfiable at once[0m
+2026-11-04T06:10:59.0705614Z    31 family/roof-form combination(s) swept across the whole authored footprint band; 0 family(ies) with no reachable form
+2026-11-04T06:10:59.0707055Z    6 family(ies) author no pitch band, so the ridge follows the generator's own type default and the specification claims nothing testable: A3, A4, A5, I3, W4, W5
+2026-11-04T06:10:59.0708735Z    NOTE C1 as a shed: 231 of 441 footprints cannot reach ridge 15-20 ft, so the family's other roof form is the only one its own bands describe (first at 14.0x25.0 ft)
+2026-11-04T06:10:59.0710355Z    NOTE F1 as a shed: 420 of 441 footprints cannot reach ridge 18-24 ft, so the family's other roof form is the only one its own bands describe (first at 18.0x32.9 ft)
+2026-11-04T06:10:59.0710822Z 
+2026-11-04T06:10:59.0711257Z    the shed offer — 9 family(ies) whose roof line names a SHED, against what this town deals them:
+2026-11-04T06:10:59.0711740Z      family  dealt   unreachable as a shed   why not a shed
+2026-11-04T06:10:59.0712102Z      A3      shed       0 of 441  ridge   8-10 ft   -
+2026-11-04T06:10:59.0712420Z      A4      shed       0 of 441  ridge   9-13 ft   -
+2026-11-04T06:10:59.0712726Z      A5      shed       0 of 441  ridge  10-15 ft   -
+2026-11-04T06:10:59.0713119Z      C1      gable    231 of 441  ridge  15-20 ft   its own ridge band cannot carry one
+2026-11-04T06:10:59.0713677Z      D2      shed       0 of 441  ridge  12-16 ft   -
+2026-11-04T06:10:59.0714061Z      F1      gable    420 of 441  ridge  18-24 ft   its own ridge band cannot carry one
+2026-11-04T06:10:59.0714855Z      F4      gable      0 of 441  ridge  17-24 ft   buildable; this town builds the gable (open-sided, so it falls across the short span)
+2026-11-04T06:10:59.0715467Z      W4      gable      0 of 441  ridge  16-27 ft   buildable; this town builds the gable
+2026-11-04T06:10:59.0715927Z      W5      gable    105 of 441  ridge  20-29 ft   its own ridge band cannot carry one
+2026-11-04T06:10:59.0716366Z      the refusal is recorded on every committed record of C1, F1, W5
+2026-11-04T06:10:59.0716611Z 
+2026-11-04T06:10:59.0716862Z [1m== no unresolved source is newly built into the town[0m
+2026-11-04T06:10:59.0750070Z rights derivation: 564 geometry-bearing attribute(s) on 59 record(s) are built from a source whose rights are unresolved, 326 of them with no other support (23 graded attested); the population is banked and may not grow
+2026-11-04T06:10:59.0751833Z 
+2026-11-04T06:10:59.0752462Z [1m== no body of far timber stands in the river[0m
+2026-11-04T06:10:59.0796167Z   far timber, sampled every 2 m against the committed heightfield
+2026-11-04T06:10:59.0796918Z   body                      samples  in water  unmodelled  worst depth   wet run
+2026-11-04T06:10:59.0797588Z   south_branch_belt            2308        57         552      1.511 m   113.7 m
+2026-11-04T06:10:59.0798417Z   north_division_timber         459         0           0            —     0.0 m
+2026-11-04T06:10:59.0799168Z   north_branch_belt            2513         8        2112      1.380 m    16.0 m
+2026-11-04T06:10:59.0800077Z   main_stem_belt_east           136         0           0            —     0.0 m
+2026-11-04T06:10:59.0800987Z   south_branch_grove           1345         0        1345            —     0.0 m
+2026-11-04T06:10:59.0801759Z                                            65   (4009 samples lie outside the modelled field, where the mask cannot answer)
+2026-11-04T06:10:59.0802596Z   PASS (ratchet) — 65 samples over water across 2 banked bodies, none new and none worse; the renderer clip keeps every one of them off the screen
+2026-11-04T06:10:59.0803044Z 
+2026-11-04T06:10:59.0803511Z [1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:59.0840161Z    self-test |    ok    the committed mesh passes, so a break below is this test's own doing
+2026-11-04T06:10:59.0840995Z    self-test |    ok    a gate with no leaves at all is caught
+2026-11-04T06:10:59.0841669Z    self-test |    ok    the 0.90 m slot this file was written for is caught
+2026-11-04T06:10:59.0842544Z    self-test |    ok    a 30 mm gap — three times the tolerance — is caught
+2026-11-04T06:10:59.0843228Z    self-test |    ok    a leaf lying across the curtain is caught
+2026-11-04T06:10:59.0844131Z    self-test |    ok    a gap inside the tolerance is NOT called a fault
+2026-11-04T06:10:59.0844709Z    self-test | 
+2026-11-04T06:10:59.0845057Z    self-test | SELF-TEST PASS
+2026-11-04T06:10:59.0845300Z 
+2026-11-04T06:10:59.0845938Z [1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:59.0883774Z    self-test |    self-test: the ten claims docs/RESEARCH/chappel_shore_lighthouse.md rests on hold
+2026-11-04T06:10:59.0885824Z 
+2026-11-04T06:10:59.0886855Z [1m== 1904 built-so-far walk matches the building records (T-2747)[0m
+2026-11-04T06:10:59.0928673Z BUILT-SO-FAR WALK PASS — 50 buildings, current with the records
+2026-11-04T06:10:59.0931212Z 
+2026-11-04T06:10:59.0932319Z [1m== Glessner street and stable opening schedule matches its record (T-2211)[0m
+2026-11-04T06:10:59.0972511Z glessner opening schedule: ok (62 street/stable openings, 53 courtyard openings, 16 bow/bay/tower/dormer rows)
+2026-11-04T06:10:59.0974394Z 
+2026-11-04T06:10:59.0974954Z [1m== source browser counts and filters[0m
+2026-11-04T06:10:59.1018425Z PASS Sources view: 559 sources, every confidence count independently checked, mixed-tier deduplication, filters, sort, issue grouping
+2026-11-04T06:10:59.1019962Z PASS Sources per scene: 1812 and 1904 list exactly the sources their own records cite (147 in 1904)
+2026-11-04T06:10:59.1020714Z 
+2026-11-04T06:10:59.1021258Z [1m== the 1812 ground mesh meets its heightfield (T-2003)[0m
+2026-11-04T06:10:59.1064568Z    terrain fit — e1830_natural, against the heightfield the walker samples
+2026-11-04T06:10:59.1064942Z 
+2026-11-04T06:10:59.1065270Z    mesh      vertices   compared   lattice     mean        rms         max |Δ|
+2026-11-04T06:10:59.1065802Z    master      650257     649483   float           0.0 mm     1.4 mm      2.5 mm
+2026-11-04T06:10:59.1066318Z    shipped     650257     649483   156.3 mm       -3.2 mm    45.2 mm     80.1 mm
+2026-11-04T06:10:59.1066591Z 
+2026-11-04T06:10:59.1067453Z    master within 30.0 mm: yes (2.5 mm); shipped derivative 80.1 mm off on a quantised lattice, conformed at load — see R-BUG3c
+2026-11-04T06:10:59.1068907Z    shipped POSITION: 16-bit POSITION, which is what tools/web_derivatives.sh asks for (16) (lattice 156.3 mm)
+2026-11-04T06:10:59.1069452Z 
+2026-11-04T06:10:59.1070242Z [1m== …and the anchor-ground rules still hold on synthetic ground[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:59.1108999Z    self-test | measure_anchors self-test: all rules hold
+2026-11-04T06:10:59.1111727Z 
+2026-11-04T06:10:59.1112917Z [1m== ticket queue (faults in the tickets repo are reported, not charged to this diff)[0m
+2026-11-04T06:10:59.1153225Z   WARN: 3 queue fault(s) this pull request cannot fix — they are the
+2026-11-04T06:10:59.1154199Z   state of kevinrhaas/chicago-tickets, a different repository, which no code diff
+2026-11-04T06:10:59.1154912Z   carries (T-1593). Reported, not charged to this branch:
+2026-11-04T06:10:59.1155954Z     - T-3335-show-the-currey-1912-bird-s-eye-view-of-the-firs.md: epic "1812" is not one of RENDERING/TOWN/GROUND/FLORA/PIPELINE/META/PAPERS/SOUTH_TIME
+2026-11-04T06:10:59.1157383Z       ↳ filed 2026-11-02 by owner · chicago-tickets 29d74fde settle: 3 ticket(s) follow their PRs
+2026-11-04T06:10:59.1158229Z     - T-3341-give-every-1812-and-1835-brick-wall-and-chimney-.md: epic "1812" is not one of RENDERING/TOWN/GROUND/FLORA/PIPELINE/META/PAPERS/SOUTH_TIME
+2026-11-04T06:10:59.1159518Z       ↳ filed 2026-11-02 by owner · chicago-tickets 5f63b016 T-3341: owner's ask, chimney-material rule and acceptance
+2026-11-04T06:10:59.1160404Z     - T-3343-carve-the-glessner-north-face-colonnettes-to-the.md: epic "PRAIRIE" is not one of RENDERING/TOWN/GROUND/FLORA/PIPELINE/META/PAPERS/SOUTH_TIME
+2026-11-04T06:10:59.1161234Z       ↳ filed 2026-11-02 by owner · chicago-tickets 709bbad3 settle: 1 ticket(s) follow their PRs
+2026-11-04T06:10:59.1161755Z   Whoever runs the command above clears it for EVERY open pull request at once:
+2026-11-04T06:10:59.1162257Z   `bash tools/tickets.sh` for a clone, then run it there. If it is the owner's to
+2026-11-04T06:10:59.1163097Z   answer, `node tools/ticket.mjs ask T-NNNN --question "…"` puts it on his board.
+2026-11-04T06:10:59.1163963Z ticket queue OK — 3230 tickets, 81 in the queue, 1 waiting on the owner — and 3 inherited fault(s) reported above as WARN, none of them this branch's
+2026-11-04T06:10:59.1164412Z 
+2026-11-04T06:10:59.1164864Z [1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:59.1197103Z    self-test | self-test: each assertion, broken deliberately
+2026-11-04T06:10:59.1198269Z    self-test |   caught  a derivative with no master — assets/web/ghost__phase.glb has no master in assets/gltf — the site ships geometry the dataset n
+2026-11-04T06:10:59.1199413Z    self-test |   caught  a master with no derivative — assets/gltf/orphan__phase.glb has no derivative in assets/web — the site cannot ship a building 
+2026-11-04T06:10:59.1200680Z    self-test |   caught  the shipped file was simplified — agency_striker_log_house__log_1830.glb: the master has 458 triangles and the shipped file has 44
+2026-11-04T06:10:59.1202131Z    self-test |   caught  the shipped file lost its structure_id — agency_striker_log_house__log_1830.glb: node names, node extras or mesh names differ between the
+2026-11-04T06:10:59.1203229Z    self-test |   caught  the shipped file lost _CONFIDENCE — agency_striker_log_house__log_1830.glb: the shipped file lost _CONFIDENCE, which docs/GLB-CONTRA
+2026-11-04T06:10:59.1204240Z    self-test |   caught  the building collapsed to a two-metre box — agency_striker_log_house__log_1830.glb: the shipped bounding box is 0.2 mm from the master's, 80
+2026-11-04T06:10:59.1205330Z    self-test |   caught  compression made the shipped file bigger than its master — agency_striker_log_house__log_1830.glb: the shipped derivative is 46,553 bytes and the master it
+2026-11-04T06:10:59.1206272Z    self-test |   held  the epoch exclusion: terrain__e1830_natural.glb grown past its master fires nothing (R-W6 owns that file's bit depth)
+2026-11-04T06:10:59.1207239Z    self-test |   caught  a new asset loses its material names — agency_striker_log_house__log_1830.glb: the shipped file's materials do not resolve to the maste
+2026-11-04T06:10:59.1208041Z    self-test |   skipped  a banked asset was repaired and not banked — nothing in this tree to mutate
+2026-11-04T06:10:59.1209209Z    self-test |   caught  a master was copied over its compressed derivative — agency_striker_log_house__log_1830.glb: assets/web/agency_striker_log_house__log_1830.glb is byt
+2026-11-04T06:10:59.1210824Z    self-test |   caught  a decided passthrough was regenerated and not banked — first_fort_dearborn_parade__first_fort_1803.glb: banked in web_derivative_baseline.json as a dec
+2026-11-04T06:10:59.1212395Z    self-test |   caught  the master was rebuilt after the derivative was made — agency_striker_log_house__log_1830.glb: the shipped derivative was made from a master with sha25
+2026-11-04T06:10:59.1213572Z    self-test |   caught  a derivative nothing recorded a master for — agency_striker_log_house__log_1830.glb: nothing records which master assets/web/agency_striker_l
+2026-11-04T06:10:59.1214829Z    self-test |   caught  a textured derivative shipped its images as JPEG — agency_striker_log_house__log_1830.glb: the shipped derivative carries 3 PNG/JPEG image(s), whic
+2026-11-04T06:10:59.1215450Z    self-test | SELF-TEST PASS
+2026-11-04T06:10:59.1215617Z 
+2026-11-04T06:10:59.1216213Z [1m== shared sheets: one copy, the repack exact, a changed sheet or byte refused (T-3232)[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:59.1241551Z    self-test | PASS  one sheet three GLBs share is written once (3 GLBs, 1 sheet)
+2026-11-04T06:10:59.1242228Z    self-test | PASS  the published bytes fall (6252 -> 4304)
+2026-11-04T06:10:59.1242665Z    self-test | PASS  an image one GLB holds stays embedded, the file untouched
+2026-11-04T06:10:59.1243068Z    self-test | PASS  the GLB names the sheet beside it
+2026-11-04T06:10:59.1243430Z    self-test | PASS  every block keeps its alignment
+2026-11-04T06:10:59.1243806Z    self-test | PASS  a versioned GLB reaches the one sheet up the tree
+2026-11-04T06:10:59.1244641Z    self-test | PASS  the gate reads every rewrite back to its source (clean)
+2026-11-04T06:10:59.1245084Z    self-test | PASS  a sheet whose bytes changed is refused
+2026-11-04T06:10:59.1245638Z    self-test | PASS  a repack that loses a mesh byte is refused
+2026-11-04T06:10:59.1246176Z    self-test | PASS  a rewrite that changes what the GLB says is refused
+2026-11-04T06:10:59.1246570Z    self-test | PASS  a sheet nothing names is refused
+2026-11-04T06:10:59.1246915Z    self-test | share_glb_sheets self-test: all passed
+2026-11-04T06:10:59.1247118Z 
+2026-11-04T06:10:59.1247706Z [1m== reference browsers: only what the root already ships is served from it[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:59.1285219Z    self-test |   ok    the identical files' bytes, and the always-root directory's, are counted as saved
+2026-11-04T06:10:59.1286151Z    self-test |   ok    a file identical at the root leaves the mirror
+2026-11-04T06:10:59.1286702Z    self-test |   ok    a new file beside identical ones stays, and does not keep its directory's other files (T-2483)
+2026-11-04T06:10:59.1287278Z    self-test |   ok    a directory the root lacks entirely stays
+2026-11-04T06:10:59.1287742Z    self-test |   ok    an ALWAYS_ROOT directory leaves even when the root lacks it
+2026-11-04T06:10:59.1288531Z    self-test |   ok    a subdirectory the move empties is removed
+2026-11-04T06:10:59.1289162Z    self-test |   ok    a file that differs from the root's stays
+2026-11-04T06:10:59.1289648Z    self-test |   ok    the viewer is told what moved and where
+2026-11-04T06:10:59.1290221Z    self-test |   ok    the viewer is told which files under a moved directory stayed
+2026-11-04T06:10:59.1290703Z    self-test |   ok    a viewer with nothing moved stays package-relative
+2026-11-04T06:10:59.1290940Z 
+2026-11-04T06:10:59.1291431Z [1m== every workflow job that installs Playwright or runs Blender runs on a pinned image (T-3169, T-3296)[0m
+2026-11-04T06:10:59.1329689Z ok: 11 Playwright-installing or Blender-running job(s) across 15 workflow(s), every one on a pinned image
+2026-11-04T06:10:59.1332329Z 
+2026-11-04T06:10:59.1333478Z [1m== a lap that cannot check out a branch says which step failed, and why[0m
+2026-11-04T06:10:59.1373908Z pr-lap.sh — a lap that cannot check out a branch has to say why
+2026-11-04T06:10:59.1374828Z   ok    the lap survives a PR whose branch is not there — exit 0
+2026-11-04T06:10:59.1375505Z   ok    …and counts it left alone
+2026-11-04T06:10:59.1376107Z   ok    …and says it was the FETCH that failed, naming the branch
+2026-11-04T06:10:59.1376853Z   ok    …and carries git's own message rather than swallowing it
+2026-11-04T06:10:59.1377827Z   ok    …and reads as a DELETED branch, not as an unexplained failure
+2026-11-04T06:10:59.1378385Z   ok    …and tells the reader what to do with the PR it named
+2026-11-04T06:10:59.1379130Z   ok    …and never prints the old four words
+2026-11-04T06:10:59.1379806Z   ok    a fetch that works and a checkout that does not still ends the lap cleanly — exit 0
+2026-11-04T06:10:59.1380371Z   ok    …and is reported as the CHECKOUT, naming both refs
+2026-11-04T06:10:59.1380761Z   ok    …and never blames the fetch, which succeeded
+2026-11-04T06:10:59.1381097Z   ok    …and carries git's own message
+2026-11-04T06:10:59.1381499Z   ok    …and names the remote-tracking ref as the thing that is missing
+2026-11-04T06:10:59.1381924Z   ok    a dirty tree does not crash the lap — exit 0
+2026-11-04T06:10:59.1382262Z   ok    …and is reported as the CHECKOUT
+2026-11-04T06:10:59.1382570Z   ok    …and carries git's own refusal
+2026-11-04T06:10:59.1383075Z   ok    …and says the tree was not clean when the lap got here
+2026-11-04T06:10:59.1383603Z   ok    …and names the dirty path
+2026-11-04T06:10:59.1383981Z   ok    a branch that is level with dev laps normally — exit 0
+2026-11-04T06:10:59.1384348Z   ok    …and gets past both guards
+2026-11-04T06:10:59.1384664Z   ok    …and is reported as already current
+2026-11-04T06:10:59.1385121Z   ok    neither guard discards git's stderr any more — both log to a file and tail it
+2026-11-04T06:10:59.1385544Z   ok    and neither of the four-word labels survives
+2026-11-04T06:10:59.1385743Z 
+2026-11-04T06:10:59.1385839Z all passed
+2026-11-04T06:10:59.1385958Z 
+2026-11-04T06:10:59.1386319Z [1m== a run that cannot finish hands its PR on, and says why in a line a script can read[0m
+2026-11-04T06:10:59.1417731Z pr-rest.sh resume — a run hands off unfinished work, and says why
+2026-11-04T06:10:59.1419344Z   ok    the call succeeds — exit 0 hold removed — hold is the owner's switch and no run applies it
+2026-11-04T06:10:59.1419973Z resume: #41 handed off · waits on: T-1567
+2026-11-04T06:10:59.1420377Z   ok    …and a comment was posted — ensure-label resume
+2026-11-04T06:10:59.1423788Z comment {"body":"resume: dev's gate is red on T-1567 · waits on: T-1567\n\nThis pull request is the loop's own unfinished work, and it is NOT parked.\nThe run that opened it could not finish inside its own budget; the branch\ncarries the work. A later run picks it up before it takes new queue work:\nmerge `dev` in, re-derive, fix what is red, gate, merge.\n\nIt waits on **T-1567**. Until that ticket closes this PR cannot go green, so a\nrun that finds it says so and takes the next row rather than re-gating it.\n\n`hold` is the owner's park switch and no run applies it — see\n`chicago/4d/AGENTS.md` § the two labels.\n\n---\n_Generated by [Claude Code](https://claude.ai/code)_\n"}
+2026-11-04T06:10:59.1427093Z label repos/kevinrhaas/chicago/issues/41/labels resume
+2026-11-04T06:10:59.1427553Z unlabel hold
+2026-11-04T06:10:59.1428381Z   ok    …whose FIRST line is the one a script reads — resume: dev's gate is red on T-1567 · waits on: T-1567
+2026-11-04T06:10:59.1429428Z   ok    …and pr-stuck.sh’s own reader gets the reason back out of it
+2026-11-04T06:10:59.1430140Z   ok    …the `resume` label was applied — ensure-label resume
+2026-11-04T06:10:59.1434110Z comment {"body":"resume: dev's gate is red on T-1567 · waits on: T-1567\n\nThis pull request is the loop's own unfinished work, and it is NOT parked.\nThe run that opened it could not finish inside its own budget; the branch\ncarries the work. A later run picks it up before it takes new queue work:\nmerge `dev` in, re-derive, fix what is red, gate, merge.\n\nIt waits on **T-1567**. Until that ticket closes this PR cannot go green, so a\nrun that finds it says so and takes the next row rather than re-gating it.\n\n`hold` is the owner's park switch and no run applies it — see\n`chicago/4d/AGENTS.md` § the two labels.\n\n---\n_Generated by [Claude Code](https://claude.ai/code)_\n"}
+2026-11-04T06:10:59.1436114Z label repos/kevinrhaas/chicago/issues/41/labels resume
+2026-11-04T06:10:59.1436425Z unlabel hold
+2026-11-04T06:10:59.1436938Z   ok    …the label vocabulary was created first, since adding an absent label is a 422 — ensure-label resume
+2026-11-04T06:10:59.1437641Z   ok    …and the run is told what it did — hold removed — hold is the owner's switch and no run applies it
+2026-11-04T06:10:59.1438134Z resume: #41 handed off · waits on: T-1567
+2026-11-04T06:10:59.1438575Z   ok    the reason is posted BEFORE the label is applied — comment@1 label@2
+2026-11-04T06:10:59.1439487Z   ok    a handoff with no --waits-on says `nothing`, not an empty field — resume: the run ran out of clock · waits on: nothing
+2026-11-04T06:10:59.1440097Z   ok    …and the body does not tell a later run to wait for something
+2026-11-04T06:10:59.1440563Z   ok    a handoff that waits on a ticket names it in the body as well
+2026-11-04T06:10:59.1440985Z   ok    a handoff with no --why is refused — exit 2
+2026-11-04T06:10:59.1441348Z   ok    …and says why the reason is the point
+2026-11-04T06:10:59.1441744Z   ok    …and wrote NOTHING — no label without a reason, ever
+2026-11-04T06:10:59.1442418Z   ok    a reason carrying newlines and tabs is folded onto one line — resume: the gate went red on stage 8 at 1280 · waits on: nothing
+2026-11-04T06:10:59.1443069Z   ok    …so `waits on` is still on the first line where its reader looks
+2026-11-04T06:10:59.1443566Z   ok    a --waits-on that is not a ticket id or `nothing` is refused — exit 2
+2026-11-04T06:10:59.1443985Z   ok    …naming both forms it accepts
+2026-11-04T06:10:59.1444291Z   ok    …and nothing was written
+2026-11-04T06:10:59.1444947Z   ok    `hold` is removed, because a run never leaves the owner’s switch on — ensure-label resume
+2026-11-04T06:10:59.1447537Z comment {"body":"resume: x · waits on: nothing\n\nThis pull request is the loop's own unfinished work, and it is NOT parked.\nThe run that opened it could not finish inside its own budget; the branch\ncarries the work. A later run picks it up before it takes new queue work:\nmerge `dev` in, re-derive, fix what is red, gate, merge.\n\n`hold` is the owner's park switch and no run applies it — see\n`chicago/4d/AGENTS.md` § the two labels.\n\n---\n_Generated by [Claude Code](https://claude.ai/code)_\n"}
+2026-11-04T06:10:59.1449494Z label repos/kevinrhaas/chicago/issues/41/labels resume
+2026-11-04T06:10:59.1449833Z unlabel hold
+2026-11-04T06:10:59.1450105Z   ok    …and the run is told
+2026-11-04T06:10:59.1450567Z   ok    a PR with no `hold` on it is handed off without error — exit 0
+2026-11-04T06:10:59.1451008Z   ok    …and the label is still applied — ensure-label resume
+2026-11-04T06:10:59.1453063Z comment {"body":"resume: x · waits on: nothing\n\nThis pull request is the loop's own unfinished work, and it is NOT parked.\nThe run that opened it could not finish inside its own budget; the branch\ncarries the work. A later run picks it up before it takes new queue work:\nmerge `dev` in, re-derive, fix what is red, gate, merge.\n\n`hold` is the owner's park switch and no run applies it — see\n`chicago/4d/AGENTS.md` § the two labels.\n\n---\n_Generated by [Claude Code](https://claude.ai/code)_\n"}
+2026-11-04T06:10:59.1454484Z label repos/kevinrhaas/chicago/issues/41/labels resume
+2026-11-04T06:10:59.1454918Z   ok    …and it does not claim to have removed a label it did not
+2026-11-04T06:10:59.1455459Z   ok    no GraphQL-backed `gh` verb is used anywhere in pr-rest.sh — every call is `gh api`
+2026-11-04T06:10:59.1455882Z   ok    the usage line documents `resume`
+2026-11-04T06:10:59.1456548Z   ok    …and so does the error for an unknown command — /home/runner/work/chicago/chicago/.github/steward/pr-rest.sh: unknown command nonsense
+2026-11-04T06:10:59.1457426Z usage: /home/runner/work/chicago/chicago/.github/steward/pr-rest.sh [--repo owner/name] create|list|view|comment|merge|resume|meter ...
+2026-11-04T06:10:59.1458327Z   ok    a handoff run with the WRONG $GITHUB_REPOSITORY still succeeds — exit 0 hold removed — hold is the owner's switch and no run applies it
+2026-11-04T06:10:59.1459219Z resume: #41 handed off · waits on: nothing
+2026-11-04T06:10:59.1460493Z   ok    …and every call it made named the checkout’s own repository — GET repos/kevinrhaas/chicago/pulls/41 | POST repos/kevinrhaas/chicago/labels | POST repos/kevinrhaas/chicago/issues/41/comments | POST repos/kevinrhaas/chicago/issues/41/labels | DELETE repos/kevinrhaas/chicago/issues/41/labels/hold
+2026-11-04T06:10:59.1462315Z   ok    …so the `resume` label went to the chicago PR, not to a stranger’s #41 — ensure-label resume
+2026-11-04T06:10:59.1465036Z comment {"body":"resume: x · waits on: nothing\n\nThis pull request is the loop's own unfinished work, and it is NOT parked.\nThe run that opened it could not finish inside its own budget; the branch\ncarries the work. A later run picks it up before it takes new queue work:\nmerge `dev` in, re-derive, fix what is red, gate, merge.\n\n`hold` is the owner's park switch and no run applies it — see\n`chicago/4d/AGENTS.md` § the two labels.\n\n---\n_Generated by [Claude Code](https://claude.ai/code)_\n"}
+2026-11-04T06:10:59.1466705Z label repos/kevinrhaas/chicago/issues/41/labels resume
+2026-11-04T06:10:59.1467002Z unlabel hold
+2026-11-04T06:10:59.1467576Z   ok    …and it asked whether the PULL REQUEST was there before writing anything — GET repos/kevinrhaas/chicago/pulls/41
+2026-11-04T06:10:59.1468262Z   ok    an unresolvable repository is refused, never taken from the environment — exit 2
+2026-11-04T06:10:59.1469916Z   ok    …and the refusal names --repo and says the environment is not the default — /tmp/prresume-co-klEl3d/.github/steward/pr-rest.sh resume: cannot tell which repository to act on — pass --repo owner/name; the default is this checkout's origin remote and NEVER $GITHUB_REPOSITORY (T-1655), and it resolved to ''
+2026-11-04T06:10:59.1471859Z   ok    …and it is ONE line, because its reader is a run already in trouble — /tmp/prresume-co-klEl3d/.github/steward/pr-rest.sh resume: cannot tell which repository to act on — pass --repo owner/name; the default is this checkout's origin remote and NEVER $GITHUB_REPOSITORY (T-1655), and it resolved to ''
+2026-11-04T06:10:59.1472917Z   ok    …and nothing was written, and nothing was even asked —  / 
+2026-11-04T06:10:59.1473414Z   ok    a handoff aimed at a repository the PR is not in is refused — exit 2
+2026-11-04T06:10:59.1474771Z   ok    …naming the repository and the PR it could not find there — /home/runner/work/chicago/chicago/.github/steward/pr-rest.sh resume: kevinrhaas/polecat-platform has no pull request #41 — refusing to write to a repository this PR is not in; name the right one with --repo owner/name (T-1655)
+2026-11-04T06:10:59.1475914Z   ok    …and the stranger was left untouched — no comment, no label
+2026-11-04T06:10:59.1476755Z   ok    create asks whether the head branch is in that repository — GET repos/kevinrhaas/chicago/branches/steward/t1655-pr-rest-repo | POST repos/kevinrhaas/chicago/pulls
+2026-11-04T06:10:59.1477451Z   ok    …and refuses, loudly, when it is not — exit 1
+2026-11-04T06:10:59.1478917Z   ok    …saying which repository has no such branch, not just "head invalid" — /home/runner/work/chicago/chicago/.github/steward/pr-rest.sh create: kevinrhaas/polecat-platform has no branch 'steward/t1655-pr-rest-repo' — refusing to open a pull request in a repository this branch is not in; name the right one with --repo owner/name (T-1655)
+2026-11-04T06:10:59.1497549Z ##[error]/home/runner/work/chicago/chicago/.github/steward/pr-rest.sh create: refused — see above (rate: )
+2026-11-04T06:10:59.1504658Z   ok    …and opened nothing — GET repos/kevinrhaas/polecat-platform/branches/steward/t1655-pr-rest-repo | GET 
+2026-11-04T06:10:59.1505328Z 
+2026-11-04T06:10:59.1505449Z all passed
+2026-11-04T06:10:59.1505579Z 
+2026-11-04T06:10:59.1505922Z [1m== every gated writer is in the derived manifest, or exempted in writing[0m
+2026-11-04T06:10:59.1506576Z manifest coverage: OK — 341 gated tool(s), every one measured and counted once.
+2026-11-04T06:10:59.1507102Z   201 in the manifest · 65 measured to reproduce and not yet placed
+2026-11-04T06:10:59.1507562Z   19 cannot rebuild, each with its number · 56 write nothing
+2026-11-04T06:10:59.1508113Z   201 + 65 + 19 + 56 = 341, which is the total above.
+2026-11-04T06:10:59.1508971Z   The pending ones are recorded, not hidden, and here they are — 65 gated
+2026-11-04T06:10:59.1510024Z   writer(s) that check.sh asserts re-derive and rederive.mjs --run does not rebuild:
+2026-11-04T06:10:59.1510632Z     tools/build_context_1904.py
+2026-11-04T06:10:59.1511778Z       not yet — measured to reproduce. It reads the committed Sanborn rasters, Robinson's 1886 plate 10 (T-2491) and their GCP fits, the school section's corner GCPs…
+2026-11-04T06:10:59.1512712Z     tools/build_former_residents_1904.py
+2026-11-04T06:10:59.1513624Z       not yet — measured to reproduce. It reads data/residents_1904/households/, the two RESEARCH readings and data/structures, and writes data/residents_1904/former…
+2026-11-04T06:10:59.1514228Z     tools/build_lodging_model_1835.py
+2026-11-04T06:10:59.1514959Z       not yet — measured to reproduce, but the manifest's order is its own measured pass and this tool reads data/structures/, which several reconstruction stages wr…
+2026-11-04T06:10:59.1515550Z     tools/build_modern_streets.py
+2026-11-04T06:10:59.1516245Z       Not placed, because it needs the City's 87 MB centerline file, fetched over the network from GitHub (Chicago/osd-street-center-line), and a rederive must run o…
+2026-11-04T06:10:59.1516836Z     tools/build_trade_table_1839.py
+2026-11-04T06:10:59.1517569Z       not yet — measured to reproduce. It writes data/research/directories/fergus_1839_trade_table.json, read by manifest steps tools/build_staffing_model_1835.py an…
+2026-11-04T06:10:59.1518175Z     tools/carry_policy_only_division.py
+2026-11-04T06:10:59.1519080Z       after seat_known_1835.py --build, which writes the address book this reads, and before rebuild_resident_index.py, which denormalises the block's value into the…
+2026-11-04T06:10:59.1519698Z     tools/carry_west_tiers_west.py
+2026-11-04T06:10:59.1520418Z       not yet — measured to reproduce. It writes data/streets/1835.json, which many manifest steps read, so a slot for it has to sit ahead of the street-reading laye…
+2026-11-04T06:10:59.1521014Z     tools/census_prairie_1904_background.py
+2026-11-04T06:10:59.1521920Z       pending, 2026-10-22 (T-3008): a reader of the street grid, the sheet censuses and the footprint traces tools/trace_prairie_1904_footprints.py writes, so it mus…
+2026-11-04T06:10:59.1522551Z     tools/compile_pictures.py
+2026-11-04T06:10:59.1523220Z       not to be placed: its output is a build product, not a committed derivation. publish.sh writes it from the Prairie library and data/sources/ at the moment it s…
+2026-11-04T06:10:59.1523797Z     tools/compile_summaries.py
+2026-11-04T06:10:59.1524466Z       not to be placed: its output is a build product, not a committed derivation. publish.sh writes it from data/summaries/, data/sources/ and the scenes' people di…
+2026-11-04T06:10:59.1525045Z     tools/complete_inwindow_trades.py
+2026-11-04T06:10:59.1525714Z       not yet, AND ITS ORDER IS KNOWN, because three red gates on #1560 paid for it (T-1453): RUN IT BEFORE `rederive.mjs --run` AND NEVER AFTER. It reads data/resea…
+2026-11-04T06:10:59.1526271Z     tools/cut_north_division_tier.py
+2026-11-04T06:10:59.1527014Z       not yet — measured to reproduce, and its inputs are all committed readings rather than anything a later stage writes, so it has no ordering hazard of its own; …
+2026-11-04T06:10:59.1527614Z     tools/cut_school_section_second_tier.py
+2026-11-04T06:10:59.1528347Z       not yet — every input it reads is a committed reading (the block grid, the 1833 register, the heightfield) rather than anything a later stage writes, so it has…
+2026-11-04T06:10:59.1529070Z     tools/cut_school_section_tier.py
+2026-11-04T06:10:59.1529953Z       not yet — measured to reproduce, and every input it reads is a committed reading rather than anything a later stage writes, so it has no ordering hazard of its…
+2026-11-04T06:10:59.1530532Z     tools/execute_roof_redeal.py
+2026-11-04T06:10:59.1531296Z       not yet — measured to reproduce, but it reads the redeal ledger, which tools/redeal_anonymous_roofs.py writes and which is itself `pending` for the same reason…
+2026-11-04T06:10:59.1531909Z     tools/extend_ic_lakefront_1904.py
+2026-11-04T06:10:59.1532663Z       Requires the core heightfield, shoreline and railway writers before it, and build_context_1904.py after it. Manifest ordering remains a separate measured pass.
+2026-11-04T06:10:59.1533572Z     tools/generate_alley_lanes.py
+2026-11-04T06:10:59.1534643Z       not yet placed: it reads data/traces/vectors/thompson_lots.json, data/sidecars/1835/ and data/streets/1835.json and nothing reads its output, so its slot is af…
+2026-11-04T06:10:59.1535347Z     tools/generate_camp_ground_1812.py
+2026-11-04T06:10:59.1536233Z       not yet: it reads the six lodge_camp sidecars (compile_scene.py's output), and data/enclosures/1812/index.json lists it through generate_fort_parade_ground.py'…
+2026-11-04T06:10:59.1537107Z     tools/generate_fort_parade_ground.py
+2026-11-04T06:10:59.1537807Z       not yet: it reads the two parade sidecars, the two forts' wall sidecars (compile_scene.py's output) and the other enclosure records of its scene, so its slot i…
+2026-11-04T06:10:59.1538394Z     tools/generate_glessner_finish.py
+2026-11-04T06:10:59.1539254Z       The original flat-brick maps read authored surface_finish and existing committed original clay/mortar maps, before the Blender master and reduced derivative. G…
+2026-11-04T06:10:59.1539887Z     tools/generate_glessner_vines.py
+2026-11-04T06:10:59.1540581Z       The atlas reads the authored Glessner record and shared numeric vine layout, and is consumed by the Blender master and reduced masked-occlusion bake. It is gen…
+2026-11-04T06:10:59.1541160Z     tools/generate_worn_ground_1812.py
+2026-11-04T06:10:59.1541830Z       not yet: it reads the 1812 sidecars (compile_scene.py's output), the 1812 enclosure records and the e1830_natural terrain, so its slot is after the sidecars an…
+2026-11-04T06:10:59.1542408Z     tools/generated_card_kin.py
+2026-11-04T06:10:59.1543136Z       not yet — measured to reproduce. It writes the households/ mirror of the register's parent ties onto cards the mints re-derive (they carry `kin` through), and …
+2026-11-04T06:10:59.1543831Z     tools/glessner_cupola_read.py
+2026-11-04T06:10:59.1544567Z       not yet — measured to reproduce. It reads T-2758's re-solved cameras (tools/glessner_stable_roof_read.py), data/reference_views/glessner_house/habs-01-northwes…
+2026-11-04T06:10:59.1545242Z     tools/glessner_north_finial_read.py
+2026-11-04T06:10:59.1545991Z       not yet — measured to reproduce. It reads data/structures/glessner_house.json, the habs-01-northwest and habs-14-north-inclined reference cameras, the two HABS…
+2026-11-04T06:10:59.1546582Z     tools/glessner_north_pairs.py
+2026-11-04T06:10:59.1547332Z       not yet — measured to reproduce. It reads data/comparisons/glessner/observations.json, data/reference_views/glessner_house/habs-14-north-inclined.json and data…
+2026-11-04T06:10:59.1548000Z     tools/glessner_opening_schedule.py
+2026-11-04T06:10:59.1548917Z       not yet — measured to reproduce. It reads only data/structures/glessner_house.json, which no reconstruction stage writes, and nothing reads its four outputs, s…
+2026-11-04T06:10:59.1549661Z     tools/glessner_prairie_front.py
+2026-11-04T06:10:59.1550412Z       not yet — measured to reproduce. It reads docs/RESEARCH/glessner-prairie-front-T-2857/read_front.py (T-2857's picks), the three front reference cameras and dat…
+2026-11-04T06:10:59.1551034Z     tools/glessner_stable_end_read.py
+2026-11-04T06:10:59.1551769Z       not yet — measured to reproduce. It reads T-2758's cameras and projection (tools/glessner_stable_roof_read.py), data/reference_views/glessner_house/habs-01-nor…
+2026-11-04T06:10:59.1552398Z     tools/glessner_stable_roof_read.py
+2026-11-04T06:10:59.1553528Z       not yet — measured to reproduce. It reads data/reference_views/glessner_house/habs-01-northwest.json, cornell-northwest-west-windows.json and data/structures/g…
+2026-11-04T06:10:59.1554126Z     tools/ktx2_sheets.py
+2026-11-04T06:10:59.1554831Z       not yet — it reads only the committed PNG masters under assets/textures/chicago_1835_pbr/ and prairie_1904_pbr/, which no manifest step writes, so it has no or…
+2026-11-04T06:10:59.1555421Z     tools/lay_prairie_1904_walk_joins.py
+2026-11-04T06:10:59.1556393Z       A reader of BUILT assets as well as committed originals: the K01/K16 GLBs' node extras (generators/k01_emit.py, k16_emit.py), the K13 records, the 1904 sidecar…
+2026-11-04T06:10:59.1557165Z     tools/measure_block_redeal_remedies.py
+2026-11-04T06:10:59.1557995Z       not yet — measured to reproduce, but it reads the roof redeal ledger, the platted-block recipe and the placement policy, and the first two are written by stage…
+2026-11-04T06:10:59.1558593Z     tools/measure_roof_id_migration.py
+2026-11-04T06:10:59.1559453Z       not yet — measured to reproduce, and it is a pure reader: every input it touches is a committed file some other stage owns, so it has no ordering hazard of its…
+2026-11-04T06:10:59.1560034Z     tools/model_refamily_rule.py
+2026-11-04T06:10:59.1560735Z       not yet — measured to reproduce, and the ordering is the thing to settle. This tool reads the order book, and build_order_book_1835.py then reads the rung ids …
+2026-11-04T06:10:59.1561318Z     tools/name_the_keepers_1835.py
+2026-11-04T06:10:59.1562048Z       not yet — measured to reproduce, but it stands between two passes already in the order: it reads the platted deal and the household cards, and the roofs that c…
+2026-11-04T06:10:59.1562616Z     tools/person_associations.py
+2026-11-04T06:10:59.1563351Z       not yet — measured to reproduce. T-1405 per its header: `--write` puts association rows ONTO the person records as well as into data/research/residents/person_…
+2026-11-04T06:10:59.1563943Z     tools/place_camp_grounds_1835.py
+2026-11-04T06:10:59.1564660Z       not yet — measured to reproduce. T-1804: it writes structure records, so it precedes compile_scene.py, and it reads every other footprint, so it follows whiche…
+2026-11-04T06:10:59.1565255Z     tools/place_landing_camps_1835.py
+2026-11-04T06:10:59.1565974Z       not yet — measured to reproduce. T-1803: it writes structure records, so it precedes compile_scene.py, and it reads every other footprint, so it follows whiche…
+2026-11-04T06:10:59.1566637Z     tools/placement_policy_1835.py
+2026-11-04T06:10:59.1567515Z       not yet — measured to reproduce. It writes data/reconstruction/1835_placement_policy.json, which the reconstruction stages that raise roofs read, so it sits ah…
+2026-11-04T06:10:59.1568119Z     tools/read_south_bank_swell_1834.py
+2026-11-04T06:10:59.1568999Z       not yet — measured to reproduce. Its inputs are the two 1834 rasters, which no stage writes, and the committed e1834_harbor_cut waterline, which tools/trace_ri…
+2026-11-04T06:10:59.1569648Z     tools/readmit_borderline_roster.py
+2026-11-04T06:10:59.1570380Z       not yet — it reads the borderline roster and is read by everything that COUNTS people, so its slot is a measured pass rather than an append (T-1302's note abov…
+2026-11-04T06:10:59.1570963Z     tools/reconstruct_businesses_1835.py
+2026-11-04T06:10:59.1571698Z       not yet — measured to reproduce. Its header states that the quota lives in the reconstruction order book and nothing about it lives in the tool, so any ticket …
+2026-11-04T06:10:59.1572313Z     tools/reconstruct_church_register.py
+2026-11-04T06:10:59.1573045Z       not yet — measured to reproduce. Stage `underdocumented`, sub-stage `church_register` (T-1504, of T-1177). It is the THIRD writer of data/residents/underdocume…
+2026-11-04T06:10:59.1573627Z     tools/reconstruct_free_black.py
+2026-11-04T06:10:59.1574348Z       not yet — measured to reproduce. Stage `underdocumented`, sub-stage `free_black` (T-1377, of T-1177). Its header records that it SHARES data/residents/underdoc…
+2026-11-04T06:10:59.1574952Z     tools/reconstruct_institutional_households.py
+2026-11-04T06:10:59.1575708Z       Waiting on nothing but its own slot being proved stable. It IS in the resident layer's rebuild order as `stage_institutional_households`, after `transients` an…
+2026-11-04T06:10:59.1576299Z     tools/reconstruct_transients_1835.py
+2026-11-04T06:10:59.1577050Z       not yet — measured to reproduce. Stage `transients` (T-1353): it draws against the lodging model and writes data/reconstruction/1835_transient_cohort.json, and…
+2026-11-04T06:10:59.1577642Z     tools/reconstruct_underdocumented.py
+2026-11-04T06:10:59.1578371Z       not yet — measured to reproduce. Stage `underdocumented`, sub-stage `native_and_metis` (T-1376, of T-1177), sharing data/residents/underdocumented/ with tools/…
+2026-11-04T06:10:59.1579142Z     tools/record_lot_seating.py
+2026-11-04T06:10:59.1579904Z       not yet — measured to reproduce, but it reads the lot layers and every committed footprint and must run before compile_scene.py carries the seat onto the card,…
+2026-11-04T06:10:59.1580775Z     tools/redeal_anonymous_roofs.py
+2026-11-04T06:10:59.1581574Z       not yet — measured to reproduce, but it reads the structure layer, the order book and the placement policy, all of which earlier reconstruction stages write, s…
+2026-11-04T06:10:59.1582158Z     tools/refamily_moves_1835.py
+2026-11-04T06:10:59.1582885Z       not yet — measured to reproduce, and it wants the same second-pass ordering model_refamily_rule.py does. This tool reads the residents layer's cards and writes…
+2026-11-04T06:10:59.1583486Z     tools/report_refamily_programme.py
+2026-11-04T06:10:59.1584203Z       not yet — measured to reproduce, and its slot is the one model_refamily_rule.py is waiting on. This tool reads BOTH the order book and the rule, so it can only…
+2026-11-04T06:10:59.1584770Z     tools/reprogramme_roofs_1835.py
+2026-11-04T06:10:59.1585474Z       not yet — measured to reproduce, but this tool reads the order book and the lodging model, both of which later reconstruction stages write, so its place in the…
+2026-11-04T06:10:59.1586051Z     tools/seat_lodgers_1835.py
+2026-11-04T06:10:59.1586749Z       not yet — measured to reproduce, but the manifest's order is its own measured pass and this tool reads data/structures/ through the lodging model AND data/resi…
+2026-11-04T06:10:59.1587410Z     tools/seat_reconstructed_trades_1835.py
+2026-11-04T06:10:59.1588135Z       not yet — measured to reproduce. T-1433, piece 2 of 3 of T-1189: it writes persons[].employment for the residents this project reconstructed, so it follows eve…
+2026-11-04T06:10:59.1588894Z     tools/spend_appearance_bounds.py
+2026-11-04T06:10:59.1589762Z       NOT PLACED. It reproduces, so it is pending rather than not_derivable, and it is counted out loud on every run instead of sitting silently outside the layer — …
+2026-11-04T06:10:59.1590335Z     tools/spend_departure_rulings.py
+2026-11-04T06:10:59.1591056Z       not yet — measured to reproduce, but the manifest's order is its own measured pass and this tool reads the resident cards and data/research/residents/spend_rul…
+2026-11-04T06:10:59.1591645Z     tools/spend_enrichment_arrivals.py
+2026-11-04T06:10:59.1592376Z       not yet — measured to reproduce. T-1330: `--write` spends thirty corroborated_enrichment units ONTO the cards they name, so it follows the pass that writes tho…
+2026-11-04T06:10:59.1592957Z     tools/spend_land_sale_bounds.py
+2026-11-04T06:10:59.1593517Z       T-1332 landed after T-1302 batch 2 placed its layer; placement in the manifest dependency order is that pass's to make, not this one's
+2026-11-04T06:10:59.1594053Z     tools/spend_press_bounds.py
+2026-11-04T06:10:59.1594764Z       NOT PLACED. It reproduces, so it is pending rather than not_derivable, and it is counted out loud on every run instead of sitting silently outside the layer — …
+2026-11-04T06:10:59.1595332Z     tools/staff_businesses_1835.py
+2026-11-04T06:10:59.1596293Z       not yet — measured to reproduce. T-1432, piece 1 of 3 of T-1189: it writes persons[].workplaces across the household records for the rows the business layer na…
+2026-11-04T06:10:59.1597018Z     tools/staff_the_houses_1835.py
+2026-11-04T06:10:59.1597735Z       not yet — measured to reproduce. T-1462, piece 2 of 2 of T-1449. Its header states the ordering constraint itself: data/businesses/*.json is DERIVED and the co…
+2026-11-04T06:10:59.1598315Z     tools/staffing_mint_order_1835.py
+2026-11-04T06:10:59.1599242Z       not yet — measured to reproduce. T-1448, of T-1434, of T-1189: it mints nobody and only sets the staffing model beside the reconstruction order book and counts…
+2026-11-04T06:10:59.1600276Z     tools/trace_south_branch_bridgeport_rees_1849.py
+2026-11-04T06:10:59.1601176Z       Not placed, because it needs the uncommitted Rees 1849 raster, fetched over the network, as its sibling trace_south_branch_rees_1849.py does, and a rederive mu…
+2026-11-04T06:10:59.1601813Z     tools/web_textures.py
+2026-11-04T06:10:59.1602533Z       not yet — it reads only the committed PNG masters under assets/textures/chicago_1835_pbr/, which no manifest step writes (the library's generator is not in the…
+2026-11-04T06:10:59.1603211Z   Ordering is its own measured pass: on #1452 three reconstruction stages
+2026-11-04T06:10:59.1603687Z   OSCILLATED until they sat in the right slot, so these cannot be appended to
+2026-11-04T06:10:59.1604208Z   the manifest blind (T-1302 batch 2). Measure what `_must_reproduce` asks —
+2026-11-04T06:10:59.1604728Z   run the build on a clean tree, require that git reports nothing moved — then
+2026-11-04T06:10:59.1605174Z   place ONE, with its slot argued in the step's own `why`.
+2026-11-04T06:10:59.1605392Z 
+2026-11-04T06:10:59.1605893Z [1m== the derived-layer manifest names real files, one owner each, none hand-authored, and its second pass is a real lag[0m
+2026-11-04T06:10:59.1606893Z derived manifest OK — 204 step(s), 676 resolvable file(s), none hand-authored; second pass of 7 step(s), then the tail from tools/compile_scene.py until it settles
+2026-11-04T06:10:59.1607381Z 
+2026-11-04T06:10:59.1607909Z [1m== ...and the refusal fires, while leaving per-attribute confidence alone[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:59.1609263Z    self-test | ok: the refusal fires on a `reconstructed` grade, on an unknown grade and on a missing one; it leaves per-attribute `reconstructed` confidence alone; and it is wired into all 5 writers of the resident layer
+2026-11-04T06:10:59.1609990Z 
+2026-11-04T06:10:59.1610490Z [1m== ...and each of its four refusals still fires on its own case[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:59.1611128Z    self-test |   ok    the ruled reading replaces the bound the mint derived
+2026-11-04T06:10:59.1611545Z    self-test |   ok    and nothing else on the record moves
+2026-11-04T06:10:59.1612026Z    self-test |   ok    handed its own output it is a no-op, so a second hook cannot double-apply
+2026-11-04T06:10:59.1612495Z    self-test |   ok    a card no reading rules on is untouched
+2026-11-04T06:10:59.1612904Z    self-test |   ok    a bound the ruling was NOT made against is refused
+2026-11-04T06:10:59.1613314Z    self-test |   ok    the committed ledger passes its own gate
+2026-11-04T06:10:59.1613753Z    self-test |   ok    refusal 3: a reading LATER than the bound is not a supersession
+2026-11-04T06:10:59.1614298Z    self-test |   ok    refusal 4: a transcription-mediated reading cannot be graded above inferred
+2026-11-04T06:10:59.1614777Z    self-test |   ok    refusal 1: a join no crosswalk made is refused
+2026-11-04T06:10:59.1615209Z    self-test |   ok    refusal 2: a claim id no claims file carries is refused
+2026-11-04T06:10:59.1615626Z    self-test |   ok    every entry names a household this layer holds
+2026-11-04T06:10:59.1616069Z    self-test |   ok    every mint that derives an arrival still consults the ledger
+2026-11-04T06:10:59.1616328Z 
+2026-11-04T06:10:59.1616902Z [1m== ...and a seniority rule, an over-ceiling trade and a borrowed name are refused[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:59.1642481Z    self-test |    the same seed draws the same face twice                                ok
+2026-11-04T06:10:59.1643494Z    self-test |    two slots draw different faces                                         ok
+2026-11-04T06:10:59.1644395Z    self-test |    largest remainder lands the whole total                                ok
+2026-11-04T06:10:59.1645344Z    self-test |    largest remainder breaks its ties on the key                           ok
+2026-11-04T06:10:59.1646404Z    self-test |    an empty total allocates nothing                                       ok
+2026-11-04T06:10:59.1647477Z    self-test |    a class the town already matches leaves room for nobody                ok
+2026-11-04T06:10:59.1648307Z    self-test |    a class the town is short of leaves room for the difference            ok
+2026-11-04T06:10:59.1648970Z    self-test |    no trade outside the 1835 vocabulary reaches the draw                  ok
+2026-11-04T06:10:59.1649535Z    self-test |    the garrison's trades and the town's singular offices never reach the draw ok
+2026-11-04T06:10:59.1650059Z    self-test |    every head the book orders is dealt a trade                            ok
+2026-11-04T06:10:59.1650556Z    self-test |    no trade is dealt past its census ceiling                              ok
+2026-11-04T06:10:59.1651067Z    self-test |    a woman is drawn only into a trade this layer records a woman at       ok
+2026-11-04T06:10:59.1651574Z    self-test |    every trade this stage may write is a controlled vocabulary word       ok
+2026-11-04T06:10:59.1652091Z    self-test |    what a ceiling refuses reaches the residual, and is not lost           ok
+2026-11-04T06:10:59.1652596Z    self-test |    a business order's floor is drawn, never past its ceiling (T-1529)     ok
+2026-11-04T06:10:59.1653126Z    self-test |    the frozen deal keeps every drawn slot its bucket still orders (T-2178) ok
+2026-11-04T06:10:59.1653643Z    self-test |    a floor takes residual slots and moves no other card (T-1529)          ok
+2026-11-04T06:10:59.1654144Z    self-test |    the deal fills every bucket to its capacity and no further             ok
+2026-11-04T06:10:59.1654643Z    self-test |    the deal is stable across two runs                                     ok
+2026-11-04T06:10:59.1655135Z    self-test |    every drawn head is a head of their own household                      ok
+2026-11-04T06:10:59.1655804Z    self-test |    no kin is seated by this stage                                         ok
+2026-11-04T06:10:59.1656351Z    self-test |    every id is unique and marked as an invention                          ok
+2026-11-04T06:10:59.1656847Z    self-test |    no invented name is an attested or inferred person's name              ok
+2026-11-04T06:10:59.1657362Z    self-test |    no drawn id is one the layer already holds                             ok
+2026-11-04T06:10:59.1657859Z    self-test |    no reviewed community is written by this stage                         ok
+2026-11-04T06:10:59.1658380Z    self-test |    every drawn person satisfies the programme's record contract           ok
+2026-11-04T06:10:59.1659106Z    self-test |    25 rule(s) checked, 0 failed
+2026-11-04T06:10:59.1659324Z 
+2026-11-04T06:10:59.1660017Z [1m== ...and a back-projected name, a drifted pool and the recapitulation leaf are refused[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:59.1686735Z    self-test |   ok    the floor is parsed from the Caton card and not typed here
+2026-11-04T06:10:59.1687543Z    self-test |   ok    the recapitulation leaf is excluded, and it is exactly one leaf
+2026-11-04T06:10:59.1688624Z    self-test |   ok    and excluding it is not cosmetic — it carries free-coloured lines that are not households
+2026-11-04T06:10:59.1689709Z    self-test |   ok    an entirely free-coloured household carries no free-white cell
+2026-11-04T06:10:59.1690328Z    self-test |   ok    a mixed household does
+2026-11-04T06:10:59.1691282Z    self-test |   ok    the committed pool's surnames are exactly the ones the roster's rows print
+2026-11-04T06:10:59.1692250Z    self-test |   ok    and `Eliza Askie` is in it, which reading the roster's `normalised` is not
+2026-11-04T06:10:59.1692724Z    self-test |   ok    an unread surname position is refused
+2026-11-04T06:10:59.1693171Z    self-test |   ok    a bracketed forename is refused while its whole surname is kept
+2026-11-04T06:10:59.1693648Z    self-test |   ok    every refusal recorded names a reason this file states
+2026-11-04T06:10:59.1694505Z    self-test |   ok    EVERY given name the 1840 free-coloured block prints is already borne by a real person of this town — which is why the pool's given list is the town's
+2026-11-04T06:10:59.1695196Z    self-test |   ok    no drawn name reproduces a reading the 1840 page prints
+2026-11-04T06:10:59.1695667Z    self-test |   ok    and none shares a reading's surname-and-initial key either
+2026-11-04T06:10:59.1696110Z    self-test |   ok    no drawn name is borne by a real person of this layer
+2026-11-04T06:10:59.1696544Z    self-test |   ok    every person is invented and wears the invented prefix
+2026-11-04T06:10:59.1696988Z    self-test |   ok    every card is review_required and touches_removal is false
+2026-11-04T06:10:59.1697368Z    self-test |   ok    no card writes an origin
+2026-11-04T06:10:59.1697730Z    self-test |   ok    the cohort stands at or above the floor
+2026-11-04T06:10:59.1698155Z    self-test |   ok    and every person written is accounted for by a relationship
+2026-11-04T06:10:59.1698601Z    self-test |   ok    and below the ceiling the 1840 share carries back
+2026-11-04T06:10:59.1699235Z    self-test |   ok    every household shape came off an entirely free-coloured 1840 household
+2026-11-04T06:10:59.1699762Z    self-test |   ok    and every card holds exactly as many people as its shape counts
+2026-11-04T06:10:59.1700266Z    self-test |   ok    every shape dealt has an adult man in it, because the floor counts men
+2026-11-04T06:10:59.1700743Z    self-test |   ok    each firm reads its community off the keeper it names
+2026-11-04T06:10:59.1701204Z    self-test |   ok    the trade liberty is on the face of every card that was dealt one
+2026-11-04T06:10:59.1701593Z    self-test |   ok    26 rule(s) hold
+2026-11-04T06:10:59.1701769Z 
+2026-11-04T06:10:59.1702119Z [1m== no person asserts a bare 'none_recorded' while the same record dates a trade[0m
+2026-11-04T06:10:59.1730734Z qualify_later_trades: every record re-derives (T-0693)
+2026-11-04T06:10:59.1733087Z 
+2026-11-04T06:10:59.1734431Z [1m== one new household renames only the people it collides with[0m
+2026-11-04T06:10:59.1775605Z    OK: one insertion rewrites at most 0 pre-existing name(s) (allowed 16)
+2026-11-04T06:10:59.1778187Z 
+2026-11-04T06:10:59.1779215Z [1m== the 1840 identity bridges re-derive and back-project nothing[0m
+2026-11-04T06:10:59.1819727Z OK: 210 census households retained; 2 validated + 1 provisional resident bridges; 1459 resident households; 2884 canonical persons
+2026-11-04T06:10:59.1822014Z 
+2026-11-04T06:10:59.1823389Z [1m== …and closed-ledger mutations cannot pass silently[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:59.1862480Z    self-test |   fires: an unclassified unit
+2026-11-04T06:10:59.1863084Z    self-test |   fires: a dead asserted target
+2026-11-04T06:10:59.1863526Z    self-test |   fires: an assertion left only in prose
+2026-11-04T06:10:59.1864095Z    self-test |   fires: an unresolved unit owned by a closed ticket
+2026-11-04T06:10:59.1864870Z    self-test |   fires: an unresolved unit owned by a spent split parent
+2026-11-04T06:10:59.1865568Z    self-test |   fires: an unresolved unit waiting on nothing it names
+2026-11-04T06:10:59.1866265Z    self-test |   fires: an unresolved unit whose wait states no evidence
+2026-11-04T06:10:59.1867164Z    self-test |   fires: an unresolved unit claiming both owners
+2026-11-04T06:10:59.1867630Z    self-test |   passes: a unit waiting on stated evidence, owned by no ticket
+2026-11-04T06:10:59.1868035Z    self-test |   fires: a rule that states nothing
+2026-11-04T06:10:59.1868362Z    self-test |   fires: a ruling with no note
+2026-11-04T06:10:59.1868697Z    self-test |   fires: a ruling naming an unstated rule
+2026-11-04T06:10:59.1869539Z    self-test |   fires: a hand-off that names neither a ticket nor an evidence clause
+2026-11-04T06:10:59.1870245Z    self-test |   fires: a hand-off that waits on evidence it does not state
+2026-11-04T06:10:59.1870918Z    self-test |   fires: a hand-off that claims a ticket and an evidence clause at once
+2026-11-04T06:10:59.1871406Z    self-test |   fires: two rulings on one unit
+2026-11-04T06:10:59.1871764Z    self-test |   fires: a ruling on a unit that does not exist
+2026-11-04T06:10:59.1872168Z    self-test |   fires: a ruling something else had already closed
+2026-11-04T06:10:59.1872584Z    self-test |   passes: a landholding on the person the unit is about
+2026-11-04T06:10:59.1873010Z    self-test |   fires: a proof naming a person the record does not hold
+2026-11-04T06:10:59.1873415Z    self-test |   fires: a proof naming a person who is not the unit
+2026-11-04T06:10:59.1873834Z    self-test |   fires: a proof naming a field that person does not carry
+2026-11-04T06:10:59.1874237Z    self-test |   holds: a live leaf lifts every split above it
+2026-11-04T06:10:59.1874660Z    self-test |   fires: a chain whose leaves have all closed reports plain split
+2026-11-04T06:10:59.1875116Z    self-test |   holds: a dead pointer names the spent chain that killed it
+2026-11-04T06:10:59.1875532Z    self-test |   holds: a pointer at no ticket at all says so
+2026-11-04T06:10:59.1875961Z    self-test |   fires: a pointer one ticket-close away from stranding is named
+2026-11-04T06:10:59.1876407Z    self-test |   holds: a chain with more than one live leaf is not fragile
+2026-11-04T06:10:59.1876841Z    self-test |   fires: the presence leg names nobody into the target index
+2026-11-04T06:10:59.1877269Z    self-test |   holds: a field that carries the reading is still a target
+2026-11-04T06:10:59.1877735Z    self-test |   holds: a business block naming the claim in its claim_ids is a target
+2026-11-04T06:10:59.1878254Z    self-test |   fires: a record's untiered claim_ids closes nothing (T-1509's population)
+2026-11-04T06:10:59.1878745Z    self-test |   fires: a claim in a business block's prose alone is no target
+2026-11-04T06:10:59.1879766Z    self-test |   holds: `tier` and `source_id` read as confidence and a cited source
+2026-11-04T06:10:59.1880252Z    self-test |   holds: a confident, sourced wharf or frontage block is a target
+2026-11-04T06:10:59.1880763Z    self-test |   fires: a reconstructed wharf block closes nothing
+2026-11-04T06:10:59.1881134Z    self-test |   fires: a layer manifest is no record
+2026-11-04T06:10:59.1881553Z    self-test |   holds: a card naming one file-qualified claim closes that claim alone
+2026-11-04T06:10:59.1882017Z    self-test |   fires: a bare claim number names no file-local unit at all
+2026-11-04T06:10:59.1882481Z    self-test |   fires: a repeated record id whose scope the registry does not declare
+2026-11-04T06:10:59.1882995Z    self-test |   fires: a global declaration for a container whose ids no longer repeat
+2026-11-04T06:10:59.1883439Z    self-test |   fires: a duplicate stable unit id
+2026-11-04T06:10:59.1883904Z    self-test | LEDGER SELF-TEST PASS — 30 case(s)
+2026-11-04T06:10:59.1884125Z 
+2026-11-04T06:10:59.1884683Z [1m== …and the leg's tier, window and removal rules fire over their fixtures[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:59.1907359Z    self-test |    OK: every rule of the presence leg holds over its fixtures
+2026-11-04T06:10:59.1910394Z 
+2026-11-04T06:10:59.1911742Z [1m== …and its citation, naming and retirement rules still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:59.1951489Z    self-test | self-test: 21/21 assertions hold
+2026-11-04T06:10:59.1953795Z 
+2026-11-04T06:10:59.1954478Z [1m== the 75-person real-resident research cohort is fixed[0m
+2026-11-04T06:10:59.1995437Z    resident research pilot: 15 member(s) have moved out of the stratum they were drawn from since the freeze, which is the research landing and not staleness
+2026-11-04T06:10:59.1996645Z       - hh_garrett_a: no longer the kind of record this stratum was drawn from
+2026-11-04T06:10:59.1997326Z       - hh_king_byram: no longer the kind of record this stratum was drawn from
+2026-11-04T06:10:59.1998067Z       - hh_thrall_e_l: no longer the kind of record this stratum was drawn from
+2026-11-04T06:10:59.1999257Z       - hh_fowler_elmira: no longer the kind of record this stratum was drawn from
+2026-11-04T06:10:59.1999807Z       - hh_bennett_h_c: no longer the kind of record this stratum was drawn from
+2026-11-04T06:10:59.2000322Z       - hh_crocker_h: no longer the kind of record this stratum was drawn from
+2026-11-04T06:10:59.2000817Z       - hh_moore_henry: no longer the kind of record this stratum was drawn from
+2026-11-04T06:10:59.2001329Z       - hh_marshall_j_a: no longer the kind of record this stratum was drawn from
+2026-11-04T06:10:59.2001796Z       - hh_curtiss_j: no longer the kind of record this stratum was drawn from
+2026-11-04T06:10:59.2002245Z       - hh_collins_j_h: no longer the kind of record this stratum was drawn from
+2026-11-04T06:10:59.2002688Z       - hh_grant_james: no longer the kind of record this stratum was drawn from
+2026-11-04T06:10:59.2003142Z       - hh_lewis_samuel: no longer the kind of record this stratum was drawn from
+2026-11-04T06:10:59.2003584Z       - hh_morris_b_s: no longer the kind of record this stratum was drawn from
+2026-11-04T06:10:59.2004024Z       - hh_boyer_j_k: no longer the kind of record this stratum was drawn from
+2026-11-04T06:10:59.2004447Z       - hh_fell_j_w: no longer the kind of record this stratum was drawn from
+2026-11-04T06:10:59.2004952Z    redirected by a landed merge ruling: vanderbogart_h (now carried by vanderbogart_henry)
+2026-11-04T06:10:59.2005809Z resident research pilot: 75 people, the frozen reservation is intact; 16 snapshot cell(s) have moved since the freeze, which is the research landing and not staleness
+2026-11-04T06:10:59.2006307Z 
+2026-11-04T06:10:59.2006599Z [1m== the fifteenth research cohort is fixed[0m
+2026-11-04T06:10:59.2039621Z    redirected by a landed merge ruling: vanderbogart_h (now carried by vanderbogart_henry)
+2026-11-04T06:10:59.2041396Z resident research pass 15: 76 people, the frozen reservation is intact; 15 snapshot cell(s) have moved since the freeze, which is the research landing and not staleness
+2026-11-04T06:10:59.2042208Z 
+2026-11-04T06:10:59.2043193Z [1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:59.2083569Z    self-test | 1 April 1834 contested-lines self-test: all assertions fire
+2026-11-04T06:10:59.2086057Z 
+2026-11-04T06:10:59.2086906Z [1m== the 1834 letter list's 170 lines still reach what the concordance says they reach[0m
+2026-11-04T06:10:59.2126719Z OK  170 printed lines, 100 reaching a card, 0 unread, 16 readings ruled onto the image and 3 still disagreeing
+2026-11-04T06:10:59.2129121Z 
+2026-11-04T06:10:59.2129982Z [1m== …and none of them claims more than a person and a reading[0m
+2026-11-04T06:10:59.2171568Z    OK: 504 civic-minted household(s) claim a person, a reading and no more
+2026-11-04T06:10:59.2173988Z 
+2026-11-04T06:10:59.2174797Z [1m== one person, one card — every duplicate cluster carries a written ruling[0m
+2026-11-04T06:10:59.2216226Z    OK: 1438 person(s) on the cards, 74 card(s) folded and redirected, every card in a candidate cluster carries a written ruling
+2026-11-04T06:10:59.2218510Z 
+2026-11-04T06:10:59.2219664Z [1m== the road-band movement report names a band that moved[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:59.2260290Z    self-test |   ok    R-W1 replay: a band is named at all — 3 row(s)
+2026-11-04T06:10:59.2261418Z    self-test |   ok    R-W1 replay: the WORST band named is south_water 250-600 m, unprompted — desktop/south_water/250-600
+2026-11-04T06:10:59.2262470Z    self-test |   ok    R-W1 replay: it is named as a FALL — fell
+2026-11-04T06:10:59.2263971Z    self-test |   ok    R-W1 replay: the 55-point collapse is in the line — perceptible 71 % → 14 % (-57 points), ΔL* 2.5 → 0.3 (-2.2), ground L* 49.8 → 42.1 (-7.7, exposure)
+2026-11-04T06:10:59.2265234Z    self-test |   ok    R-W1 replay: the exposure drop is reported but does not outrank the collapse — severity 7.3
+2026-11-04T06:10:59.2265915Z    self-test |   ok    R-W1 replay: the two bands that only darkened are NOT called falls — 1 fall(s)
+2026-11-04T06:10:59.2266508Z    self-test |   ok    a band that RECOVERS is reported too, and as a rise — rose
+2026-11-04T06:10:59.2266918Z    self-test |   ok    an unchanged run reports nothing
+2026-11-04T06:10:59.2267313Z    self-test |   ok    jitter under the materiality bar reports nothing
+2026-11-04T06:10:59.2267694Z    self-test |   ok    a newly gated band is named
+2026-11-04T06:10:59.2268058Z    self-test |   ok    a band that stopped being gated is named
+2026-11-04T06:10:59.2268423Z    self-test |   ok    collect banks the gated band
+2026-11-04T06:10:59.2268760Z    self-test |   ok    collect refuses the ungated band
+2026-11-04T06:10:59.2269323Z    self-test | 
+2026-11-04T06:10:59.2269545Z    self-test | SELF-TEST PASS
+2026-11-04T06:10:59.2269724Z 
+2026-11-04T06:10:59.2270195Z [1m== Every waitForFunction passes its options in the third slot, not as the page function's argument (T-2899)[0m
+2026-11-04T06:10:59.2304107Z ok: 683 waitForFunction calls in 249 scripts pass options in the third slot
+2026-11-04T06:10:59.2306320Z 
+2026-11-04T06:10:59.2307006Z [1m== the 1833 tax roll still leaves Peter Pruyne one entry, and it is Pryne[0m
+2026-11-04T06:10:59.2332059Z 
+2026-11-04T06:10:59.2333620Z [1m== …and the trade-sentinel predicate all four crosswalks import[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:59.2376530Z    self-test | trade_recorded --self-test: 10 cases and 2 sentinels hold
+2026-11-04T06:10:59.2379404Z 
+2026-11-04T06:10:59.2380758Z [1m== …and that pass's four carry rules hold over everything it derives[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:59.2420850Z    self-test |    OK: 1178 assertions over 237 people and 491 rulings
+2026-11-04T06:10:59.2423434Z 
+2026-11-04T06:10:59.2425140Z [1m== …and that pass writes two fields, moves no grade and repeats without drift[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:59.2464291Z    self-test | spend_civic_voter_lists self-test: 17 assertion(s) hold
+2026-11-04T06:10:59.2466600Z 
+2026-11-04T06:10:59.2468071Z [1m== …and a purchase is a dated appearance, never a residence, and never a Chicago presence[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:59.2508885Z    self-test |   ok:   this pass writes one bound per unit the register handed to T-1332
+2026-11-04T06:10:59.2509983Z    self-test |   ok:   …and the register itself rules none of them
+2026-11-04T06:10:59.2510684Z    self-test |   ok:   not one row claims a Chicago presence
+2026-11-04T06:10:59.2511510Z    self-test |   ok:   every row is an appearance or a Cook residence, and nothing stronger
+2026-11-04T06:10:59.2512268Z    self-test |   ok:   no row covers the scene date
+2026-11-04T06:10:59.2513303Z    self-test |   ok:   every date the register prints falls on or before the scene date
+2026-11-04T06:10:59.2514174Z    self-test |   ok:   the rows the register states COOK for are the ones marked a Cook residence
+2026-11-04T06:10:59.2514915Z    self-test |   ok:   …and a Cook residence still puts no body in the town
+2026-11-04T06:10:59.2515337Z    self-test |   ok:   every bound is inferred and none is attested
+2026-11-04T06:10:59.2515750Z    self-test |   ok:   every bound calls the register's own date documented
+2026-11-04T06:10:59.2516200Z    self-test |   ok:   every bound carries the ground the crosswalk upheld it on
+2026-11-04T06:10:59.2516620Z    self-test |   ok:   every bound names the register and only it
+2026-11-04T06:10:59.2517029Z    self-test |   ok:   every bound names the register row it was built from
+2026-11-04T06:10:59.2517395Z    self-test |   ok:   no record is written twice
+2026-11-04T06:10:59.2517739Z    self-test |   ok:   the applier changes exactly one key
+2026-11-04T06:10:59.2518092Z    self-test |   ok:   the applier is idempotent
+2026-11-04T06:10:59.2518486Z    self-test |   ok:   the block lands in its slot and not at the end of the record
+2026-11-04T06:10:59.2519391Z    self-test |   ok:   a write carries T-1326's roll bounds through untouched
+2026-11-04T06:10:59.2519774Z    self-test |   18 check(s), 0 failure(s)
+2026-11-04T06:10:59.2519958Z 
+2026-11-04T06:10:59.2520274Z [1m== the old-settlers rolls rebuild from their committed transcription[0m
+2026-11-04T06:10:59.2552686Z   327 name(s) read; 45 merged, 282 refused or unmatched
+2026-11-04T06:10:59.2553392Z OK: the old-settlers rolls rebuild from the committed transcription
+2026-11-04T06:10:59.2555397Z 
+2026-11-04T06:10:59.2556205Z [1m== every kinship the book corpus states is ruled on, and the ruled ties are on the cards[0m
+2026-11-04T06:10:59.2597871Z the book corpus's kinship re-derives, and every claim carries a ruling
+2026-11-04T06:10:59.2600319Z 
+2026-11-04T06:10:59.2601086Z [1m== no land-sale ruling has left the file without saying so[0m
+2026-11-04T06:10:59.2641567Z    ok    base origin/dev at 4b0868f67
+2026-11-04T06:10:59.2642492Z    ok    chicago/4d/data/research/land_sales/resident_rulings.json: 213 -> 213 adjudication(s), none lost
+2026-11-04T06:10:59.2643671Z    ok    chicago/4d/data/research/books/trade_census_1835_spend_rulings.json: 36 -> 36 adjudication(s), none lost
+2026-11-04T06:10:59.2644811Z    ok    chicago/4d/data/research/newspapers/trade_class_rulings.json: 149 -> 149 adjudication(s), none lost
+2026-11-04T06:10:59.2646140Z    ok    chicago/4d/data/research/newspapers/place_vocabulary.json: 128 -> 128 adjudication(s), none lost
+2026-11-04T06:10:59.2647238Z    ok    chicago/4d/data/research/directories/fergus_1839_lots_corrections.json: 120 -> 120 adjudication(s), none lost
+2026-11-04T06:10:59.2647870Z    ok    chicago/4d/data/residents/card_merge_rulings.json: 146 -> 146 adjudication(s), none lost
+2026-11-04T06:10:59.2648190Z 
+2026-11-04T06:10:59.2649052Z [1m== …and every run-on surname in it is repaired against the printed volume, or said[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:59.2686371Z    self-test | fergus 1843: 25 run-on surnames repaired (7 documented off the second hand, 18 inferred from the format), 2 left alone; 6 obituary tails cut back onto the entry above (0 still swallowed), 30 institutions or particles standing
+2026-11-04T06:10:59.2688230Z 
+2026-11-04T06:10:59.2688718Z [1m== …and the 1839 street face compiled off it rebuilds too[0m
+2026-11-04T06:10:59.2730397Z fergus 1839 street faces: matches the committed file
+2026-11-04T06:10:59.2732906Z 
+2026-11-04T06:10:59.2734011Z [1m== …and the three rules that judge that reading still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:59.2773839Z    self-test | fergus 1839 lots: the ditto, the carried block, the refused numeral and the page-image correction all fire
+2026-11-04T06:10:59.2776286Z 
+2026-11-04T06:10:59.2777502Z [1m== the Newberry index stays a finding aid, and its reading rebuilds from the cards[0m
+2026-11-04T06:10:59.2819863Z newberry index: ok
+2026-11-04T06:10:59.2822291Z 
+2026-11-04T06:10:59.2823022Z [1m== the St Mary's baptismal register still rebuilds, tallies and all[0m
+2026-11-04T06:10:59.2863799Z   st_marys_baptisms: 57 entries, 267 readings, 8 town findings, 11 images — and the book's own tallies agree
+2026-11-04T06:10:59.2864438Z   st_marys_baptisms: 0 exact-name pair(s) awaiting a written ruling
+2026-11-04T06:10:59.2865816Z 
+2026-11-04T06:10:59.2866706Z [1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:59.2907610Z    self-test | self-test: 10 case(s), 0 failure(s)
+2026-11-04T06:10:59.2910042Z 
+2026-11-04T06:10:59.2911119Z [1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:59.2952151Z    self-test |    fires: a recorded town count below the floor the arrival cohort implies
+2026-11-04T06:10:59.2952950Z    self-test |    fires: an empty arrival distribution
+2026-11-04T06:10:59.2953460Z    self-test |    fires: an arrival share over the wrong denominator
+2026-11-04T06:10:59.2954076Z    self-test |    fires: a point reading outside its range
+2026-11-04T06:10:59.2954649Z    self-test |    fires: a figure that states no method
+2026-11-04T06:10:59.2955161Z    self-test |    fires: a figure derived from no file
+2026-11-04T06:10:59.2955784Z    self-test |    fires: a refusal that takes more than one sentence
+2026-11-04T06:10:59.2956712Z    self-test |    fires: a section that does not say what it is not claiming
+2026-11-04T06:10:59.2957136Z    self-test |    fires: an input file the model cannot read
+2026-11-04T06:10:59.2957644Z    self-test | model_town_1835 self-tests pass (9 guards fired, 5 sections, no record named)
+2026-11-04T06:10:59.2957955Z 
+2026-11-04T06:10:59.2958361Z [1m== the business audit re-derives, and every identity ruling still holds[0m
+2026-11-04T06:10:59.2996494Z the business audit re-derives: 193 record(s), every identity ruling honoured
+2026-11-04T06:10:59.2998997Z 
+2026-11-04T06:10:59.2999682Z [1m== the street-face adoptions re-derive, and no adopted business claims a lot[0m
+2026-11-04T06:10:59.3041732Z   ok    52 street-only business(es): 45 adopted a street face, 7 wait; no adoption claims a lot
+2026-11-04T06:10:59.3042463Z   ok    60 unplaceable business(es) stand outside this policy (T-0354 half two)
+2026-11-04T06:10:59.3044150Z   ok    31 adoption(s) stand in a roof the reconstruction raised as a house of trade and 14 in a roof of no trade; of the 35 such roof(s) standing free on the faces the deal left 4 unspent, so what the rest wanted is a roof the roof programme has not raised (limit 5, T-1651)
+2026-11-04T06:10:59.3046327Z   ok    a re-family that does not cross the C/W/F bands changes 0 place(s) in the deal over 2652 trials, against 2994 under the id order this replaced (worst single re-family 0, was 8)
+2026-11-04T06:10:59.3047938Z   ok    21 adoption(s) stand in a roof of their trade's kind of premises and 24 do not; 6 works trade(s) stand in a store, and 4 works roof(s) stand free on any face they were dealt on — no business stood in the wrong kind of house of trade while its own kind was free (limit 6, T-1670)
+2026-11-04T06:10:59.3049938Z   ok    115 roof(s) raised for an authored household or workplace seat are reserved from the deal; 4 carry a committed occupancy, 111 do not yet (refusal 7, T-1626 — the platted deal writes none, so that is an upper bound)
+2026-11-04T06:10:59.3050582Z 
+2026-11-04T06:10:59.3050902Z [1m== every person says which roles and which places reach the scene date[0m
+2026-11-04T06:10:59.3068996Z 
+2026-11-04T06:10:59.3070465Z [1m== the re-familying programme's report re-derives, and the ledger's moves are the ones the rule yields (T-1560)[0m
+2026-11-04T06:10:59.3111288Z OK: the re-familying programme re-derives — 142 moves against 537 held, 395 left in 51 buckets
+2026-11-04T06:10:59.3113538Z 
+2026-11-04T06:10:59.3114660Z [1m== the 1835 business staffing model re-derives, and staffs nobody the town cannot employ[0m
+2026-11-04T06:10:59.3155306Z OK: the 1835 business staffing model re-derives — 34 classes, 199 staff at the typical figure, 9 houses unstaffed for want of a trade
+2026-11-04T06:10:59.3157265Z 
+2026-11-04T06:10:59.3158096Z [1m== every person in the resident layer carries one employment answer, and none carries none[0m
+2026-11-04T06:10:59.3200814Z OK: all 3877 people in the resident layer re-derive to the one employment answer the join carries, and none of them to none
+2026-11-04T06:10:59.3203195Z 
+2026-11-04T06:10:59.3204129Z [1m== the held heads the seats put under a dwelling are the family dwellings the book counts[0m
+2026-11-04T06:10:59.3244972Z   ok    the book discharged 14 of the room the held heads could not fill against the families waiting on a roof (T-2256): {'north': 7, 'south': 1, 'west': 6}
+2026-11-04T06:10:59.3246014Z   ok    310 family dwelling(s) re-derive from the seats and the book carries them (4 from beyond the index, 0 past the order); nobody minted
+2026-11-04T06:10:59.3247110Z 
+2026-11-04T06:10:59.3248258Z [1m== …and the ledger that spends them into the roofs refuses every way one could lie[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:59.3289070Z    self-test |   fires: an adoption that claims a lot — business_a_filer_co does not declare `lot: null, claims_lot: false` — 
+2026-11-04T06:10:59.3290417Z    self-test |   fires: an adoption whose order has become a claim — business_a_filer_co makes its order on the face a claim
+2026-11-04T06:10:59.3291940Z    self-test |   fires: an adoption citing no printing of its street — business_a_filer_co cites no printing of its street
+2026-11-04T06:10:59.3293611Z    self-test |   fires: an adoption on a roof outside the anonymous layer — business_a_filer_co adopts 'green_tree_tavern', which is not an anonym
+2026-11-04T06:10:59.3294596Z    self-test |   fires: two businesses on one roof — business_a_garrett is the second business on recon_1835_blk_south_wate
+2026-11-04T06:10:59.3295556Z    self-test |   fires: a claim id that names no corpus source — the adoption cites 'the_tribune_1871#c1', which names no corpus source
+2026-11-04T06:10:59.3296470Z    self-test |   fires: an adoption on the centreline band the owner declined — business_a_filer_co took 'centreline band', which is not a face the ru
+2026-11-04T06:10:59.3297362Z    self-test |   fires: a keeper graded above `reconstructed` — recon_1835_blk_indiana_north_cass_d3_01 is graded 'documented' — a dea
+2026-11-04T06:10:59.3298209Z    self-test |   fires: a keeper citing nothing for its own name — recon_1835_blk_indiana_north_cass_d3_01 cites nothing — a keeper's sou
+2026-11-04T06:10:59.3299368Z    self-test |   fires: a household id smuggled into the occupants prose — recon_1835_blk_indiana_north_cass_d3_01 names a household id in its oc
+2026-11-04T06:10:59.3300191Z    self-test |   fires: two keepers on one roof — recon_1835_blk_indiana_north_cass_d3_01 is given two keepers
+2026-11-04T06:10:59.3301182Z    self-test |   fires: an assignment that does not say it is assigned — recon_1835_blk_indiana_north_cass_d3_01 is written as a keeper's roof 
+2026-11-04T06:10:59.3301935Z    self-test |   ok:    12 inferred-household roof(s) and 45 street-face adoption(s) share none
+2026-11-04T06:10:59.3302643Z    self-test |   ok:    every street-face adoption is graded `reconstructed`, because the invented part is which roof and not which business
+2026-11-04T06:10:59.3303428Z    self-test | SELF-TEST PASS — the ledger refuses every way an adoption or a keeper could lie (12 cases)
+2026-11-04T06:10:59.3303766Z 
+2026-11-04T06:10:59.3304240Z [1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:59.3334524Z    self-test |    OK: 964 households and 4834 persons close on every total, the histogram and the industry columns; no name and no serial reaches the output
+2026-11-04T06:10:59.3336506Z 
+2026-11-04T06:10:59.3337215Z [1m== the lighthouse still stands on the glyph Wright drew for it[0m
+2026-11-04T06:10:59.3377626Z Wright 1834 'L. House' glyph, resource pixel 2941, 1604
+2026-11-04T06:10:59.3378144Z   recomputed local ENU    +1055.59 E    +172.54 N
+2026-11-04T06:10:59.3378485Z   recomputed UTM 16N     448128.29  4637568.34
+2026-11-04T06:10:59.3378933Z   record carries         448128.29  4637568.34
+2026-11-04T06:10:59.3379377Z   record drift from the reading   0.004 m
+2026-11-04T06:10:59.3379827Z   trace's own derived point drift 0.004 m
+2026-11-04T06:10:59.3380339Z   position graded 'inferred' on wright_1834, andreas_1884_v1
+2026-11-04T06:10:59.3380700Z 
+2026-11-04T06:10:59.3381422Z [1m== every structure's grade follows its pictures, and every ruling says why (T-2686)[0m
+2026-11-04T06:10:59.3422694Z    1812: 13 attested, 39 inferred, 7 reconstructed
+2026-11-04T06:10:59.3423347Z    1835: 12 attested, 94 inferred, 581 reconstructed
+2026-11-04T06:10:59.3423756Z    1904: 69 attested, 215 inferred, 0 reconstructed
+2026-11-04T06:10:59.3424513Z OK: every ruling names its structure, its picture and why
+2026-11-04T06:10:59.3425384Z 
+2026-11-04T06:10:59.3426584Z [1m== …and a card with no source, no grade, a home not in the scene or a late arrival is refused[0m [2m(self-test: the assertions below are meant to fire)[0m
+2026-11-04T06:10:59.3468006Z    self-test |   ok    actual invented Bardwell: reconstructed
+2026-11-04T06:10:59.3468706Z    self-test |   ok    attested source-named: documented
+2026-11-04T06:10:59.3469455Z    self-test |   ok    inferred source-named: documented
+2026-11-04T06:10:59.3470138Z    self-test |   ok    grade-reconstructed projected source name: projected
+2026-11-04T06:10:59.3470713Z    self-test |   ok    grade-reconstructed post-office name: letter_list
+2026-11-04T06:10:59.3471443Z    self-test |   ok    grade-reconstructed civic name: civic_mint
+2026-11-04T06:10:59.3471954Z    self-test |   ok    visitor category retained: transient
+2026-11-04T06:10:59.3472777Z    self-test |   ok    trade category with civic evidence: civic_mint
+2026-11-04T06:10:59.3473426Z    self-test |   ok    trade category with letter evidence: letter_list
+2026-11-04T06:10:59.3474055Z    self-test |   ok    grade alone proves no invented name: documented
+2026-11-04T06:10:59.3474661Z    self-test |   ok    actual source-read stephen_r_beggs: documented
+2026-11-04T06:10:59.3475239Z    self-test |   ok    actual source-read susan_anderson: documented
+2026-11-04T06:10:59.3475925Z    self-test |   ok    actual source-read pay_co_je_bai: documented
+2026-11-04T06:10:59.3476333Z    self-test |   ok    actual source-read nau_con_ne_bec: documented
+2026-11-04T06:10:59.3476719Z    self-test |   ok    actual source-read maub_biss: documented
+2026-11-04T06:10:59.3477177Z    self-test |   ok    all 309 actual trade heads retain explicit invented-name provenance
+2026-11-04T06:10:59.3477790Z    self-test |   ok    309 actual trade-head identity cards agree with the reconstructed tally; source counts preserved
+2026-11-04T06:10:59.3478288Z    self-test |   ok    the committed card passes
+2026-11-04T06:10:59.3479011Z    self-test |   ok    refused: an attested person with no source
+2026-11-04T06:10:59.3479400Z    self-test |   ok    refused: a person with no grade
+2026-11-04T06:10:59.3479843Z    self-test |   ok    refused: an inferred person with no note
+2026-11-04T06:10:59.3480223Z    self-test |   ok    refused: a source that does not resolve
+2026-11-04T06:10:59.3480614Z    self-test |   ok    refused: a home that does not stand in the scene
+2026-11-04T06:10:59.3481145Z    self-test |   ok    refused: an arrival after the scene date
+2026-11-04T06:10:59.3481687Z    self-test |   ok    refused: a household of nobody
+2026-11-04T06:10:59.3482119Z    self-test |   ok    refused: a card for another scene
+2026-11-04T06:10:59.3482469Z    self-test | OK: every planted fault was refused by name
+2026-11-04T06:10:59.3482692Z 
+2026-11-04T06:10:59.3483170Z [1m== string table: sections register and extend, placeholders fill, no key ever shown (T-2624)[0m
+2026-11-04T06:10:59.3515624Z STRING TABLE PASS — sections register and extend, placeholders fill, no key ever shown, the page fills from the table
+2026-11-04T06:10:59.3517808Z 
+2026-11-04T06:10:59.3518371Z [1m== the association coverage still re-derives from the committed records[0m
+2026-11-04T06:10:59.3561384Z ok  associated_with: 162 row(s) on 140 record(s), 83 undated
+2026-11-04T06:10:59.3562096Z   kind  business_premises    1
+2026-11-04T06:10:59.3562623Z   kind  church               19
+2026-11-04T06:10:59.3563012Z   kind  civic_seat           5
+2026-11-04T06:10:59.3563445Z   kind  home                 34
+2026-11-04T06:10:59.3563744Z   kind  land_purchased       51
+2026-11-04T06:10:59.3564040Z   kind  lodging              1
+2026-11-04T06:10:59.3564349Z   kind  school               2
+2026-11-04T06:10:59.3564744Z   kind  workplace            49
+2026-11-04T06:10:59.3565174Z   rung  face                 5
+2026-11-04T06:10:59.3565701Z   rung  structure            106
+2026-11-04T06:10:59.3566398Z   rung  tract                51
+2026-11-04T06:10:59.3566846Z   tier  attested             59
+2026-11-04T06:10:59.3567233Z   tier  inferred             92
+2026-11-04T06:10:59.3567641Z   tier  reconstructed        11
+2026-11-04T06:10:59.3567861Z 
+2026-11-04T06:10:59.3568273Z [1m== the walkthrough's tier reader agrees with the published table[0m
+2026-11-04T06:10:59.3609469Z ok  the card reader and the published table agree on all 22010 attribute tiers (attested 701, inferred 3684, reconstructed 10786, unknown 6839)
+2026-11-04T06:10:59.3926048Z 
+2026-11-04T06:10:59.3926845Z [32mCHECK PASS[0m — part 6/8: 147 steps, none red.
+2026-11-04T06:10:59.3927575Z   56 of them are self-tests that prove a gate by breaking it; their
+2026-11-04T06:10:59.3928047Z   assertions fire on purpose and every line of it is prefixed 'self-test |'.
+2026-11-04T06:10:59.3928609Z   This is part 6 of 8; the other 1012 steps are in the other parts. The gate is
+2026-11-04T06:10:59.3929457Z   green only when every part is: tools/check.sh --part 1/8 through --part 8/8.
