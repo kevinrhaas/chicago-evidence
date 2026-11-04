@@ -1,0 +1,11 @@
+# Prepared exact PR1687 resume — no dispatch yet
+
+Controller.py adapts the reviewed Jail pattern to T2388/PR1687/cdac604e, old SUCCESS run41740271907, original lane fort-cupola-native-20261103 and featureb37fdeca6b74d8e3c70945a75687140c0718f549. REQUEST.json sets only app=chicago, target_ticket=T-2388, resume_pr=1687, slice=1,slices=1,lane=original,max_turns=400; model/effort/processor/time remain defaults.
+
+Prepared guards bind the existing branch/head/devbase/resumelabel, no competing matching openPR or active target/lane across all active runstatuses, released normal lap FREE, old nativeworker completedSUCCESS, originalOPEN/unclaimed/prnull with exact body-preserved handoff, both hosted featureCI SUCCESS, exact workflow SHA/hash, currentdev commit/tree and12 critical fort/common/manifest/source blobs. Mutable API reads use no-cache headers plus unique query; ticket is authenticated against an immutable current ticket tip and Gitblob hash.
+
+Dispatch repeats guards, requires current source snapshot unchanged from preparation plus same workflow/ticket, refreshes ticket/PR/feature/dev/activeowner/lap immediately before POST, requires root authorization matching exact request hash, creates atomic DISPATCH-ATTEMPT.json with exclusivecreate BEFORE one POST, and never retries ambiguous dispatch. It discovers exactly one new samefeature/samelane run and then monitors actualUbuntu26 targeted-chicago job/claim read-only in a separate protected600s command.
+
+Original lap1687 was mine and natively released after verifying holder. W lease released, no appsource writes. Source/run/body checkpointproofs already public edf16c06 +62033921; fresh native handoff committedd0b9db60 preserves prior ticketbytes and appendonce. ROOT-GO.json deliberately absent; template authorized:false. Do not create it until explicit root review/GO.
+
+All preparation/dispatch/monitor commands require the shared environment and protected setsid+run-with-reaping.py wrapper with timeout600, regular-file stdout and fresh receipt paths. Native worker must preserve samePR/branch, integrate dynamiccurrentdev, reuse native25 proof onlyexact, qualify current transport-runtime bothviewports and final fullsource4/preflight + actual8-part aggregate namedgate, ordinarydevmerge, originalOPENpartial, publicUNQUALIFIEDworking checkpoints every15–20min beforegates.
