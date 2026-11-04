@@ -1,0 +1,9 @@
+# Cobweb published depth-fix source and actual geometry audit
+
+PR1690 now carries source commit ee8529e2c5c9613154073356e7c2cf611f808a90. This is a read-only independent snapshot, NOT source4/runtime/pixel/gate qualification or merge approval. Native owner remains live; currentdev integration is still required as the branch is DIRTY after foreign dev progress.
+
+Approved local call now uses w.skin + APERTURE_BACK_M; sourceblob48e4fc05fd38618be39ad2be22de1ada90a0ec65. Exact new MASTER139248B SHA2561ddf548d9a378167163d6db45e5d89e1b4c544ea176355eb7061dd99d6a1ee82 and WEB30304B SHA25699997b5f3935ceceddb072286387859a5d9a8dd3dfa112b64978d1213e20890e equal the timely native WIP checkpoint's before-gate hashes. Original source/native WIP dda093dc6bf301fb47199d71c4ba14ade58b5757 saved the fix and genuine batch1+4 logs; full82 execution still needs completedrawSDK for missing batch2+3 outputs. No bytes were produced by this observer.
+
+Actual independent GLB accessor comparison against the genuine prior striped MASTER4f42207be5fcb2391fda58672ce8442b02aba9510f3096db8c2934b695fe7bea: only12 POSITION entries in the dark primitive change. All3aperture quads shift outward22.0003mm (float32), including upperface; x/height unchanged. ALL other primitives and all indices/normals/UV/confidence/materials/nodes remain identical. Roof, logs, chinking, doors, glass and massing do not move. This is the bounded local face-depth correction; it does NOT establish actual visual clearance.
+
+No corrected-pixel publication was visible in the captured latest15evidencecommits/comments. Native still owes unchanged private camera07f94fa8/source624d8f1f actual corrected render and direct review, genuine current integration/source/runtime/full8gate before protected partial merge. Panorama camera remains UNSOLVED/private/unenrolled; originalT2374 staysOPEN/PARTIAL/DIFFERS. No new grade/fullmatch/sourceclaim is made here.
