@@ -1,0 +1,17 @@
+# Transport memory repair and current-horse checkpoint, 4 November 2026
+
+This is a saved validation increment, not an application merge. Public PR #1697 and #1700 remain open at their recorded old sources. Active CI watches and native quarter logs are excluded.
+
+The lossless constant-scalar repair is staged on isolated tree 05a2899f72a8628fcff0a765019de3f26b2295c3 over public garment HEAD 79e302ee4b8648b2b89e81ef504049010de4cb7e. Only buildings.js, compact-attributes.js and check_compact_attributes.mjs change. The complete original 1904 mobile memory meter passes at 418757056 bytes (399.357849 MiB), below the unchanged 400 MiB ceiling with 673344 bytes headroom. The unchanged ff1827 parent had failed the ceiling, and the independent scalar census had measured 4767776 redundant bytes. The new representation requires exact equality of the complete Uint8x4 backing array; varying or unsupported attributes retain their old representation. Model geometry, shaders, material semantics and quality are unchanged.
+
+Existing unit checks and final proof 04 passed. Proof 04 exercises the actual unchanged Three shaders in native WebGL multidraw and a fresh context with that extension disabled; five framebuffer cases and two GPU pick/depth/point cases are preserved. Earlier 01/02/03 runs remain as their actual negative or simulated and nonqualifying evidence; they must not be substituted for proof 04. The initial original-meter attempt failed on missing publication inputs; repaired publication input materialization and the later complete original-meter pass are both retained. Root finite review SHA256 5105dacfc18ee29ffc3f7ed48191aa40dced2d45ce682101c5ca5e3c1bac31cc is source-specific, not a full-gate or refreshed-CI pass.
+
+Current 26-joint horse skin/track intake v2 measured the actual standing and moving source bodies. All 35 pinned inputs, helper source, actual native raw skin arrays and witnessed track metadata are bound in saved manifests. No GLB bodies are duplicated. This is readback, not saddle fit, rider seating, gait or photographic acceptance.
+
+The refreshed movement/UI/world repair preparation targets actual DEV 6eeeeaa26942efc79e7b822b387bdc3979adb939. Frozen preparation patches and reconciled source records are included; no live application source is read. Two new checks are appended while preserving the original 1161-check part assignments. The launched four-part native gate is bound to tree e384a2c9cf43e96beb27e813f06189fe38f65d72 and APP 0e44d320f8430a5d360bd4d0053c7dffb9d75c5e; it was RUNNING at this cutoff. Only immutable GO, ordering, owner and source-before bindings are included. There is no four-part pass claim.
+
+Published mobile smoke stage 8 passed 22 checks, zero failures, under its original bound. Light probes 01 and 02 remain NONPASS; the source-accurate v3 proposal, if included in the manifest, is UNRUN. Original Light ratio, shadow and full-smoke requirements remain open.
+
+Own claims were renewed through the official route with published ticket ref 83bf2b2c6e379f58b0db6adcc7f3be54cc8edb58. Progress notes were published at d81414031830965e3a2bbe93e0164960ebdb2a4c without changing frontmatter, queue or broad ticket states. This checkpoint writer performed no application, claim, ticket or CI mutation.
+
+Every unique saved payload is gzip encoded and records stored and decoded SHA256. Exact content already saved in checkpoint 2f6393a2 is referenced by immutable commit/path and decoded hash. Arrays and reports are deduplicated. No active gate transcript is captured.
