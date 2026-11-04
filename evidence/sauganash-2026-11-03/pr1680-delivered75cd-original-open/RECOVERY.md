@@ -1,0 +1,7 @@
+# Sauganash PR1680 is merged and verified live on dev75cd
+
+Actual public `https://chicago.polecat.live/4d/dev/` returned build **75cd3593**, a GitHub-verified descendant of merge6953d4131bf741a1d56a141a83b0bc852b8cb56b. A stable double-build HTTP snapshot verified allthree native gallery rows exactly (one heldAndreas/two source links/noSpots), public-domain credit, attested/frame1831/July1835 sidecar, exact nativeReader note/module and exactWEB5f7d8a54f1c805d53bdb558506dc18ce237c9c0fb180a7cd274dec7d64ad480e. Native bounded delivery command exited0/allchildrenreaped. The actual existing mainDeploy41745588109 completedSUCCESS through dev assembly, Pages upload/deploy and origin smoke; no manualdispatch or maincode change was needed.
+
+This is actualHTTP ancestry/staticdelivery verification, **not a new combineddev browser smoke**. Earlier qualified actual desktop/phone/native107both runtime remains bound to exactsource27ab2f3; root directly reviewed12screens. WholeHotel image gate still DIFFERS with roof/rearwing and leftgable gaps open. OriginalT2383 was natively releasedOPEN/PARTIAL/prnull; no originalcompletion/full15/fullsizeviewer/historicalpose/doortraversal claim.
+
+[Full qualified source/runtime/merge/fold/nativepartialrelease recovery](https://github.com/kevinrhaas/chicago-evidence/blob/5dff296200f973069e5d19f3e825b6e0ffe9f156/evidence/sauganash-2026-11-03/pr1680-merged6953-original-open/RECOVERY.md). The raw actualpublic build/gallery/sidecar/Reader/module/WEB snapshot, verifier, properreaper and deploymentstep readback are in the zip.
