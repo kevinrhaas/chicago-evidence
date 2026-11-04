@@ -1,0 +1,7 @@
+# Preserve actual jail viewports and one native dispatch
+
+ActualJail6e23 desktop/phone east-body, Design and Sourcesconfidence views properlyclosedPASS, rootdirectreview62fd. Historical/metric/completeoriginalmatchnotclaimed. Desktopstock107alsoactualPASS0 asreportedbyowner; fullstockclosure/foreignLake790integration/currenthead8 stillownerfinishingbeforeordinary1702merge. Source/native272alreadydurable34a proofs.
+
+AttachednativeonePOST result and actualrunrecord prove41809182733/headba2d20409:39:46. SourceDRAFT1704publice148 androotGO33d0909precededPOST. SoleRobserver; no nativeoutput/passinferredfromthisdispatchrecord. In-progressstockbakecheckpointpending, no rePOST. ChildbakePRmaymergetoprivatefeatureonly; parentdevPRstaysdraftuntilqualification.
+
+ThispacketduplicatescriticalsmallactualruntimeimagesanddispatchreceiptsbecauseotherpublishersencounteredHTTP502beforetree/refstage. Existingsource/merges/currentproofsremainintact.
