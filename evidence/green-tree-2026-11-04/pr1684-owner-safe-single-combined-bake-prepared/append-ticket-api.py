@@ -1,0 +1,32 @@
+"""Append a reviewed continuation with SHA/prefix guards; requires separate root metadata GO."""
+from pathlib import Path
+import base64,hashlib,json,subprocess,time
+P=Path(__file__).resolve().parent
+REL='T-2250-2499/T-2376-match-the-green-tree-tavern-to-its-pictures.md'
+REPO='repos/kevinrhaas/chicago-tickets/'
+def api(path,body=None,method=None,missing=False):
+ command=['gh','api',path]
+ if method:command+=['--method',method]
+ if body is not None:command+=['--input','-']
+ r=subprocess.run(command,input=None if body is None else json.dumps(body).encode(),capture_output=True,timeout=45)
+ if r.returncode:
+  if missing and b'HTTP 404' in r.stderr:return None
+  raise RuntimeError(r.stderr.decode())
+ return json.loads(r.stdout)
+go=json.loads((P/'ROOT-METADATA-GO.json').read_text());candidate=json.loads((P/'FINAL-CANDIDATE.json').read_text());tail=(P/'TICKET-APPEND.md').read_bytes()
+assert go.get('authorized')is True and go.get('append_ticket')is True
+assert hashlib.sha256(tail).hexdigest()==candidate['handoff_sha256']==go['handoff_sha256']
+assert not (P/'TICKET-APPEND-RECEIPT.json').exists(),'Already appended; inspect receipt, never repeat blindly'
+pr=api('repos/kevinrhaas/chicago/pulls/1684');assert pr['state']=='open' and pr['head']['sha']=='740bc72c62fd8a42cb3f00dfcab1111e6f1c99dc' and not pr.get('auto_merge')
+assert api('repos/kevinrhaas/chicago/git/ref/heads/lap/pr-1684',missing=True)is None,'Live lap appeared; no takeover'
+tip=api(REPO+'git/ref/heads/main')['object']['sha'];row=api(REPO+'contents/'+REL+'?ref='+tip);old=base64.b64decode(row['content'])
+assert hashlib.sha1(b'blob '+str(len(old)).encode()+b'\0'+old).hexdigest()==row['sha']
+front=old.decode().split('---',2)[1];fields={x.split(':',1)[0]:x.split(':',1)[1].strip()for x in front.splitlines()if ':'in x}
+assert all(fields.get(k)==v for k,v in {'state':'open','claimed_by':'null','claimed_run':'null','pr':'null'}.items()),fields
+assert b'## Owner-safe combined Green Tree continuation'not in old,'Already appended; inspect actual tail'
+new=old+tail;assert new.startswith(old)
+(P/'T2376-APPEND-BEFORE.md').write_bytes(old)
+response=api(REPO+'contents/'+REL,{'message':'T-2376: preserve current native proof and bounded combined-producer continuation','sha':row['sha'],'branch':'main','content':base64.b64encode(new).decode()},'PUT')
+commit=response['commit']['sha'];check=api(REPO+'contents/'+REL+'?ref='+commit);actual=base64.b64decode(check['content']);assert actual==new and actual.startswith(old)
+receipt={'commit':commit,'before_tip':tip,'before_blob':row['sha'],'after_blob':check['sha'],'before_sha256':hashlib.sha256(old).hexdigest(),'after_sha256':hashlib.sha256(new).hexdigest(),'prior_body_byte_exact_prefix':True,'append_sha256':hashlib.sha256(tail).hexdigest(),'front_matter_unchanged':True,'claim_or_completion_changed':False,'immutable_commit_readback_exact':True}
+(P/'T2376-APPEND-PUBLISHED.md').write_bytes(actual);(P/'TICKET-APPEND-RECEIPT.json').write_text(json.dumps(receipt,indent=2)+'\n');print(json.dumps(receipt))
