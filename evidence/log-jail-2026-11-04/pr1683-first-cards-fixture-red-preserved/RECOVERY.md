@@ -1,0 +1,7 @@
+# Jail3f: preserved first desktop card-probe fixture failure
+
+The first actual desktop-cards attempt stopped after164.21s on an incorrect helper assertion: it required Gale/Trowbridge in BOTH cards’ Sources panes. Frozen published source data instead correctly gives log_jail Andreas1884 and OSM2026; only the separate keeper house cites Gale/Trowbridge1902. The core’s Gale1902 credit belongs to its LINK_ONLY Images row. This is a helper fixture error, not a product defect, rendering/network failure or passed test. No app citation was added to satisfy the fixture.
+
+World readiness/native3frame settle passed; all page/network/console/server errors and pre-teardown cancellations were0. Source, full publication and approved helper bytes stayed exact3f. Native/controller/launcher all exited1 properly, with all children reaped and no leftovers; GPU was released and no implicit retry or later leg began. Failure screenshot/logs/request timeline and actual per-record citation expectations are retained here.
+
+Root explicitly authorized a separate CARDS-v2-only external helper correction and scoped carry of the genuine396.35s desktop and222.00s phone body passes, since source/publication and body branch remain unchanged. The original three reviewed helpers and this failed attempt stay untouched. New v2 helper code requires peer/root hash approval before two cards retries in fresh output directories; no v2 runtime PASS is claimed here. NativeStage3both/full8/final merge remain separate requirements; originalT2380 remains partial/open.

@@ -1,0 +1,92 @@
+--- root-reviewed-owner-safe-1687-controller.py
++++ GT1684-owner-safe-controller.py
+@@ -7,17 +7,17 @@
+ P=Path(__file__).resolve().parent
+ FEATURE='7b427d130a2cca6ed82c183c74605b965aee1d4e'
+ REF='steward/chicago-native-exact-ticket-20261103'
+-HEAD='1355732edb4925beeacf33e8f0910b2a09c3499d'
+-LANE='fort-cupola-native-20261103'
++HEAD='740bc72c62fd8a42cb3f00dfcab1111e6f1c99dc'
++LANE='green-tree-dormer-native-20261103'
+ PLATFORM='repos/kevinrhaas/polecat-platform/'
+ APP='repos/kevinrhaas/chicago/'
+-TICKET='repos/kevinrhaas/chicago-tickets/contents/T-2250-2499/T-2388-match-the-second-fort-dearborn-1835-to-its-pictu.md'
+-OLD_RUN=41755970879
++TICKET='repos/kevinrhaas/chicago-tickets/contents/T-2250-2499/T-2376-match-the-green-tree-tavern-to-its-pictures.md'
++OLD_RUN=41759074130
+ HOSTED=[41768392703,41768399310]
+-REQUEST={'ref':REF,'inputs':{'app':'chicago','target_ticket':'T-2388','resume_pr':'1687','slice':'1','slices':'1','lane':LANE,'max_turns':'400'}}
++REQUEST={'ref':REF,'inputs':{'app':'chicago','target_ticket':'T-2376','resume_pr':'1684','slice':'1','slices':'1','lane':LANE,'max_turns':'400'}}
+ WORKFLOW='.github/workflows/steward-improve.yml'
+ W=Path('/tmp/wolf-poster-source-20261103/chicago/4d')
+-PATHS=['assets/gltf/fort_dearborn_blockhouse__log_1816.glb','assets/web/fort_dearborn_blockhouse__log_1816.glb','assets/manifest.json','assets/manifest.web.json','generators/archetypes/fort_structure.py','generators/archetypes/fort_structure_params.py','generators/common/mesh.py','generators/common/materials.py','generators/common/openings.py','data/structures/fort_dearborn_blockhouse.json','data/structure_grades.json','docs/LIBERTIES.md','assets/manifest.versions.json','generators/archetypes/frame_tavern.py','generators/archetypes/frame_tavern_params.py','data/structures/sauganash_hotel.json','assets/gltf/sauganash_hotel__frame_1831.glb','assets/web/sauganash_hotel__frame_1831.glb','generators/archetypes/outbuilding.py','generators/archetypes/outbuilding_params.py','data/structures/first_fort_dearborn_small_house_ne.json','assets/gltf/first_fort_dearborn_small_house_ne__first_fort_1803.glb','assets/web/first_fort_dearborn_small_house_ne__first_fort_1803.glb']
++PATHS=['assets/gltf/green_tree_tavern__frame_1833.glb', 'assets/web/green_tree_tavern__frame_1833.glb', 'assets/manifest.json', 'assets/manifest.web.json', 'assets/manifest.versions.json', 'generators/archetypes/frame_tavern.py', 'generators/archetypes/frame_tavern_params.py', 'generators/mesh_inputs.py', 'generators/common/mesh.py', 'generators/common/materials.py', 'generators/common/openings.py', 'data/structures/green_tree_tavern.json', 'data/structures/sauganash_hotel.json', 'assets/gltf/sauganash_hotel__frame_1831.glb', 'assets/web/sauganash_hotel__frame_1831.glb', 'data/reference_views/green_tree_tavern/andreas_1838.json', 'data/reference_views/green_tree_tavern/andreas_1838.match.json', 'data/structure_grades.json', 'docs/LIBERTIES.md', 'docs/STATUS.md', 'docs/ROADMAP.md', 'docs/measurements/source_use_coverage.md', 'tools/compile_source_use.py', 'generators/archetypes/outbuilding.py', 'generators/archetypes/outbuilding_params.py', 'data/structures/first_fort_dearborn_small_house_ne.json', 'assets/gltf/first_fort_dearborn_small_house_ne__first_fort_1803.glb', 'assets/web/first_fort_dearborn_small_house_ne__first_fort_1803.glb']
+ 
+ def now():return datetime.datetime.now(datetime.timezone.utc).isoformat()
+ def dump(name,obj):
+@@ -36,7 +36,7 @@
+ def current_ticket():
+  tip=api('repos/kevinrhaas/chicago-tickets/git/ref/heads/main')['object']['sha'];obj=api(TICKET+'?ref='+tip);data=base64.b64decode(obj['content']);assert hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()==obj['sha'];return obj,data,fields(data)
+ def lap():
+- r=subprocess.run(['node','tools/ticket.mjs','lap','1687','--status'],cwd=W,capture_output=True,timeout=120)
++ r=subprocess.run(['node','tools/ticket.mjs','lap','1684','--status'],cwd=W,capture_output=True,timeout=120)
+  row={'exit':r.returncode,'stdout':r.stdout.decode(),'stderr':r.stderr.decode()}
+  assert r.returncode==0 and row['stdout'].startswith(('free ','stale ')),row
+  return row
+@@ -94,27 +94,27 @@
+  workflow=api(PLATFORM+'contents/'+WORKFLOW+'?ref='+FEATURE)
+  workflow_bytes=base64.b64decode(workflow['content'])
+  assert b'resume_pr:' in workflow_bytes and b'timeout-minutes: 150' in workflow_bytes
+- r=api(APP+'pulls/1687');assert r['state']=='open'and r['head']['sha']==HEAD and r['head']['ref']=='steward/t2388-blockhouse-cupola-native-20261103'and r['base']['ref']=='dev'
++ r=api(APP+'pulls/1684');assert r['state']=='open'and r['head']['sha']==HEAD and r['head']['ref']=='steward/t2376-dormer-peak-native-20261104'and r['base']['ref']=='dev'
+  assert 'resume'in[x['name']for x in r['labels']]
+  assert not r.get('auto_merge'),'Do not dispatch a runtime-incomplete PR with auto-merge armed'
+  old=api(PLATFORM+'actions/runs/'+str(OLD_RUN));assert old['status']=='completed' and old['conclusion']=='success'
+  t,data,f=current_ticket();assert f.get('state')=='open'and f.get('claimed_run')=='null'and f.get('claimed_by')=='null'and f.get('pr')=='null',f
+- assert b'## Exact existing-PR recovery' in data and b'UNQUALIFIED working-source plus raw log/hash checkpoints' in data
+- if require_green:assert b'## Owner-safe exact PR1687 continuation' in data,'Publish reviewed current continuation handoff before dispatch'
++ assert b'## Exact native resume of existing PR1684' in data and b'UNQUALIFIED raw working-source checkpoint' in data
++ if require_green:assert b'## Owner-safe combined Green Tree continuation' in data,'Publish reviewed current continuation handoff before dispatch'
+  matches=[]
+  for page in range(1,11):
+   prs=api(APP+f'pulls?state=open&per_page=100&page={page}')
+   for pr in prs:
+-   if re.search(r'(?i)(?:T[-_ ]?2388|t2388)',pr['title']+' '+pr['head']['ref']+' '+(pr.get('body')or'')):matches.append(pr['number'])
++   if re.search(r'(?i)(?:T[-_ ]?2376|t2376)',pr['title']+' '+pr['head']['ref']):matches.append(pr['number'])
+   if len(prs)<100:break
+  else:raise AssertionError('Open PR pagination incomplete')
+- assert set(matches)=={1687},matches
++ assert set(matches)=={1684},matches
+  fg=feature_guards()
+- active=active_runs();conflicts=[{k:x[k]for k in ['id','display_title','status','head_sha']}for x in active if LANE in x['display_title']or re.search(r'(?i)T-?2388',x['display_title'])]
++ active=active_runs();conflicts=[{k:x[k]for k in ['id','display_title','status','head_sha']}for x in active if LANE in x['display_title']or re.search(r'(?i)T-?2376',x['display_title'])]
+  assert not conflicts,conflicts
+  before=api(PLATFORM+'actions/workflows/steward-improve.yml/runs?event=workflow_dispatch&per_page=100')['workflow_runs']
+  laps=lap();sources=source_state();ci=hosted(require_green)
+- result={'utc':now(),'feature_sha':FEATURE,'workflow_blob':workflow['sha'],'workflow_sha256':hashlib.sha256(workflow_bytes).hexdigest(),'pr':1687,'pr_head':HEAD,'pr_branch':r['head']['ref'],'ticket_blob':t['sha'],'ticket_fields':f,'ticket_body_sha256':hashlib.sha256(data).hexdigest(),'old_run_completed_success':True,'only_matching_open_pr':matches,'no_active_target_lane':True,'active_run_count':len(active),'lap':laps,'source':sources,'hosted':ci,'feature_owner_guard':fg,'prior_dispatch_run_ids':[x['id']for x in before]}
++ result={'utc':now(),'feature_sha':FEATURE,'workflow_blob':workflow['sha'],'workflow_sha256':hashlib.sha256(workflow_bytes).hexdigest(),'pr':1684,'pr_head':HEAD,'pr_branch':r['head']['ref'],'ticket_blob':t['sha'],'ticket_fields':f,'ticket_body_sha256':hashlib.sha256(data).hexdigest(),'old_run_completed_success':True,'only_matching_open_pr':matches,'no_active_target_lane':True,'active_run_count':len(active),'lap':laps,'source':sources,'hosted':ci,'feature_owner_guard':fg,'prior_dispatch_run_ids':[x['id']for x in before]}
+  emit('preflight-passed',dev=sources['dev'],hosted=ci)
+  return result
+ 
+@@ -135,10 +135,10 @@
+  dump('FRESH-PREFLIGHT.json',fresh)
+  # The final remote guards run after source/CI reads and immediately before the one POST.
+  t,data,f=current_ticket();assert t['sha']==fresh['ticket_blob'] and f['state']=='open'and f['claimed_run']=='null'
+- final_pr=api(APP+'pulls/1687');assert final_pr['head']['sha']==HEAD and not final_pr.get('auto_merge')
++ final_pr=api(APP+'pulls/1684');assert final_pr['head']['sha']==HEAD and not final_pr.get('auto_merge')
+  assert api(PLATFORM+'git/ref/heads/'+REF)['object']['sha']==FEATURE
+  assert api(APP+'git/ref/heads/dev')['object']['sha']==fresh['source']['dev']
+- assert not[x for x in active_runs()if LANE in x['display_title']or re.search(r'(?i)T-?2388',x['display_title'])]
++ assert not[x for x in active_runs()if LANE in x['display_title']or re.search(r'(?i)T-?2376',x['display_title'])]
+  final_lap=lap()
+  attempt={'utc':now(),'feature':FEATURE,'request':REQUEST,'request_sha256':reqhash,'final_lap':final_lap,'state':'ATTEMPT_RESERVED_BEFORE_POST_NO_AUTOMATIC_RETRY'}
+  with (P/'DISPATCH-ATTEMPT.json').open('x')as out:out.write(json.dumps(attempt,indent=2)+'\n')
+@@ -163,7 +163,7 @@
+  for i in range(snapshots):
+   r=api(PLATFORM+'actions/runs/'+str(rid));assert r['head_sha']==FEATURE and r['head_branch']==REF and LANE in r['display_title']
+   jobs=api(PLATFORM+'actions/runs/'+str(rid)+'/jobs')['jobs'];target=next((j for j in jobs if j['name']=='targeted-chicago'),None)
+-  t,data,f=current_ticket();pr=api(APP+'pulls/1687')
++  t,data,f=current_ticket();pr=api(APP+'pulls/1684')
+   our=f.get('state')=='claimed'and f.get('claimed_run')==url
+   mismatch=f.get('state')=='claimed'and not our
+   row={'utc':now(),'run':rid,'run_url':url,'feature_sha':r['head_sha'],'run_status':r['status'],'run_conclusion':r['conclusion'],'target_job':None if not target else {k:target[k]for k in ['id','status','conclusion','labels']},'active_step':None if not target else next((s['name']for s in target['steps']if s['status']=='in_progress'),None),'ticket_blob':t['sha'],'ticket_fields':f,'our_exact_claim':our,'ownership_mismatch':mismatch,'existing_pr_head':pr['head']['sha'],'existing_pr_state':pr['state'],'read_only':True}

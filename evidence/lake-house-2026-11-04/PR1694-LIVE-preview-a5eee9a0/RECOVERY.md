@@ -1,0 +1,5 @@
+# LIVE: Lake PR1694 source credit/address delivered to dev preview
+
+Actual public https://chicago.polecat.live/4d/dev/ now reports build **a5eee9a0**, a verified descendant of ordinary devmerge5673cb959526cd6080c7ecfceb039fcb1b2c5e73. Both publicJSONs are exactly equal to the qualified source postimages: LakeHouse1835sidecar and Fergus1839directorysource sidecar, including1876recollection timing, credit/holding/page image, conflictingstreetaccount and explicitNOTJuly1835construction/position qualification. Live rawJSON snapshots and complete ancestryresponse included. Five-sample followup monitor proper0/allchildrenreaped; no new browser/nativeexecution is claimed by this delivery check.
+
+Mergedsource/tree/all8CI/nativepartialrelease/lap404 proof: https://github.com/kevinrhaas/chicago-evidence/blob/264a972c1f4b5d8ec3d118246cc2979c9c15322f/evidence/lake-house-2026-11-04/PR1694-MERGED567-release035-preview-pending/RECOVERY.md . That earlier receipt honestly saidpreviewpending; this addendum closes delivery. OriginalT2379 remainsOPEN/PARTIAL/prnull, release035dfcffe889724ec3cd158f43facf2288ae3b88. No productionpromotion.

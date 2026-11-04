@@ -1,0 +1,180 @@
+"""Exact existing-PR dispatcher and read-only claim monitor; defaults to preparation.
+Dispatch requires a separate root authorization file and green exact-SHA hosted CI.
+No source/ticket edits; no automatic retry of the dispatch POST.
+"""
+from pathlib import Path
+import argparse,base64,concurrent.futures,datetime,hashlib,json,os,re,subprocess,time
+P=Path(__file__).resolve().parent
+FEATURE='7b427d130a2cca6ed82c183c74605b965aee1d4e'
+REF='steward/chicago-native-exact-ticket-20261103'
+HEAD='740bc72c62fd8a42cb3f00dfcab1111e6f1c99dc'
+LANE='green-tree-dormer-native-20261103'
+PLATFORM='repos/kevinrhaas/polecat-platform/'
+APP='repos/kevinrhaas/chicago/'
+TICKET='repos/kevinrhaas/chicago-tickets/contents/T-2250-2499/T-2376-match-the-green-tree-tavern-to-its-pictures.md'
+OLD_RUN=41759074130
+HOSTED=[41768392703,41768399310]
+REQUEST={'ref':REF,'inputs':{'app':'chicago','target_ticket':'T-2376','resume_pr':'1684','slice':'1','slices':'1','lane':LANE,'max_turns':'400'}}
+WORKFLOW='.github/workflows/steward-improve.yml'
+W=Path('/tmp/wolf-poster-source-20261103/chicago/4d')
+PATHS=['assets/gltf/green_tree_tavern__frame_1833.glb', 'assets/web/green_tree_tavern__frame_1833.glb', 'assets/manifest.json', 'assets/manifest.web.json', 'assets/manifest.versions.json', 'generators/archetypes/frame_tavern.py', 'generators/archetypes/frame_tavern_params.py', 'generators/mesh_inputs.py', 'generators/common/mesh.py', 'generators/common/materials.py', 'generators/common/openings.py', 'data/structures/green_tree_tavern.json', 'data/structures/sauganash_hotel.json', 'assets/gltf/sauganash_hotel__frame_1831.glb', 'assets/web/sauganash_hotel__frame_1831.glb', 'data/reference_views/green_tree_tavern/andreas_1838.json', 'data/reference_views/green_tree_tavern/andreas_1838.match.json', 'data/structure_grades.json', 'docs/LIBERTIES.md', 'docs/STATUS.md', 'docs/ROADMAP.md', 'docs/measurements/source_use_coverage.md', 'tools/compile_source_use.py', 'generators/archetypes/outbuilding.py', 'generators/archetypes/outbuilding_params.py', 'data/structures/first_fort_dearborn_small_house_ne.json', 'assets/gltf/first_fort_dearborn_small_house_ne__first_fort_1803.glb', 'assets/web/first_fort_dearborn_small_house_ne__first_fort_1803.glb']
+
+def now():return datetime.datetime.now(datetime.timezone.utc).isoformat()
+def dump(name,obj):
+ tmp=P/(name+'.tmp');tmp.write_text(json.dumps(obj,indent=2)+'\n');os.replace(tmp,P/name)
+def api(path,missing=False):
+ suffix = '&' if '?' in path else '?'
+ r=subprocess.run(['gh','api','-H','Cache-Control: no-cache','-H','Pragma: no-cache',path+suffix+'_='+str(time.time_ns())],capture_output=True,timeout=45)
+ if r.returncode:
+  if missing and b'HTTP 404' in r.stderr:return None
+  raise RuntimeError(r.stderr.decode()[:1500])
+ return json.loads(r.stdout)
+def emit(kind,**kw):print(json.dumps({'utc':now(),'event':kind,**kw}),flush=True)
+def fields(data):
+ front=data.decode().split('---',2)[1]
+ return {line.split(':',1)[0]:line.split(':',1)[1].strip() for line in front.splitlines() if ':'in line}
+def current_ticket():
+ tip=api('repos/kevinrhaas/chicago-tickets/git/ref/heads/main')['object']['sha'];obj=api(TICKET+'?ref='+tip);data=base64.b64decode(obj['content']);assert hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()==obj['sha'];return obj,data,fields(data)
+def lap():
+ r=subprocess.run(['node','tools/ticket.mjs','lap','1684','--status'],cwd=W,capture_output=True,timeout=120)
+ row={'exit':r.returncode,'stdout':r.stdout.decode(),'stderr':r.stderr.decode()}
+ assert r.returncode==0 and row['stdout'].startswith(('free ','stale ')),row
+ return row
+
+def active_runs():
+ rows=[]
+ for status in ['in_progress','queued','waiting','pending','requested']:
+  page=1
+  while True:
+   xs=api(PLATFORM+f'actions/runs?status={status}&per_page=100&page={page}')['workflow_runs'];rows.extend(xs)
+   if len(xs)<100:break
+   page+=1;assert page<10,'Unexpected active-run pagination; do not guess'
+ return list({r['id']:r for r in rows}.values())
+def hosted(require_green):
+ rows=[]
+ for rid in HOSTED:
+  r=api(PLATFORM+'actions/runs/'+str(rid));assert r['head_sha']==FEATURE
+  row={k:r[k] for k in ['id','status','conclusion','head_sha','event','head_branch']};rows.append(row)
+  if require_green:assert row['status']=='completed' and row['conclusion']=='success',row
+ return rows
+
+def source_state():
+ dev=api(APP+'git/ref/heads/dev')['object']['sha'];commit=api(APP+'git/commits/'+dev)
+ def one(path):
+  row=api(APP+'contents/chicago/4d/'+path+'?ref='+dev)
+  return {'path':path,'git_blob':row['sha'],'size':row['size']}
+ with concurrent.futures.ThreadPoolExecutor(max_workers=3)as pool:checks=list(pool.map(one,PATHS))
+ manifests={}
+ for name in ['manifest.json','manifest.web.json','manifest.versions.json']:
+  row=api(APP+'contents/chicago/4d/assets/'+name+'?ref='+dev);data=base64.b64decode(row['content'])
+  assert hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()==row['sha']
+  manifests[name]=json.loads(data)
+ families={}
+ for family,expected in [('frame_tavern',25),('outbuilding',243),('fort_structure',25)]:
+  defaults={k:v for k,v in manifests['manifest.json']['assets'].items()if v.get('archetype')==family}
+  variants={k:v for k,v in manifests['manifest.versions.json']['assets'].items()if v.get('archetype')==family}
+  assert len(defaults)+len(variants)==expected,{'family':family,'defaults':len(defaults),'variants':len(variants),'expected':expected}
+  web={k:manifests['manifest.web.json']['masters'][k] for k in defaults}
+  families[family]={'default_count':len(defaults),'variant_count':len(variants),'default_rows':defaults,'variant_rows':variants,'web_master_bindings':web}
+ return {'dev':dev,'tree':commit['tree']['sha'],'guarded_paths':checks,'preserve_native_family_registry_bindings':families,'scope':'Immutable currentdev source/registry preservation guard, not a claim of new native execution.'}
+
+FEATURE_GUARDS={'.github/steward/salvage.sh':'b675d2403cae2048da37f1941e5eed65f2b268a2a5d332a46e49a228cced65af','.github/steward/run-record.mjs':'f96017acc1e12f6d414da78f2d4e792aec02a458891ca6f25ce41f4db2dba322','.github/steward/test-salvage.sh':'e71c0fdd4909f0f3098013a61b53fbdae1eddf28b50705b5ff8b29a7b6d8e27c'}
+def feature_guards():
+ result=[]
+ for path,want in FEATURE_GUARDS.items():
+  row=api(PLATFORM+'contents/'+path+'?ref='+FEATURE);data=base64.b64decode(row['content']);actual=hashlib.sha256(data).hexdigest()
+  assert actual==want,{'path':path,'wanted':want,'actual':actual}
+  assert hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()==row['sha']
+  result.append({'path':path,'sha256':actual,'git_blob':row['sha']})
+ return result
+
+def audit(require_green=False):
+ emit('preflight-start',hosted_green_required=require_green)
+ assert api(PLATFORM+'git/ref/heads/'+REF)['object']['sha']==FEATURE,'Feature branch moved'
+ workflow=api(PLATFORM+'contents/'+WORKFLOW+'?ref='+FEATURE)
+ workflow_bytes=base64.b64decode(workflow['content'])
+ assert b'resume_pr:' in workflow_bytes and b'timeout-minutes: 150' in workflow_bytes
+ r=api(APP+'pulls/1684');assert r['state']=='open'and r['head']['sha']==HEAD and r['head']['ref']=='steward/t2376-dormer-peak-native-20261104'and r['base']['ref']=='dev'
+ assert 'resume'in[x['name']for x in r['labels']]
+ assert not r.get('auto_merge'),'Do not dispatch a runtime-incomplete PR with auto-merge armed'
+ old=api(PLATFORM+'actions/runs/'+str(OLD_RUN));assert old['status']=='completed' and old['conclusion']=='success'
+ t,data,f=current_ticket();assert f.get('state')=='open'and f.get('claimed_run')=='null'and f.get('claimed_by')=='null'and f.get('pr')=='null',f
+ assert b'## Exact native resume of existing PR1684' in data and b'UNQUALIFIED raw working-source checkpoint' in data
+ if require_green:assert b'## Owner-safe combined Green Tree continuation' in data,'Publish reviewed current continuation handoff before dispatch'
+ matches=[]
+ for page in range(1,11):
+  prs=api(APP+f'pulls?state=open&per_page=100&page={page}')
+  for pr in prs:
+   if re.search(r'(?i)(?:T[-_ ]?2376|t2376)',pr['title']+' '+pr['head']['ref']):matches.append(pr['number'])
+  if len(prs)<100:break
+ else:raise AssertionError('Open PR pagination incomplete')
+ assert set(matches)=={1684},matches
+ fg=feature_guards()
+ active=active_runs();conflicts=[{k:x[k]for k in ['id','display_title','status','head_sha']}for x in active if LANE in x['display_title']or re.search(r'(?i)T-?2376',x['display_title'])]
+ assert not conflicts,conflicts
+ before=api(PLATFORM+'actions/workflows/steward-improve.yml/runs?event=workflow_dispatch&per_page=100')['workflow_runs']
+ laps=lap();sources=source_state();ci=hosted(require_green)
+ result={'utc':now(),'feature_sha':FEATURE,'workflow_blob':workflow['sha'],'workflow_sha256':hashlib.sha256(workflow_bytes).hexdigest(),'pr':1684,'pr_head':HEAD,'pr_branch':r['head']['ref'],'ticket_blob':t['sha'],'ticket_fields':f,'ticket_body_sha256':hashlib.sha256(data).hexdigest(),'old_run_completed_success':True,'only_matching_open_pr':matches,'no_active_target_lane':True,'active_run_count':len(active),'lap':laps,'source':sources,'hosted':ci,'feature_owner_guard':fg,'prior_dispatch_run_ids':[x['id']for x in before]}
+ emit('preflight-passed',dev=sources['dev'],hosted=ci)
+ return result
+
+def prepare():
+ assert not(P/'DISPATCH-ATTEMPT.json').exists(),'Already attempted: do not prepare another dispatch'
+ dump('REQUEST.json',REQUEST);a=audit(False);dump('PREPARED.json',a)
+ dump('PREPARED-REQUEST-HASH.json',{'sha256':hashlib.sha256((P/'REQUEST.json').read_bytes()).hexdigest()})
+ emit('prepared-no-dispatch',request=REQUEST,authorization_file_exists=(P/'ROOT-GO.json').exists())
+
+def dispatch():
+ assert not(P/'DISPATCH-ATTEMPT.json').exists(),'Dispatch already attempted; inspect response/run, never retry blindly'
+ authorization=json.loads((P/'ROOT-GO.json').read_text());request_bytes=(P/'REQUEST.json').read_bytes();reqhash=hashlib.sha256(request_bytes).hexdigest()
+ assert authorization.get('authorized')is True and authorization.get('feature_sha')==FEATURE and authorization.get('request_sha256')==reqhash,'Explicit matching root authorization required'
+ assert json.loads(request_bytes)==REQUEST
+ expected=json.loads((P/'PREPARED.json').read_text());fresh=audit(True)
+ assert fresh['source']==expected['source'],'dev/source tree moved since preparation: stop, report and re-prepare with root review'
+ assert fresh['workflow_sha256']==expected['workflow_sha256'] and fresh['ticket_blob']==expected['ticket_blob']
+ dump('FRESH-PREFLIGHT.json',fresh)
+ # The final remote guards run after source/CI reads and immediately before the one POST.
+ t,data,f=current_ticket();assert t['sha']==fresh['ticket_blob'] and f['state']=='open'and f['claimed_run']=='null'
+ final_pr=api(APP+'pulls/1684');assert final_pr['head']['sha']==HEAD and not final_pr.get('auto_merge')
+ assert api(PLATFORM+'git/ref/heads/'+REF)['object']['sha']==FEATURE
+ assert api(APP+'git/ref/heads/dev')['object']['sha']==fresh['source']['dev']
+ assert not[x for x in active_runs()if LANE in x['display_title']or re.search(r'(?i)T-?2376',x['display_title'])]
+ final_lap=lap()
+ attempt={'utc':now(),'feature':FEATURE,'request':REQUEST,'request_sha256':reqhash,'final_lap':final_lap,'state':'ATTEMPT_RESERVED_BEFORE_POST_NO_AUTOMATIC_RETRY'}
+ with (P/'DISPATCH-ATTEMPT.json').open('x')as out:out.write(json.dumps(attempt,indent=2)+'\n')
+ emit('dispatch-single-post',request=REQUEST)
+ r=subprocess.run(['gh','api','--method','POST',PLATFORM+'actions/workflows/steward-improve.yml/dispatches','--input',str(P/'REQUEST.json')],capture_output=True,timeout=45)
+ dump('DISPATCH-RESPONSE.json',{'utc':now(),'exit':r.returncode,'stdout':r.stdout.decode(),'stderr':r.stderr.decode(),'request_sha256':reqhash})
+ assert r.returncode==0,'Dispatch response uncertain/failure: inspect exact remote runs, never duplicate POST'
+ prior=set(fresh['prior_dispatch_run_ids'])
+ for attempt in range(16):
+  runs=api(PLATFORM+'actions/workflows/steward-improve.yml/runs?event=workflow_dispatch&per_page=100')['workflow_runs']
+  matches=[x for x in runs if x['id']not in prior and x['head_sha']==FEATURE and LANE in x['display_title']and x['head_branch']==REF]
+  assert len(matches)<=1,'Multiple matching new runs: stop for ownership review'
+  if matches:
+   actual=matches[0];dump('ACTUAL-RUN.json',actual);emit('exact-run-discovered',run=actual['id'],url=actual['html_url']);return
+  emit('await-run-discovery',iteration=attempt+1)
+  time.sleep(5)
+ raise RuntimeError('No exact run discovered; POST NOT repeated, inspect remote')
+
+def monitor(snapshots,interval):
+ actual=json.loads((P/'ACTUAL-RUN.json').read_text());rid=actual['id'];url=actual['html_url'];rows=[]
+ assert 1<=snapshots<=15 and 1<=interval<=45
+ for i in range(snapshots):
+  r=api(PLATFORM+'actions/runs/'+str(rid));assert r['head_sha']==FEATURE and r['head_branch']==REF and LANE in r['display_title']
+  jobs=api(PLATFORM+'actions/runs/'+str(rid)+'/jobs')['jobs'];target=next((j for j in jobs if j['name']=='targeted-chicago'),None)
+  t,data,f=current_ticket();pr=api(APP+'pulls/1684')
+  our=f.get('state')=='claimed'and f.get('claimed_run')==url
+  mismatch=f.get('state')=='claimed'and not our
+  row={'utc':now(),'run':rid,'run_url':url,'feature_sha':r['head_sha'],'run_status':r['status'],'run_conclusion':r['conclusion'],'target_job':None if not target else {k:target[k]for k in ['id','status','conclusion','labels']},'active_step':None if not target else next((s['name']for s in target['steps']if s['status']=='in_progress'),None),'ticket_blob':t['sha'],'ticket_fields':f,'our_exact_claim':our,'ownership_mismatch':mismatch,'existing_pr_head':pr['head']['sha'],'existing_pr_state':pr['state'],'read_only':True}
+  if target:assert 'ubuntu-26.04'in target['labels'],target['labels']
+  rows.append(row);dump('MONITOR-LATEST.json',row);dump('MONITOR-SNAPSHOTS.json',rows);emit('claim-monitor',**row)
+  if our or mismatch or r['status']=='completed':break
+  if i+1<snapshots:time.sleep(interval)
+ dump('MONITOR-CLOSED.json',{'utc':now(),'read_only':True,'snapshots':len(rows),'latest':rows[-1]})
+
+if __name__=='__main__':
+ p=argparse.ArgumentParser();p.add_argument('mode',choices=['prepare','dispatch','monitor'],nargs='?',default='prepare');p.add_argument('--snapshots',type=int,default=10);p.add_argument('--interval',type=int,default=30);a=p.parse_args()
+ if a.mode=='prepare':prepare()
+ elif a.mode=='dispatch':dispatch()
+ else:monitor(a.snapshots,a.interval)

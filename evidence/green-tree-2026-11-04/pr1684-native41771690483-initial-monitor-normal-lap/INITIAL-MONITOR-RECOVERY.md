@@ -1,0 +1,5 @@
+# GT combined-producer initial monitor closed
+
+Actualnative41771690483 feature7b427/Ubuntu26 continues. Initialboundedmonitorproper0/allchildrenreaped/15 snapshots. One normal1684lap statusread afterclosure: FREE_NO_NORMAL_PR_LAP_OBSERVED (marker None). Originalownclaimobserved False; foreignoriginalclaim False. OriginalOPEN/unclaimed alone isnotfailure for existingPRresume.
+
+Solecombinedwatchhandoffnative_progress_after_reset, per-task7b427, consumeactualsavedlapreceiptwithoutduplicateread. ActualsinglePOST/ticketappendcheckpoint9e638427; reviewedfullcandidateadfbc6a2. No source/nativebuild/runtime/gate/merge successclaimedbyobserver. ExistingPR1684/currentincrementstillpendingchecks; originalT2376OPEN/PARTIAL/DIFFERS.

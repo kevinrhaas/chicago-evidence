@@ -1,0 +1,15 @@
+# PR1696: qualified source and current-dev integration
+
+Concrete draft PR: https://github.com/kevinrhaas/chicago/pull/1696
+
+The normal source checkpoint 35fd8cf92581435c5b1ad330f01a1d23de2cab83 is pushed. Its source gate is actual parts 1–3 on unchanged authored tree 44ce86cc plus the complete repaired part 4 on fa943206, after genuine native isolation measurement. The original part-4 failure remains preserved. All existing inventory row values and all seven authored postimages stayed exact. No claim is made that all four parts ran on the new whole-tree hash.
+
+Current dev 19910ff1701093c0c1eb8d4407fa3b8ad34ad32d was merged normally. The current feature head is 05366ebe43f1e9390ff3d0c01982a6654482ba33, tree a9235951a15503aa2ae2ef1145d7fdf75218aa42, parents 35fd plus 19910ff. It is normally fast-forward pushed and exactly read back. Both PR-only preflight questions passed. The draft PR has auto-merge off and an owned normal lap. Existing T-3041 remains claimed; no original image gate was closed.
+
+Only two merge conflicts needed resolution: preserve the fresh fix-only T-3041 pending file after the real roof fold, and use the current isolation inventory plus the native targeted writer for the new fixture. The complete stamped changelog is byte-exact current dev, preserving the old roof entry and all history. Removing only our raw STATUS append reproduces current dev's raw STATUS exactly. Foreign batch/coalesce/tree modules, tests and smoke budget remain byte-exact current dev; its transparent piece sort remains alongside the reviewed parade logic. Root approved the bounded merged delta.
+
+All eleven fresh current-tree owner and fixture commands passed with proper exit 0, all children reaped and no leftovers: compile_scene --all, compile_source_use, stale derivatives, validate --all, actual production parade loader, existing 54 fort-gate checks, batch coalescing, batch instancing, isolation inventory, pending changelog and stamped changelog. They produced no tracked drift. Actual source snippets, merge proofs and receipts are included.
+
+Publication and the exact published contract are in progress. The actual runtime remains UNRUN for this fix: the approved scope is 1812 cards plus positive native parade-ground GPU hit at desktop and phone, and existing 1835 native Stage 3 at both viewports. Keep all zero-error, real-ground, no-fake-box, source/Git/full-publication/helper and 600-second protected-reaper assertions. Roof body acceptance remains deferred and unrun; original T-3041 and parent T-2387 remain partial. Final actual hosted eight-part gate and direct root review are required before readying and normally merging.
+
+PR gate run 41771315921 is queued on exact head 05366ebe. No production dispatch, direct dev/main push, Git force, GC/repack or object deletion is authorized. Immutable object caches are borrowed without duplicate downloads. Exact workspace/TMP materialization forecasts passed before checkout; all runtime floors must still hold. Root coordinates quiet GPU and all writers.
