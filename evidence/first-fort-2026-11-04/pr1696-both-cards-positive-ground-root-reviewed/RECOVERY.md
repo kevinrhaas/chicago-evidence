@@ -1,0 +1,13 @@
+# PR1696: both actual parade/card viewport checks passed
+
+Frozen tested source: 05366ebe43f1e9390ff3d0c01982a6654482ba33, tree a9235951a15503aa2ae2ef1145d7fdf75218aa42. Draft PR https://github.com/kevinrhaas/chicago/pull/1696 has auto-merge off. Source/Git/publication/helpers remain frozen during the ongoing runtime.
+
+Actual desktop 1812 cards plus positive native parade-ground proof passed in 373.55 seconds; actual mobile passed in 147.71 seconds. Both protected reapers closed exit 0, all children reaped, no leftovers. Page, network, console and server errors were zero on both. The exact 720 selected inputs, all 5887 published members, helpers, plan and Git guards remained unchanged between legs.
+
+Both real GPU rays hit visible yard-trodden_earth geometry at the native owner/interior point. Both direct rolls report indexed 59, expected 58, standing 58, missing [], with the exact delegated parade owner and no fabricated building box. This positively proves the existing native ground surface rather than merely removing the false error. The ground already rendered before this repair.
+
+Root directly viewed all eight actual JPGs and accepted the bounded parade/card scope. What is visible: complete Quaife Record text and the Currey 1912 link-only Images credit at both viewports, with uncredited illustrator, book-author attribution, Wikimedia holder and public-domain status. The desktop shows the full Whistler citation. Precise limits: the long roof-reason paragraph is clipped; on mobile it is clipped at both ends, and the source-credit screenshot shows Quaife and Swearingen, with Whistler item 6 not on screen. Do not claim complete phone Whistler credit, the whole long reason on screen, a roof-body view or full fort image acceptance. The background palisade is not roof-body acceptance. Root's historical review receipt explicitly leaves native checks pending.
+
+At this checkpoint the existing published 1835 native Stage 3 mobile leg is running and desktop follows. Neither native success is claimed here. Final native closure, the final actual hosted eight-part gate and any needed current-dev foreign-scope integration remain required before readying and normally merging. Roof body acceptance remains deferred and unrun; original T-3041 and T-2387 remain partial.
+
+Source and current-dev qualification recovery: evidence commit 01a6135cef932da3ec28f01154e366a3b344c3dd, prefix evidence/first-fort-2026-11-04/t3041-pr1696-qualified-current199/. The original failed runtime and source isolation failure remain preserved, not relabelled as passed. Root coordinates all source and GPU leases. If any running leg fails, require proper closure/reaping and release the GPU before diagnosis.
