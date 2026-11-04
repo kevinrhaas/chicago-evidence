@@ -1,0 +1,11 @@
+# Green Tree native PR1684: actual useful pointed-cap increment
+
+[PR1684](https://github.com/kevinrhaas/chicago/pull/1684), exact headba7d4bd8b1295098d458e67d7647674d61160870, parent42b. Independent source JSON comparison finds only the4.50→4.85m nested dormerpeak and its explanatorynote; both registries change only this target. No producer, schema or recipe-scheme change.
+
+Actual downloaded MASTERf213818f…270816B and WEB65863b3c…48772B bind the new canonical DIFFERS match, with unchanged camera/source. Both actual before/after images were directly viewed: the small cap is now sharply pointed, and no visible roof seam/penetration appears. The broader shoulder/compound shape still differs; six-original-source coverage and source/date conflicts remain open. This is useful bounded progress, not a whole-picture acceptance.
+
+Independent binary parsing verifies exact worldbbox, node transforms and materialdefinitions,3318→3330triangles, and geometric/normal/confidence triangle data changes confined towall+roof primitives. Eight other primitives’ indexed geometric attributes remain exact. **UV0 is repacked throughout all10 primitives**, so the author’s blanket byte-identical-primitive wording needs narrowing. No GLB baseColor/normal/AO textures are referenced; actual app material/phone review remains necessary. The preserved attribute diagnostics distinguish sharedvertexpool/UV changes from real geometry.
+
+The author reports a genuine pinned one-target native rebuild/WEB encode and all4source parts beforecommit. Its description explicitly says final liberties regeneration followed parts1/2/4; only the required whole-head hosted gate can reprove that finaltree. Raw native execution/gate logs are not yet available to this reviewer while the worker runs. Runtime/smoke evidence was absent at initialreview. **NOT a merge approval yet**: await exacthead hostedgreen, actual bothviewport application checks/rootpixels and current-dev integration preservingforeignrows. OriginalT2376 stays OPEN/PARTIAL/DIFFERS after a useful mergedincrement.
+
+Raw exact source/asset readbacks, actual images, semantic and binary review are included for recovery. No source/ticket/run/GPU mutation or local Blender was used in this review.
