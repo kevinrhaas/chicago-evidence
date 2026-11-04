@@ -1,0 +1,137 @@
+[
+  {
+    "event": 123,
+    "name": "Bash",
+    "id": "toolu_018PLzKBEmwhTaWbL8ppfCu8",
+    "input": {
+      "command": "cd /home/runner/work/polecat-platform/polecat-platform/chicago-repo && grep -rn \"lap/pr-\" chicago/4d/AGENTS.md .github/steward/pr-rest.sh 2>/dev/null | head -30; echo \"=== pr-rest usage ===\"; grep -n '^#' .github/steward/pr-rest.sh | head -40",
+      "description": "Find lap lock protocol"
+    }
+  },
+  {
+    "event": 326,
+    "name": "Bash",
+    "id": "toolu_01Up3ZNGDH9B9kyhayrxFvv1",
+    "input": {
+      "command": "git add chicago/4d/data/yard/town_yard_outbuildings.json chicago/4d/docs/RESEARCH/1835_town_completion.md && cd chicago/4d && timeout 580 python3 tools/validate.py --stale 2>&1 | tail -40; echo \"EXIT=$?\"",
+      "description": "Check asset staleness after merge",
+      "timeout": 590000
+    }
+  },
+  {
+    "event": 338,
+    "name": "Bash",
+    "id": "toolu_01WfWPKJY32sFVgPfEkghE6p",
+    "input": {
+      "command": "timeout 580 python3 tools/validate.py --stale > /tmp/stale.log 2>&1; echo \"EXIT=$?\"; grep -in \"stale\\|not installed\\|skip\\|banked\" /tmp/stale.log | head -30; echo \"=== last 3 ===\"; tail -3 /tmp/stale.log",
+      "description": "Re-run staleness check and grep for stale/skip lines",
+      "timeout": 590000
+    }
+  },
+  {
+    "event": 391,
+    "name": "Bash",
+    "id": "toolu_01XAhcUzzndBVtaZJh8iEoic",
+    "input": {
+      "command": "sed -n 1,60p tools/bake.sh; echo \"=== usage/flags ===\"; grep -n '\\-\\-only\\|\\-\\-help\\|usage' tools/bake.sh | head -20; echo \"=== OS ===\"; lsb_release -a 2>/dev/null | tail -3; cat generators/blender.pin",
+      "description": "Read bake.sh and check runner OS plus Blender pin"
+    }
+  },
+  {
+    "event": 408,
+    "name": "Bash",
+    "id": "toolu_01MqoYMyzwtMDYj6N2ck865Z",
+    "input": {
+      "command": "FRAME=$(cat /tmp/frame_ids.txt) && STORE=$(cat /tmp/storefront_ids.txt) && ( time ./tools/bake.sh --only \"$FRAME,$STORE\" ) > /tmp/bake1.log 2>&1; echo \"EXIT=$?\"; tail -30 /tmp/bake1.log",
+      "description": "Native rebuild of the two affected frame families on the pinned Blender",
+      "timeout": 595000
+    }
+  },
+  {
+    "event": 551,
+    "name": "Bash",
+    "id": "toolu_01FVcWFDGqPYuhgT2sdsxKzr",
+    "input": {
+      "command": "cd /home/runner/work/polecat-platform/polecat-platform/chicago-repo/chicago/4d && ( time ./tools/check.sh --part 1/4 ) > /tmp/gate1.log 2>&1; echo \"EXIT=$?\"; tail -14 /tmp/gate1.log",
+      "description": "Run source gate part 1 of 4",
+      "timeout": 595000
+    }
+  },
+  {
+    "event": 579,
+    "name": "Bash",
+    "id": "toolu_01GUTKd5ePWAWjYmS2Gpy1Xn",
+    "input": {
+      "command": "( time ./tools/check.sh --part 2/4 ) > /tmp/gate2.log 2>&1; echo \"EXIT=$?\"; tail -12 /tmp/gate2.log",
+      "description": "Run source gate part 2 of 4",
+      "timeout": 595000
+    }
+  },
+  {
+    "event": 613,
+    "name": "Bash",
+    "id": "toolu_01CHW6tGhQYfXf34Yz9yBSYn",
+    "input": {
+      "command": "timeout 200 node tools/smoke_budget.mjs --for-diff 2>&1 | grep -n \"SMOKE_VIEWPORT=\" | sed -n '1,6p'; echo \"=== viewport names ===\"; grep -n \"SMOKE_VIEWPORT\\b\" tools/smoke_renderer.mjs | head -8; echo \"=== mobile pricing from --legs ===\"; timeout 200 node tools/smoke_budget.mjs --legs 2>&1 | head -30",
+      "description": "Find mobile viewport name and leg pricing"
+    }
+  },
+  {
+    "event": 626,
+    "name": "Bash",
+    "id": "toolu_01KHiHKY4A4CJmTusNfWbFB5",
+    "input": {
+      "command": "( time ./tools/check.sh --part 3/4 ) > /tmp/gate3.log 2>&1; echo \"EXIT=$?\"; tail -12 /tmp/gate3.log",
+      "description": "Run source gate part 3 of 4",
+      "timeout": 595000
+    }
+  },
+  {
+    "event": 641,
+    "name": "Bash",
+    "id": "toolu_01F9iLJyLn812pKadfFRe5uS",
+    "input": {
+      "command": "( time ./tools/check.sh --part 4/4 ) > /tmp/gate4.log 2>&1; echo \"EXIT=$?\"; tail -12 /tmp/gate4.log",
+      "description": "Run source gate part 4 of 4",
+      "timeout": 595000
+    }
+  },
+  {
+    "event": 681,
+    "name": "Bash",
+    "id": "toolu_01GujcjsvXkTRRpQpEZnAHWj",
+    "input": {
+      "command": "cd /home/runner/work/polecat-platform/polecat-platform/chicago-repo/chicago/4d && ( time env SMOKE_VIEWPORT=mobile SMOKE_STAGE=1-2 node tools/smoke_renderer.mjs --published ) > /tmp/smoke-mobile-12.log 2>&1; echo \"EXIT=$?\"; tail -20 /tmp/smoke-mobile-12.log",
+      "description": "Run mobile smoke stages 1-2 against the published mirror",
+      "timeout": 595000
+    }
+  },
+  {
+    "event": 740,
+    "name": "Bash",
+    "id": "toolu_01AgEKAxt7kg7vHPzmquugpP",
+    "input": {
+      "command": "cd /home/runner/work/polecat-platform/polecat-platform/chicago-repo && git checkout -- chicago/4d/tools/dev-smoke-state.json && git status --porcelain | wc -l && cd chicago/4d && ( time env SMOKE_VIEWPORT=desktop SMOKE_STAGE=1 node tools/smoke_renderer.mjs --published ) > /tmp/smoke-desktop-1.log 2>&1; echo \"EXIT=$?\"; tail -18 /tmp/smoke-desktop-1.log",
+      "description": "Run desktop smoke stage 1 against the published mirror",
+      "timeout": 595000
+    }
+  },
+  {
+    "event": 834,
+    "name": "Bash",
+    "id": "toolu_0119qyVVMiBQW7hb5vjfK51g",
+    "input": {
+      "command": "cat > /tmp/pr1683-evidence.md <<'EOF'\n## Exact resume of run 41734994705 \u2014 what this run finished, on head `9af909782`\n\nPreconditions checked before any write: PR open, base `dev`, carries T-2380; the\nprevious worker (run 41734994705) **completed** (`failure` / `error_max_turns`,\n00:51:36Z); the ticket read `claimed_by: null`; `inflight` showed PR #1683 with\n**no lap lock**. The lap lock `lap/pr-1683` was taken for this run. The prior run's\n[RECOVERY.md](https://github.com/kevinrhaas/chicago-evidence/blob/10583a4d9a5198d1213048d4536df3239eb3872d/evidence/log-jail-2026-11-03/pr1683-native-run-max-turns-pickup/RECOVERY.md)\nwas read first and its open items are the work below. No history was rewritten and\nno commit was replaced: the three original commits stand and `9af909782` is a\nnormal merge of current `dev` on top of them.\n\n### 1. Current `dev` merged \u2014 eight content conflicts resolved, nothing of dev's lost\n\n`dev` was 12 commits ahead. The eight conflicts the PR lap declined to pick a side on:\n\n| file | how |\n|---|---|\n| `data/liberties.json`, `data/sidecars/1835/sources/index.json`, `data/yard/town_woodpiles.json`, `docs/measurements/source_use_coverage.md` | **rebuilt from the merged inputs** by `tools/rederive.mjs --resolve` (57 steps in manifest order, 1 settling lap, exit 0, 14m25s) \u2014 never hand-merged |\n| `docs/LIBERTIES.md`, `docs/ROADMAP.md`, `docs/STATUS.md` | both sides kept, dev's entries first then T-2380's. The whole latest LIBERTIES body is preserved \u2014 `L-green-tree-closed-shoulder-working-2376` and `L-dearborn-level-draw-3361` stand verbatim beside `L-log-jail-keeper-compound-2380` |\n| `data/yard/town_yard_outbuildings.json` | derived counts; dev's side taken to clear the marker, then rewritten by the same rebuild |\n\nTwo files the rebuild moved beyond the conflict set rode the same commit, and both\nare genuine merged re-derivations: `town_yard_outbuildings.json`\n(`dwellings_off_plat` 129 \u2192 130, the keeper house) and\n`docs/RESEARCH/1835_town_completion.md` (one roof reclassified between grades).\n\n**Foreign rows preserved, checked row by row.** Against `origin/dev`:\n0 non-`frame_dwelling` manifest rows differ, 0 rows dropped, and\n`pruyne_kimball_drugstore__frame_1830s.glb` carries **dev's** newer row exactly\n(63,344 bytes, `b483c44c\u2026`) \u2014 the branch's older 61,784-byte row did not survive\nthe merge, which is correct. All 1,035 manifest rows match their committed file's\nsize on disk.\n\n### 2. The frame families qualified by an actual native rebuild on the merged tree\n\nThe old 271-asset proof was taken on the superseded base, so it was retaken here.\nPinned **Blender 4.5.3** (sha256-verified, `generators/blender.pin`) on\nUbuntu 26.04, via `./tools/bake.sh --only` over **all 272 `frame_dwelling` and all\n61 `frame_storefront` structures**:\n\n- **all 272 `frame_dwelling` masters came back byte-identical**, including the\n  keeper house, which rebuilt to **70,712 bytes** and its web derivative to\n  **20,632 bytes** \u2014 the exact figures the PR body claims. The opt-in\n  `picture_layout` moves no vertex of any other building on *current* dev.\n- **53 of 61 `frame_storefront` masters shifted bytes at an identical byte COUNT**\n  \u2014 geometry unchanged, byte layout not reproducible for that family on this\n  toolchain. `picture_layout` lives in `frame_dwelling_params.py`; `frame_storefront`\n  has its own params module and reads none of it, so this is **not** T-2380's and\n  is **not** claimed as a finding of this PR. Those 53 masters and the\n  `manifest.web.json` / `manifest.versions.json` rows they moved were **reverted**\n  to dev's committed bytes. Nothing about this was hand-stamped: no recipe\n  freshness was predicted, and `validate.py --stale` re-derives and agrees \u2014\n  *1035 assets match their inputs, 0 stale*.\n\n### 3. The whole source gate, all four parts, green on this head\n\nForeground, one call each, on `9af909782`, with `jsonschema`/`pyproj`/`Pillow`\ninstalled and `numpy` 2.5.4 / `scipy` 1.18.1 present \u2014 **no step reported a missing\nmodule, so no skip is being read as a pass**:\n\n| part | verdict | steps | time |\n|---|---|---|---|\n| 1/4 | **CHECK PASS**, none red | 287 | 6m 43s |\n| 2/4 | **CHECK PASS**, none red | 287 | 6m 57s |\n| 3/4 | **CHECK PASS**, none red | 288 | 5m 36s |\n| 4/4 | **CHECK PASS**, none red | 287 | 7m 38s |\n\n### 4. Both viewports actually run against the published mirror\n\n`smoke_budget.mjs --for-diff` named parts 1-15 (a new mesh, and `gates.js` is not in\nthe map), so the legs that cover the compound itself were taken \u2014 part 1 is the\nenclosure layer, which is the palisade front and the new gate:\n\n- **desktop 1280\u00d7800, stage 1 \u2014 95 passed, 0 failed**, exit 0 (12m 37s).\n- **mobile 390\u00d7780, stages 1-2 \u2014 193 passed, 5 failed** (7m 53s). All five failures\n  are the Green Tree's wagon shed and its covered wagon \u2014 *\"0 shed(s) \u2026 covered\n  wagon MISSING\"*. They are **inherited from `dev`**, where #1677\n  (`T-2376: enclose Green Tree shoulder and remove competing yard shed (partial)`)\n  removed that shed while these assertions still require it. Every input those five\n  checks read \u2014 `data/yard/town_trade_goods.json`, `tools/generate_yard_goods.py`,\n  `data/structures/green_tree_tavern.json` \u2014 is **byte-identical to `origin/dev`**\n  in this tree, and this branch touches no Green Tree record. Filed with\n  `dev-smoke-state.mjs record`; the record's own latest mobile part-1 red is a\n  different assertion on a different tree.\n\n### 5. What is left, and why this is a `resume` and not a merge\n\n**`chicago-4d-check.yml` \u2014 the `gate` \u2014 had never been requested on this PR**, on\n`bc0b8c564` or on `9af909782`. Only `warranted` (content build) and `report` (stuck\nPR report) were ever created, which is the gap T-2461 describes: green `report` and\n`warranted` checks are not the whole source gate. It has now been **requested\nthrough the workflow's own `workflow_dispatch` path on this branch**, and it is\nqueued on `9af909782`. It had not returned a verdict inside this run's clock \u2014\nActions was running ~22 minutes behind on this repository, with `warranted` still\nqueued from the push.\n\nSo the single remaining step is: **read the dispatched `gate`'s verdict on\n`9af909782` and merge into `dev` if green.** Nothing else is owed. The gate was\nnot read by this run, so this run does not call the merge.\n\n**T-2380 itself stays OPEN and `differs`.** Both reference views still record\n`differs`, with the differences named in the PR body \u2014 the core reading concealed\nbehind the palisade, the compound's relative proportions, the palisade as one flat\nmass, and neither camera solved (`diagnostic_only: true`). No match is claimed, no\nsign-off is split, and no photo follow-up ticket is filed (T-3153). The ticket is\nreleased back to the queue carrying those differences.\n\n\ud83e\udd16 Generated with [Claude Code](https://claude.com/claude-code)\nEOF\nbash \"$GHREST\" pr-comment kevinrhaas/chicago 1683 /tmp/pr1683-evidence.md 2>&1 | tail -3; echo \"COMMENT_EXIT=$?\"",
+      "description": "Post the verification evidence comment on PR 1683"
+    }
+  },
+  {
+    "event": 841,
+    "name": "Bash",
+    "id": "toolu_019pLrKwRDnTK2Vemh592Crc",
+    "input": {
+      "command": "cd /home/runner/work/polecat-platform/polecat-platform/chicago-repo && bash .github/steward/pr-rest.sh resume 1683 --repo kevinrhaas/chicago --why \"dev merged, all 4 source gate parts green and both viewports run on head 9af909782; the dev gate had never been requested on this PR and the workflow_dispatch I fired for it is still queued (Actions ~22 min behind) \u2014 read the gate on 9af909782 and merge, nothing else is owed\" --waits-on nothing 2>&1 | tail -6; echo \"RESUME_EXIT=$?\"",
+      "description": "Hand PR 1683 on with resume and its reason"
+    }
+  }
+]

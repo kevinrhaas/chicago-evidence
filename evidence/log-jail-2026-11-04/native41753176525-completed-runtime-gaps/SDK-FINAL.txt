@@ -1,0 +1,20 @@
+Handing off cleanly. Final state:
+
+**Ticket: T-2380 · PR: https://github.com/kevinrhaas/chicago/pull/1683 · Outcome: resume**
+
+**App picked:** chicago (FOCUS_APP), owner-targeted exact resume of PR #1683 for T-2380 — not a queue pick.
+
+**Preconditions verified before any write:** PR #1683 open, base `dev`, carries T-2380; the previous worker (run 41734994705) had **completed** (`failure`/`error_max_turns`, 00:51:36Z); the ticket read `claimed_by: null`; `inflight` showed no lap lock on #1683 and no rival live owner. I took `lap/pr-1683`, claimed T-2380, announced it, and read the prior run's RECOVERY.md before writing a line. The three original commits stand — no history rewritten, no replacement PR.
+
+**What shipped** (merge commit `9af909782` on the existing branch):
+- **Current `dev` merged** (12 commits). All eight content conflicts resolved: the four manifest-owned ones rebuilt from merged inputs by `rederive.mjs --resolve` (57 steps, exit 0); `LIBERTIES.md`/`ROADMAP.md`/`STATUS.md` keep **both** sides, so dev's `L-green-tree-closed-shoulder-working-2376` and `L-dearborn-level-draw-3361` survive verbatim. Foreign rows preserved row by row: 0 non-`frame_dwelling` manifest rows differ from dev, 0 dropped, and Pruyne carries **dev's** newer row (63,344 B), not the branch's older one.
+- **The frame families genuinely re-qualified** on the merged tree with the sha256-verified pinned Blender 4.5.3: all **272 `frame_dwelling` masters byte-identical**, keeper house rebuilding to exactly 70,712 B / 20,632 B web. The 53 `frame_storefront` byte shifts (identical byte *counts*, so geometry unchanged) are a property of a family my change cannot reach — `frame_storefront` has its own params module — so I **reverted them to dev's bytes** rather than ship them. Nothing hand-stamped; `validate.py --stale` re-derives and agrees (1035 match, 0 stale).
+
+**Verification run** (foreground, on the final head):
+- `check.sh --part 1/4`…`4/4` — **all four CHECK PASS, none red**, with no missing-module skips.
+- **desktop 1280×800 stage 1 — 95 passed, 0 failed.**
+- **mobile 390×780 stages 1-2 — 193 passed, 5 failed.** All five are the Green Tree wagon shed, **inherited from dev's #1677** which removed that shed while the assertions still require it; every input those checks read is byte-identical to `origin/dev` and this branch touches no Green Tree record. Filed with `dev-smoke-state.mjs record`.
+
+**Why resume, not merged:** `chicago-4d-check.yml` — the actual `gate` — had **never been requested on this PR**, on either head; only `warranted` and `report` ever existed (the T-2461 gap). I requested it through the workflow's own `workflow_dispatch` path and it is queued on `9af909782`, but Actions was running ~22 min behind on this repo and it returned no verdict inside my clock. I did not read the gate, so I did not call the merge. One step remains: read that gate's verdict and merge into `dev` if green — the janitor or next run does it on a branch that is otherwise finished. Full evidence is in a PR comment; `resume` carries the reason.
+
+**T-2380 remains OPEN and `differs`,** released back to its queue place with the four named differences (core concealed behind the palisade, wrong compound proportions, palisade one flat mass, neither camera solved). No match claimed, no sign-off split, no photo follow-up filed (T-3153). Lap lock released.
