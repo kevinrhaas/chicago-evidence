@@ -1,0 +1,13 @@
+T-3088: Repair empty-scene coverage and parallelize the complete CI gate
+
+Bind the actual main-block fixture dependencies and retain its empty/Light
+no-import, no-model and no-card guarantees. Run the existing native check
+partition across eight CI jobs; the original required gate succeeds only when
+all eight complete successfully. Keep all assertions, history, reader/base
+requirements, dependencies, pool selection and changelog-entry checks.
+
+The prior whole native gate took29minutes and reported one fixture failure;
+this change unblocks occupied transport delivery in PR1649. No production
+renderer, model, route, scene data or quality setting changes in this commit.
+
+Checkpoint: owner-requested incremental feature branch; full gate pending

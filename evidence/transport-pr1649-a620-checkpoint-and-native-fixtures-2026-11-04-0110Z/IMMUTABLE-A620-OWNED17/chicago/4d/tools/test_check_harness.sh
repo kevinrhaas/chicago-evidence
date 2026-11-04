@@ -1,0 +1,487 @@
+#!/usr/bin/env bash
+# T-0763. The gate's own output, held to being readable.
+#
+#   tools/test_check_harness.sh              the gate
+#   tools/test_check_harness.sh --self-test  prove it by breaking it
+#
+# Two things are asserted, and the second is the one that rots:
+#
+#   A. tools/check_harness.sh behaves — `selftest` tags every line of a transcript
+#      including stderr, still fails when its command does, and `check_summary`
+#      names the failing steps once at the end and prints nothing failure-shaped on
+#      a pass.
+#   B. tools/check.sh USES it — no step that runs a self-test goes through `step`,
+#      where its fired assertions would print untagged. That is the rule three
+#      tickets were misfiled for want of, and it is one `step` away from returning.
+set -uo pipefail
+cd "$(dirname "$0")/.."
+# T-3299: the fixtures below are whole gates of their own. A part asked of the outer
+# gate is unset by the harness before any step starts, so this never sees one, and
+# unsetting it here says so where a reader of this file will look.
+unset CHECK_PART
+
+PASS=0
+FAILN=0
+ok()   { PASS=$((PASS + 1)); printf '  ok    %s\n' "$1"; }
+bad()  { FAILN=$((FAILN + 1)); printf '  FAIL  %s\n' "$1"; }
+want() { if [ "$1" = "$2" ]; then ok "$3"; else bad "$3 — wanted [$2], got [$1]"; fi; }
+
+# ---------------------------------------------------------------- A. the harness
+
+# Sourced into a subshell per case, because the harness keeps counters in globals.
+harness_run() { # <body> -> transcript on stdout, exit status preserved
+  bash -c '
+    set -uo pipefail
+    source tools/check_harness.sh
+    '"$1"'
+  ' 2>&1
+}
+
+transcript="$(harness_run '
+  selftest "a self-test that fires" bash -c "echo FAIL the roofs are wrong; echo ok >&2"
+  check_summary
+')"
+
+untagged="$(printf '%s\n' "$transcript" | grep -c '^FAIL' || true)"
+want "$untagged" "0" "a fired assertion never starts a line"
+tagged="$(printf '%s\n' "$transcript" | grep -c '^   self-test | ' || true)"
+want "$tagged" "2" "every transcript line is tagged, stderr included"
+case "$transcript" in
+  *"self-test | FAIL the roofs are wrong"*) ok "the assertion's own words are kept, not silenced" ;;
+  *) bad "the assertion's own words are kept, not silenced" ;;
+esac
+case "$transcript" in
+  *CHECK\ PASS*) ok "a self-test that fires leaves the gate green" ;;
+  *) bad "a self-test that fires leaves the gate green" ;;
+esac
+
+# A green run must give a reader nothing that reads as a failure once the self-test
+# transcripts are set aside. That is the ticket's acceptance, stated as a test.
+residue="$(printf '%s\n' "$transcript" | grep -v '^   self-test | ' | grep -ci 'fail' || true)"
+want "$residue" "0" "a green run prints no failure-shaped line of its own"
+
+# The status still decides: a self-test whose assertions stop firing is a red gate.
+harness_run 'selftest "a self-test gone quiet" false; check_summary' >/dev/null
+want "$?" "1" "a self-test that stops firing still fails the gate"
+
+rollup="$(harness_run '
+  step "the first gate" true
+  step "the second gate" false
+  selftest "a self-test gone quiet" false
+  check_summary
+')"
+named="$(printf '%s\n' "$rollup" | grep -c '^  .\[31m\*.\[0m ' || true)"
+want "$named" "2" "the roll-up names every failing step, once each"
+case "$rollup" in
+  *"CHECK FAIL"*"2 of 3 steps failed"*) ok "the roll-up counts steps, not lines" ;;
+  *) bad "the roll-up counts steps, not lines — got: $(printf '%s' "$rollup" | tr -d '\n' | tail -c 120)" ;;
+esac
+plain_rollup="$(printf '%s\n' "$rollup" | sed 's/\x1b\[[0-9;]*m//g')"
+case "$plain_rollup" in
+  *"  * the second gate"*) ok "a failing step is named at the end, not only inline" ;;
+  *) bad "a failing step is named at the end, not only inline" ;;
+esac
+
+# T-3299. THE GATE IN PARTS. The N parts must be a partition of the same steps: every
+# step in exactly one part, the prerequisites (`every_part`) in all of them, and a part
+# that says, in words, that its pass is not the gate's.
+_part_fixture='
+  every_part step "prerequisite" bash -c "echo ran prerequisite"
+  for i in 1 2 3 4 5 6 7; do step "gate $i" bash -c "echo ran gate $i"; done
+  selftest "gate 8" bash -c "echo ran gate 8"
+  check_summary
+'
+_part_ran() { # <k/N> <jobs> -> the labels that ran, one per line
+  CHECK_PART="$1" CHECK_JOBS="$2" bash -c '
+    set -uo pipefail
+    source tools/check_harness.sh
+    '"$_part_fixture" 2>&1 | sed 's/\x1b\[[0-9;]*m//g' | sed -n 's/^.*ran \(.*\)$/\1/p'
+}
+whole="$(_part_ran "" 1 | sort)"
+for jobs in 1 4; do
+  union="$( { _part_ran 1/3 "$jobs"; _part_ran 2/3 "$jobs"; _part_ran 3/3 "$jobs"; } \
+            | grep -v '^prerequisite$' | sort)"
+  want "$union" "$(printf '%s\n' "$whole" | grep -v '^prerequisite$')" \
+       "three parts run every step of the whole gate exactly once (CHECK_JOBS=$jobs)"
+  pre="$( { _part_ran 1/3 "$jobs"; _part_ran 2/3 "$jobs"; _part_ran 3/3 "$jobs"; } \
+          | grep -c '^prerequisite$' || true)"
+  want "$pre" "3" "an every_part step runs in each part (CHECK_JOBS=$jobs)"
+done
+want "$(_part_ran 2/3 4 | tr '\n' ' ')" "prerequisite gate 1 gate 4 gate 7 " \
+     "a part deals the steps out in declared order, every N-th from its own (the prerequisite holds ordinal 1)"
+want "$(_part_ran 1/1 4 | sort)" "$whole" "--part 1/1 is the whole gate"
+
+part_out="$(CHECK_PART=2/3 bash -c '
+  set -uo pipefail
+  source tools/check_harness.sh
+  '"$_part_fixture" 2>&1 | sed 's/\x1b\[[0-9;]*m//g')"
+case "$part_out" in
+  *"CHECK PASS — part 2/3: 4 steps, none red."*"This is part 2 of 3; the other 5 steps are in the other parts."*"--part 1/3 through --part 3/3"*)
+    ok "a part's pass names its part and the steps it left to the others" ;;
+  *) bad "a part's pass names its part and the steps it left to the others — got: $(printf '%s' "$part_out" | tail -c 300)" ;;
+esac
+part_red="$(CHECK_PART=1/2 CHECK_JOBS=1 bash -c '
+  set -uo pipefail
+  source tools/check_harness.sh
+  step "red in part one" false
+  step "green in part two" true
+  check_summary
+' 2>&1)"
+want "$?" "1" "a red step fails the part it is in"
+case "$(printf '%s' "$part_red" | sed 's/\x1b\[[0-9;]*m//g')" in
+  *"CHECK FAIL — part 1/2: 1 of 1 steps failed:"*) ok "a part's failure names its part" ;;
+  *) bad "a part's failure names its part — got: $(printf '%s' "$part_red" | tail -c 200)" ;;
+esac
+CHECK_PART=2/2 bash -c 'source tools/check_harness.sh; step "red in part one" false; step "green in part two" true; check_summary' >/dev/null 2>&1
+want "$?" "0" "…and only that part: the other part is green"
+for spec in 0/3 4/3 3 a/b 1/17 -1/2; do
+  CHECK_PART="$spec" bash -c 'source tools/check_harness.sh; echo started' >/dev/null 2>&1
+  want "$?" "2" "a malformed part \"$spec\" stops the gate before any step runs"
+done
+leaked="$(CHECK_PART=1/2 bash -c 'source tools/check_harness.sh; step "child" bash -c "printf %s \"\${CHECK_PART:-unset}\""; check_summary' 2>&1 | sed -n 's/^\(unset\|1\/2\)$/&/p')"
+want "$leaked" "unset" "a step started in a part cannot see the part, so it cannot inherit it"
+
+# ------------------------------------------------------- B. the gate uses it
+
+# A step is written either on one line (`step "label" check_js`) or on two, with the
+# command on the continuation. Both shapes exist in check.sh, so the scan reads the
+# command out of whichever one it is looking at.
+scan_check() { # <file> -> offending "line: reason" rows on stdout
+  awk '
+    BEGIN { selftest_commands["  node tools/test_batch_shadow_cull.mjs"] = 1 }
+    /^(every_part )?(step|selftest) "/ {
+      n = NR; kind = ($0 ~ /^(every_part )?selftest "/) ? "selftest" : "step"
+      if ($0 ~ /\\$/) { getline cmd } else { cmd = $0 }
+      looks = (cmd ~ /self-?test/ || cmd in selftest_commands)
+      if (kind == "step" && looks)
+        printf "%d: a self-test runs through step(), so its fired assertions print untagged:%s\n", n, cmd
+      if (kind == "selftest" && !looks)
+        printf "%d: selftest() wraps something that is not a self-test:%s\n", n, cmd
+    }
+  ' "$1"
+}
+
+if [ "${1:-}" = "--self-test" ]; then
+  printf '\n-- self-test: the scan is shown a gate that breaks the rule --\n'
+  tmp="$(mktemp)"; trap 'rm -f "$tmp"' EXIT
+  cat > "$tmp" <<'BROKEN'
+step "a real gate" \
+  python3 tools/validate.py --all
+
+step "…and its own assertions still fire when broken" \
+  python3 tools/validate.py --self-test
+BROKEN
+  caught="$(scan_check "$tmp" | wc -l | tr -d ' ')"
+  want "$caught" "1" "a self-test left on step() is refused"
+  cat > "$tmp" <<'BROKEN'
+selftest "a gate that is not a self-test" \
+  python3 tools/validate.py --all
+BROKEN
+  caught="$(scan_check "$tmp" | wc -l | tr -d ' ')"
+  want "$caught" "1" "a plain gate dressed as a self-test is refused"
+fi
+
+offenders="$(scan_check tools/check.sh)"
+if [ -z "$offenders" ]; then
+  ok "every self-test in check.sh runs through selftest(), and nothing else does"
+else
+  bad "check.sh mislabels $(printf '%s\n' "$offenders" | wc -l | tr -d ' ') step(s):"
+  printf '%s\n' "$offenders" | sed 's/^/        /'
+fi
+
+# T-1594. A LABEL IS A DOUBLE-QUOTED STRING, SO BASH READS ITS BACKTICKS. T-1548's
+# step label quoted a verb name in backticks inside the double quotes, and bash took
+# them for a command substitution: it tried to run `done`, printed two untagged
+# syntax-error lines to the gate's own stderr on EVERY run, and substituted the empty
+# string — so the label the gate printed and recorded read "…the tripwire scanner
+# behind  still fires", naming a step by a label that is not the one in the file. It
+# survived seventeen days because the substitution fails harmlessly: the step still
+# runs and the verdict is right. It is noise in the one output a run is told to read,
+# and it is untagged, which the harness's whole contract is against.
+#
+# The scan reads label lines, which is where every occurrence of the class has been —
+# a backtick reaches bash there whatever follows it. An escaped \` is left alone: that
+# is the fix, and it is how a label names a verb without running it.
+scan_labels() { # <file> -> offending "line: reason" rows on stdout
+  awk '
+    /^(every_part )?(step|selftest) "/ {
+      for (i = 1; i <= length($0); i++) {
+        c = substr($0, i, 1)
+        if (c == "\\") { i++; continue }
+        if (c == "`") {
+          printf "%d: an unescaped backtick makes bash run the quoted word and drop it from the label:%s\n", NR, $0
+          break
+        }
+      }
+    }
+  ' "$1"
+}
+
+if [ "${1:-}" = "--self-test" ]; then
+  printf '\n-- self-test: the label scan is shown a gate that breaks the rule --\n'
+  ltmp="$(mktemp)"
+  cat > "$ltmp" <<'BROKEN'
+selftest "…and the tripwire scanner behind `done` still fires" \
+  node tools/ticket.mjs tripwire-self-test
+BROKEN
+  want "$(scan_labels "$ltmp" | wc -l | tr -d ' ')" "1" \
+       "a label whose backticks bash would expand is refused"
+  cat > "$ltmp" <<'FIXED'
+selftest "…and the tripwire scanner behind \`done\` still fires" \
+  node tools/ticket.mjs tripwire-self-test
+step "ticket queue" \
+  node tools/ticket.mjs check
+FIXED
+  want "$(scan_labels "$ltmp" | wc -l | tr -d ' ')" "0" \
+       "…and an escaped backtick, which is the fix, is not"
+  rm -f "$ltmp"
+fi
+
+backticks="$(scan_labels tools/check.sh)"
+if [ -z "$backticks" ]; then
+  ok "no step label in check.sh carries a backtick bash would expand"
+else
+  bad "check.sh has $(printf '%s\n' "$backticks" | wc -l | tr -d ' ') label(s) bash expands:"
+  printf '%s\n' "$backticks" | sed 's/^/        /'
+fi
+
+selftests="$(grep -c '^selftest "' tools/check.sh || true)"
+if [ "$selftests" -ge 100 ]; then
+  ok "$selftests self-test steps are tagged"
+else
+  bad "only $selftests self-test steps are tagged — check.sh had 114 when T-0763 landed"
+fi
+
+# T-1289. THE POOL MUST REACH THE SAME VERDICT AS THE SERIAL PATH, and print the same
+# thing in the same order. A gate that is faster and differently right is not faster.
+#
+# Each run is its own shell so the harness's counters start clean; the run prints its
+# transcript and then one VERDICT line, which is what the comparison reads.
+_pool_run() {
+  CHECK_JOBS="$1" bash -c '
+    source tools/check_harness.sh
+    step     "first"  sh -c "echo one"
+    selftest "second" sh -c "echo two; exit 0"
+    step     "third"  sh -c "echo three; exit 1"
+    step     "fourth" sh -c "echo four"
+    check_flush
+    printf "VERDICT failed=%s steps=%s selftests=%s\n" \
+      "$CHECK_FAILED" "$CHECK_STEPS" "$CHECK_SELFTESTS"
+  ' 2>&1
+}
+
+serial_run="$(_pool_run 1)"
+parallel_run="$(_pool_run 4)"
+
+if [ "$serial_run" = "$parallel_run" ]; then
+  ok "a four-job run prints byte-for-byte what a serial run prints, and agrees on the verdict"
+else
+  bad "the pool differs from the serial path:"
+  diff <(printf '%s\n' "$serial_run") <(printf '%s\n' "$parallel_run") | sed 's/^/        /'
+fi
+want "$(printf '%s\n' "$parallel_run" | grep -o 'failed=[01]')" "failed=1" \
+     "a step that exits non-zero still fails the gate under the pool"
+want "$(printf '%s\n' "$parallel_run" | grep -o 'steps=[0-9]*')" "steps=4" \
+     "the pool counts every step it ran"
+
+# The order is the DECLARED order, not the order they finished in.
+ordered="$(CHECK_JOBS=4 bash -c '
+  source tools/check_harness.sh
+  step "slow" sh -c "sleep 0.5; echo SLOW"
+  step "fast" sh -c "echo FAST"
+  check_flush' 2>&1)"
+slow_at="$(printf '%s\n' "$ordered" | grep -n SLOW | head -1 | cut -d: -f1)"
+fast_at="$(printf '%s\n' "$ordered" | grep -n FAST | head -1 | cut -d: -f1)"
+if [ -n "$slow_at" ] && [ -n "$fast_at" ] && [ "$slow_at" -lt "$fast_at" ]; then
+  ok "a slow step prints before the fast one declared after it, though it finished last"
+else
+  bad "the pool printed in completion order, not declaration order"
+fi
+
+# T-1336: A STEP THAT FAILS BESIDE A NEIGHBOUR AND PASSES ALONE.
+#
+# The race this answers is real and it is in this repo's own gate:
+# read_census_1830.py's self-test writes a drift into the live
+# data/research/.../resident_crosswalk.json to prove `--check` catches it, and puts
+# it back in a `finally`. The step declared immediately BEFORE it reads that same
+# file. Serially that is fine. In the pool they run together, and the check reads
+# the drift the self-test is holding — a red gate on a tree that is green.
+#
+# The fixture below is that shape with the timing made certain instead of likely:
+# a step that fails while a marker exists, beside a step that holds the marker for
+# a moment and removes it.
+race_dir="$(mktemp -d)"
+trap 'rm -rf "$race_dir"' EXIT
+
+raced="$(CHECK_JOBS=4 bash -c '
+  source tools/check_harness.sh
+  step "the neighbour that holds the tree wrong" sh -c "touch '"$race_dir"'/drift; sleep 0.4; rm -f '"$race_dir"'/drift"
+  step "the step that reads it"                  sh -c "sleep 0.1; if [ -e '"$race_dir"'/drift ]; then echo DRIFT SEEN; exit 1; fi; echo quiet"
+  check_flush
+  printf "VERDICT failed=%s raced=%s\n" "$CHECK_FAILED" "${#CHECK_RACED_LABELS[@]}"' 2>&1)"
+
+want "$(printf '%s\n' "$raced" | grep -o 'failed=[01]')" "failed=0" \
+     "a step that fails in the pool and passes alone does NOT fail the gate"
+want "$(printf '%s\n' "$raced" | grep -o 'raced=[0-9]*')" "raced=1" \
+     "and it is counted as a race rather than forgotten"
+if printf '%s\n' "$raced" | grep -q 'PASSED ALONE'; then
+  ok "the race is named inline, with the step's own label"
+else
+  bad "a retried step passed silently — a race must never be quiet:"
+  printf '%s\n' "$raced" | sed 's/^/        /'
+fi
+
+# THE OTHER HALF, WHICH MATTERS MORE: the retry must not turn a real failure green.
+real="$(CHECK_JOBS=4 bash -c '
+  source tools/check_harness.sh
+  step "genuinely broken" sh -c "echo BROKEN; exit 1"
+  step "fine"             sh -c "echo ok"
+  check_flush
+  printf "VERDICT failed=%s raced=%s\n" "$CHECK_FAILED" "${#CHECK_RACED_LABELS[@]}"' 2>&1)"
+want "$(printf '%s\n' "$real" | grep -o 'failed=[01]')" "failed=1" \
+     "a step that is red on a quiet tree too still fails the gate"
+want "$(printf '%s\n' "$real" | grep -o 'raced=[0-9]*')" "raced=0" \
+     "and it is not miscounted as a race"
+want "$(printf '%s\n' "$real" | grep -c 'BROKEN')" "1" \
+     "the failure's own output is printed once, not twice by the retry"
+
+# The serial path has no pool, so it has no race to report and must not grow a field.
+serial_race="$(CHECK_JOBS=1 bash -c '
+  source tools/check_harness.sh
+  step "fine" sh -c "echo ok"
+  check_flush
+  printf "raced=%s\n" "${#CHECK_RACED_LABELS[@]}"' 2>&1)"
+want "$(printf '%s\n' "$serial_race" | grep -o 'raced=[0-9]*')" "raced=0" \
+     "CHECK_JOBS=1 reports no races, because it cannot have one"
+
+# T-1578. THE INSTRUMENT MUST NOT CHANGE THE TRANSCRIPT, AND THE POOL MUST BE ON.
+#
+# Everything above compares the pool against the serial path with CHECK_TIMINGS
+# unset, which is how the bug this answers survived: `_check_time`'s awk warned on
+# the %q-quoted command it was handed with `-v`, onto the gate's own stderr, from
+# four workers at once. That made the byte-comparability assertion above fail — but
+# only for somebody who had set CHECK_TIMINGS, i.e. only for somebody already
+# trying to find out why the gate was slow.
+#
+# So the comparison is made a second time with the instrument ON. Setting a
+# measurement's own switch may not change what is measured.
+timed_dir="$(mktemp -d)"
+trap 'rm -rf "$race_dir" "$timed_dir"' EXIT
+
+untimed_run="$(_pool_run 4)"
+timed_run="$(CHECK_TIMINGS="$timed_dir/t.tsv" _pool_run 4)"
+if [ "$untimed_run" = "$timed_run" ]; then
+  ok "CHECK_TIMINGS records the gate without appearing in it"
+else
+  bad "the timing instrument wrote into the transcript it measures (T-1578):"
+  diff <(printf '%s\n' "$untimed_run") <(printf '%s\n' "$timed_run") | sed 's/^/        /'
+fi
+want "$(CHECK_TIMINGS="$timed_dir/s.tsv" _pool_run 1)" "$untimed_run" \
+     "…and the serial path agrees with the pool under the instrument too"
+
+# The row it writes is four tab-separated fields, and the command is the third.
+# The %q-quoting is the point: awk's -v ate the backslashes out of it, so the one
+# column this file exists to record was lossy while it was also breaking the gate.
+if [ -s "$timed_dir/t.tsv" ]; then
+  ok "a timed run actually wrote rows ($(wc -l < "$timed_dir/t.tsv" | tr -d ' ') of them)"
+else
+  bad "CHECK_TIMINGS was set and nothing was recorded"
+fi
+want "$(awk -F'\t' 'NR==1 { print NF }' "$timed_dir/t.tsv")" "4" \
+     "each row is seconds, kind, command, label"
+if grep -q 'echo\\ one' "$timed_dir/t.tsv"; then
+  ok "the recorded command keeps its %q quoting, backslashes and all"
+else
+  bad "the recorded command was mangled — awk -v processing escapes is T-1578:"
+  sed 's/^/        /' "$timed_dir/t.tsv" | head -4
+fi
+# Three decimals of seconds, and a duration that is neither negative nor absurd.
+if awk -F'\t' '$1 !~ /^[0-9]+\.[0-9][0-9][0-9]$/ { bad = 1 } END { exit bad + 0 }' \
+     "$timed_dir/t.tsv"; then
+  ok "every duration is a non-negative number of seconds to three decimals"
+else
+  bad "a duration was not formatted as N.NNN — the integer-nanosecond arithmetic slipped:"
+  awk -F'\t' '$1 !~ /^[0-9]+\.[0-9][0-9][0-9]$/ { print "        " $0 }' "$timed_dir/t.tsv" | head -4
+
+fi
+
+# THE DEFAULT ITSELF. T-1289 built the pool and left it off, and for three months the
+# only caller that turned it on was CI — so the sandbox that could not afford a serial
+# gate was the one running one. Returning 1 on four available cores is that regression.
+# Child-local CPU fixtures isolate policy from outer CHECK_JOBS/math-thread limits;
+# one actual available core legitimately defaults to 1.
+default_jobs="$(bash -c 'unset CHECK_JOBS; nproc() { printf "4\n"; }; source tools/check_harness.sh; printf "%s" "$CHECK_JOBS"')"
+want "$default_jobs" "4" "the default uses all four available fixture cores"
+one_core_jobs="$(bash -c 'unset CHECK_JOBS; nproc() { printf "1\n"; }; source tools/check_harness.sh; printf "%s" "$CHECK_JOBS"')"
+want "$one_core_jobs" "1" "a single available fixture core legitimately defaults to one job"
+want "$(CHECK_JOBS=1 bash -c 'source tools/check_harness.sh; printf "%s" "$CHECK_JOBS"')" "1" \
+     "…and an explicit CHECK_JOBS still wins, which is the escape hatch"
+
+# The CI partition keeps the same required gate and refuses incomplete verdicts.
+if python3 - ../../.github/workflows/chicago-4d-check.yml <<'PY_GATE_PARTITION'
+from pathlib import Path
+import json, re, sys
+source = Path(sys.argv[1]).read_text()
+def valid(text):
+    text = '\n'.join(line for line in text.splitlines() if not line.lstrip().startswith('#'))
+    if '\njobs:\n' not in text: return False
+    text = text.split('\njobs:\n', 1)[1]
+    jobs = {}
+    for match in re.finditer(r'^  ([a-z][a-z0-9-]*):\s*$', text, re.M):
+        start = match.end(); following = re.search(r'^  [a-z][a-z0-9-]*:\s*$', text[start:], re.M)
+        jobs[match.group(1)] = text[start:start + following.start()] if following else text[start:]
+    if set(jobs) != {'check-part', 'gate'}: return False
+    part, gate = jobs['check-part'], jobs['gate']
+    if re.search(r'^\s+(?:include|exclude):', part, re.M): return False
+    if re.findall(r'^\s+if:\s*(.+)$', gate, re.M) != ['${{ always() }}']: return False
+    required = [
+        '    name: gate part ${{ matrix.part }}/8',
+        '    runs-on: ubuntu-latest', '      fail-fast: false', '      max-parallel: 8',
+        '          fetch-depth: 0', '          filter: blob:none',
+        "          C4D_GATE_REQUIRE_READERS: '1'", "          C4D_GATE_REQUIRE_BASE: '1'",
+        '          CHECK_JOBS: ${{ steps.jobs.outputs.n }}',
+        '        run: timeout --kill-after=5s 600s ./tools/check.sh --part "${{ matrix.part }}/8"',
+        '          node chicago/4d/tools/check-changelog-entry.mjs',
+        '          "${{ github.event.pull_request.base.sha }}"',
+        '          "${{ github.event.pull_request.head.sha }}"',
+    ]
+    if any(line not in part.splitlines() for line in required): return False
+    matrix = re.search(r'^        part: (\[[^\n]+\])$', part, re.M)
+    if not matrix or json.loads(matrix.group(1)) != list(range(1, 9)): return False
+    if re.findall(r'^\s+if:\s*(.+)$', part, re.M) != ["github.event_name == 'pull_request'"]: return False
+    if 'continue-on-error:' in text: return False
+    for line in ['    name: gate', '    needs: check-part', '    if: ${{ always() }}',
+                 '    runs-on: ubuntu-latest', '          PARTS_RESULT: ${{ needs.check-part.result }}',
+                 '        run: test "$PARTS_RESULT" = success']:
+        if line not in gate.splitlines(): return False
+    if len(re.findall(r'^\s+run:', gate, re.M)) != 1: return False
+    return True
+assert valid(source), 'native CI partition or final required gate changed'
+controls = [
+    source.replace('part: [1, 2, 3, 4, 5, 6, 7, 8]', 'part: [1, 2, 3, 4, 5, 6, 7]'),
+    source.replace('600s ./tools/check.sh', '601s ./tools/check.sh'),
+    source.replace('/8"', '/4"'),
+    source.replace('timeout --kill-after=5s 600s ./tools/check.sh --part "${{ matrix.part }}/8"', 'true'),
+    source.replace("C4D_GATE_REQUIRE_READERS: '1'", "C4D_GATE_REQUIRE_READERS: '0'"),
+    source.replace("C4D_GATE_REQUIRE_BASE: '1'", "C4D_GATE_REQUIRE_BASE: '0'"),
+    source.replace('fetch-depth: 0', 'fetch-depth: 1'),
+    source.replace('    steps:\n', '    if: false\n    steps:\n', 1),
+    source.replace('    if: ${{ always() }}\n', ''),
+    source.replace('test "$PARTS_RESULT" = success', 'test "$PARTS_RESULT" != failure'),
+    source.replace('    name: gate\n', '    name: different-check\n'),
+    source.replace('        part: [1, 2, 3, 4, 5, 6, 7, 8]', '        part: [1, 2, 3, 4, 5, 6, 7, 8]\n        exclude:\n          - part: 8'),
+    source.replace('        part: [1, 2, 3, 4, 5, 6, 7, 8]', '        part: [1, 2, 3, 4, 5, 6, 7, 8]\n        include:\n          - part: 1'),
+    source.replace('    if: ${{ always() }}\n', '    if: ${{ always() }}\n    if: false\n'),
+]
+for i, broken in enumerate(controls, 1):
+    assert not valid(broken), f'unsafe CI shape control {i} passed'
+print(f'CI partition: required gate and all eight native parts; {len(controls)} refusal controls pass')
+PY_GATE_PARTITION
+then
+  ok "CI requires every native part before the required gate can pass"
+else
+  bad "CI can hide an incomplete native partition or changed required check"
+fi
+
+printf '\n%d passed, %d failed\n' "$PASS" "$FAILN"
+[ "$FAILN" -eq 0 ]
