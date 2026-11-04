@@ -1,0 +1,9 @@
+# Green Tree combined-producer continuation dispatched once
+
+Actual native run https://github.com/kevinrhaas/polecat-platform/actions/runs/41771690483 accepted04:11:33UTC on reviewed owner-safe7b427feature. ExistingPR1684/head740/originallane/max400/defaultprocessor/model/effort. ExactatomicattemptreservedbeforeSINGLEPOST; acceptedresponse/properouter0/allreaped. No duplicate.
+
+Root reviewed finalb64b4handoff/643c77controller/helper; approved guardedticketappend97a2d2bd, preservingENTIREpriorbody/frontmatter/claim/pr. Freshdev19910 and25frame_tavern243outbuilding25fort_structure bindings exact; bothfeatureCIgreen/free1684/OPENunclaimed verifiedbeforePOST. Candidatepublicadfbc6a272d8dcd16f8b9bb545ed874b80b0658a/evidence/green-tree-2026-11-04/pr1684-owner-safe-single-combined-bake-prepared/RECOVERY.md.
+
+Boundedactualnextwork: retaincap4.5→4.85RECONSTRUCTED withcurrentHotelcorniceproducer; computefull25inputdigests andgenuinelybuildonlyGTifother22defaults+2variantscurrentfresh. Not ablind25rebake. Preserveallforeignnativeoutputs. ActualcurrenttargetbothUI/capbeforeafter/native107both/sourcechecks/finalwhole8+aggregate/rootpixels/ordinaryprotecteddevmerge remainowed. No build/claim/source/runtime/merge successisclaimedbydispatch. OriginalT2376OPEN/PARTIAL/DIFFERS.
+
+Soleboundedinitialclaimmonitoractive. ExistingPRnormalPRlapisauthority; originalmaylegitimatelyremainOPEN/unclaimed. RecordnormalPRlapobservableownershipseparatelybeforehandoff, noforcedticketclaim/no foreigncancel. Oldrawqualificationtimingcorrectionsretained, neverrelabeledasnew740orcombinedexecution.
