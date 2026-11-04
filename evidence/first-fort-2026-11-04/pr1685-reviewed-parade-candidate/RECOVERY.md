@@ -1,0 +1,9 @@
+# PR1685 reviewed parade-presence candidate — full gates still pending
+
+Seven staged paths at c416a213f4044e227c91335a4be1bff5e235c35a, basea7f7942fc030d302730709ae9b006d1b7ccb0539. Root and independent peer code review approve the narrow renderer accounting repair. Real createBuildings fixture checks, the existing54 fortgate checks, source-use owner and changelog owner passed with proper reaper receipts. Full four-part source, final actual both-viewport/runtime and hosted aggregate gate have NOT run for this new renderer patch. No source commit or merge claimed.
+
+Only identified, loaded, nonempty, finite all-earth known-owner parade models are listed separately from directbuilding batches. No box or standing count is invented; null/empty/malformed assets and mixed sundial geometry remain required, and shared material roles are preserved. Ground already rendered independently; this repairs its false missing-host accounting. Existing missing-host probe assertions are unchanged.
+
+The archive includes allseven exactpostimages, stageddiff, hashes/units/rawprefixpreservation, and PREPARED-NOT-RUN external runtime helpers. Those helpers preserve the original cards/body/native107both tests and add positiveactualyardsowner/geometry plus the existingnativeGPUpicker's downwardray, so no CPUproxy is presented as realground after uploadrelease. Runtime must bind a new properlyqualifiedcommitted/publishedhead and pass zeroerrors before ordinarydevmerge. Native243geometry proof is unchanged; no hostBlender or fakebake. Originalfirstfortwholepictureacceptance staysOPEN.
+
+SourceCPU is queued behind LakeHouse's source/nativequiet lease; no appfreeze/sourcegate/result is invented whilewaiting. Earlier actualruntimefailure is preserved at64cc6a8423a7175cef6714012ba312dd5bc64808. Earlier rawrecovery candidate2445196 is retained as history; this candidate onlyadds finaldocwording andthreeconcise visitorchangelogitems.
