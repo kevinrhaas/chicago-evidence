@@ -1,0 +1,13 @@
+Concurrent Sauganash dev merge ce094 is intentionally not imported into this frozen native source baseline; root approved building the unchanged fort recipes at0a14, then preserving the qualified foreign increment through ordinary integration before final adoption.
+
+UNQUALIFIED SOURCE HALF — NEEDS BAKE. This draft prepares the owner-adopted reconstructed cupolas on the two first-fort blockhouses; their new native forms are not built yet. AGENTS' geometry-build rule permits this data half before the pinned native workflow. No stale result or native/pixel/source-gate pass is being advertised as qualified.
+
+Exactly two existing cupola controls plus their explicit provenance notes change. The current magazine producer/params, main pyramid roofs, measured plans, placement, heights, phase ranges, camera and palette remain exact. Occurrence on the supported 1812 prototype and all inherited kit dimensions are reconstructed. Whistler says the cupolas were not yet built in 1808; no completion date or presence throughout 1803–1812 is asserted.
+
+Fresh read-only current-owner recomputation at dev0a14 covers all three supported scenes/defaults/versions: 25 fort plus243 outbuilding baseline recipes match; exactly the NW+SE cupola defaults change, zero family variants. The other23fort+243 recipes and all1033 non-target registrations/available physical bindings are preserved, as are all6 version rows. Actual tracked pairs count1032 non-target: Glessner's preexisting recovery-package distinction is retained, not falsely counted as another tracked pair. No output or manifest was hand-restamped.
+
+Validation: exact approved data postimages, raw STATUS/ROADMAP prefixes, diff whitespace and one pending-entry shape pass. Current native assets are intentionally stale for these two defaults; generation, source/runtime gates, controlled picture comparison and target visitor acceptance are PENDING. T-3041/T-2387 stay OPEN/PARTIAL and Currey DIFFERS.
+
+Containment: only the stock pinned Blender4.5.3 workflow may be dispatched after a separate public exact-head intent and root single-POST GO. Its reversible child bake PR may auto-merge only into this isolated feature. This parent PR into dev stays DRAFT and auto-merge OFF until genuine two-target MASTER+WEB, foreign preservation, target source/pixels and current whole8+aggregate qualify. No workflow/pin edit, host Blender, provider job, production promotion, release/latest-good move or new photo ticket.
+
+Current read-only recipe evidence: https://github.com/kevinrhaas/chicago-evidence/blob/aef624d94da77f182560ffbdfc3002177797fd11/evidence/first-fort-2026-11-04/pr1699-live-0a14-and-cupola-readonly-rebind/cupola-readonly/CURRENT-0A14-RECIPE-REBIND.json
