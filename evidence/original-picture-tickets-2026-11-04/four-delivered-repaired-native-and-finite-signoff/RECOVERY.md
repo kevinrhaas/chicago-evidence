@@ -1,0 +1,13 @@
+# Four delivered increments; native repair running; finite signoff review
+
+2026-11-04T11:09:33.382719+00:00
+
+Mergeddevthisstretch:1699magazinefollowup0a14;1701Sauganashstacksce094(fullproof6c66490);1703Lakeinterpretation790535(fullsource501de/live98635);1702Jailgablematerial16dab2(fullproofe57d01/runtime d7db87/rootactualframesd8ad4e). Allactualcurrent8+aggregatepassed, actualmergedtreesexactqualified; originalsremainpartialwherepicturegatesdiffers. Normaloriginalreleases0b19/4fdf/e842andlapsFREE. Originaltallystill10/17complete, sevenpartial.
+
+Oldstocknative418091 generated2MASTER+2WEB but3/1161provenancechecksfailed (missing2cupolaLibertiesCovers/SourceUse); no branch/artifactretained. Rawjoblog losslessgz+summaryattached. Repaired7509eightmetadata-onlypaths; original2recordpostimages/recipes/producer/pinunchanged. Actual5fastownerspassedall1031records/559sources, peer e1f18c. Publicintent171f/newexactROOTGO14e29 precededONEacceptedPOST10:47:27. Actualnewrun41816507513/job126528591262/Ubuntu26/pinned4.5.3;last11:07Bakeinprogress, nobranch/availableGLB/passyet. SoleRobserver, parent1704DRAFT/unarmed; childautoPRIVATEfeatureonly, no production/release. OriginalT3041leasea9ba10:51expiry13:51.
+
+NownsW/GPUforfiniteT2383actualstreetwalkreview onqualifiede803 (pubPASS5895/693), originalclaimc0cd. T3153audit812872 retirespixel/count/duplicategaps andcaplip-onlypriority; adjudicatewholechimneyprofilevisibilityandcrosswingmass withactualevidence, no unmeasurable=tolerance shortcut/no newphoto tickets. Rootwillreassignretainedcupolaassetpeeronceactualoutputsavailable.
+
+WestgatewayreadonlyPREP1f714 isrealmissingfeature, existingglobaloffsetunsupportedindependentplacement; futureper-sideoverridewouldrequire15palisadegenuinebuilds/13unrelatedpreservation, separatefromfort25/cupola. No sourceimplementation/coords/dates/nativeGO.
+
+WS~560MB/TMP1.907GB; preserve512MiB/1.8Bfloors/allODBchains. No clone/mirror/GC/repack. Co169looseobjectdonor copiedtoindependentno-alternatescache toavoidcycle; sourceobjects/branchesallpreserved. CurrentpublisherexplicitPOST/filebody+max3immutableblob-only502/503/EOF retries, NEVERrefs/commits/nativePOST.
