@@ -1,0 +1,328 @@
+"""What determines a mesh — the hash the staleness gate compares against.
+
+NO bpy import, deliberately. `tools/validate.py` has to recompute this on every
+commit in a bare Python 3.11, because a staleness check that only runs where
+Blender runs is a check that runs nightly at best, and the commit that breaks
+the correspondence is not the commit that discovers it.
+
+## What is hashed, and why it is not "the files that were involved"
+
+The first version of this hash (in `build.py`, replaced by this module) hashed
+the phase record, *every* `.py` under `generators/`, and `blender.pin`. It was
+never actually compared against anything, and when it finally was, all six
+committed buildings came out stale — none of them for a reason that could move a
+vertex. Two whole classes of false positive:
+
+- **Record prose.** The phase JSON went in whole, so a `note` rewrite, a new
+  source id, or the `geometry:` declarations added on 2026-08-10 all read as
+  "the mesh changed". None of them are read by any generator.
+- **Unrelated code.** One hash over every generator meant an edit to
+  `terrain_gen.py` invalidated the taverns, and a comment added to one
+  archetype's parameter module invalidated the other archetypes' buildings.
+
+A hash that cries stale for reasons that cannot change the geometry gets
+disbelieved, and a disbelieved gate is worse than no gate: it teaches the reader
+that "stale" means nothing. So this one hashes **what the builder can actually
+see**:
+
+1. the *resolved* archetype parameters — `from_phase(phase, record)`, not the phase
+   and not the record — so only a value the generator reads counts, and it counts
+   after defaulting. The record joined the phase in T-0007, when the archetypes
+   started reading the finish the 665-roof programme dealt them; it is passed rather
+   than hashed, for the same reason the phase is;
+2. every `@property` the parameter class derives from those fields, because
+   `addition_height_m`'s 2.55/4.7 constants are as load-bearing as any field;
+3. the confidence *floats*, not the labels, so a change to `CONFIDENCE_VALUE`
+   registers even though it never appears in a field;
+4. the bytes of the code that turns parameters into vertices — this archetype's
+   builder, `generators/common/`, the geometry pipeline in `generators/emit.py`, and
+   the pinned Blender. `emit.py` rather than `build.py` since T-1654: `build.py` went
+   in WHOLE, so its module docstring, its `argparse` block and its result summary
+   were all read as statements about geometry, and a fix to `--only`'s argument
+   handling staled 422 of 422 assets for a change that could not move a vertex. The
+   pipeline was split out into `emit.py` and the CLI left behind. That is the
+   argument of paragraph two, applied to this recipe's last remaining whole
+   module.
+
+`<arch>_params.py` bytes are deliberately NOT hashed. That module's entire effect
+on the mesh is the object it returns, and that object is hashed above in more
+detail than its source would give: two params modules that resolve a record
+identically produce the same building, and the hash should say so.
+
+The residual is stated rather than papered over: this compares inputs, not
+output. Cycles AO is not bit-reproducible across hardware, which is why the
+project defines freshness on inputs in the first place; a hand-edited GLB with an
+untouched record still passes, and nothing here can catch that.
+"""
+
+from __future__ import annotations
+
+import hashlib
+import json
+import sys
+from dataclasses import asdict, is_dataclass
+from pathlib import Path
+
+import code_inputs
+
+ROOT = Path(__file__).resolve().parent.parent
+
+# Bump when the recipe below changes. assets/manifest.json records the scheme it
+# was stamped under, so a definition change is a visible, dated event rather than
+# an unexplained wave of staleness — and the gate refuses a manifest whose scheme
+# it does not know instead of comparing hashes that mean different things.
+SCHEME = "resolved-params-v4"
+
+
+class InputsError(ValueError):
+    """The inputs to a mesh cannot be resolved, so no hash can be taken."""
+
+
+#: Archetypes whose GLB is written by a pure-Python command rather than by emit.py in
+#: Blender, and that command (T-2266). Their input document hashes the archetype module
+#: and the command alone, and carries no Blender pin.
+PURE_PYTHON = {"k01_frontage": "k01_emit.py", "k13_conservatories": "k13_emit.py",  # T-2306: K13
+               "k16_timber": "k16_emit.py",  # T-2323: K16
+               "k12_coach_house": "k12_emit.py",  # T-2321: K12
+               "prairie_draft": "draft_emit.py",  # T-2329: the district draft
+               "haystack": "haystack_emit.py",  # T-2510: Lee's Place's stacks
+               "lodge_camp": "lodge_camp_emit.py"}  # T-3342: the Potawatomi camp of 1812
+#: The library modules a pure-Python archetype lays on its walls (T-2291), and so hashes
+#: beside the archetype: K03 brick's bond, heads and string course move vertices too.
+#: T-2302: and K05 builds its roof, from the kit's own parts (k05_roofs.json, hashed below).
+PURE_PYTHON_HELPERS = {
+                       # T-3342: the camp's dimensions are constants in its params module
+                       # (the dataclass hashed above carries only the record's counts)
+                       "lodge_camp": ("lodge_camp_params.py",),
+                       "k01_frontage": ("k03_brick.py", "k05_roofs.py", "k09_frontage.py", "k09_trim.py",
+                                       "k10_frontage.py", "k10_cornices.py", "k01_stone_finish.py",
+                                       "k11_frontage.py", "k11_ironwork.py",
+                                       # T-2360: K14 lays the yard, from the condition kit's ground layers
+                                       "k14_yard.py", "k14_condition.py",
+                                       # T-2313: K15 builds the chimney stacks in the roof
+                                       "k15_chimneys.py",
+                                       # T-2358: K14 weathers a record that names it
+                                       "k14_condition.py",
+                                       # T-2543: the shaped street gable, joined into the roof
+                                       "k01_shaped_gable.py",
+                                       # T-3000: a mansard deck's cresting, finials and corner hoods
+                                       "k01_mansard_deck.py",
+                                       # T-3158: a stone front's pavilions, frieze, modillions and mansard ribs
+                                       "k01_pavilions.py",
+                                       # T-3160: a side wall's arcaded porte-cochere (T-3241: and a corner porch)
+                                       "k01_porte_cochere.py",
+                                       # T-3241: a hip cut off level at a railed deck
+                                       "k01_hip_deck.py",
+                                       # T-3242: a two-level veranda on the rear wall
+                                       "k01_rear_veranda.py",
+                                       # T-1881: a raised stone terrace under an awning on the rear wall
+                                       "k01_rear_terrace.py",
+                                       # T-3255: eared and crested hoods, and corner pilasters
+                                       "k01_dressings.py"),
+                       # T-2306: the conservatory is cut with K01's Prim and K06's polygon helpers
+                       "k13_conservatories": ("k01_frontage.py", "k06_windows.py"),
+                       # T-2323: the timber front is cut with K01's Prim and K06's sash and polygon helpers
+                       # T-2425: and K09's ear clipper for 1638's pierced spandrels
+                       # T-3205: and K16's yard, which routes its walk with K14's
+                       "k16_timber": ("k01_frontage.py", "k06_windows.py", "k09_trim.py", "k16_yard.py", "k14_yard.py"),
+                       # T-2321: the coach house is cut with K09's mesh primitives, K01's vector
+                       # helpers and K10's sweep (its party-wall coping)
+                       "k12_coach_house": ("k09_trim.py", "k01_frontage.py", "k10_cornices.py")}
+
+
+def _sha_file(p: Path) -> str:
+    return hashlib.sha256(p.read_bytes()).hexdigest()
+
+
+def _code_shas(archetype: str, params=None) -> dict[str, str]:
+    """The modules whose bytes turn parameters into vertices.
+
+    Not the parameter modules — see the note above. Not `terrain_gen.py`, which
+    builds the ground and shares nothing with a building. Not this file, which
+    computes the hash and makes no geometry.
+
+    `emit.py` and not `build.py`, since T-1654. The two were one file, and hashing
+    it whole meant an `argparse` fix staled 422 of 422 assets — the same false
+    positive T-0164 removed from `common/`, one directory up. `build.py` is now the
+    command line (which structures, which scene, the manifest, the summary) and
+    `emit.py` is the pipeline (the archetype registry, the unwrap, the AO bake, the
+    glTF export), so this list reaches every line that can move a vertex and no line
+    that cannot. `tools/test_build_cli_has_no_geometry.py` is what keeps that true:
+    a file split is only as good as the gate that stops geometry drifting back into
+    the half nobody hashes.
+
+    And not, since T-0164, whatever happens to be filed in `common/`: the
+    directory is asked through `code_inputs.geometry_modules()`, which names the
+    modules that make geometry rather than listing the ones that share a folder.
+    `common/phases.py` decides whether a mesh is built at all and makes none, and
+    while it was globbed in, one comment line in it staled 349 of 349 assets.
+    """
+    gen = ROOT / "generators"
+    wanted = [gen / "emit.py", gen / "archetypes" / f"{archetype}.py"]
+    wanted += code_inputs.geometry_modules()
+    # T-2266: an archetype that writes its glTF in pure Python never runs emit.py, the
+    # shared Blender builders or the pinned Blender, so none of them is an input to its
+    # mesh — hashing them would stale it for edits that cannot move its vertices.
+    if archetype in PURE_PYTHON:
+        wanted = [gen / "archetypes" / f"{archetype}.py", gen / PURE_PYTHON[archetype]]
+        wanted += [gen / "archetypes" / h for h in PURE_PYTHON_HELPERS.get(archetype, ())]
+        if archetype == "k01_frontage":
+            wanted += [gen / "archetypes" / "k06_windows.py", gen / "archetypes" / "k07_entrances.py"]
+            # T-2308: a record's bays are built by the K08 kit, so its module moves vertices
+            wanted += [gen / "archetypes" / "k08_bays.py"]
+        # T-3222: a K16 house with a yard has its walk routed by K14 and worn by the condition kit
+        if archetype == "k16_timber" and getattr(params, "yard", None):
+            wanted += [gen / "archetypes" / "k14_yard.py", gen / "archetypes" / "k14_condition.py"]
+    # T-1730: the high-detail Glessner build delegates to v4-only modules.
+    # Hash every module in that family, including the material/texture recipe;
+    # the legacy path never imports them. New helpers in the family therefore
+    # become inputs automatically instead of silently escaping the stale gate.
+    if archetype == "masonry_house" and getattr(params, "detail_profile", "") == "glessner_v4":
+        detail_modules = sorted((gen / "archetypes").glob("masonry_house_v4*.py"))
+        if not detail_modules:
+            raise InputsError("Glessner v4 detail modules are missing")
+        wanted += detail_modules
+    out = {}
+    for p in wanted:
+        if not p.exists():
+            raise InputsError(f"{p.relative_to(ROOT)} is missing, so what this mesh "
+                              f"was built from cannot be established")
+        out[p.relative_to(gen).as_posix()] = _sha_file(p)
+    return out
+
+
+def _params_doc(params) -> dict:
+    """Everything the builder can read off a resolved parameter object."""
+    if not is_dataclass(params):
+        raise InputsError(f"{type(params).__name__} is not a dataclass, so its fields "
+                          f"cannot be enumerated")
+    fields = asdict(params)
+    confidence = fields.pop("confidence", {}) or {}
+    derived = {name: getattr(params, name)
+               for name, member in sorted(vars(type(params)).items())
+               if isinstance(member, property)}
+    return {
+        "fields": fields,
+        # the floats that reach the _CONFIDENCE attribute, not the labels that
+        # name them — the mapping between the two is itself an input
+        "confidence": {a: params.conf(a) for a in sorted(confidence)},
+        "inferred": derived,
+    }
+
+
+def resolve_params(archetype: str, phase: dict, record: dict | None = None):
+    """`from_phase` for one archetype, imported without Blender.
+
+    The record travels alongside the phase because the finish the 665-roof programme
+    dealt a building is not a form attribute — it sits one level up, in the record's
+    `reconstruction` block — and since T-0007 the archetypes read it. `build.py`
+    passes the same pair, which is the property this module exists to hold: the hash
+    is taken over what the builder can actually see, and over nothing else.
+    """
+    gen = str(ROOT / "generators")
+    if gen not in sys.path:
+        sys.path.insert(0, gen)
+    try:
+        mod = __import__(f"archetypes.{archetype}_params", fromlist=["from_phase"])
+    except Exception as e:  # noqa: BLE001
+        raise InputsError(f"no importable parameter module for archetype "
+                          f"'{archetype}': {e}") from e
+    return mod.from_phase(phase, record)
+
+
+def structure_inputs_doc(structure: dict, phase: dict, archetype: str | None = None) -> dict:
+    """Everything the hash is taken over, as a readable document.
+
+    Exposed separately from the hash because a hash tells you *that* two builds
+    differ and never *how*, and "why has everything gone stale" is the question
+    this file exists to make answerable. Diff two of these.
+    """
+    arch = archetype or structure.get("archetype")
+    if not arch:
+        raise InputsError(f"structure {structure.get('id')} declares no archetype")
+    params = resolve_params(arch, phase, structure)
+    doc = {
+        "scheme": SCHEME,
+        "structure": structure.get("id"),
+        "phase": phase.get("id"),
+        "archetype": arch,
+        "params": _params_doc(params),
+        "code": _code_shas(arch, params),
+        "blender_pin": (ROOT / "generators" / "blender.pin").read_text().strip(),
+    }
+    if arch in PURE_PYTHON:
+        del doc["blender_pin"]
+    if arch == "k01_frontage":
+        # T-2291: the K03 maps a K01 wall embeds are inputs, like Glessner v4's below
+        from archetypes import k03_brick
+        doc["textures"] = {p.relative_to(ROOT).as_posix(): _sha_file(p) for p in k03_brick.TEXTURE_FILES}
+        # T-2358: a record that names the K14 condition kit reads its layers as data
+        if getattr(params, "condition", None):
+            kit = ROOT / params.condition["kit"]
+            doc["condition_kit"] = {kit.relative_to(ROOT).as_posix(): _sha_file(kit)}
+        # T-2298: the window kit's sizes are data the builder reads, like a texture
+        kit = ROOT / "data" / "components" / "prairie_1904" / "k06_windows.json"
+        doc["window_kit"] = {kit.relative_to(ROOT).as_posix(): _sha_file(kit)}
+        # T-2304: and the entrance kit's, which the door and its stoop are built from
+        ent = ROOT / "data" / "components" / "prairie_1904" / "k07_entrances.json"
+        doc["entrance_kit"] = {ent.relative_to(ROOT).as_posix(): _sha_file(ent)}
+        # T-2310: the K09 kit's sizes are data, and its trim is laid from them
+        kit = ROOT / "data" / "components" / "prairie_1904" / "k09_trim.json"
+        doc["component_data"] = {kit.relative_to(ROOT).as_posix(): _sha_file(kit)}
+        # T-2317: and the K10 kit's, which the brackets, bed moulding and cresting are built from
+        k10 = ROOT / "data" / "components" / "prairie_1904" / "k10_cornices.json"
+        doc["component_data"][k10.relative_to(ROOT).as_posix()] = _sha_file(k10)
+        # T-2319: and the K11 kit's, which the fence, gates, piers and wall are built from
+        k11 = ROOT / "data" / "components" / "prairie_1904" / "k11_ironwork.json"
+        doc["component_data"][k11.relative_to(ROOT).as_posix()] = _sha_file(k11)
+        # T-2313: and the K15 kit's, whose variants, parts, draught rule and soot band size
+        # and shape every stack a record names
+        k15 = ROOT / "data" / "components" / "prairie_1904" / "k15_chimneys.json"
+        doc["component_data"][k15.relative_to(ROOT).as_posix()] = _sha_file(k15)
+        # T-2360: and the K14 kit's, whose ground layers wear the yard's walks and cut its lawn
+        k14 = ROOT / "data" / "components" / "prairie_1904" / "k14_condition.json"
+        doc["component_data"][k14.relative_to(ROOT).as_posix()] = _sha_file(k14)
+        # T-2308: and the bay kit's — its parts, curves and roofs size every bay a record names
+        bays = ROOT / "data" / "components" / "prairie_1904" / "k08_bays.json"
+        doc["bay_kit"] = {bays.relative_to(ROOT).as_posix(): _sha_file(bays)}
+        # T-2302: the K05 kit's part sizes (eave box, dormer eave and verge) shape the roof;
+        # its prose and variants do not, so only `parts` is hashed
+        k05 = json.loads((ROOT / "data" / "components" / "prairie_1904" / "k05_roofs.json").read_text())
+        doc["k05_parts"] = hashlib.sha256(json.dumps(k05["parts"], sort_keys=True).encode()).hexdigest()
+    if arch == "k13_conservatories":
+        # T-2306: the kit's tiers, glass, plinth and staging are data the builder reads, and
+        # its rainwater is K04's profiles
+        for kit in ("k13_conservatories.json", "k04_roofs.json"):
+            f = ROOT / "data" / "components" / "prairie_1904" / kit
+            doc.setdefault("component_data", {})[f.relative_to(ROOT).as_posix()] = _sha_file(f)
+    if arch == "k16_timber":
+        # T-2323: the kit's boards, trim, porch and paint are data the builder reads, and the
+        # sash in its casings is K06's
+        for kit in ("k16_timber.json", "k06_windows.json"):
+            f = ROOT / "data" / "components" / "prairie_1904" / kit
+            doc.setdefault("component_data", {})[f.relative_to(ROOT).as_posix()] = _sha_file(f)
+        # T-3222: and a yard's walk is worn by the K14 kit's ground layers
+        if getattr(params, "yard", None):
+            k14 = ROOT / "data" / "components" / "prairie_1904" / "k14_condition.json"
+            doc["component_data"][k14.relative_to(ROOT).as_posix()] = _sha_file(k14)
+    if arch == "k12_coach_house":
+        # T-2321: the kit's parts (wall, storeys, roof, party wall, openings, workyard) are
+        # data the builder reads
+        kit = ROOT / "data" / "components" / "prairie_1904" / "k12_coach_house.json"
+        doc["component_data"] = {kit.relative_to(ROOT).as_posix(): _sha_file(kit)}
+    if arch == "masonry_house" and getattr(params, "detail_profile", "") == "glessner_v4":
+        # The map bytes are inputs too: replacing a normal map must demand a
+        # bake just as changing a stone's depth does. Only v4 reads this folder.
+        texture_root = ROOT / "assets" / "textures" / "glessner-v4"
+        maps = sorted(p for p in texture_root.rglob("*")
+                      if p.is_file() and p.suffix.lower() in {".png", ".jpg", ".jpeg", ".py"})
+        if not maps:
+            raise InputsError("Glessner v4 texture maps are missing")
+        doc["textures"] = {p.relative_to(ROOT).as_posix(): _sha_file(p) for p in maps}
+    return doc
+
+
+def structure_inputs_sha(structure: dict, phase: dict, archetype: str | None = None) -> str:
+    """The input hash for one structure phase's GLB."""
+    doc = structure_inputs_doc(structure, phase, archetype)
+    return hashlib.sha256(json.dumps(doc, sort_keys=True).encode()).hexdigest()
