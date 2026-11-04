@@ -1,0 +1,7 @@
+# Keeper east-gable native41790140057 — actual authorized dispatch
+
+Actual run https://github.com/kevinrhaas/polecat-platform/actions/runs/41790140057 dispatched once on feature7b427d130a2cca6ed82c183c74605b965aee1d4e, NEW targetT-2380/lane jail-gable-native-20261104/default/max400/noresume. The reviewed controller verified actual public ROOTGO3c93c0e5 before its exclusive reservation and ONE successfulPOST. Public GO commit1b3c55c6d854feb4064d3f60bfd4786c975692b4. Fresh source8f10 and ticket8fc28 guards passed. Dispatch controller proper0/allchildrenreaped/no leftovers.
+
+The approved change is only the existing keeper selector's east new roof-end triangle M_ROOF→existing M_WALL; no palette retuning, geometry, newparameter, date or paint attestation. Genuine272 native exports + actual271 default MASTER equality and new keeper WEB remain required before geometry commit. Then UNQUALIFIED source checkpoint, source4/preflight/current nativeboth+publishedboth/Gale review and exact8 before ordinarydevmerge; originalT2380 OPEN/PARTIAL. See published reviewed handoff6da1e32d.
+
+Initial run/Ubuntu26/claim monitor currently pending; do not infer claim acquisition or native generation from dispatch. No native acceptance/appPR/merge/release claimed. Initial observer alone watches this new run; existing coordinator alone watches independent magazine/Sauganash. Proper initial-monitor closure and explicit transfer proof will follow. No source/ticket mutation afterGO.
