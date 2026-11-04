@@ -1,0 +1,117 @@
+{
+  "observed_utc": "2026-11-04T03:44:07.353926+00:00",
+  "private_integration": "0921fec4b35cc1234611b69bc5c54f8c63c4d5c6",
+  "private_tree": "746a48448d648619ee6b617715b3f3efad8c1c1c",
+  "live_head": "1355732edb4925beeacf33e8f0910b2a09c3499d",
+  "live_tree": "858a87f93c05c0ccdf66d90325b7cffbf2707145",
+  "direct_child": true,
+  "only_changed_path": "chicago/4d/tools/dev-smoke-state.json",
+  "actual_raw_events": [
+    {
+      "event": 199,
+      "id": "toolu_011ByA91oe9GdsTAPzVpVPTT",
+      "command": "cd \"$GITHUB_WORKSPACE/chicago\" && git add chicago/4d/data/liberties.json chicago/4d/docs/measurements/source_use_coverage.md && git commit --quiet -F - <<'EOF'\nT-2388: integrate current dev, re-derive the generated files\n\n`dev` advanced to a3a87caf while this branch waited \u2014 the occupied-transport\nwork of PR #1649 (T-3088/T-2793/T-2804), T-3366's verandah rail, and two\nchangelog folds. Merged in with no hand-resolved geometry, record or\nmanifest row.\n\nTwo conflicts, both GENERATED, both taken as dev's file and then rebuilt from\nthe merged tree rather than edited:\n\n* `data/liberties.json`      \u2192 `tools/compile_liberties.py`  (992 liberties)\n* `docs/measurements/source_use_coverage.md`\n                             \u2192 `tools/compile_source_use.py` (559 sources,\n                               all source IDs resolve)\n\n`tools/compile_scene.py --all` then reported no further change, so the\nsidecar indices were already consistent with the merged tree.\n\nThe two asset registries auto-merged and were audited row by row rather than\ntrusted: of 1,034 rows, dev changed 52 and this branch 25, the two sets do not\nintersect, every one of dev's 52 is dev's value in the merge and every one of\nthis branch's 25 is this branch's. No foreign registry row was touched. The\nblockhouse master stays at the natively rebuilt 133,092 B / `96d9fb80\u2026`.\n\nDev changed no `fort_structure` producer, no shared archetype this family\nreads and not `generators/blender.pin`, so the 25-master native rebuild\nalready proved on this branch still applies byte for byte \u2014 `validate.py\n--stale` in the gate is what holds that claim, not this message.\n\nThe three append-only docs merged with both sides' blocks intact\n(`L-second-fort-blockhouse-cupola-2388` beside dev's eight new liberties).\n\nCo-Authored-By: Claude Opus 5 <noreply@anthropic.com>\nEOF\ngit log --oneline -2"
+    },
+    {
+      "event": 201,
+      "result_for": "toolu_011ByA91oe9GdsTAPzVpVPTT",
+      "text": "0921fec4b T-2388: integrate current dev, re-derive the generated files\na3a87cafe changelog: fold entry files into changelog.js; re-derive merged counts"
+    },
+    {
+      "event": 207,
+      "id": "toolu_019FApxumY2LdRFeuF6e3Vnv",
+      "command": "cd \"$GITHUB_WORKSPACE/chicago\" && git log -1 --format='%H parents: %P' && git log --oneline --first-parent -3 && echo \"=== diff vs dev stat ===\" && git diff --stat origin/dev..HEAD | tail -25"
+    },
+    {
+      "event": 208,
+      "result_for": "toolu_019FApxumY2LdRFeuF6e3Vnv",
+      "text": "0921fec4b35cc1234611b69bc5c54f8c63c4d5c6 parents: cdac604e34b1b3ba3ed981ebfcfd0d0efc1e8f2f a3a87cafe9321a2970a390cac77ae45be82680f5\n0921fec4b T-2388: integrate current dev, re-derive the generated files\ncdac604e3 Merge origin/dev into T-2388 blockhouse cupola\nf447b68a1 T-2388: the second fort's blockhouse gets the cupola its pictures draw\n=== diff vs dev stat ===\n chicago/4d/data/liberties.json                     |  61 ++-\n .../1812/first_fort_dearborn_blockhouse_nw.json    |   2 +-\n .../1812/first_fort_dearborn_blockhouse_se.json    |   2 +-\n .../sidecars/1835/fort_dearborn_blockhouse.json    |  79 +++-\n .../4d/data/sidecars/1835/green_tree_tavern.json   |   2 +-\n chicago/4d/data/sidecars/1835/sauganash_hotel.json |   2 +-\n chicago/4d/data/sidecars/1835/sources/index.json   |   2 +-\n .../sources/kinzie_1857_chicago_1831_panorama.json |   2 +-\n .../sidecars/1835/sources/kurz_allison_1893.json   |   2 +-\n chicago/4d/data/sources/kurz_allison_1893.json     |   2 +-\n chicago/4d/data/structure_grades.json              |   6 +\n .../data/structures/fort_dearborn_blockhouse.json  |  21 +-\n chicago/4d/docs/LIBERTIES.md                       |  53 +++\n .../RESEARCH/second-fort-cupola-T-2388/README.md   |  38 ++\n .../second-fort-panel-5-compound-side-by-side.jpg  | Bin 0 -> 251155 bytes\n .../second-fort-panel-5-compound-side-by-side.jpg  | Bin 0 -> 251071 bytes\n .../second-fort-panel-5-compound.json              |  63 +++\n .../second-fort-panel-5-compound.match.json        | 439 +++++++++++++++++++++\n chicago/4d/docs/ROADMAP.md                         |  16 +\n chicago/4d/docs/STATUS.md                          |  47 +++\n .../4d/docs/measurements/source_use_coverage.md    |   2 +-\n chicago/4d/generators/archetypes/fort_structure.py |  70 +++-\n .../generators/archetypes/fort_structure_params.py |  79 +++-\n chicago/4d/tools/dev-smoke-state.json              | 129 +++---\n 29 files changed, 1067 insertions(+), 117 deletions(-)"
+    },
+    {
+      "event": 346,
+      "id": "toolu_01TVCsjJezk3wnDnQRdKRxc1",
+      "command": "cd \"$GITHUB_WORKSPACE/chicago/chicago/4d\" && (time PATH=\"/tmp/np23/bin:$PATH\" C4D_GATE_REQUIRE_READERS=1 timeout --kill-after=5s 580s ./tools/check.sh --part 2/4) > /tmp/c2b.log 2>&1; echo \"exit=$?\"; sed -e 's/\\x1b\\[[0-9;]*m//g' /tmp/c2b.log | grep -E 'CHECK (PASS|FAIL)|is not installed|banked reading' | cut -c1-220; tail -4 /tmp/c2b.log | cut -c1-120"
+    },
+    {
+      "event": 355,
+      "result_for": "toolu_01TVCsjJezk3wnDnQRdKRxc1",
+      "text": "exit=0\nCHECK PASS \u2014 part 2/4: 292 steps, none red.\n\nreal\t3m27.546s\nuser\t10m29.447s\nsys\t0m46.421s"
+    },
+    {
+      "event": 362,
+      "id": "toolu_01X4sbgTdnUUg6yJ8YkubUgW",
+      "command": "cd \"$GITHUB_WORKSPACE/chicago/chicago/4d\" && (time PATH=\"/tmp/np23/bin:$PATH\" C4D_GATE_REQUIRE_READERS=1 timeout --kill-after=5s 580s ./tools/check.sh --part 3/4) > /tmp/c3.log 2>&1; echo \"exit=$?\"; sed -e 's/\\x1b\\[[0-9;]*m//g' /tmp/c3.log | grep -E 'CHECK (PASS|FAIL)|is not installed|banked reading' | cut -c1-220; sed -e 's/\\x1b\\[[0-9;]*m//g' /tmp/c3.log | grep -A8 'CHECK FAIL' | cut -c1-200; tail -4 /tmp/c3.log | cut -c1-120"
+    },
+    {
+      "event": 374,
+      "result_for": "toolu_01X4sbgTdnUUg6yJ8YkubUgW",
+      "text": "exit=0\nCHECK PASS \u2014 part 3/4: 291 steps, none red.\n\nreal\t4m35.453s\nuser\t14m33.884s\nsys\t0m52.155s"
+    },
+    {
+      "event": 375,
+      "id": "toolu_01NRzCKJUZzkzej6PtAAuBZo",
+      "command": "cd \"$GITHUB_WORKSPACE/chicago/chicago/4d\" && (time PATH=\"/tmp/np23/bin:$PATH\" C4D_GATE_REQUIRE_READERS=1 timeout --kill-after=5s 580s ./tools/check.sh --part 4/4) > /tmp/c4.log 2>&1; echo \"exit=$?\"; sed -e 's/\\x1b\\[[0-9;]*m//g' /tmp/c4.log | grep -E 'CHECK (PASS|FAIL)|is not installed|banked reading' | cut -c1-220; sed -e 's/\\x1b\\[[0-9;]*m//g' /tmp/c4.log | grep -A8 'CHECK FAIL' | cut -c1-200; tail -4 /tmp/c4.log | cut -c1-120"
+    },
+    {
+      "event": 386,
+      "result_for": "toolu_01NRzCKJUZzkzej6PtAAuBZo",
+      "text": "exit=0\nCHECK PASS \u2014 part 4/4: 290 steps, none red.\n\nreal\t4m2.181s\nuser\t11m54.984s\nsys\t0m53.008s"
+    },
+    {
+      "event": 415,
+      "id": "toolu_01ECjhvLZjE7FXXZaghdaT7u",
+      "command": "cd \"$GITHUB_WORKSPACE/chicago/chicago/4d\" && PATH=\"/tmp/np23/bin:$PATH\" ./tools/publish.sh > /tmp/pub.log 2>&1; echo \"publish exit=$?\"; tail -3 /tmp/pub.log | cut -c1-160; (time PATH=\"/tmp/np23/bin:$PATH\" C4D_GATE_REQUIRE_READERS=1 timeout --kill-after=5s 580s ./tools/check.sh --part 1/4) > /tmp/c1b.log 2>&1; echo \"part1 exit=$?\"; sed -e 's/\\x1b\\[[0-9;]*m//g' /tmp/c1b.log | grep -E 'CHECK (PASS|FAIL)|is not installed|banked reading' | cut -c1-220; tail -4 /tmp/c1b.log | cut -c1-120"
+    },
+    {
+      "event": 428,
+      "result_for": "toolu_01ECjhvLZjE7FXXZaghdaT7u",
+      "text": "publish exit=0\n   pack 1835: 5008 files, 264.6 MB\n   pack 1904: 3294 files, 291.8 MB\npublished ../../site/4d  (20.74 MB)\npart1 exit=0\n   self-test |    FAIL  numpy (numpy) is not installed, so 9 step(s) below stand on a banked reading:\n   self-test |    WARN  numpy (numpy) is not installed, so 9 step(s) below stand on a banked reading:\nCHECK PASS \u2014 part 1/4: 291 steps, none red.\n\nreal\t4m25.190s\nuser\t13m46.033s\nsys\t1m10.869s"
+    },
+    {
+      "event": 436,
+      "id": "toolu_015WaLBt5P6UWCRZhxf235fc",
+      "command": "cd \"$GITHUB_WORKSPACE/chicago/chicago/4d\" && (time SMOKE_VIEWPORT=desktop SMOKE_STAGE=3 NODE_PATH=\"$GITHUB_WORKSPACE/node_modules\" timeout --kill-after=5s 580s node tools/smoke_renderer.mjs --published) > /tmp/smoke_d3.log 2>&1; echo \"exit=$?\"; sed -e 's/\\x1b\\[[0-9;]*m//g' /tmp/smoke_d3.log | grep -E 'SMOKE (PASS|FAIL)|passed|failed|page error|pageerror' | cut -c1-200 | tail -12; tail -4 /tmp/smoke_d3.log | cut -c1-120"
+    },
+    {
+      "event": 447,
+      "result_for": "toolu_015WaLBt5P6UWCRZhxf235fc",
+      "text": "exit=0\n  pass  desktop 1280x800: zero page errors\n  pass  vendor: meshopt import raises no page error\n107 passed, 0 failed\nSMOKE PASS\n\nreal\t4m8.101s\nuser\t0m11.816s\nsys\t0m3.821s"
+    },
+    {
+      "event": 448,
+      "id": "toolu_01NCT2V1wLV93hTQk1BEAqsN",
+      "command": "cd \"$GITHUB_WORKSPACE/chicago/chicago/4d\" && (time SMOKE_VIEWPORT=mobile SMOKE_STAGE=3-4 NODE_PATH=\"$GITHUB_WORKSPACE/node_modules\" timeout --kill-after=5s 580s node tools/smoke_renderer.mjs --published) > /tmp/smoke_m34.log 2>&1; echo \"exit=$?\"; sed -e 's/\\x1b\\[[0-9;]*m//g' /tmp/smoke_m34.log | grep -E 'SMOKE (PASS|FAIL)|passed, |page error' | cut -c1-200 | tail -12; tail -4 /tmp/smoke_m34.log | cut -c1-120"
+    },
+    {
+      "event": 459,
+      "result_for": "toolu_01NCT2V1wLV93hTQk1BEAqsN",
+      "text": "exit=0\n  pass  mobile 390x780: zero page errors\n  pass  vendor: meshopt import raises no page error\n139 passed, 0 failed\nSMOKE PASS\n\nreal\t4m20.268s\nuser\t0m28.009s\nsys\t0m9.083s"
+    },
+    {
+      "event": 464,
+      "result_for": "toolu_016XmRvBmZeMCdpFgVg1a6oF",
+      "text": "recorded desktop stage 3: pass (107 passed, 0 failed) on sha256:02b6b0847ee5f495\nrecorded mobile stage 3-4: pass (139 passed, 0 failed) on sha256:02b6b0847ee5f495\n M chicago/4d/tools/dev-smoke-state.json"
+    },
+    {
+      "event": 465,
+      "id": "toolu_01NSDTYExT7pnDmKumtnCaAQ",
+      "command": "cd \"$GITHUB_WORKSPACE/chicago\" && git add chicago/4d/tools/dev-smoke-state.json && git commit --quiet -F - <<'EOF'\nT-2388: file this head's own both-viewport smoke readings\n\nThe two legs `tools/smoke_budget.mjs --for-diff` prices for this diff, run in\nthe foreground on the merged head's published mirror (sha256:02b6b084\u2026):\n\n* `SMOKE_VIEWPORT=desktop SMOKE_STAGE=3`  \u2014 SMOKE PASS, 107 passed, 0 failed,\n  zero page errors, 4 m 08 s at 1280x800\n* `SMOKE_VIEWPORT=mobile SMOKE_STAGE=3-4` \u2014 SMOKE PASS, 139 passed, 0 failed,\n  zero page errors, 4 m 20 s at 390x780\n\n`--for-diff` names parts 1-15 because the asset registries moved, which is the\nwhole gate rather than a reading of this diff; part 3 is the part that actually\ncovers what changed (the record's own account on the card, the citation to its\ndocument, the liberties). The whole 15-part gate was NOT run here and is not\nclaimed \u2014 the repository's own hosted eight-part gate is what this merges on.\n\nCo-Authored-By: Claude Opus 5 <noreply@anthropic.com>\nEOF\ngit log --oneline --first-parent -3"
+    },
+    {
+      "event": 466,
+      "result_for": "toolu_01NSDTYExT7pnDmKumtnCaAQ",
+      "text": "1355732ed T-2388: file this head's own both-viewport smoke readings\n0921fec4b T-2388: integrate current dev, re-derive the generated files\ncdac604e3 Merge origin/dev into T-2388 blockhouse cupola"
+    },
+    {
+      "event": 611,
+      "id": "toolu_01RbauwWePR9eXPUqtwVe7zn",
+      "command": "cd \"$GITHUB_WORKSPACE/chicago\" && echo \"my local merged head: $(git rev-parse HEAD)\" && echo \"its tree:            $(git rev-parse HEAD^{tree})\" && echo \"merge of:            $(git rev-parse --short cdac604e3) + $(git rev-parse --short a3a87cafe)\" && echo \"published mirror sha256 fragment: 02b6b0847ee5f495\" && git log --oneline --first-parent -3"
+    },
+    {
+      "event": 612,
+      "result_for": "toolu_01RbauwWePR9eXPUqtwVe7zn",
+      "text": "my local merged head: 1355732edb4925beeacf33e8f0910b2a09c3499d\nits tree:            858a87f93c05c0ccdf66d90325b7cffbf2707145\nmerge of:            cdac604e3 + a3a87cafe\npublished mirror sha256 fragment: 02b6b0847ee5f495\n1355732ed T-2388: file this head's own both-viewport smoke readings\n0921fec4b T-2388: integrate current dev, re-derive the generated files\ncdac604e3 Merge origin/dev into T-2388 blockhouse cupola"
+    }
+  ],
+  "limitation": "Strong exact private-to-live proof; NOT execution on currentdev, no target UI acceptance or whole8current gate claim."
+}
