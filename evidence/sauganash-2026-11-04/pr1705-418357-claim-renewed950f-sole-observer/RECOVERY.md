@@ -1,0 +1,7 @@
+# Sauganash native run pending; ownership/observer renewed
+
+SOURCE763649/ref1705 remainsfrozen. One scopednative run41835705988 isongoing; thelastoldobserver snapshot13:29:51 reportswarrantedSUCCESS andbake/Bake inprogress. No retainedoutputbranch hadappeared; no failureor nativePASSisinferred. Thefirst510sobserverclosedproper0/allchildrenreaped/noleftovers. Oneguardsuccessor ownsstatuswatching, witholdclosurehashesandoldPIDsabsentbeforestart. No duplicateAPIobserver or POST.
+
+TheoriginalT2383claimwasnormallyrenewed at13:25:58UTC in950f1fafe2e9801b9bfe16470579016d9dbe4f97 (actualticketblob7baac30c07e882ae656e8c32d08c9c9de57753b1), freshuntil16:25:58UTC. OfficialticketCLI wasexportedbyteexactfromimmutableSOURCE toanexternaltoolroot, runagainsttheindependentexistingticketclone; exactpreviousownowner pre-pushguard +normalmainFF; fullticketbodyunchanged. CLIforcebypassedonlytheknownownactiveclaim/branch check, not anotherowner. No W/source/pub mutationduringRlease.
+
+Actualdispatch/source/fullfastproofs remain fd4d12a4 and0aa4d50a; normaldevmerge/actual25outputs+24controls/currentpicture/UI/fullgates stillowed. ThisperiodiccheckpointdoesnotchangeSOURCEorreportnativecompletion.
