@@ -1,0 +1,16 @@
+Ticket: T-2388 · PR: https://github.com/kevinrhaas/chicago/pull/1687 · Outcome: resume
+
+PR #1687 is integrated with current dev and passed my local checks, but it did not merge: CI's dev gate was still running after both 540 s merge waits. I handed it on with `resume` (waits on: nothing), so the next pass or the janitor can merge it as soon as the gate goes green.
+
+- **App and why:** chicago, a finish-only run (`QUEUE: PAUSED`), slice 2 of 5. Seven `resume` PRs were open. Three already had a live lap lock (#1668, #1683, #1685), so #1687 was the second free one. I took `lap/pr-1687` and announced the claim.
+- **What the PR is:** the second Fort Dearborn's blockhouse gets the small cupola that the 1893 Kurz & Allison sheet and the Wau-Bun views draw, replacing a made-up chimney. It is a partial step, and T-2388 stays open.
+- **What I did:**
+  - Merged dev into the branch. Only two generated files conflicted (`data/liberties.json`, `docs/measurements/source_use_coverage.md`), and `tools/rederive.mjs --resolve` rebuilt both from source.
+  - No rebake was needed: dev changed no `fort_structure` code or anything else the fort's models are built from.
+  - Another run pushed its own dev integration to the branch while I held the lap lock, so my push was rejected. Its tree matches mine except for gzip byte-timestamps and the smoke-state file. I adopted its head (`1355732`) rather than force-pushing over it.
+- **Verification:**
+  - `check.sh` parts 1, 3 and 4 passed.
+  - Part 2 failed on one step, the T-3088 horse socket test: `np.cross` rejects 2-D vectors under this runner's numpy 2.5.4. Those files are identical to dev's, so the failure comes from dev, not this PR.
+  - Smoke part 3 (the building's card, sidecars and liberties) passed on desktop and mobile: 107/107 each, zero failures.
+  - `pr-automerge` returned pending twice (part 6/8 still queued), so I handed the PR on rather than waiting longer.
+- **Lap lock:** released. No new ticket was taken and no new PR was opened.

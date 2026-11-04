@@ -1,0 +1,23 @@
+Nothing was pushed to `kevinrhaas/chicago`, and every piece of state the live sibling owns is intact.
+
+**Ticket: T-2388 · PR: https://github.com/kevinrhaas/chicago/pull/1687 · Outcome: blocked**
+
+**App picked, and why.** `FOCUS_APP: chicago`, owner-targeted at T-2388 with `OWNER_RESUME_PR: 1687` — an exact resume, so picking was overridden.
+
+**Why it stopped.** The exact-resume rules require verifying, before any write, that *"no other active run, ticket owner or PR lap is working it."* That check came back occupied:
+
+- `tools/ticket.mjs lap 1687 --status` → `held lap/pr-1687 — taken 43m ago`, holder [`Steward improve — chicago [2/5]` run 41755835659](https://github.com/kevinrhaas/polecat-platform/actions/runs/41755835659), job `improve` **still in_progress** since 01:46:36Z.
+- `ticket.mjs inflight` says of #1687, unprompted: *"A live sibling's row: do not take it."*
+- The branch is still at `cdac604e3` — the holder hasn't pushed, so it is still working.
+
+`pr-lap.sh` § THE LAP LOCK measures what pushing over a live holder costs, from run #1132: *"the holding run's merge of dev, its ten-minute re-derive, check.sh and smoke were all thrown away."* So I did not push, relap, reset, open a replacement PR, claim T-2388, or fall back to another ticket. PR #1687 stays open, non-draft, `resume`, head unchanged; T-2388 stays `open`/unclaimed.
+
+**What the run did produce** (all local, all verified in the foreground, now recorded as a [comment on #1687](https://github.com/kevinrhaas/chicago/pull/1687#issuecomment-6620981007) so the holder doesn't rediscover it):
+
+- **The current-dev integration**, `cdac604e3` + `a3a87cafe`: exactly two conflicts, both generated — `data/liberties.json` and `docs/measurements/source_use_coverage.md` — resolved by taking dev's and re-running `compile_liberties.py` (992 liberties) and `compile_source_use.py` (559 sources). `compile_scene.py --all` then reported no further change.
+- **Both asset registries audited row by row**: of 1,034 rows, dev changed 52 and the branch 25, with no intersection; every row on each side kept its own value. No foreign registry row touched.
+- **No rebake needed, proven not assumed**: dev changed no `fort_structure` producer, no archetype this family reads, and not `blender.pin`, so `validate.py --stale` passes on the merged tree and the 25-master native proof still binds.
+- **Gate**: `check.sh --part 1/4`…`4/4` all **PASS** — 291/292/291/290 steps, 1,164 total, none red, with `C4D_GATE_REQUIRE_READERS=1` and no real step on a banked reading.
+- **Smoke**, both viewports on the published mirror: desktop stage 3 **PASS** (107/0, zero page errors) and mobile 390×780 stage 3-4 **PASS** (139/0, zero page errors). The whole 15-part gate was not run and is not claimed.
+
+**One finding worth flagging to you.** `check.sh --part 2/4` is red on this runner on a step belonging to dev's T-3088 transport code, not to T-2388: `socket_controls.py`'s `orient()` uses `np.cross` on 2-vectors, which NumPy has removed. Measured both ways — numpy 2.3.5 returns `1.0` with a DeprecationWarning, numpy 2.5.4 raises. CI pins Python 3.11 (numpy 2.3.x) and is green; the steward runner has Python 3.14 (numpy 2.5.4) and is red. Part 2/4 passes here too under `numpy<2.4`. I deliberately did not fix it — `socket_controls.py` is T-3088's source and T-3088 is live, so fixing it inside a T-2388 PR would bundle unrelated work. Filed as **T-3368** (`--by loop`, effort S) with the measurement and acceptance written in. Any run gating locally on this image will hit it and shouldn't read it as its own.
