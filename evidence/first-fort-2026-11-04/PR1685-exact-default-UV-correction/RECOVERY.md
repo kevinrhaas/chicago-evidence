@@ -1,0 +1,11 @@
+# Correction to PR1685 native MASTER change explanation
+
+This supersedes the byte-change attribution in eba8a4cd0fee365c76ca0d3fcc00deff98662b55's checkpoint and original native worker PR text. Its recovery sourcepatch and nativebuild proof remain valid; the incorrect attribution is the claim that all180MASTERchanges are submillimetre hardwarefloatnoise.
+
+The independent actual old/new GLB accessor audit covers ALL179 changed defaultMASTERs excluding the intendedNEhouse roof: every POSITION, NORMAL, colour and non-UV float accessor is EXACT, every index/integeraccessor is EXACT, materials/nodes/mesh topology are EXACT. Only TEXCOORD_0 repacked on each179defaultMASTER, maximumcomponentdelta0.9745727404952049. NONE has texture or imagebindings, and all179servedWEBblobs remain exact. The remainingchangedMASTER/WEBpair is the intended NEpyramidalroof. No geometry or sourcehash was predicted or restamped; exactnative243 and actualrecomputedrecipes remain validated.
+
+Initial audit assumed allfloataccessors were metric; it correctly failed onunusedUVdelta0.9126575579866767 forbeaubienbarn. That failed initialaudit/closedreaper is retained here. The corrected audit measures positions separately and enumerates everychangedfloatsemantic; this is an externalreadonly measurement, not a weakened source/test assertion. No source gate/test has been edited.
+
+PR1685description corrected. At publication, sourceSTATUSline23 andROADMAPline25 stillneed the same prose correction. Existingwholepart1 qualification stillruns onunchangedsource; rootcoordinating safehandoff beforefinalall4. No finalfullsourcepass/qualifiedintegrationcommit/hostedgate/runtime/merge is claimed yet. Root directlyviewed allthreecurrentrenderedcomparisons and accepts boundedNEshape while allcompoundandJail differencesremainDIFFERS. See ROOT-THREE-CANONICAL-PIXEL-REVIEW.json.
+
+Recover via /tmp/first-fort-finish-1685-20261104; inspectprotectedSOURCE4controller/reapers beforedoinganything. Sourceowner first_fort_finish_1685 inR; no source/Gitwriter overlap. ParentrootcoordinatesGPU/CPU. Firstcheckpoint full6.8MBbinaryintegrationpatch againstexactpublicc8562 andnativeartifactdigest stillsuppliesfullsavedintegration. Do notmerge until sourceprose corrected andall4finalsource/gate/runtime/rootreview passes. T3041partialandparent2387unchanged; noliveclaims/newtickets/fakecompletion.
