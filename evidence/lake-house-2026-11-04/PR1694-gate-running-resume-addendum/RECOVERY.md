@@ -1,0 +1,7 @@
+# PR1694 live hosted-gate checkpoint
+
+Source remains head73d4d727002f14eaa3263f4c4d3fcfdd099fbad6/tree739270d6a0093a699de05e5bc69a9b1e935c9fff, ordinary dev22d merge. Ready PR1694; our live lap/pr1694 lock. Actual eight-part gate41767413487 is in progress, not passed. Never substitute contentbuild/warranted or report. Gate jobs snapshot in zip. Native107/0 BOTH actually ran c647 and has scoped exact carry to73d4; all source10postimages/rawnative evidence already published in1c689a7b889216ed37c48ec35f3d1b71cf878758, evidence/lake-house-2026-11-04/PR1694-native-both-integrated73d4/.
+
+Resume helper merge_once.py refuses unless exact head/base22d/whole8+aggregate/allotherchecks green, then calls ordinary SHA-guarded squash merge and verifies exacttree delivered. Do not run while gate pending. If dev moved, inspect/adopt instead; no force. Native registry supplement explains243/180 changed registry rows, runtime asset-path contract, active1835 exact WEB preservation.
+
+After merge, native ticket.mjs release originalT2379 (currently our claimed_by CodexLakeHouse boundedprimarysource research, claimed_run:null) with PR/evidence reason; preserve OPEN/PARTIAL and pr:null, no done/newfollow-up. Confirm remote sameactor immediately before release; use clean exclusive own clone /tmp/lake-house-source-20261103/chicago/4d/tickets with CHICAGO_TICKETS_DIR. Release ownlap only once merged or handedover. SourceN=/tmp/cobweb-active-20261103, source env every shell. NeverGC/repack/delete borrowedRobjects. Current rootonlysourcewriter; no hidden changes.
