@@ -1,0 +1,10 @@
+# Independent Sauganash source review — 2026-11-09
+
+Reviewed the working source against base `dc998577d76a09a31a5519b7deb0c0c0f6e1f869`, the four-file port manifest, current parameter contracts, the actual roof helper, name-key changes, liberty disclosure and the twelve named owner receipts. No blocking source correctness finding.
+
+- Independently verified all four live source postimages equal the port manifest SHA-256 values. Both added dataclass fields are keyword-only and keep their default `None`/`False`; the live Hotel record resolves and validates with `True`/`0.6`. This preserves the old positional argument ordering rather than repeating the earlier failed native run's constructor defect.
+- The shared-ridge endpoint calculation accounts for `add_gable_roof`'s 0.25 m longitudinal overhang: the actual crest ends at main depth / 2. Its transverse span, ridge height, walls and outer wing depth are unchanged. The shaft change preserves stations, count and top elevation and applies only when the explicit section is selected.
+- Name-pool edits add two exact construction-note paths, retain the existing declarations, and do not hide a resident-bearing field. The record and liberty call the dimensions reconstructed and leave image acceptance pending.
+- The recorded immutable family inventory is 23 default outputs plus two Tremont variants; 24 non-Hotel family outputs are controls. Preserve 1021 other default registry rows and four other versions. Parameter compatibility receipts cover all 25 old records and the full 25-test feature owner passed.
+
+This is a source review, not a native mesh, whole-gate, image-match or renderer approval. Before merging, require the actual current-source native bake, verify the 24 controls and foreign registry preservation, inspect the four affected Hotel/Carpenter comparison compositions, and pass desktop plus phone smoke. Keep T-2383 partial until its finite visitor-visible discrepancies are adjudicated. No source edits, GitHub mutations, installs or Blender were performed by this reviewer.
