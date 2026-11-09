@@ -1,0 +1,1 @@
+No new construction-note path is introduced. The existing `phases[].form.enclosed_left_annex.note` declaration under the structure-record scope already covers this appended note. Preserve that declaration; no shared name_pool_keys edit is requested.

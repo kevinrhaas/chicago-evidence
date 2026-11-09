@@ -1,0 +1,5 @@
+### T-2376 shoulder roof rise — source trial, 2026-11-09
+
+Only the existing reconstructed shoulder roof_high_m changes, 4.0→4.6 m; the outer eave remains 3.2 m and pointed cap 4.85 m. The slope rises from about12.5° to21.3°, following the stronger attachment rise visible in Andreas. No generator, camera, footprint, placement, opening, material, date or grade changes. Actual accumulator comparison confines the effect to eight vertical-only roof/upper-infill vertices, with topology, materials, confidence, full bounds, occupied frames and doorway identical; all24 other frame-tavern recipes remain exact. The existing25-test picture-feature owner passes.
+
+This needs only one genuine Green Tree native build, not a family rebake. The fresh fixed-camera comparison, current web/registry readback and published body/yard/terrain/phone/desktop checks remain pending. Original T-2376 stays open: remaining left-group proportions and broader picture coverage are not accepted by this one slope trial. No new photo follow-up is needed.
