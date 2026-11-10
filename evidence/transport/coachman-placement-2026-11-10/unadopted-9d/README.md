@@ -1,0 +1,9 @@
+# Unadopted Glessner coachman placement prototype
+
+This is the preserved eleven-file candidate on source 9d293d140, not adopted APP code. Canonical preparation and handoff checks passed; the complete whole-site handoff manifest is referenced by hash without copying its 2.37 MB list; the actual desktop03 attempt is NONPASS because its unchanged 600-second cap expired. Resource checks passed and cleanup left zero owned children. The three PNGs are original unedited candidate captures from an explicitly amended saved-artifact fixture, not a live build. No new post position or grounding/data fix followed them.
+
+Charles appears beside the original team/carriage in one scene, with tree and native UI occlusion in the closer views. The measured complete-object bounds have 1.413554457 m separation in one frame; original horse-contact assertions pass for that frame only. Feet sit about 27 mm above sampled parkway triangles while following a higher heightfield. Terrain-cut visible coverage is unqualified, so these measurements do not prove hovering or continuous sole contact.
+
+Balanced triangle counts exceed the unchanged budget. Baseline, quiet sequence, phone, tour, waiting/passage, boarding/ride and photographic acceptance were not completed. Texture aborts and timecap remain recorded. This checkpoint does not adopt the candidate, close a ticket or approve MAIN deployment.
+
+Attribution: original project Brougham/scene tools retain GPL terms; source Horse by sevketkabatas and rig reference by antemeossa retain CC BY4.0 credits. Cleared MakeHuman graphical inputs, MargaretToigo skin and short04 hair retain CC0 notices; source people/outfits are reconstructed. Native UI portraits may be museum public-domain stand-ins, explicitly not the named people. Exact source/license records are included in attribution/. No 3D payload is included.

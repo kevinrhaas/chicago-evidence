@@ -1,0 +1,9 @@
+# Human clothing library: bounded static hem review
+
+Original native producer run 42774580234 and stills run 42780711312 completed at source 8745ab40. Nine unchanged PNGs and their original manifests are preserved here. The 582 MB producer archive, masters and runtime 3D assets are excluded. The small downloaded review artifact was verified by digest; rendered master hashes are native before/after statements, not independently downloaded local-master hashes.
+
+The comparison retains old producer dc998577 and renderer a64f26fa against new 8745ab40. The renderer script Git blob is identical at both renderer commits. Otis decoded pixels are identical across the three pictured views, while PNG containers and master bytes need not be. Joseph and Martin show continuous lower hems in these static idle views without newly visible garment/body clipping. Joseph framing moves slightly; the comparison does not isolate an exact whole-frame pixel difference. Old image hashes and decoded-pixel proof are retained without copying old images.
+
+This accepts only an observed static hem cleanup as an incremental generator improvement. Clothing still appears smooth and mannequin-like. Photographic quality, likeness, full fit, moving/bending/seated poses and runtime adoption remain unaccepted. Existing Otis seated-drive/natural-idle clips were not replaced; T-1789 remains open. No APP, ticket or MAIN changes were made by this checkpoint.
+
+Source attribution: cleared MakeHuman graphical base CC0-1.0; MargaretToigo male bronze skin CC0-1.0; short04 hair by makehuman_system, with Data Collection AB, Joel Palmius and Jonas Hauquier notices retained. Original workwear graphics retain CC0 and tool code GPL terms. These are reconstructed anonymous body/clothing choices, not historical likenesses. Full pinned notices and source metadata are in attribution/.
