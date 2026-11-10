@@ -1,0 +1,118 @@
+diff --git a/tmp/chicago-t2795-brougham-door-foundation-20261110/chicago/4d/tools/transport/brougham/interval_batch.py b/tmp/chicago-t2795-brougham-door-foundation-20261110/chicago/4d/tools/transport/brougham/interval_batch.py
+new file mode 100644
+index 0000000..f46e323
+--- /dev/null
++++ b/tmp/chicago-t2795-brougham-door-foundation-20261110/chicago/4d/tools/transport/brougham/interval_batch.py
+@@ -0,0 +1,112 @@
++# App import adaptation of sealed outside-app helper1aa9d3de5b51ab7404a7aa74312d43f0d30f24a5a1ff40b3616359f7c469b45c.
++# Provenance: t2797-interval-batch-study-20261110/SEALED-CHECKPOINT.json; GPL-3.0-or-later.
++# SPDX-License-Identifier: GPL-3.0-or-later
++"""External bounded DFS accelerator; no model or clearance qualification.
++
++Each independent pair retains the scalar algorithm's left-first traversal.
++Only the current SAT calculation is batched. The unchanged scalar function
++remains the numerical authority through separation_batch's boundary fallback.
++"""
++import hashlib
++import math
++import struct
++import numpy as np
++from sampled_sat import separation_batch
++
++PAIR_CAP = 128
++DEPTH_CAP = 12
++CONTACT_TOLERANCE = 1e-8
++OWNED_WORKSPACE_BOUND = 4 * 1024 * 1024
++
++
++def interval_clear_batch(moving, fixed, start, end, depth=12, tolerance=1e-8,
++                         *, scalar, turn):
++    """Return ordered scalar-compatible (clear, hits) tuples plus diagnostics.
++
++    No sampling, angular-depth truncation, pair omission or contact exemption is
++    introduced. A failed left subtree terminates that pair without visiting its
++    pending right subtree, exactly as interval_clear does. Inputs are bounded
++    before conversion; this helper never builds a moving-by-fixed pair matrix.
++    """
++    count = len(moving)
++    if count > PAIR_CAP or len(fixed) != count:
++        raise ValueError('Corresponding triangle pairs, at most128, required')
++    if type(depth) is not int or not 0 <= depth <= DEPTH_CAP:
++        raise ValueError('Original bounded interval depth0..12 required')
++    if isinstance(tolerance, (bool, np.bool_)) or tolerance != CONTACT_TOLERANCE:
++        raise ValueError('Original1e-8 contact tolerance required')
++    if not callable(scalar) or not callable(turn):
++        raise TypeError('Original scalar separation and turn functions required')
++    if not isinstance(start, (int, float, np.floating)) or not isinstance(end, (int, float, np.floating)):
++        raise ValueError('Finite scalar interval endpoints required')
++    start, end = float(start), float(end)
++    if not math.isfinite(start) or not math.isfinite(end) or abs(end-start) > math.pi:
++        raise ValueError('Finite interval of at most pi radians required')
++    for value in (moving, fixed):
++        if isinstance(value, np.ndarray):
++            if value.shape != (count, 3, 3):
++                raise ValueError('Triangle inputs must have shapeN×3×3')
++        elif any(len(tri) != 3 or any(len(vertex) != 3 for vertex in tri) for tri in value):
++            raise ValueError('Triangle inputs must have shapeN×3×3')
++    a, b = np.asarray(moving, dtype=np.float64), np.asarray(fixed, dtype=np.float64)
++    if a.shape != (count, 3, 3) or b.shape != a.shape or not np.isfinite(a).all() or not np.isfinite(b).all():
++        raise ValueError('Finite corresponding triangle arrays required')
++    # Same expression as the original scalar, once per immutable moving triangle.
++    radii = [float(np.hypot(tri[:, 0], tri[:, 2]).max()) for tri in a]
++    current = [(start, end, depth) for _ in range(count)]
++    pending = [[] for _ in range(count)]
++    results = [None] * count
++    visits = [0] * count
++    trace = [hashlib.sha256() for _ in range(count)]
++    totals = {'rounds': 0, 'node_visits': 0, 'max_pending_right_depth': 0,
++              'scalar_fallback_rows': 0, 'axis_cutoff_ambiguous_rows': 0,
++              'decision_ambiguous_rows': 0, 'max_SAT_workspace_bound_bytes': 0}
++    while any(result is None for result in results):
++        ids = [i for i, result in enumerate(results) if result is None]
++        posed, thresholds, mids = [], [], []
++        for i in ids:
++            left, right, remaining = current[i]
++            middle = (left + right) / 2
++            displacement = 2 * radii[i] * math.sin(abs(right-left) / 4)
++            posed.append(turn(a[i], middle))
++            thresholds.append([tolerance, displacement + tolerance])
++            mids.append(middle)
++            trace[i].update(struct.pack('<ddi', left, right, remaining))
++            visits[i] += 1
++        gaps, diagnostics = separation_batch(np.asarray(posed), b[ids],
++            scalar=scalar, decision_thresholds=np.asarray(thresholds))
++        totals['rounds'] += 1
++        totals['node_visits'] += len(ids)
++        for key in ['scalar_fallback_rows', 'axis_cutoff_ambiguous_rows', 'decision_ambiguous_rows']:
++            totals[key] += diagnostics[key]
++        totals['max_SAT_workspace_bound_bytes'] = max(totals['max_SAT_workspace_bound_bytes'],
++            diagnostics['owned_workspace_upper_bound_bytes'])
++        for row, i in enumerate(ids):
++            left, right, remaining = current[i]
++            gap = float(gaps[row])
++            if gap > thresholds[row][1]:
++                if pending[i]:
++                    current[i] = pending[i].pop()
++                else:
++                    results[i] = (True, 0)
++            elif gap <= tolerance:
++                results[i] = (False, 1)
++                pending[i].clear()
++            elif remaining <= 0:
++                results[i] = (False, 0)
++                pending[i].clear()
++            else:
++                middle = mids[row]
++                pending[i].append((middle, right, remaining-1))
++                current[i] = (left, middle, remaining-1)
++                totals['max_pending_right_depth'] = max(totals['max_pending_right_depth'], len(pending[i]))
++                assert len(pending[i]) <= depth
++        # Complete binary-tree bound; an assertion failure is never clearance.
++        assert max(visits, default=0) <= 2 ** (depth+1) - 1
++    return results, {**totals, 'pairs': count, 'pair_cap': PAIR_CAP,
++        'default_depth': 12, 'requested_depth': depth, 'contact_tolerance_m': tolerance,
++        'visits_by_pair': visits, 'DFS_state_sha256_by_pair': [h.hexdigest() for h in trace],
++        'owned_workspace_conservative_bound_bytes': OWNED_WORKSPACE_BOUND,
++        'input_pair_bytes': a.nbytes+b.nbytes, 'actual_process_RSS_bound_claimed': False,
++        'pair_order_preserved': True, 'left_first': True, 'original_thresholds_changed': False,
++        'qualification_supplied': False}

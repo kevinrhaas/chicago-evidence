@@ -1,0 +1,620 @@
+diff --git a/chicago/4d/renderers/web/js/brougham-door.js b/chicago/4d/renderers/web/js/brougham-door.js
+index 6a3b183b98..f83254d35c 100644
+--- a/chicago/4d/renderers/web/js/brougham-door.js
++++ b/chicago/4d/renderers/web/js/brougham-door.js
+@@ -80,6 +80,7 @@ export function broughamDoorRig({ root, midRoot, spec, vehicleHashes }) {
+  */
+ export function createCoachmanDoorActions({ parkedTransport, humans, days, router, visitor, interactions }) {
+   const held = new Map();
++  let disposed = false;
+   const release = actor => {
+     if (!held.has(actor.id)) return;
+     held.delete(actor.id);
+@@ -101,7 +102,7 @@ export function createCoachmanDoorActions({ parkedTransport, humans, days, route
+     });
+   };
+   const actionsFor = actor => {
+-    if (actor.personId !== CHARLES_NELSON || actor.indoors || actor.disposed
++    if (disposed || actor.personId !== CHARLES_NELSON || actor.indoors || actor.disposed
+       || humans.shown === false || humans.isHeld?.(actor) || days?.isHosted?.(actor)) return [];
+     const instance = live();
+     if (!instance) return [];
+@@ -111,7 +112,13 @@ export function createCoachmanDoorActions({ parkedTransport, humans, days, route
+     const open = door.fraction < 1, target = open ? 1 : 0;
+     let arrived = false, refusal = null;
+     let start = door.fraction;
+-    const isLive = () => live() === instance && !actor.disposed && !actor.indoors && humans.shown !== false;
++    const isLive = () => !disposed && live() === instance && !actor.disposed && !actor.indoors && humans.shown !== false;
++    const unavailable = () => {
++      if (isLive()) return false;
++      refusal ??= 'The carriage is no longer available';
++      release(actor);
++      return true;
++    };
+     const short = (a, b) => Math.hypot(a.e - b.e, a.n - b.n) <= .15;
+     return [{ id: open ? 'carriage:open' : 'carriage:close',
+       label: open ? 'Ask Charles to open the carriage door' : 'Ask Charles to close the carriage door',
+@@ -140,7 +147,7 @@ export function createCoachmanDoorActions({ parkedTransport, humans, days, route
+         ? `Charles has ${open ? 'opened' : 'closed'} the carriage door. Boarding is not available.`
+         : 'The carriage door has stopped'),
+       steps: [
+-        { label: 'Charles is walking to the carriage', until: () => arrived || !!refusal, timeout: 60,
++        { label: 'Charles is walking to the carriage', until: () => unavailable() || arrived || !!refusal, timeout: 60,
+           run: t => {
+             if (t === 1 && !arrived) {
+               actor.stopPath(); refusal ??= 'Charles has not reached the carriage door';
+@@ -150,7 +157,7 @@ export function createCoachmanDoorActions({ parkedTransport, humans, days, route
+           seconds: door.plan.duration_s, run: t => {
+             if (t === 0) start = door.fraction;
+             if (refusal || !arrived) return;
+-            if (!isLive()) { refusal = 'The carriage is no longer available'; return; }
++            if (unavailable()) return;
+             const result = door.pose(start + (target - start) * t, bodies());
+             if (!result.ok) refusal = result.why;
+           } },
+@@ -158,6 +165,7 @@ export function createCoachmanDoorActions({ parkedTransport, humans, days, route
+     }];
+   };
+   actionsFor.dispose = () => {
++    disposed = true;
+     unsubscribe();
+     for (const actor of [...held.values()]) release(actor);
+   };
+diff --git a/chicago/4d/tools/transport/brougham/DOOR-FOUNDATION.md b/chicago/4d/tools/transport/brougham/DOOR-FOUNDATION.md
+index 858cd92b07..b00b20266c 100644
+--- a/chicago/4d/tools/transport/brougham/DOOR-FOUNDATION.md
++++ b/chicago/4d/tools/transport/brougham/DOOR-FOUNDATION.md
+@@ -415,3 +415,109 @@ boarding, full four-part checks/preflight and exact-head hosted/published delive
+ gates remain OPEN/UNRUN.** This is an explicitly authorized unqualified source
+ checkpoint on the owned feature branch only; no PR, installed delivery or DEV/MAIN
+ merge is included. All recipe capability/qualification flags remain false.
++
++
++## Six-view bounded source decision and interval caller proposal
++
++ROOT personally reviewed all six original1280×800PNGs from the admitted source
++study (14.361379s, originalSUP120/floors, cleanup0). The bounded source appearance
++is acceptable **to continue engineering**: the closed overall U/glass/cabin/roof,
++lamps, wheels and pole are retained at the one chosen low curbside quarter camera;
++rear hinges and narrow bright running seams are visible. The open leaf reveals
++the actual cabin/seat. The188mm lower-stem route is not dominant at this camera,
++but is not established as invisible. This resolves review of these six chosen
++source views only. It is not full near/mid published/phone/photo appearance
++approval, passage/fit proof or adoption, and no recipe flag changes follow.
++Original capture report SHA256
++`03e28dc6f76938e718590b6fd22657703de6f1180c2b1b9cf98d2aa2156f194c`
++remains immutable; ROOT's later bounded decision is recorded separately.
++
++The proposed interval helper ports the sealed GPL-3.0-or-later outside-app
++`interval_batch.py` SHA256
++`1aa9d3de5b51ab7404a7aa74312d43f0d30f24a5a1ff40b3616359f7c469b45c`
++from sealed checkpoint
++`6e0534cc` (full hash in the source packet). Its only semantic import adaptation
++is `sat_batch`→`sampled_sat`, which is already the exact same reviewed SAT source.
++Only the inner independent-pair interval loop uses chunks of at most128; original
++scalar axes/separation/turn/recursive interval code, full-circle broadphase,
++fixed candidate order, all15 sampled poses, and the original final proof verdict
++remain authoritative. Each independent pair keeps its original left-first DFS,
++short-circuit and unresolved-as-NONPASS rules. Both original SAT decision bounds
++retain scalar numerical fallback. Default actual depth12/tolerance1e-8 and finite
++helper-supported endpoint intervals use the accelerator. Every other accepted
++scalar setting, including stricter tolerance/depth13–16 or an endpoint span>pi,
++uses the unchanged original scalar path; no CLI argument range is narrowed.
++Atomic progress remains bounded in frequency and records current chunk/counters
++before expensive work when due. An interruption/timeout cannot become PASS.
++
++New native caller controls are prepared for ordered259-pair/128-row boundaries,
++independent original outcomes and per-pair DFS hashes, omitted/false-clear/order
++corruptions, unsupported-setting scalar fallback, both numerical thresholds and
++full-check orchestration (all15 samples and unresolved/contact rejection).
++These controls and a complete actual-model interval proof are **UNRUN for this
++integration proposal**. The earlier64 OLD-model pair study (50clear/14contact),
++though useful for helper equivalence, supplies no current-model/full-domain
++clearance. The new actual near/mid source geometry, all qualification flags,
++installed assets and runtime implementation remain unchanged by this numerical
++proposal. Full local/hosted/published/runtime/fit gates remain open.
++
++
++## Actual integrated interval controls and complete NEAR NONPASS checkpoint
++
++The native caller controls passed in1.369903s under originalSUP120/floors with
++zero remaining children:259ordered pairs and exact per-pair originalDFS hashes,
++128/128/3chunks, omitted-result rejection, independent false-clear/order mutation
++detection,13original-scalar fallback settings, both SAT threshold boundaries and
++full-check orchestration. Four original scalar cores, structural verifier,
++full-circle broadphase and CLI footer are exact. Control result SHA256
++`0fffc5c09a3635a903c835fef84019590a373d456c4c92649c6b3aa810684417`.
++This numerical control PASS does not qualify a carriage or interval domain.
++
++The ONE default complete NEAR proof then finished its **entire domain** in
++103.474063s, rc1/**NONPASS**, without timeout. It ran structure, all15sampled poses
++(zero contacts) and all2,824moving triangles/all2,100,050continuous candidate pairs.
++2,100,008pairs proved clear;42were nonclear. Originaldepth12/tolerance1e-8/allfixed
++surfaces were retained. Input/source/receipt hashes stayed exact; originalfloors
++passed and cleanup left zero children. Actual report SHA256
++`9de737efc931cc4333aa5ba8acc38567994079c929e162df1904a46a33dd1eef`.
++`PASS:false` and `continuous_surface_separation:false` are authoritative; FULLMID
++was not admitted after this failure and has not run.
++
++The separately admitted read-only witness diagnosis closed in77.008539s, replaying
++all2,824moving/all2,100,050interval candidate decisions without repeating structure
++or15samples. Its counts exactly matched the original42nonclear pairs; each was
++rechecked through the unchanged original recursive scalar AST with an observation
++callback only. All27bound inputs stayed unchanged; originalfloors/cleanup passed.
++It records31strictly-negative-gap scalar contacts and11positive-gap/depth0 unresolved
++pairs. The31contact gaps range−1.6929875mm to−0.00186497mm; the11unresolved positive
++gaps range31.9873–85.2773µm. **These SAT gaps are not MTD or penetration-depth estimates.**
++All42involve top interfaces at decisive angles−2.03125°…−7.36328125°: transferred
++header against roof underside/fascia/retained header, and original window frame
++against roof underside/fascia. They occur between the15sample poses; the lower
++step/floor/link repair produced no nonclear pair in this complete interval proof.
++Full42actual node paths/source occurrence IDs/triangle coordinates and originalDFS
++false-leaf intervals are retained, not replaced by a tolerance or depth waiver.
++Diagnosis progress SHA256
++`d99a278eebc5d054c467d603f0627cdb274db3db1710856ad201811af90676e7`;
++compact42witness index SHA256
++`329c41b3dc87ddc271115e4689858f31269241e6dba660163a62d5b01a19881e`.
++This diagnostic supplies explanation only and retains PASS/final_PASS false.
++No geometry repair or repeat proof is implied by this checkpoint.
++
++The separately reviewed CPU controller study exposed three original lifecycle
++counterexamples and passed the exact prepared patch across26fixtures. ROOT
++approved applying only that patch to brougham-door.js, SHA256
++`04a00cb1eb4492808de35eb5088ce561af0d25eb2b720e0a25034fa2986fd54a`.
++Runtime checkpoint SHA256
++`007b28751ed0cb3259e8879799af486e28ab6fe8fbc4125000b2c0889d2b41f1`
++and exact one-file application receipt
++`d6a1ed4b13c9ff956379a2cdbc373721ce340362ce18cd21f7567195a08c2224`
++are preserved. This is CPU-fixture evidence only; actual world interaction,
++external host replacement/date/year/cancel paths and fit/boarding stay unqualified.
++
++This explicitly authorized periodic feature-branch source checkpoint changes no
++raw producer/recipe/geometry, installed asset or capability flag. It creates no
++PR and merges neither DEV nor MAIN. Full local checks/preflight, exact-head hosted
++and published/phone gates remain unrun; all original failures stay retained. Next
++geometry work requires a source-bound upper-interface decision and review, not a
++contact exemption, tolerance/depth change or automatic repeat.
+diff --git a/chicago/4d/tools/transport/brougham/check_door_aperture.py b/chicago/4d/tools/transport/brougham/check_door_aperture.py
+index 32749f240b..a5c569c1ad 100644
+--- a/chicago/4d/tools/transport/brougham/check_door_aperture.py
++++ b/chicago/4d/tools/transport/brougham/check_door_aperture.py
+@@ -21,6 +21,7 @@ from check_near import read, values, component, world_nodes
+ from check_mid import bind_parts
+ from sampled_sat import separation_batch, BATCH_CAP
+ from sampled_broadphase import FixedYBroadphase
++from interval_batch import interval_clear_batch, PAIR_CAP as INTERVAL_PAIR_CAP
+ 
+ CLOSED_WORLD_POSITION_TOLERANCE_M = 2e-7
+ CUT_SURFACE_AREA_TOLERANCE_M2 = 2e-6
+@@ -627,6 +628,55 @@ def verify_structure(args):
+     return summary, (recipe, doc, binary, protected, triangles, moving, labels, mobile, fixed)
+ 
+ 
++def interval_pair_results(triangle, fixed, candidates, start, end, depth, tolerance,
++                          totals, on_chunk=None):
++    """Ordered complete pair results; only original defaults use the bounded helper.
++
++    Other CLI-supported tolerances/depths retain the original scalar authority.
++    The full-circle candidate array is supplied unchanged by the original caller.
++    """
++    # Exact Python endpoints match the native CLI. NumPy endpoint arithmetic
++    # may retain another precision; preserve its original scalar semantics.
++    endpoints_supported = (type(start) in (int, float)
++                           and type(end) in (int, float)
++                           and math.isfinite(start) and math.isfinite(end)
++                           and abs(float(end) - float(start)) <= math.pi)
++    if type(depth) is not int or depth != 12 or tolerance != 1e-8 or not endpoints_supported:
++        for k in candidates:
++            result = interval_clear(triangle, fixed[k], start, end, depth, tolerance)
++            totals['scalar_fallback_pairs'] += 1
++            yield int(k), *result
++        return
++    for offset in range(0, len(candidates), INTERVAL_PAIR_CAP):
++        chunk = candidates[offset:offset + INTERVAL_PAIR_CAP]
++        if on_chunk is not None:
++            on_chunk({'candidate_offset': offset, 'candidate_count': len(chunk),
++                      'first_fixed_index': int(chunk[0]), 'last_fixed_index': int(chunk[-1]),
++                      'state': 'ENTERING_BOUNDED_INTERVAL_CHUNK'})
++        repeated = np.repeat(triangle[None], len(chunk), axis=0)
++        results, info = interval_clear_batch(repeated, fixed[chunk], start, end, depth,
++                                             tolerance, scalar=separation, turn=turn)
++        assert len(results) == len(chunk), 'Interval helper omitted or added an independent pair'
++        assert info['pairs'] == len(chunk) and info['pair_order_preserved']
++        totals['accelerated_chunks'] += 1
++        totals['helper_pairs_evaluated'] += len(chunk)
++        totals['max_pairs_per_chunk'] = max(totals['max_pairs_per_chunk'], len(chunk))
++        totals['node_visits'] += info['node_visits']
++        for key in ['scalar_fallback_rows', 'axis_cutoff_ambiguous_rows', 'decision_ambiguous_rows']:
++            totals[key] += info[key]
++        totals['max_owned_helper_workspace_bound_bytes'] = max(
++            totals['max_owned_helper_workspace_bound_bytes'], info['owned_workspace_conservative_bound_bytes'])
++        for k, result in zip(chunk, results):
++            yield int(k), *result
++
++
++def interval_batch_counters():
++    return {'accelerated_chunks': 0, 'helper_pairs_evaluated': 0, 'scalar_fallback_pairs': 0,
++            'max_pairs_per_chunk': 0, 'node_visits': 0, 'scalar_fallback_rows': 0,
++            'axis_cutoff_ambiguous_rows': 0, 'decision_ambiguous_rows': 0,
++            'max_owned_helper_workspace_bound_bytes': 0}
++
++
+ def check(args):
+     started = time.monotonic()
+     progress_path = args.progress or Path(str(args.report) + '.progress.json')
+@@ -637,7 +687,7 @@ def check(args):
+         'recipe_sha256': sha(args.recipe), 'source_receipt_sha256': sha(args.source_receipt),
+         'checker_sha256': sha(Path(__file__)),
+         'source_file_sha256': {name: sha(Path(__file__).with_name(name)) for name in [
+-            'door_aperture.py', 'check_door_aperture.py', 'door-aperture.json', 'check_near.py', 'check_mid.py', 'sampled_sat.py', 'sampled_broadphase.py']},
++            'door_aperture.py', 'check_door_aperture.py', 'door-aperture.json', 'check_near.py', 'check_mid.py', 'sampled_sat.py', 'sampled_broadphase.py', 'interval_batch.py']},
+         'settings': {'max_interval_depth': args.max_depth, 'tolerance_m': args.tolerance,
+                      'sample_count': 15, 'fixed_surface_exemptions': [],
+                      'sampled_only_diagnostic': args.sampled_only, 'sampled_batch_cap': BATCH_CAP},
+@@ -725,6 +775,7 @@ def check(args):
+         return not contacts
+     unresolved = 0
+     interval_started = time.monotonic()
++    interval_batch_totals = interval_batch_counters()
+     interval_counts = {'moving_triangles_completed': 0, 'moving_triangles_total': len(mobile),
+                        'broadphase_pairs': 0, 'pairs_completed': 0, 'pairs_proven_clear': 0,
+                        'unresolved_or_intersecting_pairs': 0}
+@@ -740,18 +791,26 @@ def check(args):
+             candidates = np.flatnonzero(np.all(fhi >= lo - args.tolerance, axis=1)
+                                         & np.all(flo <= hi + args.tolerance, axis=1))
+             interval_counts['broadphase_pairs'] += len(candidates)
+-            for k in candidates:
+-                clear, _ = interval_clear(tri, fixed[k], 0, total_angle, args.max_depth, args.tolerance)
++            def entering_chunk(chunk):
++                nonlocal last_update
++                if time.monotonic() - last_update >= 1:
++                    save_progress(interval_counts=interval_counts, interval_batch_totals=interval_batch_totals,
++                                  interval_current_chunk=chunk, interval_seconds=time.monotonic() - interval_started)
++                    last_update = time.monotonic()
++            for k, clear, _ in interval_pair_results(tri, fixed, candidates, 0, total_angle,
++                    args.max_depth, args.tolerance, interval_batch_totals, entering_chunk):
+                 interval_counts['pairs_completed'] += 1
+                 interval_counts['pairs_proven_clear'] += int(clear)
+                 if not clear:
+                     unresolved += 1
+                 interval_counts['unresolved_or_intersecting_pairs'] = unresolved
+                 if time.monotonic() - last_update >= 1:
+-                    save_progress(interval_counts=interval_counts, interval_seconds=time.monotonic() - interval_started)
++                    save_progress(interval_counts=interval_counts, interval_batch_totals=interval_batch_totals,
++                      interval_seconds=time.monotonic() - interval_started)
+                     last_update = time.monotonic()
+             interval_counts['moving_triangles_completed'] += 1
+-        save_progress(interval_counts=interval_counts, interval_seconds=time.monotonic() - interval_started)
++        save_progress(interval_counts=interval_counts, interval_batch_totals=interval_batch_totals,
++                      interval_seconds=time.monotonic() - interval_started)
+     else:
+         unresolved = None
+         save_progress(phase='CONTINUOUS_NOT_QUALIFIED_SAMPLED_CONTACTS', interval_counts=interval_counts,
+@@ -766,6 +825,8 @@ def check(args):
+               'sampled_broadphase': sampled_broadphase.reading(),
+               'sampled_batch_totals': sampled_batch_totals,
+               'progress_path': str(progress_path), 'interval_counts': interval_counts,
++              'interval_batch_totals': interval_batch_totals,
++              'interval_helper_sha256': sha(Path(__file__).with_name('interval_batch.py')),
+               'all_actual_triangles': len(triangles), 'moving_triangles': int(moving.sum()),
+               'sampled': sampled, 'failure_examples': failures, 'unresolved_continuous_pairs': unresolved,
+               'continuous_surface_separation': unresolved == 0,
+diff --git a/chicago/4d/tools/transport/brougham/interval_batch.py b/chicago/4d/tools/transport/brougham/interval_batch.py
+new file mode 100644
+index 0000000000..f46e323c9f
+--- /dev/null
++++ b/chicago/4d/tools/transport/brougham/interval_batch.py
+@@ -0,0 +1,112 @@
++# App import adaptation of sealed outside-app helper1aa9d3de5b51ab7404a7aa74312d43f0d30f24a5a1ff40b3616359f7c469b45c.
++# Provenance: t2797-interval-batch-study-20261110/SEALED-CHECKPOINT.json; GPL-3.0-or-later.
++# SPDX-License-Identifier: GPL-3.0-or-later
++"""External bounded DFS accelerator; no model or clearance qualification.
++
++Each independent pair retains the scalar algorithm's left-first traversal.
++Only the current SAT calculation is batched. The unchanged scalar function
++remains the numerical authority through separation_batch's boundary fallback.
++"""
++import hashlib
++import math
++import struct
++import numpy as np
++from sampled_sat import separation_batch
++
++PAIR_CAP = 128
++DEPTH_CAP = 12
++CONTACT_TOLERANCE = 1e-8
++OWNED_WORKSPACE_BOUND = 4 * 1024 * 1024
++
++
++def interval_clear_batch(moving, fixed, start, end, depth=12, tolerance=1e-8,
++                         *, scalar, turn):
++    """Return ordered scalar-compatible (clear, hits) tuples plus diagnostics.
++
++    No sampling, angular-depth truncation, pair omission or contact exemption is
++    introduced. A failed left subtree terminates that pair without visiting its
++    pending right subtree, exactly as interval_clear does. Inputs are bounded
++    before conversion; this helper never builds a moving-by-fixed pair matrix.
++    """
++    count = len(moving)
++    if count > PAIR_CAP or len(fixed) != count:
++        raise ValueError('Corresponding triangle pairs, at most128, required')
++    if type(depth) is not int or not 0 <= depth <= DEPTH_CAP:
++        raise ValueError('Original bounded interval depth0..12 required')
++    if isinstance(tolerance, (bool, np.bool_)) or tolerance != CONTACT_TOLERANCE:
++        raise ValueError('Original1e-8 contact tolerance required')
++    if not callable(scalar) or not callable(turn):
++        raise TypeError('Original scalar separation and turn functions required')
++    if not isinstance(start, (int, float, np.floating)) or not isinstance(end, (int, float, np.floating)):
++        raise ValueError('Finite scalar interval endpoints required')
++    start, end = float(start), float(end)
++    if not math.isfinite(start) or not math.isfinite(end) or abs(end-start) > math.pi:
++        raise ValueError('Finite interval of at most pi radians required')
++    for value in (moving, fixed):
++        if isinstance(value, np.ndarray):
++            if value.shape != (count, 3, 3):
++                raise ValueError('Triangle inputs must have shapeN×3×3')
++        elif any(len(tri) != 3 or any(len(vertex) != 3 for vertex in tri) for tri in value):
++            raise ValueError('Triangle inputs must have shapeN×3×3')
++    a, b = np.asarray(moving, dtype=np.float64), np.asarray(fixed, dtype=np.float64)
++    if a.shape != (count, 3, 3) or b.shape != a.shape or not np.isfinite(a).all() or not np.isfinite(b).all():
++        raise ValueError('Finite corresponding triangle arrays required')
++    # Same expression as the original scalar, once per immutable moving triangle.
++    radii = [float(np.hypot(tri[:, 0], tri[:, 2]).max()) for tri in a]
++    current = [(start, end, depth) for _ in range(count)]
++    pending = [[] for _ in range(count)]
++    results = [None] * count
++    visits = [0] * count
++    trace = [hashlib.sha256() for _ in range(count)]
++    totals = {'rounds': 0, 'node_visits': 0, 'max_pending_right_depth': 0,
++              'scalar_fallback_rows': 0, 'axis_cutoff_ambiguous_rows': 0,
++              'decision_ambiguous_rows': 0, 'max_SAT_workspace_bound_bytes': 0}
++    while any(result is None for result in results):
++        ids = [i for i, result in enumerate(results) if result is None]
++        posed, thresholds, mids = [], [], []
++        for i in ids:
++            left, right, remaining = current[i]
++            middle = (left + right) / 2
++            displacement = 2 * radii[i] * math.sin(abs(right-left) / 4)
++            posed.append(turn(a[i], middle))
++            thresholds.append([tolerance, displacement + tolerance])
++            mids.append(middle)
++            trace[i].update(struct.pack('<ddi', left, right, remaining))
++            visits[i] += 1
++        gaps, diagnostics = separation_batch(np.asarray(posed), b[ids],
++            scalar=scalar, decision_thresholds=np.asarray(thresholds))
++        totals['rounds'] += 1
++        totals['node_visits'] += len(ids)
++        for key in ['scalar_fallback_rows', 'axis_cutoff_ambiguous_rows', 'decision_ambiguous_rows']:
++            totals[key] += diagnostics[key]
++        totals['max_SAT_workspace_bound_bytes'] = max(totals['max_SAT_workspace_bound_bytes'],
++            diagnostics['owned_workspace_upper_bound_bytes'])
++        for row, i in enumerate(ids):
++            left, right, remaining = current[i]
++            gap = float(gaps[row])
++            if gap > thresholds[row][1]:
++                if pending[i]:
++                    current[i] = pending[i].pop()
++                else:
++                    results[i] = (True, 0)
++            elif gap <= tolerance:
++                results[i] = (False, 1)
++                pending[i].clear()
++            elif remaining <= 0:
++                results[i] = (False, 0)
++                pending[i].clear()
++            else:
++                middle = mids[row]
++                pending[i].append((middle, right, remaining-1))
++                current[i] = (left, middle, remaining-1)
++                totals['max_pending_right_depth'] = max(totals['max_pending_right_depth'], len(pending[i]))
++                assert len(pending[i]) <= depth
++        # Complete binary-tree bound; an assertion failure is never clearance.
++        assert max(visits, default=0) <= 2 ** (depth+1) - 1
++    return results, {**totals, 'pairs': count, 'pair_cap': PAIR_CAP,
++        'default_depth': 12, 'requested_depth': depth, 'contact_tolerance_m': tolerance,
++        'visits_by_pair': visits, 'DFS_state_sha256_by_pair': [h.hexdigest() for h in trace],
++        'owned_workspace_conservative_bound_bytes': OWNED_WORKSPACE_BOUND,
++        'input_pair_bytes': a.nbytes+b.nbytes, 'actual_process_RSS_bound_claimed': False,
++        'pair_order_preserved': True, 'left_first': True, 'original_thresholds_changed': False,
++        'qualification_supplied': False}
+diff --git a/chicago/4d/tools/transport/brougham/test_interval_batch.py b/chicago/4d/tools/transport/brougham/test_interval_batch.py
+new file mode 100644
+index 0000000000..307933917f
+--- /dev/null
++++ b/chicago/4d/tools/transport/brougham/test_interval_batch.py
+@@ -0,0 +1,195 @@
++# SPDX-License-Identifier: GPL-3.0-or-later
++"""Caller/DFS/numerical controls only; not an actual carriage interval proof."""
++import ast
++import hashlib
++import json
++import math
++from pathlib import Path
++import struct
++import tempfile
++from types import SimpleNamespace
++from unittest.mock import patch
++
++import numpy as np
++
++import check_door_aperture as checker
++import interval_batch as helper
++
++
++def state_hash(states):
++    digest = hashlib.sha256()
++    for start, end, depth in states:
++        digest.update(struct.pack('<ddi', start, end, depth))
++    return digest.hexdigest()
++
++
++def traced_original():
++    source = Path(checker.__file__).read_text()
++    node = next(n for n in ast.parse(source).body if isinstance(n, ast.FunctionDef) and n.name == 'interval_clear')
++    original = ast.dump(node, include_attributes=False)
++    probe = ast.parse('visit(start, end, depth)').body[0]
++    node.body.insert(0, probe)
++    assert ast.dump(ast.FunctionDef(name=node.name, args=node.args, body=node.body[1:],
++        decorator_list=node.decorator_list, returns=node.returns, type_comment=node.type_comment), include_attributes=False) == original
++    states = []
++    namespace = {'math':math, 'np':np, 'turn':checker.turn, 'separation':checker.separation,
++                 'visit':lambda start,end,depth:states.append((start,end,depth))}
++    exec(compile(ast.fix_missing_locations(ast.Module(body=[node], type_ignores=[])), '<original interval with trace only>', 'exec'), namespace)
++    return namespace, states
++
++
++def expected_pairs(triangle, fixed, candidates, start, end, depth, tolerance):
++    reference, states = traced_original()
++    results, traces = [], []
++    for k in candidates:
++        states.clear()
++        results.append((int(k), *reference['interval_clear'](triangle, fixed[k], start, end, depth, tolerance)))
++        traces.append(state_hash(states))
++    return results, traces
++
++
++def verify():
++    a = np.array([[1.,0.,0.],[0.,0.,1.],[0.,0.,0.]])
++    count = 259
++    fixed = np.tile(a + [0,5,0], (count,1,1))
++    contact_ids = [0,5,128,130,258]
++    fixed[contact_ids] = a
++    candidates = np.roll(np.arange(count,dtype=np.intp),7)
++    frozen = (a.tobytes(),fixed.tobytes(),candidates.tobytes())
++    start,end,depth,tolerance = 0.,-math.radians(65),12,1e-8
++    expected,traces = expected_pairs(a,fixed,candidates,start,end,depth,tolerance)
++    observed_traces, calls, entered = [], [], []
++    real = helper.interval_clear_batch
++
++    def observed(moving, static, left, right, remaining, tol, **kwargs):
++        assert len(moving)<=128 and kwargs['scalar'] is checker.separation and kwargs['turn'] is checker.turn
++        assert (left,right,remaining,tol)==(start,end,depth,tolerance)
++        results,info=real(moving,static,left,right,remaining,tol,**kwargs)
++        calls.append(len(results));observed_traces.extend(info['DFS_state_sha256_by_pair'])
++        return results,info
++
++    totals=checker.interval_batch_counters()
++    with patch.object(checker,'interval_clear_batch',observed):
++        actual=list(checker.interval_pair_results(a,fixed,candidates,start,end,depth,tolerance,totals,entered.append))
++    assert actual==expected and observed_traces==traces
++    assert calls==[128,128,3] and [x['candidate_offset'] for x in entered]==[0,128,256]
++    assert [k for k,clear,_ in actual if not clear]==[int(k) for k in candidates if k in contact_ids]
++    assert totals['helper_pairs_evaluated']==count and totals['max_pairs_per_chunk']==128 and totals['scalar_fallback_pairs']==0
++    assert totals['max_owned_helper_workspace_bound_bytes']<=4*1024*1024
++    assert not list(checker.interval_pair_results(a,fixed,np.array([],dtype=np.intp),start,end,depth,tolerance,checker.interval_batch_counters()))
++    assert frozen==(a.tobytes(),fixed.tobytes(),candidates.tobytes())
++
++    # Genuine caller failure controls: incomplete returned arrays cannot silently
++    # omit a pair. Independently compared real results detect a flipped contact
++    # or swapped ordering rather than checking a canned expected implementation.
++    def truncated(*args,**kwargs):
++        results,info=real(*args,**kwargs)
++        return results[:-1],info
++    with patch.object(checker,'interval_clear_batch',truncated):
++        try:
++            list(checker.interval_pair_results(a,fixed,candidates,start,end,depth,tolerance,checker.interval_batch_counters()))
++        except AssertionError as error:
++            assert 'omitted or added' in str(error)
++        else:
++            raise AssertionError('Native caller accepted an omitted independent pair')
++
++    mutation_controls=[]
++    for mutation in ['contact_relabelled_clear','pair_results_reversed']:
++        def altered(*args,**kwargs):
++            results,info=real(*args,**kwargs);results=list(results)
++            if mutation=='contact_relabelled_clear':
++                for i,result in enumerate(results):
++                    if not result[0]:
++                        results[i]=(True,0);break
++            else:
++                results.reverse()
++            return results,info
++        with patch.object(checker,'interval_clear_batch',altered):
++            got=list(checker.interval_pair_results(a,fixed,candidates,start,end,depth,tolerance,checker.interval_batch_counters()))
++        assert got!=expected, 'Independent original scalar comparison missed '+mutation
++        mutation_controls.append({'mutation':mutation,'detected_by_independent_scalar_comparison':True,
++                                  'not_claimed_runtime_redundant_scalar_check':True})
++
++    # Strict CLI settings unsupported by the accelerator remain accepted through
++    # the original scalar function. No catch-and-relax or helper rejection path.
++    fallbacks=[]; subset=np.array([258,1,0],dtype=np.intp)
++    for lo_arg,hi_arg,remaining,tol in [
++            (start,end,1,1e-8),(start,end,13,1e-8),(start,end,16,1e-8),
++            (start,end,12,1e-9),(start,end,16,1e-12),
++            (0.,math.pi+.1,12,1e-8),(np.int64(0),np.int64(-1),12,1e-8),
++            (start,end,np.int64(12),1e-8),(start,end,True,1e-8),
++            (np.float32(.17),np.float32(-1.07),12,1e-8),
++            (np.float64(.17),np.float64(-1.07),12,1e-8),
++            (np.longdouble('.17'),np.longdouble('-1.07'),12,1e-8),
++            (False,True,12,1e-8)]:
++        want,want_traces=expected_pairs(a,fixed,subset,lo_arg,hi_arg,remaining,tol)
++        reference,states=traced_original();seen=[]
++        def scalar(left,right,lo,hi,d,t):
++            states.clear();result=reference['interval_clear'](left,right,lo,hi,d,t)
++            seen.append(state_hash(states));assert (lo,hi,d,t)==(lo_arg,hi_arg,remaining,tol)
++            return result
++        tally=checker.interval_batch_counters()
++        with patch.object(checker,'interval_clear',scalar),patch.object(checker,'interval_clear_batch',side_effect=AssertionError('Unsupported setting entered accelerator')) as forbidden:
++            got=list(checker.interval_pair_results(a,fixed,subset,lo_arg,hi_arg,remaining,tol,tally))
++            forbidden.assert_not_called()
++        assert got==want and seen==want_traces and tally['scalar_fallback_pairs']==len(subset) and tally['accelerated_chunks']==0
++        fallbacks.append({'start':float(lo_arg),'end':float(hi_arg),'depth':int(remaining),'depth_type':type(remaining).__name__,'endpoint_types':[type(lo_arg).__name__,type(hi_arg).__name__],'tolerance_m':tol,'pairs':len(subset),'scalar_results_and_DFS_exact':True})
++
++    # Both original numerical decision boundaries still have actual SAT/scalar
++    # fallback. The caller passes both unchanged, including upper equality.
++    boundary_rows=[]
++    upper=2*math.sin(1/4)+tolerance
++    for gap in [tolerance,upper,np.nextafter(upper,math.inf)]:
++        target=checker.turn(a,.5)+[0,gap,0]
++        want,want_trace=expected_pairs(a,target[None],np.array([0]),0.,1.,12,tolerance)
++        diagnostics=[]
++        def record(*args,**kwargs):
++            result,info=real(*args,**kwargs);diagnostics.append(info);return result,info
++        with patch.object(checker,'interval_clear_batch',record):
++            got=list(checker.interval_pair_results(a,target[None],np.array([0]),0.,1.,12,tolerance,checker.interval_batch_counters()))
++        assert got==want and diagnostics[0]['DFS_state_sha256_by_pair']==want_trace
++        assert diagnostics[0]['scalar_fallback_rows']>=1
++        boundary_rows.append({'gap_m':gap,'results_and_DFS_exact':True,'actual_scalar_fallback_rows':diagnostics[0]['scalar_fallback_rows']})
++
++    # Full-check orchestration fixtures mock ONLY the already separately tested
++    # structural prefix. All15sampled poses and full-circle AABB run normally.
++    # A false/unresolved interval result must block default proof PASS.
++    orchestration=[]
++    for mode in ['clear','forced_unresolved','sampled_contact']:
++        static=a.copy() if mode=='sampled_contact' else np.array([[-.9,0.,-.9],[-.85,0.,-.9],[-.9,0.,-.85]])
++        triangles=np.array([a,static]);moving=np.array([True,False])
++        structure={'schema':'UNIT_ORCHESTRATION_FIXTURE_NOT_GEOMETRY_PROOF','result':'STRUCTURE_ONLY_PASS'}
++        data=({'open_angle_deg':-65},{},b'',[],triangles,moving,['moving','fixed'],a[None],static[None])
++        with tempfile.TemporaryDirectory(prefix='t2797-interval-unit-') as folder:
++            directory=Path(folder);source=Path(__file__)
++            args=SimpleNamespace(input=source,candidate=source,recipe=source,source_receipt=source,
++                report=directory/'unit-only-proof.json',progress=None,max_depth=12,tolerance=tolerance,structure_only=False,sampled_only=False)
++            def uncertain(*args,**kwargs):
++                results,info=real(*args,**kwargs)
++                return [(False,0) for _ in results],info
++            oracle=uncertain if mode=='forced_unresolved' else real
++            if mode=='sampled_contact':
++                oracle=lambda *a,**k:(_ for _ in ()).throw(AssertionError('Sampled contacts must block interval proof'))
++            with patch.object(checker,'verify_structure',return_value=(structure,data)),patch.object(checker,'interval_clear_batch',oracle):
++                good=checker.check(args)
++            result=json.loads(args.report.read_text());progress=json.loads(Path(str(args.report)+'.progress.json').read_text())
++            assert len(result['sampled'])==15 and good is (mode=='clear') and result['PASS'] is (mode=='clear')
++            if mode=='sampled_contact':
++                assert result['unresolved_continuous_pairs'] is None and result['interval_counts']['pairs_completed']==0
++            else:
++                assert result['interval_counts']['broadphase_pairs']==result['interval_counts']['pairs_completed']==1
++                assert result['interval_batch_totals']['helper_pairs_evaluated']==1
++                assert result['interval_counts']['moving_triangles_completed']==1
++                assert result['unresolved_continuous_pairs']==(0 if mode=='clear' else 1)
++            assert progress['final_PASS'] is (mode=='clear')
++            orchestration.append({'fixture':mode,'all15_samples_run':True,'default_full_proof_verdict_correct':True,
++                                  'actual_carriage_or_fit_qualification':False})
++    return {'schema':'chicago-brougham-native-interval-caller-controls-v1','result':'NUMERICAL_CALLER_CONTROLS_PASS',
++            'ordered_pairs_and_DFS_exact':count,'chunk_sizes':calls,'independent_false_clear_and_order_controls':mutation_controls,
++            'truncated_result_rejected':True,'unsupported_settings_scalar_fallback':fallbacks,
++            'both_threshold_scalar_fallback':boundary_rows,'full_check_orchestration':orchestration,
++            'actual_door_geometry_or_continuous_clearance_qualified':False}
++
++
++if __name__=='__main__':
++    print(json.dumps(verify(),indent=2))

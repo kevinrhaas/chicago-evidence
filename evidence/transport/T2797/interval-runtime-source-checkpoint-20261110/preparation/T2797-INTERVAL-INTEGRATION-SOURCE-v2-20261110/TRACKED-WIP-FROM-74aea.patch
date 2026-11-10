@@ -1,0 +1,178 @@
+diff --git a/chicago/4d/tools/transport/brougham/DOOR-FOUNDATION.md b/chicago/4d/tools/transport/brougham/DOOR-FOUNDATION.md
+index 858cd92b07..8e767bef98 100644
+--- a/chicago/4d/tools/transport/brougham/DOOR-FOUNDATION.md
++++ b/chicago/4d/tools/transport/brougham/DOOR-FOUNDATION.md
+@@ -415,3 +415,48 @@ boarding, full four-part checks/preflight and exact-head hosted/published delive
+ gates remain OPEN/UNRUN.** This is an explicitly authorized unqualified source
+ checkpoint on the owned feature branch only; no PR, installed delivery or DEV/MAIN
+ merge is included. All recipe capability/qualification flags remain false.
++
++
++## Six-view bounded source decision and interval caller proposal
++
++ROOT personally reviewed all six original1280×800PNGs from the admitted source
++study (14.361379s, originalSUP120/floors, cleanup0). The bounded source appearance
++is acceptable **to continue engineering**: the closed overall U/glass/cabin/roof,
++lamps, wheels and pole are retained at the one chosen low curbside quarter camera;
++rear hinges and narrow bright running seams are visible. The open leaf reveals
++the actual cabin/seat. The188mm lower-stem route is not dominant at this camera,
++but is not established as invisible. This resolves review of these six chosen
++source views only. It is not full near/mid published/phone/photo appearance
++approval, passage/fit proof or adoption, and no recipe flag changes follow.
++Original capture report SHA256
++`03e28dc6f76938e718590b6fd22657703de6f1180c2b1b9cf98d2aa2156f194c`
++remains immutable; ROOT's later bounded decision is recorded separately.
++
++The proposed interval helper ports the sealed GPL-3.0-or-later outside-app
++`interval_batch.py` SHA256
++`1aa9d3de5b51ab7404a7aa74312d43f0d30f24a5a1ff40b3616359f7c469b45c`
++from sealed checkpoint
++`6e0534cc` (full hash in the source packet). Its only semantic import adaptation
++is `sat_batch`→`sampled_sat`, which is already the exact same reviewed SAT source.
++Only the inner independent-pair interval loop uses chunks of at most128; original
++scalar axes/separation/turn/recursive interval code, full-circle broadphase,
++fixed candidate order, all15 sampled poses, and the original final proof verdict
++remain authoritative. Each independent pair keeps its original left-first DFS,
++short-circuit and unresolved-as-NONPASS rules. Both original SAT decision bounds
++retain scalar numerical fallback. Default actual depth12/tolerance1e-8 and finite
++helper-supported endpoint intervals use the accelerator. Every other accepted
++scalar setting, including stricter tolerance/depth13–16 or an endpoint span>pi,
++uses the unchanged original scalar path; no CLI argument range is narrowed.
++Atomic progress remains bounded in frequency and records current chunk/counters
++before expensive work when due. An interruption/timeout cannot become PASS.
++
++New native caller controls are prepared for ordered259-pair/128-row boundaries,
++independent original outcomes and per-pair DFS hashes, omitted/false-clear/order
++corruptions, unsupported-setting scalar fallback, both numerical thresholds and
++full-check orchestration (all15 samples and unresolved/contact rejection).
++These controls and a complete actual-model interval proof are **UNRUN for this
++integration proposal**. The earlier64 OLD-model pair study (50clear/14contact),
++though useful for helper equivalence, supplies no current-model/full-domain
++clearance. The new actual near/mid source geometry, all qualification flags,
++installed assets and runtime implementation remain unchanged by this numerical
++proposal. Full local/hosted/published/runtime/fit gates remain open.
+diff --git a/chicago/4d/tools/transport/brougham/check_door_aperture.py b/chicago/4d/tools/transport/brougham/check_door_aperture.py
+index 32749f240b..a5c569c1ad 100644
+--- a/chicago/4d/tools/transport/brougham/check_door_aperture.py
++++ b/chicago/4d/tools/transport/brougham/check_door_aperture.py
+@@ -21,6 +21,7 @@ from check_near import read, values, component, world_nodes
+ from check_mid import bind_parts
+ from sampled_sat import separation_batch, BATCH_CAP
+ from sampled_broadphase import FixedYBroadphase
++from interval_batch import interval_clear_batch, PAIR_CAP as INTERVAL_PAIR_CAP
+ 
+ CLOSED_WORLD_POSITION_TOLERANCE_M = 2e-7
+ CUT_SURFACE_AREA_TOLERANCE_M2 = 2e-6
+@@ -627,6 +628,55 @@ def verify_structure(args):
+     return summary, (recipe, doc, binary, protected, triangles, moving, labels, mobile, fixed)
+ 
+ 
++def interval_pair_results(triangle, fixed, candidates, start, end, depth, tolerance,
++                          totals, on_chunk=None):
++    """Ordered complete pair results; only original defaults use the bounded helper.
++
++    Other CLI-supported tolerances/depths retain the original scalar authority.
++    The full-circle candidate array is supplied unchanged by the original caller.
++    """
++    # Exact Python endpoints match the native CLI. NumPy endpoint arithmetic
++    # may retain another precision; preserve its original scalar semantics.
++    endpoints_supported = (type(start) in (int, float)
++                           and type(end) in (int, float)
++                           and math.isfinite(start) and math.isfinite(end)
++                           and abs(float(end) - float(start)) <= math.pi)
++    if type(depth) is not int or depth != 12 or tolerance != 1e-8 or not endpoints_supported:
++        for k in candidates:
++            result = interval_clear(triangle, fixed[k], start, end, depth, tolerance)
++            totals['scalar_fallback_pairs'] += 1
++            yield int(k), *result
++        return
++    for offset in range(0, len(candidates), INTERVAL_PAIR_CAP):
++        chunk = candidates[offset:offset + INTERVAL_PAIR_CAP]
++        if on_chunk is not None:
++            on_chunk({'candidate_offset': offset, 'candidate_count': len(chunk),
++                      'first_fixed_index': int(chunk[0]), 'last_fixed_index': int(chunk[-1]),
++                      'state': 'ENTERING_BOUNDED_INTERVAL_CHUNK'})
++        repeated = np.repeat(triangle[None], len(chunk), axis=0)
++        results, info = interval_clear_batch(repeated, fixed[chunk], start, end, depth,
++                                             tolerance, scalar=separation, turn=turn)
++        assert len(results) == len(chunk), 'Interval helper omitted or added an independent pair'
++        assert info['pairs'] == len(chunk) and info['pair_order_preserved']
++        totals['accelerated_chunks'] += 1
++        totals['helper_pairs_evaluated'] += len(chunk)
++        totals['max_pairs_per_chunk'] = max(totals['max_pairs_per_chunk'], len(chunk))
++        totals['node_visits'] += info['node_visits']
++        for key in ['scalar_fallback_rows', 'axis_cutoff_ambiguous_rows', 'decision_ambiguous_rows']:
++            totals[key] += info[key]
++        totals['max_owned_helper_workspace_bound_bytes'] = max(
++            totals['max_owned_helper_workspace_bound_bytes'], info['owned_workspace_conservative_bound_bytes'])
++        for k, result in zip(chunk, results):
++            yield int(k), *result
++
++
++def interval_batch_counters():
++    return {'accelerated_chunks': 0, 'helper_pairs_evaluated': 0, 'scalar_fallback_pairs': 0,
++            'max_pairs_per_chunk': 0, 'node_visits': 0, 'scalar_fallback_rows': 0,
++            'axis_cutoff_ambiguous_rows': 0, 'decision_ambiguous_rows': 0,
++            'max_owned_helper_workspace_bound_bytes': 0}
++
++
+ def check(args):
+     started = time.monotonic()
+     progress_path = args.progress or Path(str(args.report) + '.progress.json')
+@@ -637,7 +687,7 @@ def check(args):
+         'recipe_sha256': sha(args.recipe), 'source_receipt_sha256': sha(args.source_receipt),
+         'checker_sha256': sha(Path(__file__)),
+         'source_file_sha256': {name: sha(Path(__file__).with_name(name)) for name in [
+-            'door_aperture.py', 'check_door_aperture.py', 'door-aperture.json', 'check_near.py', 'check_mid.py', 'sampled_sat.py', 'sampled_broadphase.py']},
++            'door_aperture.py', 'check_door_aperture.py', 'door-aperture.json', 'check_near.py', 'check_mid.py', 'sampled_sat.py', 'sampled_broadphase.py', 'interval_batch.py']},
+         'settings': {'max_interval_depth': args.max_depth, 'tolerance_m': args.tolerance,
+                      'sample_count': 15, 'fixed_surface_exemptions': [],
+                      'sampled_only_diagnostic': args.sampled_only, 'sampled_batch_cap': BATCH_CAP},
+@@ -725,6 +775,7 @@ def check(args):
+         return not contacts
+     unresolved = 0
+     interval_started = time.monotonic()
++    interval_batch_totals = interval_batch_counters()
+     interval_counts = {'moving_triangles_completed': 0, 'moving_triangles_total': len(mobile),
+                        'broadphase_pairs': 0, 'pairs_completed': 0, 'pairs_proven_clear': 0,
+                        'unresolved_or_intersecting_pairs': 0}
+@@ -740,18 +791,26 @@ def check(args):
+             candidates = np.flatnonzero(np.all(fhi >= lo - args.tolerance, axis=1)
+                                         & np.all(flo <= hi + args.tolerance, axis=1))
+             interval_counts['broadphase_pairs'] += len(candidates)
+-            for k in candidates:
+-                clear, _ = interval_clear(tri, fixed[k], 0, total_angle, args.max_depth, args.tolerance)
++            def entering_chunk(chunk):
++                nonlocal last_update
++                if time.monotonic() - last_update >= 1:
++                    save_progress(interval_counts=interval_counts, interval_batch_totals=interval_batch_totals,
++                                  interval_current_chunk=chunk, interval_seconds=time.monotonic() - interval_started)
++                    last_update = time.monotonic()
++            for k, clear, _ in interval_pair_results(tri, fixed, candidates, 0, total_angle,
++                    args.max_depth, args.tolerance, interval_batch_totals, entering_chunk):
+                 interval_counts['pairs_completed'] += 1
+                 interval_counts['pairs_proven_clear'] += int(clear)
+                 if not clear:
+                     unresolved += 1
+                 interval_counts['unresolved_or_intersecting_pairs'] = unresolved
+                 if time.monotonic() - last_update >= 1:
+-                    save_progress(interval_counts=interval_counts, interval_seconds=time.monotonic() - interval_started)
++                    save_progress(interval_counts=interval_counts, interval_batch_totals=interval_batch_totals,
++                      interval_seconds=time.monotonic() - interval_started)
+                     last_update = time.monotonic()
+             interval_counts['moving_triangles_completed'] += 1
+-        save_progress(interval_counts=interval_counts, interval_seconds=time.monotonic() - interval_started)
++        save_progress(interval_counts=interval_counts, interval_batch_totals=interval_batch_totals,
++                      interval_seconds=time.monotonic() - interval_started)
+     else:
+         unresolved = None
+         save_progress(phase='CONTINUOUS_NOT_QUALIFIED_SAMPLED_CONTACTS', interval_counts=interval_counts,
+@@ -766,6 +825,8 @@ def check(args):
+               'sampled_broadphase': sampled_broadphase.reading(),
+               'sampled_batch_totals': sampled_batch_totals,
+               'progress_path': str(progress_path), 'interval_counts': interval_counts,
++              'interval_batch_totals': interval_batch_totals,
++              'interval_helper_sha256': sha(Path(__file__).with_name('interval_batch.py')),
+               'all_actual_triangles': len(triangles), 'moving_triangles': int(moving.sum()),
+               'sampled': sampled, 'failure_examples': failures, 'unresolved_continuous_pairs': unresolved,
+               'continuous_surface_separation': unresolved == 0,

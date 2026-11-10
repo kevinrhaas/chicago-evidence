@@ -1,0 +1,60 @@
+--- a/chicago/4d/renderers/web/js/brougham-door.js
++++ b/chicago/4d/renderers/web/js/brougham-door.js
+@@ -80,6 +80,7 @@
+  */
+ export function createCoachmanDoorActions({ parkedTransport, humans, days, router, visitor, interactions }) {
+   const held = new Map();
++  let disposed = false;
+   const release = actor => {
+     if (!held.has(actor.id)) return;
+     held.delete(actor.id);
+@@ -101,7 +102,7 @@
+     });
+   };
+   const actionsFor = actor => {
+-    if (actor.personId !== CHARLES_NELSON || actor.indoors || actor.disposed
++    if (disposed || actor.personId !== CHARLES_NELSON || actor.indoors || actor.disposed
+       || humans.shown === false || humans.isHeld?.(actor) || days?.isHosted?.(actor)) return [];
+     const instance = live();
+     if (!instance) return [];
+@@ -111,7 +112,13 @@
+     const open = door.fraction < 1, target = open ? 1 : 0;
+     let arrived = false, refusal = null;
+     let start = door.fraction;
+-    const isLive = () => live() === instance && !actor.disposed && !actor.indoors && humans.shown !== false;
++    const isLive = () => !disposed && live() === instance && !actor.disposed && !actor.indoors && humans.shown !== false;
++    const unavailable = () => {
++      if (isLive()) return false;
++      refusal ??= 'The carriage is no longer available';
++      release(actor);
++      return true;
++    };
+     const short = (a, b) => Math.hypot(a.e - b.e, a.n - b.n) <= .15;
+     return [{ id: open ? 'carriage:open' : 'carriage:close',
+       label: open ? 'Ask Charles to open the carriage door' : 'Ask Charles to close the carriage door',
+@@ -140,7 +147,7 @@
+         ? `Charles has ${open ? 'opened' : 'closed'} the carriage door. Boarding is not available.`
+         : 'The carriage door has stopped'),
+       steps: [
+-        { label: 'Charles is walking to the carriage', until: () => arrived || !!refusal, timeout: 60,
++        { label: 'Charles is walking to the carriage', until: () => unavailable() || arrived || !!refusal, timeout: 60,
+           run: t => {
+             if (t === 1 && !arrived) {
+               actor.stopPath(); refusal ??= 'Charles has not reached the carriage door';
+@@ -150,7 +157,7 @@
+           seconds: door.plan.duration_s, run: t => {
+             if (t === 0) start = door.fraction;
+             if (refusal || !arrived) return;
+-            if (!isLive()) { refusal = 'The carriage is no longer available'; return; }
++            if (unavailable()) return;
+             const result = door.pose(start + (target - start) * t, bodies());
+             if (!result.ok) refusal = result.why;
+           } },
+@@ -158,6 +165,7 @@
+     }];
+   };
+   actionsFor.dispose = () => {
++    disposed = true;
+     unsubscribe();
+     for (const actor of [...held.values()]) release(actor);
+   };
