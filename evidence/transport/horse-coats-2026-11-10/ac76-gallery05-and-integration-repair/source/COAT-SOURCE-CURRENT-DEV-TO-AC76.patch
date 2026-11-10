@@ -1,0 +1,1924 @@
+diff --git a/chicago/4d/changelog.d/T-2795-coats.json b/chicago/4d/changelog.d/T-2795-coats.json
+new file mode 100644
+index 0000000000..fda3f90512
+--- /dev/null
++++ b/chicago/4d/changelog.d/T-2795-coats.json
+@@ -0,0 +1,8 @@
++{
++  "title": "Individual coats for the town's horses",
++  "kind": "feature",
++  "items": [
++    "Town horses use bay, chestnut and grey coats, with stable individual blazes, socks and subtle dappling. Team members can match while keeping different markings.",
++    "These colors and markings are reconstructed choices. They do not identify documented Chicago animals."
++  ]
++}
+diff --git a/chicago/4d/data/liberties.json b/chicago/4d/data/liberties.json
+index 8d480b2a6e..e18e214ca6 100644
+--- a/chicago/4d/data/liberties.json
++++ b/chicago/4d/data/liberties.json
+@@ -3,7 +3,7 @@
+   "source": "docs/LIBERTIES.md",
+   "standard": "A visitor should be able to tell you which parts we made up.",
+   "note": "The confidence model covers attributes. These are the decisions that live above any single attribute: scope, omission, simplification, and the choices a visitor would otherwise have to reverse-engineer.",
+-  "count": 1079,
++  "count": 1080,
+   "names": [
+     {
+       "id": "agency_striker_log_house",
+@@ -72745,6 +72745,36 @@
+         "T-2383"
+       ]
+     },
++    {
++      "id": "L-horse-individual-coats-2795",
++      "title": "individual coats and markings (1812, 1835, 1904)",
++      "section": "per_subject",
++      "subjects": [],
++      "covers": [],
++      "recorded": "2026-11-10",
++      "revised": null,
++      "fields": [
++        {
++          "label": "Decision",
++          "text": "The owner requested visibly different horses across eras. Bay, chestnut, iron-grey and dark-bay palettes, individual blazes, sock heights and subdued dappling are reconstructed choices. Team members share a palette and have distinct stable markings; they do not identify historical Chicago animals, breeds or ownership. The engine-neutral recipe and its generated source contract carry these choices. The existing sevketkabatas *Horse* geometry and photographic fur maps retain their CC BY 4.0 attribution and unchanged bytes. Shader painting retains fur luminance detail, leaves the source eye material alone and protects chosen muzzle, lower-foot and pale-feather regions; chestnut individuals may also have a chestnut mane/tail. It creates no new captured historical texture or anatomy. This proposal does not establish photographic quality, qualified continuous hoof contact, natural standing/tail motion or all-era visual acceptance. Those remain subject to actual native and ordinary-world desktop/phone image review in this work."
++        },
++        {
++          "label": "Sources",
++          "text": "sevketkabatas, “Horse”, published 29 March 2021, CC BY 4.0, retrieved via… supplies the existing CC BY 4.0 model and maps only. Individual coats and markings are owner-requested reconstruction."
++        },
++        {
++          "label": "How to resolve",
++          "text": "Historical pictures could identify particular animals; actual native and ordinary-world desktop/phone image reviews must qualify the current surface appearance."
++        },
++        {
++          "label": "Recorded",
++          "text": "2026-11-10."
++        }
++      ],
++      "work_refs": [
++        "T-2795"
++      ]
++    },
+     {
+       "id": "L-pullman-18th-street-wall-c1900-1934",
+       "title": "Pullman's 18th Street wall east of the stair's pier built as the c. 1900 picture shows it: one level coping, its later piers, urn and curved low walls withdrawn",
+diff --git a/chicago/4d/data/transport/driven/loops.json b/chicago/4d/data/transport/driven/loops.json
+index e5cd904195..56d0c477f3 100644
+--- a/chicago/4d/data/transport/driven/loops.json
++++ b/chicago/4d/data/transport/driven/loops.json
+@@ -1,5 +1,6 @@
+ {
+   "schema": "town_driven_transport_candidates_v1",
++  "horse_appearance": {"recipe_file": "transport/horse-coats.json", "grade": "reconstructed", "liberty": "L-horse-individual-coats-2795"},
+   "status": "SOURCE_DERIVED_CANDIDATES_RENDERED_GROUND_COLLISION_AND_BROWSER_UNRUN",
+   "corridor_line": "reconstructed",
+   "corridor_line_why": "The 1835 demonstration uses reconstructed level ground southwest of town. The 1904 candidate uses a reconstructed lane within existing inferred carriageways; source triangle support assessment does not establish posed world contact or an archival trip.",
+diff --git a/chicago/4d/data/transport/horse-coats.json b/chicago/4d/data/transport/horse-coats.json
+new file mode 100644
+index 0000000000..462e7fc7c8
+--- /dev/null
++++ b/chicago/4d/data/transport/horse-coats.json
+@@ -0,0 +1,558 @@
++{
++  "schema": "chicago4d_horse_coats_v1",
++  "grade": "reconstructed",
++  "liberty": "L-horse-individual-coats-2795",
++  "basis": "Owner-requested individual coat/marking variation. Original colour and mask choices, not historical Chicago animals, breeds, ownership or captured new textures. Existing sevketkabatas Horse model/maps remain CC BY 4.0 with their existing credit.",
++  "scenes": [
++    "1812",
++    "1835",
++    "1904"
++  ],
++  "sources": [
++    {
++      "file": "renderers/web/transport/driven/horse-current26-inplace-full.glb",
++      "sha256": "ad9dc060f8630d0de04fef97d716e8c82be3ac8bf070684e78107720c5221ec6"
++    },
++    {
++      "file": "renderers/web/transport/standing-horse/horse-sevket-quiet-head-neck-idle-v6.glb",
++      "sha256": "7ce84d43445e930eecc6d9f69e97ed7ade0fe0b3fc44a9a753c25d88b3f548e1"
++    }
++  ],
++  "body_material": "Material_HorseMain4k00.png",
++  "hair_material": "Material.003_Hair12Main2k.png",
++  "eye_material": "Eye_brown",
++  "body_vertices": 5595,
++  "coordinate_frame": "canonical_metres_Yup_Zforward_Xleft",
++  "foot_reference": "data/transport/parked/horse-sevket-sidecar.json",
++  "mask_choices": {
++    "status": "Reconstructed painting regions within the real canonical source frame, not altered anatomy or contact classifiers",
++    "protect_below_y_m": 0.16,
++    "sock_transition_m": 0.025,
++    "sock_radius_m": 0.15,
++    "sock_top_range_m": [
++      0.24,
++      0.56
++    ],
++    "face_y_range_m": [
++      1.28,
++      1.76
++    ],
++    "face_z_min_m": 1.05,
++    "face_halfwidth_m": 0.075,
++    "muzzle_protect_z_m": [
++      1.36,
++      1.48
++    ],
++    "muzzle_protect_y_m": [
++      1.35,
++      1.47
++    ],
++    "dapple_pitch_m": 0.085,
++    "brown_reference_luminance": 0.12,
++    "white_reference_luminance": 0.55,
++    "hair_reference_luminance": 0.035,
++    "dapple_body_y_m": [
++      0.6,
++      0.9
++    ],
++    "dapple_front_fade_z_m": [
++      0.5,
++      0.9
++    ],
++    "hair_upper_y_m": [
++      0.65,
++      0.85
++    ],
++    "hair_tail_z_m": [
++      -0.95,
++      -0.8
++    ]
++  },
++  "palettes": [
++    {
++      "id": "bay",
++      "linear_rgb": [
++        0.14,
++        0.065,
++        0.023
++      ],
++      "mane_linear_rgb": null,
++      "dapple_strength": 0.02
++    },
++    {
++      "id": "chestnut",
++      "linear_rgb": [
++        0.24,
++        0.105,
++        0.04
++      ],
++      "mane_linear_rgb": [
++        0.11,
++        0.038,
++        0.015
++      ],
++      "dapple_strength": 0.015
++    },
++    {
++      "id": "iron_grey",
++      "linear_rgb": [
++        0.21,
++        0.23,
++        0.245
++      ],
++      "mane_linear_rgb": null,
++      "dapple_strength": 0.075
++    },
++    {
++      "id": "dark_bay",
++      "linear_rgb": [
++        0.075,
++        0.035,
++        0.018
++      ],
++      "mane_linear_rgb": null,
++      "dapple_strength": 0.025
++    }
++  ],
++  "group_palettes": {
++    "1812:fort_wagon_loop_1812": "bay",
++    "1812:shore_road_wagon_haul_1812": "chestnut",
++    "1835:western_hotel_driven_wagon_loop_1835": "chestnut",
++    "1835:western_hotel_yard_standing_horse_01": "iron_grey",
++    "1904:prairie_driven_brougham_loop_1904": "iron_grey",
++    "1904:prairie_parked_studebaker_brougham": "bay"
++  },
++  "individual_policy": "Palette keyed by scene/team row; blaze, four sock tops and dapple phase keyed by scene/row/individual side. Stable across reload and visibility/LOD reacquisition. No time, camera or random seed.",
++  "photographic_acceptance": false,
++  "seed_contract": {
++    "algorithm": "fnv1a32_murmur3_avalanche_v1",
++    "encoding": "ASCII",
++    "individual_key": "{scene}:{row}:{individual}",
++    "palette_key": "{scene}:{team}",
++    "channel_separator": "|",
++    "uint32_divisor": 4294967296,
++    "channels": {
++      "sock_enabled": "sock-enabled{index}",
++      "sock_height": "sock-height{index}",
++      "blaze_enabled": "blaze-enabled",
++      "blaze_width": "blaze-width",
++      "blaze_offset": "blaze-offset",
++      "phase": [
++        "pattern-x",
++        "pattern-y",
++        "pattern-z"
++      ]
++    }
++  },
++  "individual_choices": {
++    "sock_absent_probability": 0.3,
++    "blaze_absent_probability": 0.2,
++    "blaze_halfwidth_range_m": [
++      0.008,
++      0.04
++    ],
++    "blaze_offset_range_m": [
++      -0.006,
++      0.006
++    ],
++    "phase_range": [
++      0,
++      13
++    ]
++  },
++  "source_contract": [
++    {
++      "file": "renderers/web/transport/driven/horse-current26-inplace-full.glb",
++      "sha256": "ad9dc060f8630d0de04fef97d716e8c82be3ac8bf070684e78107720c5221ec6",
++      "body_vertices": 5595,
++      "body_bounds_m": [
++        [
++          -0.36283543705940247,
++          0.0,
++          -0.9441675543785095
++        ],
++        [
++          0.361839234828949,
++          1.7924532890319824,
++          1.542850136756897
++        ]
++      ],
++      "body_attributes": {
++        "POSITION": {
++          "accessor": {
++            "bufferView": 31,
++            "componentType": 5126,
++            "count": 5595,
++            "type": "VEC3",
++            "min": [
++              -0.36283543705940247,
++              0.0,
++              -0.9441675543785095
++            ],
++            "max": [
++              0.361839234828949,
++              1.7924532890319824,
++              1.542850136756897
++            ]
++          },
++          "buffer_view_sha256": "e9aa0c036e331cd649e126d9e27189983e3553638542ad41cc379805561e6fde"
++        },
++        "NORMAL": {
++          "accessor": {
++            "bufferView": 32,
++            "componentType": 5126,
++            "count": 5595,
++            "type": "VEC3",
++            "min": [
++              -0.9997574090957642,
++              -0.9999949932098389,
++              -0.9999623894691467
++            ],
++            "max": [
++              0.9999003410339355,
++              0.9980241060256958,
++              0.9999999403953552
++            ]
++          },
++          "buffer_view_sha256": "bb3311847e92ea013cc17f4a7eb2394fbcfa9ec890b3043bc2b197bdfffa22ad"
++        },
++        "TEXCOORD_0": {
++          "accessor": {
++            "bufferView": 33,
++            "componentType": 5126,
++            "count": 5595,
++            "type": "VEC2",
++            "min": [
++              0.0019199999514967203,
++              0.012769999913871288
++            ],
++            "max": [
++              0.9996299743652344,
++              0.9838700294494629
++            ]
++          },
++          "buffer_view_sha256": "cdbe373c5d484bbded1df6e3ba241f29f5029cd12ffbbe85f6f1528f0f987b81"
++        },
++        "JOINTS_0": {
++          "accessor": {
++            "bufferView": 34,
++            "componentType": 5123,
++            "count": 5595,
++            "type": "VEC4"
++          },
++          "buffer_view_sha256": "15e1f05caef552e1982f89abcf5bb57fada2621b0dbc6bf6b86b79739811366a"
++        },
++        "WEIGHTS_0": {
++          "accessor": {
++            "bufferView": 35,
++            "componentType": 5126,
++            "count": 5595,
++            "type": "VEC4",
++            "min": [
++              1.14794157117298e-14,
++              0.0,
++              0.0,
++              0.0
++            ],
++            "max": [
++              1.0,
++              1.0,
++              1.0,
++              0.9962390661239624
++            ]
++          },
++          "buffer_view_sha256": "4b67898fdd71a08e25061764b78d31e916a2876edb1d45b622865d8678015bd1"
++        },
++        "TEXCOORD_1": {
++          "accessor": {
++            "bufferView": 33,
++            "componentType": 5126,
++            "count": 5595,
++            "type": "VEC2",
++            "min": [
++              0.0019199999514967203,
++              0.012769999913871288
++            ],
++            "max": [
++              0.9996299743652344,
++              0.9838700294494629
++            ]
++          },
++          "buffer_view_sha256": "cdbe373c5d484bbded1df6e3ba241f29f5029cd12ffbbe85f6f1528f0f987b81"
++        }
++      },
++      "body_indices": {
++        "accessor": {
++          "bufferView": 36,
++          "componentType": 5123,
++          "count": 29382,
++          "type": "SCALAR"
++        },
++        "buffer_view_sha256": "d828dbdbbad193f90e0cf140beba65d351846fe67e1bf0b1469f73f7ce6c2c16"
++      },
++      "joint_names": [
++        "horse_motion_root",
++        "horse_body",
++        "horse_neck",
++        "horse_head",
++        "horse_tail_base",
++        "horse_tail_tip",
++        "fore_l_shoulder",
++        "fore_l_elbow",
++        "fore_l_carpus",
++        "fore_l_fetlock",
++        "fore_l_hoof",
++        "fore_r_shoulder",
++        "fore_r_elbow",
++        "fore_r_carpus",
++        "fore_r_fetlock",
++        "fore_r_hoof",
++        "hind_l_hip",
++        "hind_l_stifle",
++        "hind_l_hock",
++        "hind_l_fetlock",
++        "hind_l_hoof",
++        "hind_r_hip",
++        "hind_r_stifle",
++        "hind_r_hock",
++        "hind_r_fetlock",
++        "hind_r_hoof"
++      ],
++      "inverse_bind_matrices": {
++        "accessor": {
++          "bufferView": 16,
++          "componentType": 5126,
++          "count": 26,
++          "type": "MAT4"
++        },
++        "buffer_view_sha256": "54fb5b70bea8f3ddcafffa2a80a2561387fa2ab3e66d83e8bcba0f9e8afb2da0"
++      },
++      "animation_names": [
++        "sevket_reconstructed_quiet_head_neck_idle_v1",
++        "reconstructed_bare_current26_inplace_careful_walk_cubic129_v1"
++      ],
++      "image_payload_sha256": [
++        "979df4f4dcdf4490f3f1780a7b411ac0e3c6be2af96e51ab49d83011a87d2a45",
++        "59465a0984f36264f7d2f9082c355f4c632f2e03e1c3c2e51cfda7bdb7b7ae90",
++        "38ec10da4600112c14988e3bb8156299cdf21a4443f6c0cbccecb94ead471938",
++        "237aaec69c56661e6179b8028cd604a11b058d4e45877ae168379b3d31936618",
++        "1e0382c8ad5d155dc3bf45378a5a37bb10bdcc79ffefee211e69edb3b609a5b3",
++        "f6a1cefd4126d387a1d73655918c1a97896845e527650a3555f560c2098fede3"
++      ],
++      "material_names": [
++        "Material.003_Hair12Main2k.png",
++        "Material_HorseMain4k00.png",
++        "Eye_brown"
++      ]
++    },
++    {
++      "file": "renderers/web/transport/standing-horse/horse-sevket-quiet-head-neck-idle-v6.glb",
++      "sha256": "7ce84d43445e930eecc6d9f69e97ed7ade0fe0b3fc44a9a753c25d88b3f548e1",
++      "body_vertices": 5595,
++      "body_bounds_m": [
++        [
++          -0.36283543705940247,
++          0.0,
++          -0.9441675543785095
++        ],
++        [
++          0.361839234828949,
++          1.7924532890319824,
++          1.542850136756897
++        ]
++      ],
++      "body_attributes": {
++        "POSITION": {
++          "accessor": {
++            "bufferView": 41,
++            "componentType": 5126,
++            "count": 5595,
++            "type": "VEC3",
++            "min": [
++              -0.36283543705940247,
++              0.0,
++              -0.9441675543785095
++            ],
++            "max": [
++              0.361839234828949,
++              1.7924532890319824,
++              1.542850136756897
++            ]
++          },
++          "buffer_view_sha256": "e9aa0c036e331cd649e126d9e27189983e3553638542ad41cc379805561e6fde"
++        },
++        "NORMAL": {
++          "accessor": {
++            "bufferView": 42,
++            "componentType": 5126,
++            "count": 5595,
++            "type": "VEC3",
++            "min": [
++              -0.9997574090957642,
++              -0.9999949932098389,
++              -0.9999623894691467
++            ],
++            "max": [
++              0.9999003410339355,
++              0.9980241060256958,
++              0.9999999403953552
++            ]
++          },
++          "buffer_view_sha256": "bb3311847e92ea013cc17f4a7eb2394fbcfa9ec890b3043bc2b197bdfffa22ad"
++        },
++        "TEXCOORD_0": {
++          "accessor": {
++            "bufferView": 43,
++            "componentType": 5126,
++            "count": 5595,
++            "type": "VEC2",
++            "min": [
++              0.0019199999514967203,
++              0.012769999913871288
++            ],
++            "max": [
++              0.9996299743652344,
++              0.9838700294494629
++            ]
++          },
++          "buffer_view_sha256": "cdbe373c5d484bbded1df6e3ba241f29f5029cd12ffbbe85f6f1528f0f987b81"
++        },
++        "JOINTS_0": {
++          "accessor": {
++            "bufferView": 44,
++            "componentType": 5123,
++            "count": 5595,
++            "type": "VEC4"
++          },
++          "buffer_view_sha256": "15e1f05caef552e1982f89abcf5bb57fada2621b0dbc6bf6b86b79739811366a"
++        },
++        "WEIGHTS_0": {
++          "accessor": {
++            "bufferView": 45,
++            "componentType": 5126,
++            "count": 5595,
++            "type": "VEC4",
++            "min": [
++              1.14794157117298e-14,
++              0.0,
++              0.0,
++              0.0
++            ],
++            "max": [
++              1.0,
++              1.0,
++              1.0,
++              0.9962390661239624
++            ]
++          },
++          "buffer_view_sha256": "4b67898fdd71a08e25061764b78d31e916a2876edb1d45b622865d8678015bd1"
++        },
++        "TEXCOORD_1": {
++          "accessor": {
++            "bufferView": 43,
++            "componentType": 5126,
++            "count": 5595,
++            "type": "VEC2",
++            "min": [
++              0.0019199999514967203,
++              0.012769999913871288
++            ],
++            "max": [
++              0.9996299743652344,
++              0.9838700294494629
++            ]
++          },
++          "buffer_view_sha256": "cdbe373c5d484bbded1df6e3ba241f29f5029cd12ffbbe85f6f1528f0f987b81"
++        }
++      },
++      "body_indices": {
++        "accessor": {
++          "bufferView": 46,
++          "componentType": 5123,
++          "count": 29382,
++          "type": "SCALAR"
++        },
++        "buffer_view_sha256": "d828dbdbbad193f90e0cf140beba65d351846fe67e1bf0b1469f73f7ce6c2c16"
++      },
++      "joint_names": [
++        "horse_motion_root",
++        "horse_body",
++        "horse_neck",
++        "horse_head",
++        "horse_tail_base",
++        "horse_tail_tip",
++        "fore_l_shoulder",
++        "fore_l_elbow",
++        "fore_l_carpus",
++        "fore_l_fetlock",
++        "fore_l_hoof",
++        "fore_r_shoulder",
++        "fore_r_elbow",
++        "fore_r_carpus",
++        "fore_r_fetlock",
++        "fore_r_hoof",
++        "hind_l_hip",
++        "hind_l_stifle",
++        "hind_l_hock",
++        "hind_l_fetlock",
++        "hind_l_hoof",
++        "hind_r_hip",
++        "hind_r_stifle",
++        "hind_r_hock",
++        "hind_r_fetlock",
++        "hind_r_hoof"
++      ],
++      "inverse_bind_matrices": {
++        "accessor": {
++          "bufferView": 26,
++          "componentType": 5126,
++          "count": 26,
++          "type": "MAT4"
++        },
++        "buffer_view_sha256": "54fb5b70bea8f3ddcafffa2a80a2561387fa2ab3e66d83e8bcba0f9e8afb2da0"
++      },
++      "animation_names": [
++        "sevket_reconstructed_quiet_head_neck_idle_v1"
++      ],
++      "image_payload_sha256": [
++        "979df4f4dcdf4490f3f1780a7b411ac0e3c6be2af96e51ab49d83011a87d2a45",
++        "59465a0984f36264f7d2f9082c355f4c632f2e03e1c3c2e51cfda7bdb7b7ae90",
++        "38ec10da4600112c14988e3bb8156299cdf21a4443f6c0cbccecb94ead471938",
++        "237aaec69c56661e6179b8028cd604a11b058d4e45877ae168379b3d31936618",
++        "1e0382c8ad5d155dc3bf45378a5a37bb10bdcc79ffefee211e69edb3b609a5b3",
++        "f6a1cefd4126d387a1d73655918c1a97896845e527650a3555f560c2098fede3"
++      ],
++      "material_names": [
++        "Material.003_Hair12Main2k.png",
++        "Material_HorseMain4k00.png",
++        "Eye_brown"
++      ]
++    }
++  ],
++  "foot_reference_sha256": "65046a1f2eb44f5952ba966a1b9baa2633f5e0079df5cef934aec6118f99f8a0",
++  "foot_centres_m": {
++    "fore_l": [
++      0.1775004118680954,
++      0.0052360789850354195,
++      0.3987632393836975
++    ],
++    "fore_r": [
++      -0.1784951090812683,
++      0.005237669218331575,
++      0.3987651765346527
++    ],
++    "hind_l": [
++      0.3001173734664917,
++      0.0,
++      -0.4202912449836731
++    ],
++    "hind_r": [
++      -0.30109232664108276,
++      0.00010489956184756011,
++      -0.4202728271484375
++    ]
++  },
++  "source_protection": "Original geometry/UV/skin/IBMs/joints/clips/maps unchanged; shader colour only. Derived anchors do not replace complete-hoof classifiers.",
++  "native_all_path_visual_qualification": "UNRUN",
++  "recipe_sha256": "f7ceb0de2e60e3f9555746ef43cd6495f58d4fd39cc393b4607840fd13be791e"
++}
+diff --git a/chicago/4d/data/transport/horse-coats.recipe.json b/chicago/4d/data/transport/horse-coats.recipe.json
+new file mode 100644
+index 0000000000..f6c094b3a6
+--- /dev/null
++++ b/chicago/4d/data/transport/horse-coats.recipe.json
+@@ -0,0 +1,163 @@
++{
++  "schema": "chicago4d_horse_coats_recipe_v1",
++  "grade": "reconstructed",
++  "liberty": "L-horse-individual-coats-2795",
++  "basis": "Owner-requested individual coat/marking variation. Original colour and mask choices, not historical Chicago animals, breeds, ownership or captured new textures. Existing sevketkabatas Horse model/maps remain CC BY 4.0 with their existing credit.",
++  "scenes": [
++    "1812",
++    "1835",
++    "1904"
++  ],
++  "sources": [
++    {
++      "file": "renderers/web/transport/driven/horse-current26-inplace-full.glb",
++      "sha256": "ad9dc060f8630d0de04fef97d716e8c82be3ac8bf070684e78107720c5221ec6"
++    },
++    {
++      "file": "renderers/web/transport/standing-horse/horse-sevket-quiet-head-neck-idle-v6.glb",
++      "sha256": "7ce84d43445e930eecc6d9f69e97ed7ade0fe0b3fc44a9a753c25d88b3f548e1"
++    }
++  ],
++  "body_material": "Material_HorseMain4k00.png",
++  "hair_material": "Material.003_Hair12Main2k.png",
++  "eye_material": "Eye_brown",
++  "body_vertices": 5595,
++  "coordinate_frame": "canonical_metres_Yup_Zforward_Xleft",
++  "foot_reference": "data/transport/parked/horse-sevket-sidecar.json",
++  "mask_choices": {
++    "status": "Reconstructed painting regions within the real canonical source frame, not altered anatomy or contact classifiers",
++    "protect_below_y_m": 0.16,
++    "sock_transition_m": 0.025,
++    "sock_radius_m": 0.15,
++    "sock_top_range_m": [
++      0.24,
++      0.56
++    ],
++    "face_y_range_m": [
++      1.28,
++      1.76
++    ],
++    "face_z_min_m": 1.05,
++    "face_halfwidth_m": 0.075,
++    "muzzle_protect_z_m": [
++      1.36,
++      1.48
++    ],
++    "muzzle_protect_y_m": [
++      1.35,
++      1.47
++    ],
++    "dapple_pitch_m": 0.085,
++    "brown_reference_luminance": 0.12,
++    "white_reference_luminance": 0.55,
++    "hair_reference_luminance": 0.035,
++    "dapple_body_y_m": [
++      0.6,
++      0.9
++    ],
++    "dapple_front_fade_z_m": [
++      0.5,
++      0.9
++    ],
++    "hair_upper_y_m": [
++      0.65,
++      0.85
++    ],
++    "hair_tail_z_m": [
++      -0.95,
++      -0.8
++    ]
++  },
++  "palettes": [
++    {
++      "id": "bay",
++      "linear_rgb": [
++        0.14,
++        0.065,
++        0.023
++      ],
++      "mane_linear_rgb": null,
++      "dapple_strength": 0.02
++    },
++    {
++      "id": "chestnut",
++      "linear_rgb": [
++        0.24,
++        0.105,
++        0.04
++      ],
++      "mane_linear_rgb": [
++        0.11,
++        0.038,
++        0.015
++      ],
++      "dapple_strength": 0.015
++    },
++    {
++      "id": "iron_grey",
++      "linear_rgb": [
++        0.21,
++        0.23,
++        0.245
++      ],
++      "mane_linear_rgb": null,
++      "dapple_strength": 0.075
++    },
++    {
++      "id": "dark_bay",
++      "linear_rgb": [
++        0.075,
++        0.035,
++        0.018
++      ],
++      "mane_linear_rgb": null,
++      "dapple_strength": 0.025
++    }
++  ],
++  "group_palettes": {
++    "1812:fort_wagon_loop_1812": "bay",
++    "1812:shore_road_wagon_haul_1812": "chestnut",
++    "1835:western_hotel_driven_wagon_loop_1835": "chestnut",
++    "1835:western_hotel_yard_standing_horse_01": "iron_grey",
++    "1904:prairie_driven_brougham_loop_1904": "iron_grey",
++    "1904:prairie_parked_studebaker_brougham": "bay"
++  },
++  "individual_policy": "Palette keyed by scene/team row; blaze, four sock tops and dapple phase keyed by scene/row/individual side. Stable across reload and visibility/LOD reacquisition. No time, camera or random seed.",
++  "photographic_acceptance": false,
++  "seed_contract": {
++    "algorithm": "fnv1a32_murmur3_avalanche_v1",
++    "encoding": "ASCII",
++    "individual_key": "{scene}:{row}:{individual}",
++    "palette_key": "{scene}:{team}",
++    "channel_separator": "|",
++    "uint32_divisor": 4294967296,
++    "channels": {
++      "sock_enabled": "sock-enabled{index}",
++      "sock_height": "sock-height{index}",
++      "blaze_enabled": "blaze-enabled",
++      "blaze_width": "blaze-width",
++      "blaze_offset": "blaze-offset",
++      "phase": [
++        "pattern-x",
++        "pattern-y",
++        "pattern-z"
++      ]
++    }
++  },
++  "individual_choices": {
++    "sock_absent_probability": 0.3,
++    "blaze_absent_probability": 0.2,
++    "blaze_halfwidth_range_m": [
++      0.008,
++      0.04
++    ],
++    "blaze_offset_range_m": [
++      -0.006,
++      0.006
++    ],
++    "phase_range": [
++      0,
++      13
++    ]
++  }
++}
+diff --git a/chicago/4d/data/transport/parked/placements.json b/chicago/4d/data/transport/parked/placements.json
+index 7c4c522b1d..2fe4b73d63 100644
+--- a/chicago/4d/data/transport/parked/placements.json
++++ b/chicago/4d/data/transport/parked/placements.json
+@@ -257,6 +257,7 @@
+         "note": "Reconstructed parked individual using the 1893 catalogue design reference. The catalogue establishes the maker/type before 1904; neither this particular vehicle, its owner, a household connection nor this curbside stop is documented. A matched pair and their stationary activity are reconstructed when the near carriage team is shown. Closed doors, no occupant, boarding, traffic or driving; no coachman or passenger fit is claimed.",
+         "stationary_team": {
+           "schema": "chicago4d_parked_draft_team_v1",
++          "horse_appearance": {"recipe_file": "transport/horse-coats.json", "scene": "1904", "grade": "reconstructed", "liberty": "L-horse-individual-coats-2795"},
+           "driver_present": false,
+           "reins_mode": "unheld",
+           "pole_node": "vehicle_team_pole",
+diff --git a/chicago/4d/docs/LIBERTIES.md b/chicago/4d/docs/LIBERTIES.md
+index d3a4c1d54e..69fb21cb2b 100644
+--- a/chicago/4d/docs/LIBERTIES.md
++++ b/chicago/4d/docs/LIBERTIES.md
+@@ -43072,3 +43072,25 @@ no plan, phase date, paint or placement is moved to erase them.
+ 
+ **Ticket:** T-2383.
+ **Recorded:** 2026-11-10.
++
++
++### L-horse-individual-coats-2795 — individual coats and markings (1812, 1835, 1904)
++
++**Decision:** The owner requested visibly different horses across eras. Bay, chestnut, iron-grey
++and dark-bay palettes, individual blazes, sock heights and subdued dappling are
++reconstructed choices. Team members share a palette and have distinct stable
++markings; they do not identify historical Chicago animals, breeds or ownership.
++The engine-neutral recipe and its generated source contract carry these choices.
++
++The existing sevketkabatas *Horse* geometry and photographic fur maps retain their
++CC BY 4.0 attribution and unchanged bytes. Shader painting retains fur luminance detail,
++leaves the source eye material alone and protects chosen muzzle, lower-foot and pale-feather regions; chestnut individuals may also
++have a chestnut mane/tail. It creates no new captured historical texture or anatomy.
++This proposal does not establish photographic quality, qualified continuous hoof
++contact, natural standing/tail motion or all-era visual acceptance. Those remain
++subject to actual native and ordinary-world desktop/phone image review in T-2795.
++
++**Sources:** `sevketkabatas_2021_horse_model` supplies the existing CC BY 4.0 model and maps only. Individual coats and markings are owner-requested reconstruction.
++**How to resolve:** Historical pictures could identify particular animals; actual native and ordinary-world desktop/phone image reviews must qualify the current surface appearance.
++**Ticket:** T-2795.
++**Recorded:** 2026-11-10.
+diff --git a/chicago/4d/docs/measurements/horse-coats-writer-2026-11-10.json b/chicago/4d/docs/measurements/horse-coats-writer-2026-11-10.json
+new file mode 100644
+index 0000000000..f28f761385
+--- /dev/null
++++ b/chicago/4d/docs/measurements/horse-coats-writer-2026-11-10.json
+@@ -0,0 +1,84 @@
++{
++  "schema": "t2795_coat_writer_behavior_measurement_v1",
++  "tool": "tools/derive_horse_coats.py",
++  "write_mode": "(bare)",
++  "fixture": "Separate Git index fixture; six exact candidate/source files; no HEAD commit or application index used",
++  "inputs": [
++    {
++      "path": "tools/derive_horse_coats.py",
++      "sha256": "90a571efd4fe3168576afca1c36770420b14689624cc89aa49d60bf2e6c2526e",
++      "bytes": 4475
++    },
++    {
++      "path": "data/transport/horse-coats.recipe.json",
++      "sha256": "92b688b607e7500e65e8dfa18ccb398efe3163a056c88ad1d308d3cd668717a3",
++      "bytes": 4380
++    },
++    {
++      "path": "data/transport/horse-coats.json",
++      "sha256": "6f470d500f5d7472631b646ba2f8e1ae0a568b9cdb20ef266b0d135ed9c9a16a",
++      "bytes": 16051
++    },
++    {
++      "path": "data/transport/parked/horse-sevket-sidecar.json",
++      "sha256": "65046a1f2eb44f5952ba966a1b9baa2633f5e0079df5cef934aec6118f99f8a0",
++      "bytes": 406558
++    },
++    {
++      "path": "renderers/web/transport/driven/horse-current26-inplace-full.glb",
++      "sha256": "ad9dc060f8630d0de04fef97d716e8c82be3ac8bf070684e78107720c5221ec6",
++      "bytes": 3460908
++    },
++    {
++      "path": "renderers/web/transport/standing-horse/horse-sevket-quiet-head-neck-idle-v6.glb",
++      "sha256": "7ce84d43445e930eecc6d9f69e97ed7ade0fe0b3fc44a9a753c25d88b3f548e1",
++      "bytes": 4165556
++    }
++  ],
++  "samples": [
++    {
++      "label": "identity-write-1",
++      "returncode": 0,
++      "before_mtime_ns": 1794285845262098517,
++      "after_mtime_ns": 1794285845634814973,
++      "mtime_advanced": true,
++      "sha256": "6f470d500f5d7472631b646ba2f8e1ae0a568b9cdb20ef266b0d135ed9c9a16a",
++      "working_bytes_equal_own_index": true,
++      "stdout": "{\"sources\": 2, \"body_vertices\": 5595, \"source_only\": true, \"native_qualification\": \"UNRUN\"}"
++    },
++    {
++      "label": "identity-write-2",
++      "returncode": 0,
++      "before_mtime_ns": 1794285845634814973,
++      "after_mtime_ns": 1794285845734528500,
++      "mtime_advanced": true,
++      "sha256": "6f470d500f5d7472631b646ba2f8e1ae0a568b9cdb20ef266b0d135ed9c9a16a",
++      "working_bytes_equal_own_index": true,
++      "stdout": "{\"sources\": 2, \"body_vertices\": 5595, \"source_only\": true, \"native_qualification\": \"UNRUN\"}"
++    },
++    {
++      "label": "perturb-and-restore",
++      "returncode": 0,
++      "before_mtime_ns": 1794285845770550754,
++      "after_mtime_ns": 1794285845824551855,
++      "mtime_advanced": true,
++      "sha256": "6f470d500f5d7472631b646ba2f8e1ae0a568b9cdb20ef266b0d135ed9c9a16a",
++      "working_bytes_equal_own_index": true,
++      "stdout": "{\"sources\": 2, \"body_vertices\": 5595, \"source_only\": true, \"native_qualification\": \"UNRUN\"}"
++    }
++  ],
++  "all_input_bytes_unchanged_after_restoration": true,
++  "claimed_output": "chicago/4d/data/transport/horse-coats.json",
++  "only_output_mtime_advanced": true,
++  "reproduces": true,
++  "actual_write_proven": true,
++  "limits": "Focused writer proof only; no full rederive --prove or native/render acceptance",
++  "measured_utc_date": "2026-11-10",
++  "supervisor_seconds": 0.6658229309832677,
++  "timeout_seconds": 120,
++  "resource_pair_accepted": true,
++  "available_memory_before_bytes": 4319711232,
++  "available_memory_after_bytes": 4295446528,
++  "remaining_owned_children": [],
++  "original_application_source_unchanged": true
++}
+diff --git a/chicago/4d/renderers/web/js/draft-horse-assets.js b/chicago/4d/renderers/web/js/draft-horse-assets.js
+index e1c7c9240c..1bd94bc005 100644
+--- a/chicago/4d/renderers/web/js/draft-horse-assets.js
++++ b/chicago/4d/renderers/web/js/draft-horse-assets.js
+@@ -2,6 +2,7 @@
+ // One immutable horse template across the moving and parked teams. Each team
+ // owns its cloned skeletons; embedded images/geometry live until the last lease.
+ import { disposeLoadedAsset } from './scene-loader.js';
++import { prepareHorseTemplate } from './horse-appearance.js';
+ 
+ const entries = new Map();
+ export async function acquireDraftHorse({ url, sha256, materialVariant, loader }) {
+@@ -21,6 +22,7 @@ export async function acquireDraftHorse({ url, sha256, materialVariant, loader }
+         .map(n => n.toString(16).padStart(2, '0')).join('');
+       if (actual !== sha256) throw Error('draft horse: actual horse differs from its model binding');
+       const asset = await loader.parseAsync(bytes, new URL('.', url).href);
++      prepareHorseTemplate(asset, materialVariant);
+       entry.asset = asset;
+       return asset;
+     })();
+diff --git a/chicago/4d/renderers/web/js/driven-assembly-loader.js b/chicago/4d/renderers/web/js/driven-assembly-loader.js
+index e80fe1e4cc..9a363648e1 100644
+--- a/chicago/4d/renderers/web/js/driven-assembly-loader.js
++++ b/chicago/4d/renderers/web/js/driven-assembly-loader.js
+@@ -12,10 +12,11 @@ import { createDriverLife } from './driver-life.js';
+ import { clothHuman } from './fabric.js';
+ import { loadLivery, dressInLivery } from './driver-livery.js';
+ import { acquireDraftHorse } from './draft-horse-assets.js';
++import { applyHorseAppearance } from './horse-appearance.js';
+ 
+ /** Actual portable assets, never an identity/wardrobe or idle-only fallback. */
+ export function createDrivenAssemblyLoader({ sceneId, people, profiles = [], humanAssets,
+-  confidence, heightAt, horseSpec, horseSupportDomain, makeHitch, adoptPerson = () => () => {},
++  confidence, heightAt, horseSpec, horseSupportDomain, coatRecipe = null, makeHitch, adoptPerson = () => () => {},
+   moduleBase = new URL('../', import.meta.url), driverLod = 0, createWalker = null }) {
+   if (!humanAssets || typeof makeHitch !== 'function') throw Error('driven assembly: portable humans and actual visible hitch loader required');
+   const horseSpecCopy = { ...horseSpec };
+@@ -70,21 +71,29 @@ export function createDrivenAssemblyLoader({ sceneId, people, profiles = [], hum
+   // The two-horse team, its distance-driven walk and its support on the ground (T-2803).
+   const makeTeam = (row, template, walk) => {
+     const group = new THREE.Group(); group.name = `team:${row.id}`;
+-    const horses = [-1, 1].map(side => {
+-      const root = cloneSkinned(template.scene);
+-      root.traverse(node => {
+-        if (!node.isMesh) return;
+-        node.frustumCulled = false;
+-        if (horseSpecCopy.material_variant === 'organic_dielectric_v1') node.material.metalness = 0;
+-      });
++    const horses = [];
++    const retireHorse = horse => {
++      horse.appearance?.dispose();
++      horse.mixer?.stopAllAction(); horse.mixer?.uncacheRoot(horse.root);
++      const skeletons = new Set(); horse.root.traverse(node => { if (node.isSkinnedMesh) skeletons.add(node.skeleton); });
++      for (const skeleton of skeletons) skeleton.dispose();
++      horse.root.removeFromParent();
++    };
++    try { for (const side of [-1, 1]) {
++      const root = cloneSkinned(template.scene), horse = { root };
++      horses.push(horse); // Error cleanup owns this skeleton before decoration.
++      root.traverse(node => { if (node.isMesh) node.frustumCulled = false; });
++      horse.appearance = applyHorseAppearance(root, { recipe: coatRecipe,
++        sourceSha: horseSpecCopy.sha256, scene: sceneId, row: row.id,
++        individual: side === 1 ? 'left' : 'right', confidence });
+       root.position.set(side * row.team_half_spacing_m, 0, 0);
+       group.add(root);
+-      const mixer = new THREE.AnimationMixer(root);
++      const mixer = horse.mixer = new THREE.AnimationMixer(root);
+       const action = mixer.clipAction(walk).setLoop(THREE.LoopRepeat, Infinity).play();
+       action.paused = true; mixer.setTime(0);
+       const savedHorse = row.initial_assembly_state?.horse?.[side === -1 ? 0 : 1];
+-      return { root, mixer, action, distance: savedHorse?.distance_m ?? 0, prior: null, x: root.position.x };
+-    });
++      Object.assign(horse, { action, distance: savedHorse?.distance_m ?? 0, prior: null, x: root.position.x });
++    } } catch (error) { for (const horse of horses) retireHorse(horse); throw error; }
+     let teamDisposed = false;
+     return {
+       root: group, horses,
+@@ -113,16 +122,11 @@ export function createDrivenAssemblyLoader({ sceneId, people, profiles = [], hum
+         }
+       },
+       stop() {}, // Distance-driven mixers freeze at the existing phase, never snap to idle.
+-      snapshot() { return horses.map(horse => ({ distance_m: horse.distance, support: horse.support })); },
++      snapshot() { return horses.map(horse => ({ distance_m: horse.distance, support: horse.support, ...(horse.appearance.identity ? { appearance: horse.appearance.identity } : {}) })); },
+       dispose() {
+         if (teamDisposed) return;
+         teamDisposed = true;
+-        for (const horse of horses) {
+-          horse.mixer.stopAllAction(); horse.mixer.uncacheRoot(horse.root);
+-          const skeletons = new Set(); horse.root.traverse(node => { if (node.isSkinnedMesh) skeletons.add(node.skeleton); });
+-          for (const skeleton of skeletons) skeleton.dispose();
+-          horse.root.removeFromParent();
+-        }
++        for (const horse of horses) retireHorse(horse);
+         releaseHorse(template);
+       },
+     };
+diff --git a/chicago/4d/renderers/web/js/horse-appearance.js b/chicago/4d/renderers/web/js/horse-appearance.js
+new file mode 100644
+index 0000000000..e5fd2f83c8
+--- /dev/null
++++ b/chicago/4d/renderers/web/js/horse-appearance.js
+@@ -0,0 +1,210 @@
++// SPDX-License-Identifier: GPL-3.0-or-later
++// Reconstructed individual coats over the licensed source maps. No geometry,
++// texture allocation, historical identity or photographic acceptance is implied.
++const recipes = new Map(), applied = new WeakMap();
++export const hashHorse = text => {
++  let h = 2166136261;
++  for (const c of String(text)) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); }
++  // Avalanche prevents neighbouring channel suffixes from giving all four legs
++  // nearly identical sock choices. Fixed integer arithmetic, never Math.random.
++  h ^= h >>> 16; h = Math.imul(h, 0x85ebca6b);
++  h ^= h >>> 13; h = Math.imul(h, 0xc2b2ae35);
++  return (h ^ (h >>> 16)) >>> 0;
++};
++const need = (ok, message) => { if (!ok) throw Error('horse appearance: '+message); };
++const rgb = value => Array.isArray(value) && value.length === 3 && value.every(x => Number.isFinite(x) && x >= 0 && x <= 1);
++export function validateHorseRecipe(recipe) {
++  need(recipe?.schema === 'chicago4d_horse_coats_v1' && recipe.grade === 'reconstructed'
++    && recipe.liberty === 'L-horse-individual-coats-2795' && recipe.body_vertices === 5595, 'explicit reconstructed source contract required');
++  need(recipe.body_material === 'Material_HorseMain4k00.png' && recipe.hair_material === 'Material.003_Hair12Main2k.png' && recipe.eye_material === 'Eye_brown', 'protected source material names differ');
++  need(Array.isArray(recipe.source_contract) && recipe.source_contract.length === 2
++    && recipe.source_contract.every(s => /^[a-f0-9]{64}$/.test(s.sha256) && s.body_vertices === 5595
++      && recipe.sources?.some(input => input.file === s.file && input.sha256 === s.sha256)
++      && s.joint_names?.length === 26 && new Set(s.joint_names).size === 26), 'two immutable canonical26 sources required');
++  need(recipe.palettes?.length >= 3 && recipe.palettes.every(p => rgb(p.linear_rgb)
++    && (p.mane_linear_rgb === null || rgb(p.mane_linear_rgb)) && p.dapple_strength >= 0 && p.dapple_strength <= .1), 'bounded natural palette required');
++  need(recipe.mask_choices && Array.isArray(recipe.scenes) && recipe.group_palettes, 'mask and stable group definitions required');
++  for (const value of Object.values(recipe.mask_choices)) if (typeof value !== 'string') {
++    need((Array.isArray(value) ? value : [value]).every(Number.isFinite), 'finite mask parameters required');
++  }
++  need(Object.keys(recipe.foot_centres_m ?? {}).sort().join(',') === 'fore_l,fore_r,hind_l,hind_r', 'four source-derived feet required');
++  need(Object.values(recipe.foot_centres_m).every(p => Array.isArray(p) && p.length === 3 && p.every(Number.isFinite)), 'finite source-derived feet required');
++  const m = recipe.mask_choices;
++  for (const key of ['sock_top_range_m', 'face_y_range_m', 'muzzle_protect_z_m', 'muzzle_protect_y_m', 'dapple_body_y_m', 'dapple_front_fade_z_m', 'hair_upper_y_m', 'hair_tail_z_m']) {
++    need(Array.isArray(m[key]) && m[key].length === 2 && m[key][1] > m[key][0], 'ordered painting ranges required');
++  }
++  need(m.protect_below_y_m >= .1 && m.sock_top_range_m[0] > m.protect_below_y_m
++    && m.sock_top_range_m[1] <= .65 && m.sock_radius_m > 0 && m.sock_radius_m < .25
++    && m.sock_transition_m > 0 && m.dapple_pitch_m >= .03 && m.dapple_pitch_m <= .2
++    && [m.brown_reference_luminance, m.white_reference_luminance, m.hair_reference_luminance].every(x => x > 0 && x <= 1), 'bounded metric painting parameters required');
++  need(new Set(recipe.palettes.map(p => p.id)).size === recipe.palettes.length
++    && Object.values(recipe.group_palettes).every(id => recipe.palettes.some(p => p.id === id)), 'distinct declared palettes required');
++  const seed = recipe.seed_contract, choices = recipe.individual_choices;
++  need(seed?.algorithm === 'fnv1a32_murmur3_avalanche_v1' && seed.encoding === 'ASCII'
++    && seed.uint32_divisor === 4294967296 && seed.channel_separator === '|'
++    && seed.channels?.phase?.length === 3 && choices, 'portable seed contract required');
++  need([choices.sock_absent_probability, choices.blaze_absent_probability].every(x => x >= 0 && x <= 1)
++    && [choices.blaze_halfwidth_range_m, choices.blaze_offset_range_m, choices.phase_range].every(a => Array.isArray(a) && a.length === 2 && a.every(Number.isFinite) && a[1] > a[0]), 'bounded individual choices required');
++  return recipe;
++}
++export function loadHorseRecipe(base, file = 'transport/horse-coats.json') {
++  const url = new URL(file, base).href;
++  if (!recipes.has(url)) recipes.set(url, fetch(url).then(r => {
++    need(r.ok, `recipe HTTP${r.status}`); return r.json();
++  }).then(validateHorseRecipe).catch(error => { recipes.delete(url); throw error; }));
++  return recipes.get(url);
++}
++export function horseIdentity(recipe, { scene, row, individual, team = row }) {
++  validateHorseRecipe(recipe);
++  need(recipe.scenes.includes(String(scene)) && [row, individual, team].every(x => typeof x === 'string' && /^[a-z0-9_-]+$/.test(x)), 'stable scene/row/individual keys required');
++  const group = `${scene}:${team}`, key = `${scene}:${row}:${individual}`;
++  const seed = recipe.seed_contract, choices = recipe.individual_choices, channels = seed.channels;
++  const sample = channel => hashHorse(key+seed.channel_separator+channel)/seed.uint32_divisor;
++  const range = (values, channel) => values[0]+(values[1]-values[0])*sample(channel);
++  const named = recipe.group_palettes[group];
++  const palette = named ? recipe.palettes.find(p => p.id === named) : recipe.palettes[hashHorse(group)%recipe.palettes.length];
++  need(palette, 'unknown declared group palette');
++  const [lo, hi] = recipe.mask_choices.sock_top_range_m;
++  return { key, palette: palette.id, linear_rgb: [...palette.linear_rgb],
++    mane_linear_rgb: palette.mane_linear_rgb && [...palette.mane_linear_rgb], dapple_strength: palette.dapple_strength,
++    socks_m: [0, 1, 2, 3].map(i => sample(channels.sock_enabled.replace('{index}', i)) < choices.sock_absent_probability
++      ? recipe.mask_choices.protect_below_y_m : lo+(hi-lo)*sample(channels.sock_height.replace('{index}', i))),
++    blaze: [sample(channels.blaze_enabled) < choices.blaze_absent_probability ? 0 : range(choices.blaze_halfwidth_range_m, channels.blaze_width), range(choices.blaze_offset_range_m, channels.blaze_offset)],
++    phase: channels.phase.map(channel => range(choices.phase_range, channel)),
++    grade: 'reconstructed', liberty: recipe.liberty, historical_individual: false };
++}
++
++/** Prepare the explicit organic cache variant BEFORE any shared lease is exposed.
++ * Replace material objects; never mutate the parsed source definitions or maps. */
++export function prepareHorseTemplate(asset, variant) {
++  if (variant !== 'organic_dielectric_v1') return asset;
++  const copies = new Map();
++  asset.scene.traverse(node => {
++    if (!node.isMesh) return;
++    const copy = material => {
++      if (material.metalness === 0) return material;
++      if (!copies.has(material)) { const clone = material.clone(); clone.metalness = 0; copies.set(material, clone); }
++      return copies.get(material);
++    };
++    node.material = Array.isArray(node.material) ? node.material.map(copy) : copy(node.material);
++  });
++  return asset;
++}
++
++const noise = `
++varying vec3 vChiHorseP;
++uniform vec4 chiHorseColor;
++uniform vec4 chiHorseStyle;
++uniform vec4 chiHorseSocks;
++uniform vec4 chiHorseFace;
++uniform vec3 chiHorsePhase;
++float chiHorseHash(vec3 p) {
++  p=fract(p*.1031); p+=dot(p,p.yzx+33.33); return fract((p.x+p.y)*p.z);
++}
++float chiHorseNoise(vec3 p) {
++  vec3 i=floor(p),f=fract(p); f=f*f*(3.0-2.0*f);
++  return mix(mix(mix(chiHorseHash(i),chiHorseHash(i+vec3(1,0,0)),f.x),
++    mix(chiHorseHash(i+vec3(0,1,0)),chiHorseHash(i+vec3(1,1,0)),f.x),f.y),
++    mix(mix(chiHorseHash(i+vec3(0,0,1)),chiHorseHash(i+vec3(1,0,1)),f.x),
++    mix(chiHorseHash(i+vec3(0,1,1)),chiHorseHash(i+vec3(1,1,1)),f.x),f.y),f.z);
++}
++float chiHorseBand(float x,float a,float b) { return smoothstep(a-.012,a,x)*(1.0-smoothstep(b,b+.012,x)); }
++`;
++function colourCode(recipe) {
++  const m = recipe.mask_choices, f = x => { need(Number.isFinite(x), 'invalid GLSL scalar'); return x.toFixed(6); };
++  const band = (axis, pair) => `chiHorseBand(${axis},${f(pair[0])},${f(pair[1])})`;
++  const feet = ['fore_l', 'fore_r', 'hind_l', 'hind_r'].map((name, i) => {
++    const p = recipe.foot_centres_m[name];
++    return `sock=max(sock,(1.0-smoothstep(${f(m.sock_radius_m*.65)},${f(m.sock_radius_m)},length(p.xz-vec2(${f(p[0])},${f(p[2])}))))*(1.0-smoothstep(chiHorseSocks[${i}]+edge,chiHorseSocks[${i}]+edge+${f(m.sock_transition_m)},p.y)));`;
++  }).join('\n');
++  return `{
++    vec3 p=vChiHorseP, source=diffuseColor.rgb;
++    float lum=max(dot(source,vec3(.2126,.7152,.0722)),.0001);
++    float n=chiHorseNoise(p/${f(m.dapple_pitch_m)}+chiHorsePhase);
++    float white=smoothstep(.22,.5,lum)*(1.0-smoothstep(.035,.12,max(source.r,max(source.g,source.b))-min(source.r,min(source.g,source.b))));
++    float detail=mix(clamp(lum/${f(m.brown_reference_luminance)},.4,1.7),clamp(lum/${f(m.white_reference_luminance)},.65,1.3),white);
++    float muzzle=smoothstep(${f(m.muzzle_protect_z_m[0])},${f(m.muzzle_protect_z_m[1])},p.z)*(1.0-smoothstep(${f(m.muzzle_protect_y_m[0])},${f(m.muzzle_protect_y_m[1])},p.y));
++    // Eyes use their own untouched material. Eyelid fur follows the coat;
++    // protecting a BODY box here left a visible brown rectangle on grey horses.
++    float paint=smoothstep(${f(m.protect_below_y_m)},${f(m.protect_below_y_m+.05)},p.y)*(1.0-muzzle);
++    vec3 coat=chiHorseColor.rgb*detail;
++    float fade=clamp(1.0-length(fwidth(p))/${f(m.dapple_pitch_m)}*2.0,0.0,1.0);
++    coat*=1.0+chiHorseColor.a*(n-.5)*2.0*fade*smoothstep(${f(m.dapple_body_y_m[0])},${f(m.dapple_body_y_m[1])},p.y)*(1.0-smoothstep(${f(m.dapple_front_fade_z_m[0])},${f(m.dapple_front_fade_z_m[1])},p.z));
++    float sock=0.0,edge=(n-.5)*.008;
++    ${feet}
++    float face=${band('p.y', m.face_y_range_m)}*smoothstep(${f(m.face_z_min_m)},${f(m.face_z_min_m+.05)},p.z)*(1.0-smoothstep(${f(m.face_halfwidth_m)},${f(m.face_halfwidth_m+.01)},abs(p.x)));
++    float blaze=step(.0001,chiHorseFace.x)*face*(1.0-smoothstep(chiHorseFace.x,chiHorseFace.x+.012,abs(p.x-chiHorseFace.y-(n-.5)*.008)));
++    coat=mix(coat,vec3(.58,.56,.51)*detail,max(sock,blaze));
++    if(chiHorseStyle.x>0.5) {
++      paint=max(smoothstep(${f(m.hair_upper_y_m[0])},${f(m.hair_upper_y_m[1])},p.y),1.0-smoothstep(${f(m.hair_tail_z_m[0])},${f(m.hair_tail_z_m[1])},p.z))*(1.0-smoothstep(.15,.3,lum));
++      coat=chiHorseColor.rgb*clamp(lum/${f(m.hair_reference_luminance)},.4,1.8);
++    }
++    diffuseColor.rgb=mix(source,coat,paint);
++  }`;
++}
++
++/** Own only required coat/mane material copies. Texture and geometry pointers
++ * stay shared. An existing private owner (standing) may supply ownedMaterials. */
++export function applyHorseAppearance(root, { recipe, sourceSha, scene, row, individual, team = row,
++  confidence = null, ownedMaterials = null } = {}) {
++  if (!recipe) return { identity: null, dispose() {} }; // Legacy adapters remain compatible.
++  validateHorseRecipe(recipe);
++  need(recipe.source_contract.some(s => s.sha256 === sourceSha), 'unbound source; do not guess a geometry mask');
++  const identity = horseIdentity(recipe, { scene: String(scene), row, individual, team });
++  if (applied.has(root)) {
++    const existing = applied.get(root);
++    need(existing.identity.key === identity.key && existing.identity.source_sha256 === sourceSha, 'live root already belongs to another individual');
++    return existing;
++  }
++  identity.source_sha256 = sourceSha;
++  const materials = new Map(), changes = [], owned = new Set();
++  let bodies = 0;
++  try {
++    root.traverse(node => {
++      if (!node.isMesh || Array.isArray(node.material)) return;
++      const original = node.material, body = original.name === recipe.body_material;
++      const hair = original.name === recipe.hair_material && identity.mane_linear_rgb;
++      if (!body && !hair) return; // Eye material is never decorated or tinted.
++      if (body) { bodies++; need(node.geometry.attributes.position.count === 5595 && node.skeleton?.bones.length === 26, 'BODY/rig differs'); }
++      let material = materials.get(original);
++      if (!material) {
++        material = ownedMaterials?.has(original) ? original : original.clone();
++        if (material !== original) owned.add(material);
++        materials.set(original, material);
++        // clone() copies userData, NOT onBeforeCompile. Never trust a copied marker.
++        confidence?.patch?.(material);
++        const prior = material.onBeforeCompile, hadKey = Object.hasOwn(material, 'customProgramCacheKey');
++        const priorKey = hadKey ? String(material.customProgramCacheKey()) : prior.toString();
++        const uniforms = { chiHorseColor: { value: [...(hair ? identity.mane_linear_rgb : identity.linear_rgb), hair ? 0 : identity.dapple_strength] },
++          chiHorseStyle: { value: [hair ? 1 : 0, 0, 0, 0] }, chiHorseSocks: { value: identity.socks_m },
++          chiHorseFace: { value: [...identity.blaze, 0, 0] }, chiHorsePhase: { value: identity.phase } };
++        material.onBeforeCompile = function(shader, renderer) {
++          prior.call(this, shader, renderer);
++          need(shader.vertexShader.includes('#include <begin_vertex>') && shader.fragmentShader.includes('#include <map_fragment>'), 'shader anchors missing');
++          Object.assign(shader.uniforms, uniforms);
++          shader.vertexShader = 'varying vec3 vChiHorseP;\n'+shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\n vChiHorseP=position;');
++          shader.fragmentShader = noise+shader.fragmentShader.replace('#include <map_fragment>', '#include <map_fragment>\n'+colourCode(recipe));
++        };
++        const codeKey = hashHorse(JSON.stringify([recipe.mask_choices, recipe.foot_centres_m]));
++        material.customProgramCacheKey = () => `${priorKey}|chicago-horse-coat-v1:${codeKey}`;
++        material.userData.chicagoHorseCoat = { ...identity, source_sha256: sourceSha };
++        material.needsUpdate = true;
++      }
++      node.material = material; changes.push([node, original]);
++    });
++    need(bodies === 1, 'one actual classified BODY is required');
++  } catch (error) {
++    for (const [node, material] of changes) node.material = material;
++    for (const material of owned) material.dispose();
++    throw error;
++  }
++  let disposed = false;
++  const result = { identity, dispose() {
++    if (disposed) return; disposed = true;
++    for (const [node, material] of changes) node.material = material;
++    for (const material of owned) material.dispose(); // Borrowed maps/geometry are NOT disposed.
++    applied.delete(root);
++  } };
++  applied.set(root, result);
++  return result;
++}
+diff --git a/chicago/4d/renderers/web/js/main.js b/chicago/4d/renderers/web/js/main.js
+index 4849638b94..99cf265c47 100644
+--- a/chicago/4d/renderers/web/js/main.js
++++ b/chicago/4d/renderers/web/js/main.js
+@@ -2799,6 +2799,7 @@ async function boot() {
+   scene3d.add(parkedTransport.group);
+   api.parkedTransport = parkedTransport;
+   const standingHorses = await createStandingHorses({
++    recipeFile: 'transport/horse-coats.json',
+     dataBase: layerBase('standing_horses'), sceneId: YEAR, confidence, detail: detailLevel,
+     problems: layerProblems('standing_horses'), hostMissing,
+     groundHeight: (e, n, recordId, regionId) => yards.drawnBaseHeightAt(e, n, recordId, regionId),
+diff --git a/chicago/4d/renderers/web/js/parked-draft-team.js b/chicago/4d/renderers/web/js/parked-draft-team.js
+index 28b81283c7..6f4911e11b 100644
+--- a/chicago/4d/renderers/web/js/parked-draft-team.js
++++ b/chicago/4d/renderers/web/js/parked-draft-team.js
+@@ -6,6 +6,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+ import { clone as cloneSkinned } from 'three/addons/utils/SkeletonUtils.js';
+ import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+ import { acquireDraftHorse } from './draft-horse-assets.js';
++import { loadHorseRecipe, applyHorseAppearance } from './horse-appearance.js';
+ import { createDraftHitchFactory } from './draft-hitch.js';
+ import { certifiedHorseSupportDomain, fitHorseSupport } from './transport-support.js';
+ 
+@@ -73,6 +74,7 @@ export async function createParkedDraftTeam({ row, frame, vehicle, midVehicle =
+     if (disposed) return;
+     disposed = true; hitch?.dispose(); midLift?.restore();
+     for (const horse of horses) {
++      horse.appearance?.dispose();
+       horse.mixer.stopAllAction(); horse.mixer.uncacheRoot(horse.root);
+       const skeletons = new Set(); horse.root.traverse(n => { if (n.isSkinnedMesh) skeletons.add(n.skeleton); });
+       for (const skeleton of skeletons) skeleton.dispose();
+@@ -96,6 +98,8 @@ export async function createParkedDraftTeam({ row, frame, vehicle, midVehicle =
+     if (!neutral.toArray().every(Number.isFinite) || Math.abs(neutral.length() - 1) > 1e-7) throw Error('parked team: finite neutral stance required');
+     lease = await acquireDraftHorse({ url: url(horseSpec.file), sha256: horseSpec.sha256,
+       materialVariant: horseSpec.material_variant, loader });
++    const coatRecipe = spec.horse_appearance
++      ? await loadHorseRecipe(dataBase, spec.horse_appearance.recipe_file) : null;
+     const clip = lease.asset.animations.find(a => a.name === horseSpec.idle_clip);
+     if (!clip || certificate.quiet_frames !== 129) throw Error('parked team: actual certified quiet clip missing');
+     root.position.fromArray(spec.horse_offset_m); frame.add(root);
+@@ -105,14 +109,16 @@ export async function createParkedDraftTeam({ row, frame, vehicle, midVehicle =
+       horse.traverse(node => {
+         if (!node.isMesh) return;
+         node.frustumCulled = false; node.receiveShadow = true;
+-        if (horseSpec.material_variant === 'organic_dielectric_v1') node.material.metalness = 0;
+         if (!node.geometry.getAttribute('_confidence')) node.geometry.setAttribute('_confidence',
+           new THREE.Float32BufferAttribute(new Float32Array(node.geometry.attributes.position.count).fill(1), 1));
+         confidence?.patch?.(node.material);
+       });
+       const mixer = new THREE.AnimationMixer(horse); mixer.clipAction(clip).play();
+       mixer.setTime(spec.idle_phase_fractions[side === -1 ? 0 : 1] * clip.duration);
+-      const entry = { root: horse, mixer, support: null }; horses.push(entry);
++      const entry = { root: horse, mixer, support: null, appearance: null }; horses.push(entry);
++      entry.appearance = applyHorseAppearance(horse, { recipe: coatRecipe,
++        sourceSha: horseSpec.sha256, scene: spec.horse_appearance?.scene, row: row.id,
++        individual: side === 1 ? 'left' : 'right', confidence });
+       updateFrame();
+       const at = horse.getWorldPosition(new THREE.Vector3());
+       const support = fitHorseSupport({ e: at.x, n: -at.z, yaw: frame.rotation.y, heightAt, ...domain });
+@@ -179,7 +185,7 @@ export async function createParkedDraftTeam({ row, frame, vehicle, midVehicle =
+         if (!fit?.valid) throw Error('parked team: pole no longer meets the actual collar yoke');
+         midLift?.setPitch(fit.pole_pitch_rad);
+         last = { ...fit, horse_sha256: horseSpec.sha256, idle_clip: clip.name,
+-          supports: horses.map(h => h.support), source_vehicle_unchanged: true,
++          supports: horses.map(h => h.support), ...(coatRecipe ? { appearances: horses.map(h => h.appearance.identity) } : {}), source_vehicle_unchanged: true,
+           boarding: false, coachman_fit: false, full_surface_contact_acceptance: 'UNRUN' };
+         return last;
+       },
+diff --git a/chicago/4d/renderers/web/js/standing-horses.js b/chicago/4d/renderers/web/js/standing-horses.js
+index 4a274a82d4..7befdc957c 100644
+--- a/chicago/4d/renderers/web/js/standing-horses.js
++++ b/chicago/4d/renderers/web/js/standing-horses.js
+@@ -4,6 +4,7 @@ import * as THREE from 'three';
+ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+ import { clone as cloneSkinned } from 'three/addons/utils/SkeletonUtils.js';
+ import { disposeLoadedAsset } from './scene-loader.js';
++import { loadHorseRecipe, applyHorseAppearance } from './horse-appearance.js';
+ import { createPlantedStandingHorseIdle, validatePlantedStandingHeader } from './standing-horse-planted-idle.js';
+ import { standingHorseCard as card } from './standing-horse-card.js';
+ import { createQuietHeadNeckStandingContract, QUIET_MODE } from './standing-horse-quiet-head-neck-idle.js';
+@@ -79,14 +80,14 @@ function inspectStanding(root, spec) {
+ }
+ 
+ /** Play only the explicit planted-standing26 clip; old head/tail clips are not composed. */
+-function instantiate(asset, spec, row, confidence, groundHeight) {
++function instantiate(asset, spec, row, confidence, groundHeight, coatRecipe, sceneId) {
+   const root = cloneSkinned(asset.scene);
+   const clonedGeometry = new Set(), clonedMaterials = new Set(), shadowMaterials = new Set();
+-  let idle = null;
++  let idle = null, appearance = null;
+   const placement = new THREE.Group(), support = new THREE.Group();
+   const metric = new THREE.Group(), origin = new THREE.Group();
+   const retireClone = () => {
+-    placement.removeFromParent(); idle?.dispose(); disposeSkeletons(root);
++    placement.removeFromParent(); appearance?.dispose(); idle?.dispose(); disposeSkeletons(root);
+     for (const geometry of clonedGeometry) geometry.dispose();
+     for (const material of clonedMaterials) material.dispose();
+     for (const material of shadowMaterials) material.dispose();
+@@ -111,6 +112,8 @@ function instantiate(asset, spec, row, confidence, groundHeight) {
+       }
+       node.frustumCulled = false; node.castShadow = false; node.receiveShadow = true;
+     });
++    appearance = applyHorseAppearance(root, { recipe: coatRecipe, sourceSha: spec.runtime_asset.sha256,
++      scene: sceneId, row: row.id, individual: 'single', confidence, ownedMaterials: clonedMaterials });
+     placement.name = row.id; placement.userData.standingHorseId = row.id;
+     placement.rotation.y = yawOf(row.bearing_deg);
+     placement.position.set(row.at_local_enu_m[0], 0, -row.at_local_enu_m[1]);
+@@ -168,7 +171,7 @@ function instantiate(asset, spec, row, confidence, groundHeight) {
+     }
+     return { group: placement, root, asset, row, idle, idleWasActive: false, card: card(row, spec), dispose: retireClone,
+       receipt: { asset_sha256: spec.runtime_asset.sha256, source_qualification_mode: spec.runtime_asset.source_qualification_mode ?? 'anatomy_r3',
+-        material_variant: row.material_variant, root_y_m: base,
++        material_variant: row.material_variant, ...(appearance.identity ? { appearance: appearance.identity } : {}), root_y_m: base,
+         support_quaternion_xyzw: q, minimum_gap_by_hoof_m: gaps,
+         equal_10mm_slab_minimum_gaps_m: slabGaps, mixer_count: idle ? 1 : 0,
+         autoplay: Boolean(idle), original_six_autoplay: false, idle_clip: idle?.status.clip ?? null } };
+@@ -177,7 +180,7 @@ function instantiate(asset, spec, row, confidence, groundHeight) {
+ 
+ /** Separate skinned standing layer; NEVER enters vehicle staticBatches/wheel fitting. */
+ export async function createStandingHorses({ dataBase = null, sceneId, confidence, detail = 'full',
+-  problems = [], hostMissing = () => false, groundHeight = null } = {}) {
++  problems = [], hostMissing = () => false, groundHeight = null, recipeFile = null } = {}) {
+   const group = new THREE.Group(); group.name = 'standing-horses';
+   const ray = new THREE.Raycaster(), eye = new THREE.Vector3();
+   const motionPreference = globalThis.matchMedia?.('(prefers-reduced-motion: reduce)');
+@@ -284,7 +287,9 @@ export async function createStandingHorses({ dataBase = null, sceneId, confidenc
+         asset = await new GLTFLoader().parseAsync(bytes, new URL('.', file).href);
+         const canonicalReceipt = inspectStanding(asset.scene, spec);
+         if (mine !== revision || disposed || tier === 'light') return;
+-        const candidate = instantiate(asset, spec, row, confidence, groundHeight);
++        const coatRecipe = recipeFile ? await loadHorseRecipe(dataBase, recipeFile) : null;
++        if (mine !== revision || disposed || tier === 'light') return;
++        const candidate = instantiate(asset, spec, row, confidence, groundHeight, coatRecipe, sceneId);
+         candidate.receipt.canonical = canonicalReceipt;
+         active = candidate; asset = null; group.add(active.group);
+         if (lastCamera) out.update(lastCamera);
+diff --git a/chicago/4d/renderers/web/js/town-transport-scene.js b/chicago/4d/renderers/web/js/town-transport-scene.js
+index 581ab407ac..d559980e7f 100644
+--- a/chicago/4d/renderers/web/js/town-transport-scene.js
++++ b/chicago/4d/renderers/web/js/town-transport-scene.js
+@@ -39,12 +39,13 @@ export async function mountTownTransport({ sceneId, dataBase, people, getPeople
+   let assemblyModules = null, assemblyTools = null;
+   const prepareAssemblyModules = () => (assemblyModules ??= Promise.all([
+     import('./driven-assembly-loader.js'), import('./draft-hitch.js'),
+-    import('three/addons/loaders/GLTFLoader.js'),
++    import('three/addons/loaders/GLTFLoader.js'), import('./horse-appearance.js'),
+   ]).catch(error => { assemblyModules = null; throw error; }));
+   const getAssemblyTools = () => (assemblyTools ??= prepareAssemblyModules()
+-    .then(([{ createDrivenAssemblyLoader }, { createDraftHitchFactory }, { GLTFLoader }]) => {
++    .then(async ([{ createDrivenAssemblyLoader }, { createDraftHitchFactory }, { GLTFLoader }, { loadHorseRecipe }]) => {
+     const loader = new GLTFLoader();
+-    return { createDrivenAssemblyLoader, makeHitch: createDraftHitchFactory({ confidence, loadJSON: json,
++    return { createDrivenAssemblyLoader, coatRecipe: config.horse_appearance
++      ? await loadHorseRecipe(dataBase, config.horse_appearance.recipe_file) : null, makeHitch: createDraftHitchFactory({ confidence, loadJSON: json,
+       loadGLTF: file => loader.loadAsync(new URL(file, moduleBase).href) }) };
+   }).catch(error => { assemblyTools = null; throw error; }));
+   const makeByHorse = new Map(), live = new Map(), fixed = new Map();
+@@ -88,14 +89,14 @@ export async function mountTownTransport({ sceneId, dataBase, people, getPeople
+     async makeAssembly(row) {
+       const model = modelFor(row);
+       // Lazy eligible assembly only: Light/remote boot never fetches a district directory.
+-      const [directory, { createDrivenAssemblyLoader, makeHitch }] = await Promise.all([
++      const [directory, { createDrivenAssemblyLoader, makeHitch, coatRecipe }] = await Promise.all([
+         Array.isArray(people?.people) ? people : getPeople?.(), getAssemblyTools(),
+       ]);
+       if (!Array.isArray(directory?.people)) throw Error('town transport: this scene named people directory is unavailable');
+       if (!makeByHorse.has(model)) makeByHorse.set(model, createDrivenAssemblyLoader({
+         sceneId, people: directory.people, profiles: config.profiles ?? [],
+         humanAssets: humans.assets, confidence, heightAt, horseSpec: config.horse_models[model], horseSupportDomain: supportByHorse.get(model),
+-        makeHitch, driverLod: coarse ? 3 : 0,
++        makeHitch, coatRecipe, driverLod: coarse ? 3 : 0,
+         // T-3497: a teamster on foot is the scene's own figure of him, made as the layer makes it.
+         createWalker: typeof humans.createActor === 'function'
+           ? (instance, identity) => humans.createActor(instance, { person: identity.person, identity }) : null,
+diff --git a/chicago/4d/tools/derive_horse_coats.py b/chicago/4d/tools/derive_horse_coats.py
+new file mode 100644
+index 0000000000..20c9bac0ab
+--- /dev/null
++++ b/chicago/4d/tools/derive_horse_coats.py
+@@ -0,0 +1,77 @@
++# SPDX-License-Identifier: GPL-3.0-or-later
++"""Derive an engine-neutral coat contract from immutable licensed source arrays.
++
++No mesh/image bytes or joints are changed. Runtime palettes are reconstruction;
++source model/maps retain CC BY 4.0. Run explicitly, not as a browser fallback.
++"""
++import argparse
++import hashlib
++import json
++from pathlib import Path
++import struct
++
++APP = Path(__file__).resolve().parent.parent
++
++
++def derive(recipe, root):
++    assert recipe['schema'] == 'chicago4d_horse_coats_recipe_v1', 'authored recipe required'
++    sources = []
++    for spec in recipe['sources']:
++        raw = (root/spec['file']).read_bytes()
++        assert hashlib.sha256(raw).hexdigest() == spec['sha256'], 'immutable horse source differs'
++        magic, version, length = struct.unpack_from('<III', raw)
++        assert magic == 0x46546c67 and version == 2 and length == len(raw)
++        size, kind = struct.unpack_from('<II', raw, 12)
++        assert kind == 0x4e4f534a
++        g = json.loads(raw[20:20+size]); binary = memoryview(raw)[28+size:]
++        def view_hash(index):
++            v = g['bufferViews'][index]; start = v.get('byteOffset', 0)
++            return hashlib.sha256(binary[start:start+v['byteLength']]).hexdigest()
++        def accessor_hash(index):
++            a = g['accessors'][index]
++            return {'accessor': a, 'buffer_view_sha256': view_hash(a['bufferView'])}
++        bodies = [p for m in g['meshes'] for p in m['primitives']
++                  if g['materials'][p['material']]['name'] == recipe['body_material']]
++        assert len(bodies) == 1
++        body = bodies[0]; position = g['accessors'][body['attributes']['POSITION']]
++        assert position['count'] == recipe['body_vertices']
++        joints = [g['nodes'][i]['name'] for i in g['skins'][0]['joints']]
++        assert len(joints) == 26 and len(set(joints)) == 26
++        sources.append({**spec, 'body_vertices': position['count'],
++                        'body_bounds_m': [position['min'], position['max']],
++                        'body_attributes': {k: accessor_hash(v) for k, v in body['attributes'].items()},
++                        'body_indices': accessor_hash(body['indices']), 'joint_names': joints,
++                        'inverse_bind_matrices': accessor_hash(g['skins'][0]['inverseBindMatrices']),
++                        'animation_names': [a['name'] for a in g.get('animations', [])],
++                        'image_payload_sha256': [view_hash(i['bufferView']) for i in g['images']],
++                        'material_names': [m['name'] for m in g['materials']]})
++    reference = root/recipe['foot_reference']
++    sidecar = json.loads(reference.read_text())
++    feet = {name: patch['minimum_vertex_canonical_m'] for name, patch in sidecar['contacts'].items()}
++    assert set(feet) == {'fore_l', 'fore_r', 'hind_l', 'hind_r'}
++    return {**recipe, 'schema': 'chicago4d_horse_coats_v1', 'source_contract': sources,
++            'foot_reference_sha256': hashlib.sha256(reference.read_bytes()).hexdigest(),
++            'foot_centres_m': feet,
++            'source_protection': 'Original geometry/UV/skin/IBMs/joints/clips/maps unchanged; shader colour only. Derived anchors do not replace complete-hoof classifiers.',
++            'native_all_path_visual_qualification': 'UNRUN'}
++
++
++if __name__ == '__main__':
++    p = argparse.ArgumentParser(description=__doc__)
++    p.add_argument('--source-root', type=Path, default=APP)
++    p.add_argument('--recipe', type=Path, default=APP/'data/transport/horse-coats.recipe.json')
++    p.add_argument('--output', type=Path, default=APP/'data/transport/horse-coats.json')
++    p.add_argument('--check', action='store_true', help='compare the entire canonical derivation without writing')
++    args = p.parse_args()
++    raw_recipe = args.recipe.read_bytes()
++    output = derive(json.loads(raw_recipe), args.source_root)
++    output['recipe_sha256'] = hashlib.sha256(raw_recipe).hexdigest()
++    canonical = json.dumps(output, indent=2)+'\n'
++    if args.check:
++        if not args.output.is_file() or args.output.read_text() != canonical:
++            raise SystemExit('HORSE COATS FAIL: canonical output is stale; run python3 tools/derive_horse_coats.py')
++    else:
++        args.output.parent.mkdir(parents=True, exist_ok=True)
++        args.output.write_text(canonical)
++    print(json.dumps({'sources': len(output['source_contract']), 'body_vertices': output['body_vertices'],
++                      'source_only': True, 'native_qualification': 'UNRUN'}))
+diff --git a/chicago/4d/tools/derived_manifest.json b/chicago/4d/tools/derived_manifest.json
+index e239674e9e..04ae7bedfa 100644
+--- a/chicago/4d/tools/derived_manifest.json
++++ b/chicago/4d/tools/derived_manifest.json
+@@ -2975,6 +2975,21 @@
+         "--check"
+       ]
+     },
++    {
++      "why": "T-2795: the generated horse coat contract reads only the separately authored recipe, two SHA-bound portable sources and the existing bound foot reference. It owns only horse-coats.json; the recipe, source assets and reference are inputs and remain unowned. No current manifest step rebuilds these inputs. Its slot is in the settled tail immediately after source-use export. The source-use compiler has an explicit collection whitelist that does not consume this transport contract; the recipe sources contain file/SHA bindings, while model citation is already declared by the liberties above. It reads no resident-card, profile or second-pass output and stays outside the measured between-pass window. Focused two-write reproducibility and perturb/restore proof are recorded in docs/measurements/horse-coats-writer-2026-11-10.json; the complete manifest --prove remains unrun.",
++      "command": [
++        "python3",
++        "tools/derive_horse_coats.py"
++      ],
++      "resolves": [
++        "chicago/4d/data/transport/horse-coats.json"
++      ],
++      "verify": [
++        "python3",
++        "tools/derive_horse_coats.py",
++        "--check"
++      ]
++    },
+     {
+       "why": "SCENE FURNITURE DEALT FROM THE TOWN — signs, fences, plantings, infill. It reads a settled town and writes geometry nothing else reads back. PLACED BY LAYER, NOT BY A DERIVED DEPENDENCY (T-1302 batch 2, 2026-09-18). A dependency graph was built for this — write-sets MEASURED by running all 142 tools on a clean tree, reads taken from their source — and it was rejected by its own validation: against the 54 steps already here, an order people reached by hitting real failures, the graph contradicted 127 of 349 edges (36%; 32% at the finest granularity tried). These tools overwhelmingly read and write the same shared directories, so the graph saturates and cannot tell a real dependency from co-location. Only 6 of the 89 could be placed with evidence. A clean-tree `--run` goes green in ANY order because every one of them reproduces, so greenness is not evidence here either. This position is reasoned from what the tool reads and writes; it is not measured, and the honest test is the first time a change upstream of one of these fails to propagate. WRITES, BUT DOES NOT CLAIM, ITS OUTPUTS. `resolves` is not documentation: it declares that the manifest OWNS a file, so the lap settles a conflict there by REBUILDING rather than merging. Listing what these 89 tools touch took the owned set from 72 files to 1,899 — including 1,261 household cards — and a conflict in any of them would then be rebuilt over whatever a branch had actually written. Being run by the manifest and owning your outputs are separate decisions; this is the first, and the second is not taken here. rederive.mjs's own self-test caught it, on the assertion that `hh_taylor_c.json` is a file nobody derives.",
+       "command": [
+diff --git a/chicago/4d/tools/test_driven_assembly.mjs b/chicago/4d/tools/test_driven_assembly.mjs
+index f17e778b9b..c0bb54374a 100644
+--- a/chicago/4d/tools/test_driven_assembly.mjs
++++ b/chicago/4d/tools/test_driven_assembly.mjs
+@@ -5,6 +5,7 @@ import { readFileSync } from 'node:fs';
+ import * as THREE from '../renderers/web/vendor/three-0.185.1/three.module.js';
+ import { createDrivenAssembly, createTeamsterAssembly, createTownTransport } from '../renderers/web/js/town-transport.js';
+ import { circleRoute, createTransportLoop } from '../renderers/web/js/transport-loop.js';
++import { prepareHorseTemplate, applyHorseAppearance, loadHorseRecipe } from '../renderers/web/js/horse-appearance.js';
+ 
+ const path = new URL('../renderers/web/transport/wagon-driver/wagon-w01.glb', import.meta.url);
+ const until = async predicate => { for (let i = 0; i < 1000; i++) { if (predicate()) return; await new Promise(r => setTimeout(r, 2)); } throw Error('bounded asynchronous test did not reach expected state'); };
+@@ -266,7 +267,7 @@ async function controlledFactory(code, { syncFailure = null, wrongMetadata = fal
+   }
+   const dependencyKey = `__controlledDriverFactory${fixtureNumber++}`;
+   globalThis[dependencyKey] = { THREE, GLTFLoader: FixtureLoader, cloneSkinned: root => root.clone(true),
+-    HumanActor: FixtureActor, resolveHumanIdentity, createDrivenAssembly, createTeamsterAssembly, MeshoptDecoder: {}, createDriverLife: () => null, clothHuman: () => [],
++    HumanActor: FixtureActor, prepareHorseTemplate, applyHorseAppearance, resolveHumanIdentity, createDrivenAssembly, createTeamsterAssembly, MeshoptDecoder: {}, createDriverLife: () => null, clothHuman: () => [],
+     fitHorseSupport: () => ({ height_m: 0, normal_local_xyz: [0, 1, 0] }), crypto: webcrypto,
+     disposeLoadedAsset(value) {
+       if (value === gltfVehicle) stats.vehicleDisposed++;
+@@ -275,7 +276,7 @@ async function controlledFactory(code, { syncFailure = null, wrongMetadata = fal
+     },
+     fetch(url) { const kind = String(url).includes('/horse/') ? 'horse' : 'vehicle'; events.push(kind + '-start'); if (syncFailure === kind) throw failure; return io[kind].promise; },
+   };
+-  const injected = `const { THREE, GLTFLoader, cloneSkinned, HumanActor, resolveHumanIdentity, disposeLoadedAsset, createDrivenAssembly, createTeamsterAssembly, MeshoptDecoder, createDriverLife, clothHuman, fitHorseSupport, crypto, fetch } = globalThis[${JSON.stringify(dependencyKey)}];\n`
++  const injected = `const { THREE, GLTFLoader, cloneSkinned, HumanActor, resolveHumanIdentity, disposeLoadedAsset, createDrivenAssembly, createTeamsterAssembly, MeshoptDecoder, createDriverLife, clothHuman, fitHorseSupport, prepareHorseTemplate, applyHorseAppearance, crypto, fetch } = globalThis[${JSON.stringify(dependencyKey)}];\n`
+     + horsePoolCode.replace(/^import .*;\n/gm, '').replace(/^export /gm, '')
+     + code.replace(/^import .*;\n/gm, '');
+   const module = await import('data:text/javascript;base64,' + Buffer.from(injected).toString('base64'));
+@@ -385,7 +386,7 @@ function actualAssemblyCallback(code, catalog = null) {
+   const make = new Function('modelFor', 'people', 'getPeople', 'makeByHorse', 'createDrivenAssemblyLoader', 'sceneId', 'config', 'humans', 'confidence', 'heightAt', 'supportByHorse', 'makeHitch', 'coarse', 'getAssemblyTools', `return (${method});`)(
+     row => row.horse_model, catalog, async () => { gets++; return actualPeople1904; }, new Map(), nativeLoader,
+     '1904', actualRoutes, { assets: {} }, null, () => 0, new Map(), nativeHitch, false,
+-    async () => ({ createDrivenAssemblyLoader: nativeLoader, makeHitch: nativeHitch }));
++    async () => ({ createDrivenAssemblyLoader: nativeLoader, makeHitch: nativeHitch, coatRecipe: null }));
+   return { make, get gets() { return gets; }, get nativeLoaderCalls() { return nativeLoaderCalls; } };
+ }
+ const lazy = actualAssemblyCallback(sceneBindingSource);
+@@ -531,25 +532,41 @@ console.log('original1835 Navigator immediate return preserved while household p
+ {
+   const begin = sceneBindingSource.indexOf('let assemblyModules = null'), end = sceneBindingSource.indexOf('  const makeByHorse', begin);
+   assert(begin >= 0 && end > begin);
+-  const events = [], pendingModules = deferredAsset(); let loaders = 0, hitchFactories = 0;
+-  class Loader { constructor() { loaders++; } loadAsync() { events.push('GLB'); throw Error('no GLB before actual makeHitch'); } }
+-  const modules = {
+-    './driven-assembly-loader.js': { createDrivenAssemblyLoader() {} },
+-    './draft-hitch.js': { createDraftHitchFactory() { hitchFactories++; return () => {}; } },
+-    'three/addons/loaders/GLTFLoader.js': { GLTFLoader: Loader },
+-  };
+-  const source = sceneBindingSource.slice(begin, end).replace(/\bimport\(/g, 'loadModule(');
+-  const caches = new Function('loadModule', 'confidence', 'json', 'moduleBase', source + '\nreturn { prepareAssemblyModules, getAssemblyTools };')(
+-    path => { events.push(path); return pendingModules.promise.then(() => modules[path]); }, null,
+-    () => { events.push('JSON'); throw Error('directory/binding JSON must remain lazy'); }, new URL('https://controlled.example/'));
+-  const first = caches.prepareAssemblyModules(), second = caches.prepareAssemblyModules();
+-  assert.strictEqual(first, second); assert.equal(events.length, 3);
+-  assert(events.every(path => path.endsWith('.js'))); assert.equal(loaders, 0); assert.equal(hitchFactories, 0);
+-  pendingModules.resolve(); await first;
+-  assert.equal(loaders, 0); assert.equal(hitchFactories, 0); assert.equal(events.length, 3);
+-  const tools = caches.getAssemblyTools(), sameTools = caches.getAssemblyTools(); assert.strictEqual(tools, sameTools);
+-  const readyTools = await tools; assert.equal(typeof readyTools.createDrivenAssemblyLoader, 'function');
+-  assert.equal(loaders, 1); assert.equal(hitchFactories, 1); assert.equal(events.length, 3);
++  const recipe = JSON.parse(readFileSync(new URL('../data/transport/horse-coats.json', import.meta.url)));
++  // The real loader is injected, including its real validated JSON path. Cover
++  // both the unchanged no-recipe API and opt-in acquisition after lazy warmup.
++  for (const enabled of [false, true]) {
++    const events = [], pendingModules = deferredAsset(); let loaders = 0, hitchFactories = 0, recipeReads = 0;
++    class Loader { constructor() { loaders++; } loadAsync() { events.push('GLB'); throw Error('no GLB before actual makeHitch'); } }
++    const modules = {
++      './driven-assembly-loader.js': { createDrivenAssemblyLoader() {} },
++      './draft-hitch.js': { createDraftHitchFactory() { hitchFactories++; return () => {}; } },
++      'three/addons/loaders/GLTFLoader.js': { GLTFLoader: Loader },
++      './horse-appearance.js': { loadHorseRecipe },
++    };
++    const source = sceneBindingSource.slice(begin, end).replace(/\bimport\(/g, 'loadModule(');
++    const dataBase = new URL('https://controlled.example/lazy-coat-data/');
++    const config = enabled ? { horse_appearance: { recipe_file: 'transport/horse-coats.json' } } : {};
++    const oldFetch = globalThis.fetch;
++    globalThis.fetch = async url => {
++      recipeReads++; assert.equal(String(url), new URL('transport/horse-coats.json', dataBase).href);
++      return { ok: true, json: async () => recipe };
++    };
++    try {
++      const caches = new Function('loadModule', 'confidence', 'json', 'moduleBase', 'config', 'dataBase', source + '\nreturn { prepareAssemblyModules, getAssemblyTools };')(
++        path => { events.push(path); return pendingModules.promise.then(() => modules[path]); }, null,
++        () => { events.push('JSON'); throw Error('directory/binding JSON must remain lazy'); }, new URL('https://controlled.example/'), config, dataBase);
++      const first = caches.prepareAssemblyModules(), second = caches.prepareAssemblyModules();
++      assert.strictEqual(first, second); assert.equal(events.length, 4);
++      assert(events.every(path => path.endsWith('.js'))); assert.equal(loaders, 0); assert.equal(hitchFactories, 0); assert.equal(recipeReads, 0);
++      pendingModules.resolve(); await first;
++      assert.equal(loaders, 0); assert.equal(hitchFactories, 0); assert.equal(events.length, 4); assert.equal(recipeReads, 0);
++      const tools = caches.getAssemblyTools(), sameTools = caches.getAssemblyTools(); assert.strictEqual(tools, sameTools);
++      const readyTools = await tools; assert.equal(typeof readyTools.createDrivenAssemblyLoader, 'function');
++      assert.equal(loaders, 1); assert.equal(hitchFactories, 1); assert.equal(events.length, 4);
++      assert.equal(readyTools.coatRecipe, enabled ? recipe : null); assert.equal(recipeReads, enabled ? 1 : 0);
++    } finally { globalThis.fetch = oldFetch; }
++  }
+ }
+ console.log('eligibleJSprewarm: zeroGLBs/leases beforecomplete route, Light/remote/welcome/cancel/refusal/cache ownership PASS');
+ // One cached JS request can finish across Light->Full generations; only the
+diff --git a/chicago/4d/tools/test_horse_appearance.mjs b/chicago/4d/tools/test_horse_appearance.mjs
+new file mode 100644
+index 0000000000..e2ef3c9dc6
+--- /dev/null
++++ b/chicago/4d/tools/test_horse_appearance.mjs
+@@ -0,0 +1,264 @@
++// SPDX-License-Identifier: GPL-3.0-or-later
++// Actual hash-bound source meshes and Three material ownership; no WebGL,
++// decoded image, ordinary-world contact or photographic acceptance.
++import assert from 'node:assert/strict';
++import fs from 'node:fs';
++import { createHash } from 'node:crypto';
++import { register } from 'node:module';
++import { spawnSync } from 'node:child_process';
++import { tmpdir } from 'node:os';
++import path from 'node:path';
++import { fileURLToPath } from 'node:url';
++import { applyHorseAppearance, horseIdentity, prepareHorseTemplate,
++  validateHorseRecipe } from '../renderers/web/js/horse-appearance.js';
++// This driver is always read-only; --check explicitly selects the same complete
++// source/ownership controls for the gate's check-mode contract.
++assert(process.argv.length === 2 || (process.argv.length === 3 && process.argv[2] === '--check'),
++  'usage: node tools/test_horse_appearance.mjs [--check]');
++const root = new URL('../', import.meta.url);
++const read = file => fs.readFileSync(new URL(file, root));
++const json = file => JSON.parse(read(file));
++const sha = bytes => createHash('sha256').update(bytes).digest('hex');
++const recipe = validateHorseRecipe(json('data/transport/horse-coats.json'));
++assert.equal(sha(read('data/transport/horse-coats.recipe.json')), recipe.recipe_sha256, 'authored recipe changes must reach the runtime contract');
++assert.equal(sha(read(recipe.foot_reference)), recipe.foot_reference_sha256, 'real foot reference remains bound');
++assert.deepEqual(Object.fromEntries(Object.entries(json(recipe.foot_reference).contacts).map(([limb, contact]) => [limb, contact.minimum_vertex_canonical_m])), recipe.foot_centres_m);
++const clone = value => structuredClone(value);
++// Prove the normal authoring path cannot leave a stale runtime recipe green.
++// Copy only the two JSON controls to a tempdir; source meshes remain real inputs.
++const temporary = fs.mkdtempSync(path.join(tmpdir(), 'c4d-coat-stale-'));
++try {
++  const input = path.join(temporary, 'recipe.json'), output = path.join(temporary, 'runtime.json');
++  const authored = json('data/transport/horse-coats.recipe.json');
++  authored.palettes[0].linear_rgb[0] += .001;
++  fs.writeFileSync(input, JSON.stringify(authored)); fs.writeFileSync(output, read('data/transport/horse-coats.json'));
++  const before = sha(fs.readFileSync(output));
++  const result = spawnSync('python3', [fileURLToPath(new URL('tools/derive_horse_coats.py', root)), '--check',
++    '--source-root', fileURLToPath(root), '--recipe', input, '--output', output], { encoding: 'utf8' });
++  assert.equal(result.error, undefined); assert.notEqual(result.status, 0);
++  assert.match(result.stderr, /canonical output is stale/);
++  assert.equal(sha(fs.readFileSync(output)), before, 'rejected check never rewrites output');
++} finally { fs.rmSync(temporary, { recursive: true, force: true }); }
++
++const loops = json('data/transport/driven/loops.json');
++const standing = json('data/transport/parked/standing-horses.json');
++const parked = json('data/transport/parked/placements.json');
++const individuals = loops.rows.flatMap(row => ['left', 'right'].map(individual => ({ scene: row.scene, row: row.id, individual })));
++for (const [scene, rows] of Object.entries(standing.scenes)) for (const row of rows) individuals.push({ scene, row: row.id, individual: 'single' });
++for (const [scene, rows] of Object.entries(parked.scenes)) for (const row of rows) if (row.stationary_team) {
++  assert.equal(row.stationary_team.horse_appearance.scene, scene);
++  for (const individual of ['left', 'right']) individuals.push({ scene, row: row.id, individual });
++}
++assert.equal(loops.horse_appearance.recipe_file, 'transport/horse-coats.json');
++assert.equal(standing.horse_appearance, undefined, 'frozen selected placement metadata is not an appearance configuration');
++assert.deepEqual(Object.fromEntries(recipe.scenes.map(scene => [scene, individuals.filter(i => i.scene === scene).length])), { 1812: 4, 1835: 3, 1904: 4 });
++const identities = individuals.map(i => horseIdentity(recipe, i));
++assert.equal(new Set(identities.map(i => i.key)).size, 11);
++for (let n = 0; n < identities.length; n++) {
++  assert.deepEqual(horseIdentity(clone(recipe), individuals[n]), identities[n], 'reload changes no marking');
++  assert.equal(identities[n].historical_individual, false);
++  assert(identities[n].socks_m.every(h => h >= .16 && h <= .56));
++}
++for (const scene of recipe.scenes) assert(new Set(identities.filter(i => i.key.startsWith(scene+':')).map(i => i.palette)).size >= 2, 'each era has coat diversity');
++for (const row of loops.rows) {
++  const pair = identities.filter(i => i.key.startsWith(row.scene+':'+row.id+':'));
++  assert.equal(pair[0].palette, pair[1].palette, 'matched team palette');
++  assert.notDeepEqual(pair[0].phase, pair[1].phase, 'individual pattern differs');
++  assert.notDeepEqual([pair[0].socks_m, pair[0].blaze], [pair[1].socks_m, pair[1].blaze]);
++}
++for (const mutate of [r => r.grade = 'attested', r => r.body_material = 'renamed',
++  r => r.source_contract[0].sha256 = '0'.repeat(64), r => r.foot_centres_m.fore_l[0] = NaN,
++  r => r.mask_choices.sock_top_range_m.reverse(), r => r.mask_choices.dapple_pitch_m = 0,
++  r => r.group_palettes[Object.keys(r.group_palettes)[0]] = 'unknown', r => r.seed_contract.algorithm = 'random']) {
++  const bad = clone(recipe); mutate(bad); assert.throws(() => validateHorseRecipe(bad), /horse appearance:/);
++}
++assert.throws(() => horseIdentity(recipe, { scene: '2000', row: 'row', individual: 'left' }), /stable scene/);
++console.log('Coat identities PASS: 11 source-routed individuals, three eras, stable matched palettes/distinct markings; invalid contracts refused');
++
++const vendor = new URL('renderers/web/vendor/three-0.185.1/', root).href;
++register(`data:text/javascript,${encodeURIComponent(`export async function resolve(s,c,n){
++if(s==='three')return{url:${JSON.stringify(vendor+'three.module.js')},shortCircuit:true};
++if(s.startsWith('three/addons/'))return{url:${JSON.stringify(vendor)}+'addons/'+s.slice(13),shortCircuit:true};return n(s,c);}`)}`);
++const THREE = await import('three');
++const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
++const { clone: cloneSkinned } = await import('three/addons/utils/SkeletonUtils.js');
++const { createConfidenceView } = await import('../renderers/web/js/confidence.js');
++// Remove texture connections only for Node's lack of image decoding. Source
++// image payloads are independently checked against the generated contract.
++function sourceDocument(raw) { const size = raw.readUInt32LE(12); return { doc: JSON.parse(raw.subarray(20, 20+size)), bin: raw.subarray(28+size) }; }
++function geometryOnly(raw) {
++  const { doc, bin } = sourceDocument(raw);
++  function strip(value) { for (const key of Object.keys(value)) {
++    if (/Texture$/.test(key)) delete value[key];
++    else if (value[key] && typeof value[key] === 'object') strip(value[key]);
++  } }
++  doc.materials.forEach(strip); delete doc.images; delete doc.textures;
++  const text = Buffer.from(JSON.stringify(doc));
++  const encoded = Buffer.concat([text, Buffer.alloc(-text.length & 3, 32)]), out = Buffer.alloc(28+encoded.length+bin.length);
++  out.writeUInt32LE(0x46546c67, 0); out.writeUInt32LE(2, 4); out.writeUInt32LE(out.length, 8);
++  out.writeUInt32LE(encoded.length, 12); out.writeUInt32LE(0x4e4f534a, 16); encoded.copy(out, 20);
++  out.writeUInt32LE(bin.length, 20+encoded.length); out.writeUInt32LE(0x004e4942, 24+encoded.length); bin.copy(out, 28+encoded.length);
++  return out.buffer.slice(out.byteOffset, out.byteOffset+out.byteLength);
++}
++function bodyOf(root) { const found = []; root.traverse(n => { if (n.isMesh && n.material.name === recipe.body_material) found.push(n); }); assert.equal(found.length, 1); return found[0]; }
++for (const source of recipe.source_contract) {
++  const raw = read(source.file), { doc, bin } = sourceDocument(raw);
++  assert.equal(sha(raw), source.sha256, 'immutable selected source');
++  assert.deepEqual(doc.skins[0].joints.map(i => doc.nodes[i].name), source.joint_names);
++  assert.deepEqual(doc.images.map(image => { const v = doc.bufferViews[image.bufferView]; return sha(bin.subarray(v.byteOffset ?? 0, (v.byteOffset ?? 0)+v.byteLength)); }), source.image_payload_sha256);
++  const asset = await new GLTFLoader().parseAsync(geometryOnly(raw), '');
++  prepareHorseTemplate(asset, 'organic_dielectric_v1');
++  const sourceBody = bodyOf(asset.scene), originalMaterial = sourceBody.material;
++  const positions = sourceBody.geometry.attributes.position;
++  assert.equal(positions.count, 5595); assert.equal(sourceBody.skeleton.bones.length, 26);
++  const rigBefore = JSON.stringify({ inverses: sourceBody.skeleton.boneInverses.map(m => m.toArray()), clips: asset.animations.map(a => THREE.AnimationClip.toJSON(a)) });
++  const indexBefore = sha(Buffer.from(sourceBody.geometry.index.array.buffer));
++  const attributeHashes = Object.fromEntries(Object.entries(sourceBody.geometry.attributes).map(([key, a]) => [key, sha(Buffer.from(a.array.buffer, a.array.byteOffset, a.array.byteLength))]));
++  const a = cloneSkinned(asset.scene), b = cloneSkinned(asset.scene), confidence = createConfidenceView();
++  let sourceDisposed = 0, ownedDisposed = 0;
++  originalMaterial.addEventListener('dispose', () => sourceDisposed++);
++  const params = { recipe, sourceSha: source.sha256, scene: '1835', row: 'western_hotel_driven_wagon_loop_1835', confidence };
++  const first = applyHorseAppearance(a, { ...params, individual: 'left' });
++  const second = applyHorseAppearance(b, { ...params, individual: 'right' });
++  assert.equal(applyHorseAppearance(a, { ...params, individual: 'left' }), first, 'same root decoration is idempotent');
++  assert.throws(() => applyHorseAppearance(a, { ...params, individual: 'different' }), /another individual/);
++  assert.throws(() => applyHorseAppearance(cloneSkinned(asset.scene), { ...params, sourceSha: '0'.repeat(64), individual: 'left' }), /unbound source/);
++  const firstBody = bodyOf(a), secondBody = bodyOf(b);
++  assert.equal(firstBody.material.name, originalMaterial.name, 'hoof/tack classifier material name remains exact');
++  assert.notEqual(firstBody.material, secondBody.material); assert.notEqual(firstBody.material, originalMaterial);
++  assert.equal(firstBody.geometry, sourceBody.geometry); assert.equal(secondBody.geometry, sourceBody.geometry);
++  assert.equal(firstBody.material.metalness, 0); assert.equal(originalMaterial.userData.chicagoHorseCoat, undefined);
++  for (const horse of [a, b]) horse.traverse(n => {
++    if (!n.isMesh) return;
++    if (n.material.name === recipe.eye_material) assert.equal(n.material.userData.chicagoHorseCoat, undefined);
++    if (n.material.userData.chicagoHorseCoat) n.material.addEventListener('dispose', () => ownedDisposed++);
++  });
++  const program = firstBody.material.customProgramCacheKey();
++  assert.equal(program, secondBody.material.customProgramCacheKey(), 'different individuals share one shader program');
++  const shader = { vertexShader: THREE.ShaderLib.standard.vertexShader, fragmentShader: THREE.ShaderLib.standard.fragmentShader, uniforms: {} };
++  firstBody.material.onBeforeCompile(shader);
++  assert(shader.vertexShader.includes('vChiHorseP=position;')); assert(shader.vertexShader.includes('vConfidence'));
++  assert(shader.fragmentShader.includes('chiHorseSocks')); assert(shader.fragmentShader.includes('vConfidence'));
++  confidence.patch(firstBody.material); assert.equal(firstBody.material.customProgramCacheKey(), program, 'later confidence application preserves coat hook');
++  assert.equal(shader.uniforms.chiHorseColor.value.length, 4);
++  first.dispose(); first.dispose(); assert.equal(sourceDisposed, 0); assert.equal(ownedDisposed, 2, 'only BODY and chestnut HAIR owned by this individual');
++  assert.equal(bodyOf(a).material, originalMaterial); assert.notEqual(bodyOf(b).material, originalMaterial, 'other live horse remains varied');
++  second.dispose(); assert.equal(ownedDisposed, 4); assert.equal(sourceDisposed, 0);
++  for (const [key, a] of Object.entries(sourceBody.geometry.attributes)) assert.equal(sha(Buffer.from(a.array.buffer, a.array.byteOffset, a.array.byteLength)), attributeHashes[key]);
++  assert.equal(sha(Buffer.from(sourceBody.geometry.index.array.buffer)), indexBefore);
++  assert.equal(JSON.stringify({ inverses: sourceBody.skeleton.boneInverses.map(m => m.toArray()), clips: asset.animations.map(a => THREE.AnimationClip.toJSON(a)) }), rigBefore, 'source bind matrices and clips unchanged');
++  assert.equal(sha(read(source.file)), source.sha256, 'source file unchanged');
++  const privateRoot = cloneSkinned(asset.scene), privateMaterials = new Set();
++  privateRoot.traverse(n => { if (n.isMesh) { n.material = n.material.clone(); privateMaterials.add(n.material); confidence.patch(n.material); } });
++  const privateBody = bodyOf(privateRoot).material; let privateDisposed = 0;
++  privateBody.addEventListener('dispose', () => privateDisposed++);
++  const privateOwner = applyHorseAppearance(privateRoot, { ...params, row: 'western_hotel_yard_standing_horse_01', individual: 'single', ownedMaterials: privateMaterials });
++  assert.equal(bodyOf(privateRoot).material, privateBody, 'standing reuses its already-owned material without another clone');
++  privateOwner.dispose(); assert.equal(privateDisposed, 0, 'standing owner, not coat layer, disposes private materials');
++  for (const material of privateMaterials) material.dispose(); assert.equal(privateDisposed, 1);
++  const privateSkeletons = new Set(); privateRoot.traverse(n => { if (n.isSkinnedMesh) privateSkeletons.add(n.skeleton); });
++  for (const skeleton of privateSkeletons) skeleton.dispose();
++  for (const tree of [a, b, asset.scene]) { const skeletons = new Set(); tree.traverse(n => { if (n.isSkinnedMesh) skeletons.add(n.skeleton); }); for (const skeleton of skeletons) skeleton.dispose(); }
++}
++console.log('Actual source/material guards PASS: geometry/joints/maps bound, names preserved, independent owned clones cleaned; GLSL compilation, images and all-era street/phone acceptance UNRUN');
++
++// Execute the production main binding against the actual standing factory. Its
++// real GLTF parser sees the selected source arrays; images alone are stripped
++// for Node. URL controls cover source and published data bases without WebGL.
++{
++  const { createStandingHorses } = await import('../renderers/web/js/standing-horses.js');
++  const main = read('renderers/web/js/main.js').toString();
++  const begin = main.indexOf('const standingHorses = await createStandingHorses({');
++  const end = main.indexOf('\n  scene3d.add(standingHorses.group)', begin);
++  assert(begin >= 0 && end > begin);
++  const statement = main.slice(begin, end);
++  const invoke = new Function('createStandingHorses', 'layerBase', 'YEAR', 'confidence', 'detailLevel', 'layerProblems', 'hostMissing', 'yards',
++    `return (async () => { ${statement}; return standingHorses; })();`);
++  const nativeParse = GLTFLoader.prototype.parseAsync, previousFetch = globalThis.fetch;
++  const row = standing.scenes['1835'][0], camera = new THREE.PerspectiveCamera();
++  camera.position.set(row.at_local_enu_m[0], 1.7, -row.at_local_enu_m[1]+5);
++  const parsed = [], requests = [];
++  let mode = 'normal', releaseRecipe = null;
++  function dimensions(bytes) {
++    if (bytes.subarray(1, 4).toString() === 'PNG') return { width: bytes.readUInt32BE(16), height: bytes.readUInt32BE(20) };
++    assert.equal(bytes.readUInt16BE(0), 0xffd8, 'original JPEG or PNG required');
++    for (let p = 2; p+8 < bytes.length;) {
++      assert.equal(bytes[p++], 0xff); while (bytes[p] === 0xff) p++;
++      const marker = bytes[p++]; if (marker === 0xd8 || marker === 0xd9) continue;
++      const length = bytes.readUInt16BE(p);
++      if ([0xc0,0xc1,0xc2,0xc3,0xc5,0xc6,0xc7,0xc9,0xca,0xcb,0xcd,0xce,0xcf].includes(marker)) return { width: bytes.readUInt16BE(p+5), height: bytes.readUInt16BE(p+3) };
++      assert(length >= 2); p += length;
++    }
++    assert.fail('actual source image dimensions missing');
++  }
++  GLTFLoader.prototype.parseAsync = async function(bytes, base) {
++    const raw = Buffer.from(bytes), { doc, bin } = sourceDocument(raw);
++    const asset = await nativeParse.call(this, geometryOnly(raw), base);
++    // Native Texture handles carry dimensions parsed from each ORIGINAL image's
++    // header. No pixels are decoded/uploaded. The real factory budget assertion
++    // and map ownership stay exercised rather than being disabled for Node.
++    const images = doc.images.map(image => { const v = doc.bufferViews[image.bufferView]; return dimensions(bin.subarray(v.byteOffset ?? 0, (v.byteOffset ?? 0)+v.byteLength)); });
++    const textures = doc.textures.map(texture => new THREE.Texture(images[texture.source]));
++    asset.scene.traverse(node => {
++      if (!node.isMesh) return;
++      const source = doc.materials.find(material => material.name === node.material.name).pbrMetallicRoughness;
++      node.material.map = textures[source.baseColorTexture.index];
++      node.material.metalnessMap = node.material.roughnessMap = textures[source.metallicRoughnessTexture.index];
++    });
++    const body = bodyOf(asset.scene); let disposed = 0;
++    const textureDisposals = textures.map(() => 0); textures.forEach((texture, i) => texture.addEventListener('dispose', () => textureDisposals[i]++));
++    body.material.addEventListener('dispose', () => disposed++);
++    parsed.push({ asset, sourceBody: body, textureDisposals, get disposed() { return disposed; } }); return asset;
++  };
++  const publishedBase = new URL('https://published.invalid/4d/dev/data/');
++  globalThis.fetch = async value => {
++    const url = new URL(String(value)); requests.push(url.href);
++    const isRecipe = url.pathname.endsWith('/transport/horse-coats.json');
++    if (isRecipe && mode === 'missing') return { ok: false, status: 404 };
++    if (isRecipe && mode === 'pending') await new Promise(resolve => { releaseRecipe = resolve; });
++    const location = url.protocol === 'file:' ? new URL(url.pathname, url)
++      : new URL('data/'+url.pathname.slice(publishedBase.pathname.length), root);
++    const bytes = fs.readFileSync(location);
++    return { ok: true, status: 200, json: async () => JSON.parse(bytes),
++      arrayBuffer: async () => bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset+bytes.byteLength) };
++  };
++  const load = async layer => { layer.update(camera); await layer.ready; };
++  const baseOptions = { sceneId: '1835', confidence: createConfidenceView(), detail: 'full', groundHeight: () => 0 };
++  try {
++    const legacyProblems = [], start = requests.length;
++    const legacy = await createStandingHorses({ ...baseOptions, dataBase: new URL('data/', root), problems: legacyProblems });
++    await load(legacy); assert.deepEqual(legacyProblems, []); assert.equal(legacy.instances.length, 1);
++    assert.equal(bodyOf(legacy.instances[0].root).material.userData.chicagoHorseCoat, undefined);
++    assert(!requests.slice(start).some(url => url.includes('/horse-coats.json')), 'legacy constructor stays off and performs no recipe I/O');
++    legacy.dispose(); legacy.dispose();
++    for (const dataBase of [new URL('data/', root), publishedBase]) {
++      const problems = [], start = requests.length;
++      const layer = await invoke(createStandingHorses, name => { assert.equal(name, 'standing_horses'); return dataBase; }, '1835',
++        createConfidenceView(), 'full', name => { assert.equal(name, 'standing_horses'); return problems; }, () => false, { drawnBaseHeightAt: () => 0 });
++      await load(layer); assert.deepEqual(problems, []); assert.equal(layer.instances.length, 1);
++      const body = bodyOf(layer.instances[0].root), identity = body.material.userData.chicagoHorseCoat;
++      assert.equal(identity.key, '1835:'+row.id+':single'); assert.equal(identity.palette, 'iron_grey');
++      assert(requests.slice(start).includes(new URL('transport/horse-coats.json', dataBase).href), 'real production call supplies the explicit recipe file');
++      const privateMaterial = body.material; let ownedDisposed = 0;
++      privateMaterial.addEventListener('dispose', () => ownedDisposed++);
++      assert.notEqual(privateMaterial, parsed.at(-1).sourceBody.material); assert.equal(parsed.at(-1).sourceBody.material.userData.chicagoHorseCoat, undefined);
++      assert.equal(privateMaterial.map, parsed.at(-1).sourceBody.material.map, 'standing material borrows the original map handle');
++      await layer.setTier('light'); assert.equal(layer.instances.length, 0); assert.equal(ownedDisposed, 1); assert.equal(parsed.at(-1).disposed, 1); assert(parsed.at(-1).textureDisposals.every(count => count === 1), 'source owner disposes each borrowed map once');
++      await layer.setTier('full'); await layer.ready; assert.equal(layer.instances.length, 1);
++      assert.deepEqual(bodyOf(layer.instances[0].root).material.userData.chicagoHorseCoat, identity, 'reacquisition retains the same individual');
++      layer.dispose(); layer.dispose(); assert.equal(parsed.at(-1).disposed, 1);
++    }
++    mode = 'missing'; const problems = [];
++    const refused = await createStandingHorses({ ...baseOptions, dataBase: new URL('data/', root), problems, recipeFile: 'transport/horse-coats.json?missing' });
++    await load(refused); assert.equal(refused.instances.length, 0); assert(problems.some(message => message.includes('recipe HTTP404')));
++    assert.equal(parsed.at(-1).disposed, 1, 'recipe failure releases the parsed source'); refused.dispose();
++    mode = 'pending'; const pendingProblems = [];
++    const pending = await createStandingHorses({ ...baseOptions, dataBase: new URL('data/', root), problems: pendingProblems, recipeFile: 'transport/horse-coats.json?pending' });
++    pending.update(camera);
++    for (let i = 0; !releaseRecipe && i < 1000; i++) await new Promise(resolve => setTimeout(resolve, 2));
++    assert(releaseRecipe, 'actual source parse reached the delayed recipe fetch');
++    await pending.setTier('light'); pending.dispose(); releaseRecipe(); await pending.ready;
++    assert.equal(pending.instances.length, 0); assert.deepEqual(pendingProblems, []); assert.equal(parsed.at(-1).disposed, 1, 'late recipe completion cannot mount or retain the source');
++  } finally { globalThis.fetch = previousFetch; GLTFLoader.prototype.parseAsync = nativeParse; }
++  console.log('Standing factory/main wiring PASS: legacy off, source/published recipe opt-in, actual source-owned cleanup, Light reacquisition, error and late disposal; images/WebGL separate');
++}
+diff --git a/chicago/4d/tools/writer_inventory.json b/chicago/4d/tools/writer_inventory.json
+index f8e814acb2..bce6afa19d 100644
+--- a/chicago/4d/tools/writer_inventory.json
++++ b/chicago/4d/tools/writer_inventory.json
+@@ -7,6 +7,13 @@
+     "not_a_writer": "gated with --check and declares no write mode; recorded so the audit stops reporting it"
+   },
+   "tools": {
++    "derive_horse_coats.py": {
++      "placement": "manifest",
++      "write_mode": "(bare)",
++      "measured": "2026-11-10",
++      "finding": "Reproduces: in a separate six-file Git index fixture, two bare writes advanced the generated contract mtime and retained its SHA256; deliberately corrupting the output was repaired to the same baseline. Every tracked fixture byte equalled its own index after each run. No application index or HEAD commit was used. SUP120, original resource pairs and descendant cleanup passed. See docs/measurements/horse-coats-writer-2026-11-10.json.",
++      "placed": "Only horse-coats.json is derived; the recipe, two SHA-bound portable sources and bound foot reference are separate inputs with no existing manifest owner. The explicit step is in the settled tail immediately after source-use export, whose collection whitelist does not consume this independent transport contract. Focused actual-write proof is measured; full-manifest rederive --prove remains unrun."
++    },
+     "generate_glessner_finish.py": {
+       "placement": "pending",
+       "write_mode": "(bare)",

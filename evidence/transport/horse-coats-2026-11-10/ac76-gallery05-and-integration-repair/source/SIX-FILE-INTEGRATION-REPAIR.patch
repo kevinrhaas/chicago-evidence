@@ -1,0 +1,225 @@
+diff --git a/chicago/4d/data/transport/parked/standing-horses.json b/chicago/4d/data/transport/parked/standing-horses.json
+index f04ce1d686..2854c7aca1 100644
+--- a/chicago/4d/data/transport/parked/standing-horses.json
++++ b/chicago/4d/data/transport/parked/standing-horses.json
+@@ -1,6 +1,5 @@
+ {
+   "schema": "standing_horse_placements_v1",
+-  "horse_appearance": {"recipe_file": "transport/horse-coats.json", "grade": "reconstructed", "liberty": "L-horse-individual-coats-2795"},
+   "status": "Quiet head/neck idle selected for local integration after exact finite129 qualification; actual unheld yard, phone, app and photographic acceptance pending.",
+   "models": {
+     "sevket_horse_standing_development_01": {
+diff --git a/chicago/4d/renderers/web/js/main.js b/chicago/4d/renderers/web/js/main.js
+index 4849638b94..99cf265c47 100644
+--- a/chicago/4d/renderers/web/js/main.js
++++ b/chicago/4d/renderers/web/js/main.js
+@@ -2799,6 +2799,7 @@ async function boot() {
+   scene3d.add(parkedTransport.group);
+   api.parkedTransport = parkedTransport;
+   const standingHorses = await createStandingHorses({
++    recipeFile: 'transport/horse-coats.json',
+     dataBase: layerBase('standing_horses'), sceneId: YEAR, confidence, detail: detailLevel,
+     problems: layerProblems('standing_horses'), hostMissing,
+     groundHeight: (e, n, recordId, regionId) => yards.drawnBaseHeightAt(e, n, recordId, regionId),
+diff --git a/chicago/4d/renderers/web/js/standing-horses.js b/chicago/4d/renderers/web/js/standing-horses.js
+index 39cc3c4ff6..7befdc957c 100644
+--- a/chicago/4d/renderers/web/js/standing-horses.js
++++ b/chicago/4d/renderers/web/js/standing-horses.js
+@@ -180,7 +180,7 @@ function instantiate(asset, spec, row, confidence, groundHeight, coatRecipe, sce
+ 
+ /** Separate skinned standing layer; NEVER enters vehicle staticBatches/wheel fitting. */
+ export async function createStandingHorses({ dataBase = null, sceneId, confidence, detail = 'full',
+-  problems = [], hostMissing = () => false, groundHeight = null } = {}) {
++  problems = [], hostMissing = () => false, groundHeight = null, recipeFile = null } = {}) {
+   const group = new THREE.Group(); group.name = 'standing-horses';
+   const ray = new THREE.Raycaster(), eye = new THREE.Vector3();
+   const motionPreference = globalThis.matchMedia?.('(prefers-reduced-motion: reduce)');
+@@ -287,8 +287,7 @@ export async function createStandingHorses({ dataBase = null, sceneId, confidenc
+         asset = await new GLTFLoader().parseAsync(bytes, new URL('.', file).href);
+         const canonicalReceipt = inspectStanding(asset.scene, spec);
+         if (mine !== revision || disposed || tier === 'light') return;
+-        const coatRecipe = manifest.horse_appearance
+-          ? await loadHorseRecipe(dataBase, manifest.horse_appearance.recipe_file) : null;
++        const coatRecipe = recipeFile ? await loadHorseRecipe(dataBase, recipeFile) : null;
+         if (mine !== revision || disposed || tier === 'light') return;
+         const candidate = instantiate(asset, spec, row, confidence, groundHeight, coatRecipe, sceneId);
+         candidate.receipt.canonical = canonicalReceipt;
+diff --git a/chicago/4d/tools/derived_manifest.json b/chicago/4d/tools/derived_manifest.json
+index 36b8dc9bd8..04ae7bedfa 100644
+--- a/chicago/4d/tools/derived_manifest.json
++++ b/chicago/4d/tools/derived_manifest.json
+@@ -2170,21 +2170,6 @@
+         "chicago/4d/data/reconstruction/1835_off_plat_seats.json"
+       ]
+     },
+-    {
+-      "why": "T-2795: the generated horse coat contract reads only the separately authored recipe, two SHA-bound portable sources and the existing bound foot reference. It owns only horse-coats.json; the recipe, source assets and reference are inputs and remain unowned. No current manifest step rebuilds these inputs. Its slot precedes the liberties/source-use export sequence so downstream exports see the current contract. Focused two-write reproducibility and perturb/restore proof are recorded in docs/measurements/horse-coats-writer-2026-11-10.json; the complete manifest --prove remains unrun.",
+-      "command": [
+-        "python3",
+-        "tools/derive_horse_coats.py"
+-      ],
+-      "resolves": [
+-        "chicago/4d/data/transport/horse-coats.json"
+-      ],
+-      "verify": [
+-        "python3",
+-        "tools/derive_horse_coats.py",
+-        "--check"
+-      ]
+-    },
+     {
+       "why": "The liberties register, compiled from the sidecars and the town — every liberty the reconstruction takes, with its reason.",
+       "command": [
+@@ -2990,6 +2975,21 @@
+         "--check"
+       ]
+     },
++    {
++      "why": "T-2795: the generated horse coat contract reads only the separately authored recipe, two SHA-bound portable sources and the existing bound foot reference. It owns only horse-coats.json; the recipe, source assets and reference are inputs and remain unowned. No current manifest step rebuilds these inputs. Its slot is in the settled tail immediately after source-use export. The source-use compiler has an explicit collection whitelist that does not consume this transport contract; the recipe sources contain file/SHA bindings, while model citation is already declared by the liberties above. It reads no resident-card, profile or second-pass output and stays outside the measured between-pass window. Focused two-write reproducibility and perturb/restore proof are recorded in docs/measurements/horse-coats-writer-2026-11-10.json; the complete manifest --prove remains unrun.",
++      "command": [
++        "python3",
++        "tools/derive_horse_coats.py"
++      ],
++      "resolves": [
++        "chicago/4d/data/transport/horse-coats.json"
++      ],
++      "verify": [
++        "python3",
++        "tools/derive_horse_coats.py",
++        "--check"
++      ]
++    },
+     {
+       "why": "SCENE FURNITURE DEALT FROM THE TOWN — signs, fences, plantings, infill. It reads a settled town and writes geometry nothing else reads back. PLACED BY LAYER, NOT BY A DERIVED DEPENDENCY (T-1302 batch 2, 2026-09-18). A dependency graph was built for this — write-sets MEASURED by running all 142 tools on a clean tree, reads taken from their source — and it was rejected by its own validation: against the 54 steps already here, an order people reached by hitting real failures, the graph contradicted 127 of 349 edges (36%; 32% at the finest granularity tried). These tools overwhelmingly read and write the same shared directories, so the graph saturates and cannot tell a real dependency from co-location. Only 6 of the 89 could be placed with evidence. A clean-tree `--run` goes green in ANY order because every one of them reproduces, so greenness is not evidence here either. This position is reasoned from what the tool reads and writes; it is not measured, and the honest test is the first time a change upstream of one of these fails to propagate. WRITES, BUT DOES NOT CLAIM, ITS OUTPUTS. `resolves` is not documentation: it declares that the manifest OWNS a file, so the lap settles a conflict there by REBUILDING rather than merging. Listing what these 89 tools touch took the owned set from 72 files to 1,899 — including 1,261 household cards — and a conflict in any of them would then be rebuilt over whatever a branch had actually written. Being run by the manifest and owning your outputs are separate decisions; this is the first, and the second is not taken here. rederive.mjs's own self-test caught it, on the assertion that `hh_taylor_c.json` is a file nobody derives.",
+       "command": [
+diff --git a/chicago/4d/tools/test_horse_appearance.mjs b/chicago/4d/tools/test_horse_appearance.mjs
+index 6d65575403..e2ef3c9dc6 100644
+--- a/chicago/4d/tools/test_horse_appearance.mjs
++++ b/chicago/4d/tools/test_horse_appearance.mjs
+@@ -50,7 +50,7 @@ for (const [scene, rows] of Object.entries(parked.scenes)) for (const row of row
+   for (const individual of ['left', 'right']) individuals.push({ scene, row: row.id, individual });
+ }
+ assert.equal(loops.horse_appearance.recipe_file, 'transport/horse-coats.json');
+-assert.equal(standing.horse_appearance.recipe_file, 'transport/horse-coats.json');
++assert.equal(standing.horse_appearance, undefined, 'frozen selected placement metadata is not an appearance configuration');
+ assert.deepEqual(Object.fromEntries(recipe.scenes.map(scene => [scene, individuals.filter(i => i.scene === scene).length])), { 1812: 4, 1835: 3, 1904: 4 });
+ const identities = individuals.map(i => horseIdentity(recipe, i));
+ assert.equal(new Set(identities.map(i => i.key)).size, 11);
+@@ -161,3 +161,104 @@ for (const source of recipe.source_contract) {
+   for (const tree of [a, b, asset.scene]) { const skeletons = new Set(); tree.traverse(n => { if (n.isSkinnedMesh) skeletons.add(n.skeleton); }); for (const skeleton of skeletons) skeleton.dispose(); }
+ }
+ console.log('Actual source/material guards PASS: geometry/joints/maps bound, names preserved, independent owned clones cleaned; GLSL compilation, images and all-era street/phone acceptance UNRUN');
++
++// Execute the production main binding against the actual standing factory. Its
++// real GLTF parser sees the selected source arrays; images alone are stripped
++// for Node. URL controls cover source and published data bases without WebGL.
++{
++  const { createStandingHorses } = await import('../renderers/web/js/standing-horses.js');
++  const main = read('renderers/web/js/main.js').toString();
++  const begin = main.indexOf('const standingHorses = await createStandingHorses({');
++  const end = main.indexOf('\n  scene3d.add(standingHorses.group)', begin);
++  assert(begin >= 0 && end > begin);
++  const statement = main.slice(begin, end);
++  const invoke = new Function('createStandingHorses', 'layerBase', 'YEAR', 'confidence', 'detailLevel', 'layerProblems', 'hostMissing', 'yards',
++    `return (async () => { ${statement}; return standingHorses; })();`);
++  const nativeParse = GLTFLoader.prototype.parseAsync, previousFetch = globalThis.fetch;
++  const row = standing.scenes['1835'][0], camera = new THREE.PerspectiveCamera();
++  camera.position.set(row.at_local_enu_m[0], 1.7, -row.at_local_enu_m[1]+5);
++  const parsed = [], requests = [];
++  let mode = 'normal', releaseRecipe = null;
++  function dimensions(bytes) {
++    if (bytes.subarray(1, 4).toString() === 'PNG') return { width: bytes.readUInt32BE(16), height: bytes.readUInt32BE(20) };
++    assert.equal(bytes.readUInt16BE(0), 0xffd8, 'original JPEG or PNG required');
++    for (let p = 2; p+8 < bytes.length;) {
++      assert.equal(bytes[p++], 0xff); while (bytes[p] === 0xff) p++;
++      const marker = bytes[p++]; if (marker === 0xd8 || marker === 0xd9) continue;
++      const length = bytes.readUInt16BE(p);
++      if ([0xc0,0xc1,0xc2,0xc3,0xc5,0xc6,0xc7,0xc9,0xca,0xcb,0xcd,0xce,0xcf].includes(marker)) return { width: bytes.readUInt16BE(p+5), height: bytes.readUInt16BE(p+3) };
++      assert(length >= 2); p += length;
++    }
++    assert.fail('actual source image dimensions missing');
++  }
++  GLTFLoader.prototype.parseAsync = async function(bytes, base) {
++    const raw = Buffer.from(bytes), { doc, bin } = sourceDocument(raw);
++    const asset = await nativeParse.call(this, geometryOnly(raw), base);
++    // Native Texture handles carry dimensions parsed from each ORIGINAL image's
++    // header. No pixels are decoded/uploaded. The real factory budget assertion
++    // and map ownership stay exercised rather than being disabled for Node.
++    const images = doc.images.map(image => { const v = doc.bufferViews[image.bufferView]; return dimensions(bin.subarray(v.byteOffset ?? 0, (v.byteOffset ?? 0)+v.byteLength)); });
++    const textures = doc.textures.map(texture => new THREE.Texture(images[texture.source]));
++    asset.scene.traverse(node => {
++      if (!node.isMesh) return;
++      const source = doc.materials.find(material => material.name === node.material.name).pbrMetallicRoughness;
++      node.material.map = textures[source.baseColorTexture.index];
++      node.material.metalnessMap = node.material.roughnessMap = textures[source.metallicRoughnessTexture.index];
++    });
++    const body = bodyOf(asset.scene); let disposed = 0;
++    const textureDisposals = textures.map(() => 0); textures.forEach((texture, i) => texture.addEventListener('dispose', () => textureDisposals[i]++));
++    body.material.addEventListener('dispose', () => disposed++);
++    parsed.push({ asset, sourceBody: body, textureDisposals, get disposed() { return disposed; } }); return asset;
++  };
++  const publishedBase = new URL('https://published.invalid/4d/dev/data/');
++  globalThis.fetch = async value => {
++    const url = new URL(String(value)); requests.push(url.href);
++    const isRecipe = url.pathname.endsWith('/transport/horse-coats.json');
++    if (isRecipe && mode === 'missing') return { ok: false, status: 404 };
++    if (isRecipe && mode === 'pending') await new Promise(resolve => { releaseRecipe = resolve; });
++    const location = url.protocol === 'file:' ? new URL(url.pathname, url)
++      : new URL('data/'+url.pathname.slice(publishedBase.pathname.length), root);
++    const bytes = fs.readFileSync(location);
++    return { ok: true, status: 200, json: async () => JSON.parse(bytes),
++      arrayBuffer: async () => bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset+bytes.byteLength) };
++  };
++  const load = async layer => { layer.update(camera); await layer.ready; };
++  const baseOptions = { sceneId: '1835', confidence: createConfidenceView(), detail: 'full', groundHeight: () => 0 };
++  try {
++    const legacyProblems = [], start = requests.length;
++    const legacy = await createStandingHorses({ ...baseOptions, dataBase: new URL('data/', root), problems: legacyProblems });
++    await load(legacy); assert.deepEqual(legacyProblems, []); assert.equal(legacy.instances.length, 1);
++    assert.equal(bodyOf(legacy.instances[0].root).material.userData.chicagoHorseCoat, undefined);
++    assert(!requests.slice(start).some(url => url.includes('/horse-coats.json')), 'legacy constructor stays off and performs no recipe I/O');
++    legacy.dispose(); legacy.dispose();
++    for (const dataBase of [new URL('data/', root), publishedBase]) {
++      const problems = [], start = requests.length;
++      const layer = await invoke(createStandingHorses, name => { assert.equal(name, 'standing_horses'); return dataBase; }, '1835',
++        createConfidenceView(), 'full', name => { assert.equal(name, 'standing_horses'); return problems; }, () => false, { drawnBaseHeightAt: () => 0 });
++      await load(layer); assert.deepEqual(problems, []); assert.equal(layer.instances.length, 1);
++      const body = bodyOf(layer.instances[0].root), identity = body.material.userData.chicagoHorseCoat;
++      assert.equal(identity.key, '1835:'+row.id+':single'); assert.equal(identity.palette, 'iron_grey');
++      assert(requests.slice(start).includes(new URL('transport/horse-coats.json', dataBase).href), 'real production call supplies the explicit recipe file');
++      const privateMaterial = body.material; let ownedDisposed = 0;
++      privateMaterial.addEventListener('dispose', () => ownedDisposed++);
++      assert.notEqual(privateMaterial, parsed.at(-1).sourceBody.material); assert.equal(parsed.at(-1).sourceBody.material.userData.chicagoHorseCoat, undefined);
++      assert.equal(privateMaterial.map, parsed.at(-1).sourceBody.material.map, 'standing material borrows the original map handle');
++      await layer.setTier('light'); assert.equal(layer.instances.length, 0); assert.equal(ownedDisposed, 1); assert.equal(parsed.at(-1).disposed, 1); assert(parsed.at(-1).textureDisposals.every(count => count === 1), 'source owner disposes each borrowed map once');
++      await layer.setTier('full'); await layer.ready; assert.equal(layer.instances.length, 1);
++      assert.deepEqual(bodyOf(layer.instances[0].root).material.userData.chicagoHorseCoat, identity, 'reacquisition retains the same individual');
++      layer.dispose(); layer.dispose(); assert.equal(parsed.at(-1).disposed, 1);
++    }
++    mode = 'missing'; const problems = [];
++    const refused = await createStandingHorses({ ...baseOptions, dataBase: new URL('data/', root), problems, recipeFile: 'transport/horse-coats.json?missing' });
++    await load(refused); assert.equal(refused.instances.length, 0); assert(problems.some(message => message.includes('recipe HTTP404')));
++    assert.equal(parsed.at(-1).disposed, 1, 'recipe failure releases the parsed source'); refused.dispose();
++    mode = 'pending'; const pendingProblems = [];
++    const pending = await createStandingHorses({ ...baseOptions, dataBase: new URL('data/', root), problems: pendingProblems, recipeFile: 'transport/horse-coats.json?pending' });
++    pending.update(camera);
++    for (let i = 0; !releaseRecipe && i < 1000; i++) await new Promise(resolve => setTimeout(resolve, 2));
++    assert(releaseRecipe, 'actual source parse reached the delayed recipe fetch');
++    await pending.setTier('light'); pending.dispose(); releaseRecipe(); await pending.ready;
++    assert.equal(pending.instances.length, 0); assert.deepEqual(pendingProblems, []); assert.equal(parsed.at(-1).disposed, 1, 'late recipe completion cannot mount or retain the source');
++  } finally { globalThis.fetch = previousFetch; GLTFLoader.prototype.parseAsync = nativeParse; }
++  console.log('Standing factory/main wiring PASS: legacy off, source/published recipe opt-in, actual source-owned cleanup, Light reacquisition, error and late disposal; images/WebGL separate');
++}
+diff --git a/chicago/4d/tools/writer_inventory.json b/chicago/4d/tools/writer_inventory.json
+index 17b8021fc9..bce6afa19d 100644
+--- a/chicago/4d/tools/writer_inventory.json
++++ b/chicago/4d/tools/writer_inventory.json
+@@ -12,7 +12,7 @@
+       "write_mode": "(bare)",
+       "measured": "2026-11-10",
+       "finding": "Reproduces: in a separate six-file Git index fixture, two bare writes advanced the generated contract mtime and retained its SHA256; deliberately corrupting the output was repaired to the same baseline. Every tracked fixture byte equalled its own index after each run. No application index or HEAD commit was used. SUP120, original resource pairs and descendant cleanup passed. See docs/measurements/horse-coats-writer-2026-11-10.json.",
+-      "placed": "Only horse-coats.json is derived; the recipe, two SHA-bound portable sources and bound foot reference are separate inputs with no existing manifest owner. The explicit step precedes liberties/source-use export. Focused actual-write proof is measured; full-manifest rederive --prove remains unrun."
++      "placed": "Only horse-coats.json is derived; the recipe, two SHA-bound portable sources and bound foot reference are separate inputs with no existing manifest owner. The explicit step is in the settled tail immediately after source-use export, whose collection whitelist does not consume this independent transport contract. Focused actual-write proof is measured; full-manifest rederive --prove remains unrun."
+     },
+     "generate_glessner_finish.py": {
+       "placement": "pending",
