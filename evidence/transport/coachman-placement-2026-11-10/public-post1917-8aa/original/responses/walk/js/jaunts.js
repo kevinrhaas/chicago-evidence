@@ -1,0 +1,536 @@
+import { count as countField } from './field-log.js'; // T-2660: started and finished, on this device only
+import { authoredLeg } from './travel-estimate.js'; // T-3355: a leg's own mode
+/** Content-only session state. No destination or jaunt identity is special. */
+export const SESSION_KEY = 'c4d.jaunt.session.v1';
+export const emptyState = () => ({ jaunt: null, session: null, leg: 0, stopIndex: 0,
+  visited: [], vars: {}, inventory: [], events: [], eventSeq: 0, phase: 'menu', choice: null,
+  mode: null, modeChosen: false, estimate: null, notice: null, restored: false, context: null, contextDismissed: false });
+export function matches(test, vars, inventory) {
+  if (!test) return true;
+  if (test.all) return test.all.every(t => matches(t, vars, inventory));
+  if (test.any) return test.any.some(t => matches(t, vars, inventory));
+  if (test.not) return !matches(test.not, vars, inventory);
+  if (test.has) return inventory.includes(test.has);
+  const a = vars[test.var], b = test.value;
+  return ({ '<': a < b, '<=': a <= b, '==': a === b, '!=': a !== b, '>=': a >= b, '>': a > b })[test.op] ?? false;
+}
+export const currentStop = s => s.jaunt?.stops.find(stop => stop.id === s.visited[s.stopIndex]?.id);
+// T-3355: the mode this leg travels in. An authored leg may name its own (a long ride
+// Instantly); it applies until the visitor picks a mode, so a mode the visitor picked,
+// and Straight there, still win. T-3405: "picked" is `modeChosen`, not "differs from the
+// default": a visitor who chose Fly on a Fly jaunt was still sent Instantly on such legs.
+const ownLegMode = (s, fromId, toId) => {
+  if (!s.jaunt || s.modeChosen || s.mode !== s.jaunt.default_mode) return s.mode;
+  const own = authoredLeg(s.jaunt, fromId, toId)?.mode;
+  return own && (s.jaunt.allowed_modes || []).includes(own) ? own : s.mode;
+};
+export function legMode(s) {
+  if (s.instant) return 'instantly';
+  return ownLegMode(s, s.fromStopId, currentStop(s)?.id);
+}
+/** T-3405: the mode the picker shows — the leg being travelled, or at a stop the leg to
+ *  its one next stop — so a leg that goes its own way says so, and can be changed. */
+export function shownMode(s) {
+  if (!s.jaunt) return s.mode;
+  const phase = s.phase === 'detail' ? s.detailPhase : s.phase;
+  if (['travelling', 'paused'].includes(phase)) return s.instant ? s.mode : legMode(s);
+  const stop = currentStop(s), next = s.visited[s.stopIndex + 1]?.id
+    ?? (stop?.choices?.length ? null : stop?.next);
+  return next && s.jaunt.stops.some(x => x.id === next) ? ownLegMode(s, stop.id, next) : s.mode;
+}
+const money = cents => Math.abs(cents) < 100 ? `${Math.abs(cents)} ¢` : `$${(Math.abs(cents) / 100).toFixed(2)}`;
+const label = name => name.replace(/[_-]+/g, ' ').replace(/^./, c => c.toUpperCase());
+// Units a visitor can read as a resource. Any other unit (the pilot's `preference`) is
+// the outing's own bookkeeping for branching, and is never shown as a chip or a cost.
+const SHOWN_UNITS = new Set(['cents', 'minutes', 'count']);
+export const shownResource = spec => SHOWN_UNITS.has(spec?.unit);
+export function formatResource(name, value, spec = {}) {
+  if (spec.unit === 'cents') return `${label(name)} ${money(value)}`;
+  if (spec.unit === 'minutes') return `${label(name)} ${value} min`;
+  return `${label(name)} ${value}`;
+}
+function rawEffects(s, list = []) {
+  const vars = { ...s.vars }, inventory = new Set(s.inventory);
+  let overflow = null;
+  for (const e of list) {
+    if (e.var) {
+      const spec = s.jaunt.variables[e.var], raw = e.op === 'set' ? e.value : vars[e.var] + e.value;
+      if (raw < spec.min || raw > spec.max) overflow ??= { kind: 'variable', name: e.var, raw, spec };
+      vars[e.var] = Math.max(spec.min, Math.min(spec.max, raw));
+    } else if (e.op === 'add') {
+      if (!inventory.has(e.item) && inventory.size >= (s.jaunt.inventory?.capacity ?? 0))
+        overflow ??= { kind: 'inventory', item: e.item };
+      else inventory.add(e.item);
+    } else if (e.op === 'remove') inventory.delete(e.item);
+  }
+  return { vars, inventory: [...inventory], overflow };
+}
+export function choiceStatus(s, choice) {
+  if (!matches(choice.when, s.vars, s.inventory)) {
+    const test = choice.when;
+    if (test?.var && s.jaunt.variables[test.var]?.unit === 'cents')
+      return { available: false, reason: `Needs ${money(test.value)} · you have ${money(s.vars[test.var])}` };
+    if (test?.has) return { available: false, reason: `Needs ${label(test.has)}` };
+    return { available: false, reason: 'Unavailable after your earlier choices' };
+  }
+  const result = rawEffects(s, choice.effects);
+  if (result.overflow?.kind === 'inventory')
+    return { available: false, reason: `Basket full · ${s.inventory.length} of ${s.jaunt.inventory.capacity}` };
+  if (result.overflow?.kind === 'variable') {
+    const { name, raw, spec } = result.overflow;
+    if (spec.unit === 'cents' && raw < spec.min)
+      return { available: false, reason: `Not enough ${label(name).toLowerCase()} · you have ${money(s.vars[name])}` };
+    return { available: false, reason: `${label(name)} is already at its ${raw > spec.max ? 'maximum' : 'minimum'}` };
+  }
+  return { available: true, reason: null };
+}
+export const choicesFor = s => (currentStop(s)?.choices || []).filter(c => choiceStatus(s, c).available);
+export function choiceConsequence(s, choice) {
+  const details = [];
+  for (const e of choice.effects || []) {
+    if (e.var) {
+      const spec = s.jaunt.variables[e.var];
+      if (!shownResource(spec)) continue;
+      if (spec.unit === 'cents' && e.op === 'inc' && e.value < 0)
+        details.push(`costs ${money(e.value)} · you have ${money(s.vars[e.var])}`);
+      else if (e.op === 'inc') details.push(`${label(e.var)} ${e.value >= 0 ? '+' : ''}${e.value} · you have ${s.vars[e.var]}`);
+      else details.push(`${label(e.var)} becomes ${formatResource(e.var, e.value, spec).replace(`${label(e.var)} `, '')}`);
+    } else if (e.op === 'add') details.push(`adds ${label(e.item).toLowerCase()} · basket ${s.inventory.length}/${s.jaunt.inventory?.capacity ?? 0}`);
+    else if (e.op === 'remove') details.push(`uses ${label(e.item).toLowerCase()}`);
+  }
+  return details.length ? details.join(' · ') : choice.consequence;
+}
+export function resourceSummary(s) {
+  const rows = Object.entries(s.jaunt?.variables || {}).filter(([, spec]) => shownResource(spec)).map(([name, spec]) => formatResource(name, s.vars[name], spec));
+  if (s.jaunt?.inventory) rows.push(`Basket ${s.inventory.length}/${s.jaunt.inventory.capacity}`);
+  return rows;
+}
+/**
+ * T-3432 (owner, 2026-11-06: "the last stop screen should be more obvious that you are at
+ * the last stop"): this stop is where the outing ends. A stop whose next is an ending, or whose
+ * every choice goes to one; a stop that goes on, or that may (one choice continues), is not.
+ */
+/**
+ * T-3459: the season a dated stop stands in, by its month (March to May spring, June to
+ * August summer, September to November fall, December to February winter), or null for
+ * a stop with no date. The owner, 2026-11-07: a jaunt that says spring 1812 opened in his
+ * own Winter, because a stop's date moved the sun and never the Season.
+ */
+export function seasonOfDate(date) {
+  const month = Number(/^\d{4}-(\d{2})-\d{2}$/.exec(date ?? '')?.[1]);
+  if (!(month >= 1 && month <= 12)) return null;
+  return ['winter', 'winter', 'spring', 'spring', 'spring', 'summer', 'summer', 'summer', 'fall', 'fall', 'fall', 'winter'][month - 1];
+}
+/**
+ * T-3495 (owner, 2026-11-07: "by default with the jaunts when going on them the people should
+ * be hidden so that they don't interfere ... I am concerned about all these soldiers around the
+ * fort hanging out 24 7"): the people a stop calls for, by person id: its own `people`, then
+ * the people its person cards link. Everyone else stays out of the scene while the jaunt is on.
+ */
+export function stopPeople(stop) {
+  const linked = (stop?.links || []).filter(l => l?.kind === 'person').map(l => l.id);
+  return [...new Set([...(Array.isArray(stop?.people) ? stop.people : []), ...hostIds(stop), ...linked].filter(id => typeof id === 'string' && id))];
+}
+/** T-3525: the people who tell a stop, standing at their marks (jaunt-hosts.js). */
+export const hostIds = stop => (Array.isArray(stop?.hosts) ? stop.hosts : []).map(h => h?.person).filter(id => typeof id === 'string' && id);
+/** T-3525: who a jaunt keeps in the scene now: the stop's people, and on the way from a stop
+ *  its hosts too, so the one who sent the visitor on does not vanish behind them. */
+export function keptPeople(s) {
+  const here = stopPeople(currentStop(s));
+  if (!['travelling', 'paused'].includes(s?.phase)) return here;
+  const from = s.jaunt?.stops.find(stop => stop.id === s.fromStopId);
+  return [...new Set([...here, ...hostIds(from)])];
+}
+/** T-3459: the season a stop is shown in: its date's, else the jaunt's ambience, else null. */
+export const stopSeason = (jaunt, stop) => seasonOfDate(stop?.date) || jaunt?.ambience?.season || null;
+/** T-3459: the light a jaunt opens in, for its menu row and welcome: its ambience, else the
+ *  first stop's own hour and its date's season. */
+export function openingLight(jaunt) {
+  const first = jaunt?.stops?.[0];
+  const hour = first?.hour || jaunt?.ambience?.hour, season = stopSeason(jaunt, first);
+  return hour || season ? { ...(hour ? { hour } : {}), ...(season ? { season } : {}) } : null;
+}
+export function isFinalStop(s) {
+  const stop = currentStop(s);
+  if (!stop || s.stopIndex < s.visited.length - 1) return false;
+  const ends = next => next === '$end' || (s.jaunt.endings || []).some(x => x.id === next);
+  const choices = stop.choices || [];
+  const chosen = choices.find(c => c.id === s.choice);
+  if (chosen) return ends(chosen.next ?? stop.next);
+  if (choices.length && choices.some(c => c.next)) return choices.every(c => ends(c.next ?? stop.next));
+  return stop.next != null ? ends(stop.next) : s.stopIndex === s.jaunt.stops.length - 1;
+}
+export const canNext = s => (s.phase === 'atStop' || (s.phase === 'detail' && s.detailPhase === 'atStop'))
+  && !!(s.stopIndex < s.visited.length - 1 || currentStop(s)?.next || s.choice);
+const append = (s, type, data = {}, eventId = null) => {
+  const eventSeq = s.eventSeq + 1;
+  return { ...s, eventSeq, events: [...s.events,
+    { id: eventId || `${s.session}:${eventSeq}`, type, ...data }] };
+};
+function effects(s, list = []) {
+  const { vars, inventory } = rawEffects(s, list);
+  return { ...s, vars, inventory };
+}
+function initialResources(jaunt) {
+  return { vars: Object.fromEntries(Object.entries(jaunt.variables || {}).map(([k, v]) => [k, v.initial])),
+    inventory: [...(jaunt.inventory?.initial || [])] };
+}
+function revise(s) {
+  const kept = s.visited.slice(0, s.stopIndex + 1).map((v, i) => i === s.stopIndex
+    ? { id: v.id } : { ...v });
+  let resources = { ...s, ...initialResources(s.jaunt) };
+  for (const visit of kept.slice(0, -1)) {
+    const stop = s.jaunt.stops.find(x => x.id === visit.id);
+    const choice = stop?.choices?.find(x => x.id === visit.choice);
+    resources = effects(resources, choice?.effects);
+  }
+  const cut = s.events.findIndex(event => event.type === 'decision' && event.stop === currentStop(s).id);
+  resources = { ...resources, visited: kept, choice: null, phase: 'atStop', outcome: null,
+    error: null, events: cut < 0 ? s.events : s.events.slice(0, cut), restored: false };
+  return append(resources, 'revise', { stop: currentStop(s).id });
+}
+const fallbackEnding = () => ({ id: 'content-error', fallback: true, completion_eligible: false, read_s: 0,
+  text: 'This outing reached an unfinished ending. Return to the Jaunts Menu and choose another route.' });
+function endingFor(s, next) {
+  const endings = s.jaunt.endings || [];
+  if (next === '$end') return endings.find(x => !x.default && matches(x.when, s.vars, s.inventory))
+    || endings.find(x => x.default) || fallbackEnding();
+  const ending = endings.find(x => x.id === next);
+  return ending && matches(ending.when, s.vars, s.inventory) ? ending : fallbackEnding();
+}
+function move(s, index) {
+  return append({ ...s, fromStopId: index === s.stopIndex ? s.fromStopId : currentStop(s)?.id, context: null, contextDismissed: false, stopIndex: index, leg: s.leg + 1, phase: 'travelling', choice: null, error: null, instant: false },
+    'depart', { stop: s.visited[index].id, leg: s.leg + 1 });
+}
+export function reduce(s, e) {
+  if (e.type === 'START') {
+    if (!e.jaunt?.stops?.length || e.jaunt.review_required) throw new Error('Jaunt unavailable');
+    return append({ ...emptyState(), jaunt: e.jaunt, session: e.session, leg: 1, phase: 'opening',
+      visited: [{ id: e.jaunt.stops[0].id }], mode: e.jaunt.allowed_modes?.includes(e.mode) ? e.mode : e.jaunt.default_mode,
+      modeChosen: e.chosen === true && !!e.jaunt.allowed_modes?.includes(e.mode),
+      ...initialResources(e.jaunt) }, 'start');
+  }
+  if (!s.jaunt) return s;
+  if (['ARRIVE', 'STOPPED', 'FAILED', 'CONTEXT'].includes(e.type) && (e.session !== s.session || e.leg !== s.leg)) return s;
+  if (e.type === 'CONTEXT' && s.phase === 'travelling') return { ...s, context: e.context };
+  if (e.type === 'DISMISS_CONTEXT') return { ...s, contextDismissed: true };
+  if (e.type === 'END') return emptyState();
+  // T-3405: picking the mode the jaunt is already on still counts when the leg was going
+  // its own way (the picker showed that leg's mode): from then on every leg takes it.
+  if (e.type === 'MODE' && s.jaunt.allowed_modes?.includes(e.mode) && s.phase !== 'outcome'
+    && (e.mode !== s.mode || !s.modeChosen)) {
+    if (e.mode === s.mode && shownMode(s) === e.mode && legMode(s) === e.mode) return { ...s, modeChosen: true };
+    const changed = append({ ...s, mode: e.mode, modeChosen: true }, 'mode', { mode: e.mode });
+    return ['travelling', 'paused'].includes(s.phase) ? move(changed, s.stopIndex) : changed;
+  }
+  if (e.type === 'INSTANT' && ['travelling', 'paused'].includes(s.phase))
+    return { ...move(s, s.stopIndex), instant: true };
+  if (e.type === 'RIDE' && s.phase === 'paused') return move(s, s.stopIndex);
+  if (e.type === 'ARRIVE' && ['opening', 'travelling'].includes(s.phase))
+    return append({ ...s, phase: 'atStop', error: null }, 'arrival', { stop: currentStop(s).id, leg: s.leg });
+  if (e.type === 'FAILED' && s.phase === 'travelling') return { ...s, error: e.message };
+  if (e.type === 'STOPPED' && s.phase === 'travelling')
+    return append({ ...s, phase: 'paused', leg: s.leg + 1, error: null }, 'pause', { reason: e.reason });
+  if (e.type === 'MENU') {
+    if (['menu', 'outcome'].includes(s.phase)) return s;
+    // T-3432: the flight to the start is landed when the menu opens, so it resumes at the stop.
+    return append({ ...s, phase: 'menu', resumePhase: s.phase === 'detail' ? s.detailPhase || 'atStop' : s.phase === 'paused' ? 'travelling'
+      : s.phase === 'opening' ? 'atStop' : s.phase, leg: s.leg + 1 }, 'pause');
+  }
+  if (e.type === 'RESUME' && s.phase === 'menu') {
+    const resumed = append({ ...s, phase: s.resumePhase || 'atStop' }, 'resume');
+    return resumed.phase === 'travelling' ? move(resumed, s.stopIndex) : resumed;
+  }
+  if (e.type === 'DETAIL' && ['atStop', 'travelling', 'paused'].includes(s.phase))
+    return { ...s, phase: 'detail', detailPhase: s.phase, leg: s.leg + (s.phase === 'travelling' ? 1 : 0) };
+  if (e.type === 'RETURN' && s.phase === 'detail')
+    return s.detailPhase === 'travelling' ? move(s, s.stopIndex) : { ...s, phase: s.detailPhase || 'atStop', detailPhase: null };
+  if (e.type === 'RETRY' && s.phase === 'travelling' && s.error) return move(s, s.stopIndex);
+  if (e.type === 'PREV' && ['travelling', 'paused', 'atStop', 'detail'].includes(s.phase)) return s.stopIndex ? move(s, s.stopIndex - 1) : s;
+  if (e.type === 'REVISE' && ['atStop', 'detail'].includes(s.phase) && s.visited[s.stopIndex]?.committed) return revise(s);
+  if (!['atStop', 'detail'].includes(s.phase)) return s;
+  if (e.type === 'CHOOSE' && !s.visited[s.stopIndex].committed && choicesFor(s).some(c => c.id === e.id)) return { ...s, choice: e.id };
+  if (e.type !== 'NEXT' || !canNext(s)) return s;
+  if (s.stopIndex < s.visited.length - 1) return move(s, s.stopIndex + 1);
+  const stop = currentStop(s), choice = stop.choices?.find(c => c.id === s.choice), next = choice?.next ?? stop.next;
+  if (next === 'Previous') return s.stopIndex ? move(s, s.stopIndex - 1) : s;
+  const eventId = e.eventId || `${s.session}:decision:${stop.id}:${choice?.id ?? 'continue'}`;
+  if (s.events.some(event => event.id === eventId)) return s;
+  let updated = effects(s, choice?.effects);
+  updated = append({ ...updated, visited: s.visited.map((v, i) => i === s.stopIndex ? { ...v, committed: true, choice: choice?.id, next } : v) },
+    'decision', { stop: stop.id, choice: choice?.id ?? null }, eventId);
+  const ending = next === '$end' || s.jaunt.endings.some(x => x.id === next) ? endingFor(updated, next) : null;
+  if (ending) return append({ ...updated, phase: 'outcome', outcome: ending, choice: null, leg: s.leg + 1,
+    error: ending.fallback ? 'No declared ending matched this route.' : null }, 'complete', { ending: ending.id });
+  if (!s.jaunt.stops.some(x => x.id === next)) throw new Error('Unknown validated stop');
+  return move({ ...updated, visited: [...updated.visited, { id: next }] }, updated.visited.length);
+}
+
+export function replaySession(jaunt, saved, session = 1) {
+  if (!saved || saved.jaunt !== jaunt.id || saved.content_version !== jaunt.content_version || !Array.isArray(saved.events))
+    throw new Error('version');
+  if (saved.events.length > 500 || saved.events.some(e => !e || typeof e.id !== 'string' || typeof e.type !== 'string'))
+    throw new Error('corrupt');
+  const picked = [...saved.events].reverse().find(e => e.type === 'mode')?.mode;
+  const mode = picked || jaunt.default_mode;
+  let state = reduce(emptyState(), { type: 'START', jaunt, session, mode, chosen: !!picked });
+  state = reduce(state, { type: 'ARRIVE', session, leg: state.leg });
+  for (const event of saved.events.filter(e => e.type === 'decision')) {
+    if (state.phase === 'outcome' || currentStop(state)?.id !== event.stop) throw new Error('corrupt');
+    if (event.choice != null) state = reduce(state, { type: 'CHOOSE', id: event.choice });
+    state = reduce(state, { type: 'NEXT', eventId: event.id });
+    if (state.phase === 'travelling') state = reduce(state, { type: 'ARRIVE', session, leg: state.leg });
+  }
+  if (saved.events.some(e => e.type === 'complete') && state.phase !== 'outcome') throw new Error('corrupt');
+  const position = [...saved.events].reverse().find(e => ['arrival', 'depart'].includes(e.type) && e.stop);
+  const positionIndex = position && state.visited.findIndex(visit => visit.id === position.stop);
+  if (positionIndex >= 0 && state.phase !== 'outcome') state = { ...state, stopIndex: positionIndex };
+  return state.phase === 'outcome' ? { ...state, restored: true }
+    : { ...state, phase: 'menu', resumePhase: 'atStop', restored: true };
+}
+
+/** Adapters own UI and travel. Tokens invalidate every obsolete completion. */
+export function createJaunts({ scene = '1835', load, resolve, place, travel, enter, showMenu, render, openDetail, closeDetail, onError,
+  estimate = () => null, contextForRoute = () => null, onComplete = () => {}, storage: suppliedStorage,
+  // T-2652: the mode the visitor's getting-there choice asks of this Jaunt, or null for its own.
+  preferredMode = () => null,
+  // T-3432: the flight to the first stop. `approach(target)` is asked before the visitor is
+  // set down (it reads where they are), and returns { begin(callbacks) -> bool } or null;
+  // `begin` is called once they stand at the start, and flies there from where they were.
+  // Without it, or when it declines (reduced motion, nothing to fly), the start is a jump.
+  approach = null,
+  // T-3328: the scene's hour (api.timeOfDay, T-3331). A stop with an `hour` sets it on
+  // arrival, transiently; a stop without one, and the end of the jaunt, give the visitor's
+  // own hour back. Optional: a harness without it plays the jaunt in the hour it has.
+  // T-3377: a jaunt's `ambience` is the hour and season it opens in (a morning walk in
+  // spring, a night walk in the fall): its hour stands at every stop without one of its
+  // own, its season for the whole outing, and both are given back when it ends.
+  hour = null, season = null,
+  // T-3495: the everyday people. `crowd.hold(ids)` keeps only the people named (a stop's
+  // `stopPeople`) and holds everyone else out of the scene; `crowd.restore()` gives them all
+  // back. Held from the flight to the first stop until the jaunt ends, completes or goes to
+  // the menu. Optional: a harness without it plays the jaunt with whoever stands there.
+  crowd = null,
+  // T-3525: a stop's hosts (jaunt-hosts.js): `hosts.sync(stop, { arrived })` brings the people
+  // who tell a stop to their marks on the way to it and greets the visitor on arrival;
+  // `hosts.release()` lets them all go back about their day. Optional, like the crowd.
+  hosts = null }) {
+  const sessionKey = scene === '1835' ? SESSION_KEY : `${SESSION_KEY}.${scene}`;
+  let state = emptyState(), serial = 0, request, detailRequest, destroyed = false, previousMode;
+  let storage = suppliedStorage;
+  if (storage === undefined) { try { storage = globalThis.localStorage; } catch { storage = null; } }
+  const clearSaved = () => { try { storage?.removeItem(sessionKey); } catch { /* memory-only */ } };
+  const persist = () => {
+    if (!state.jaunt) return clearSaved();
+    try { storage?.setItem(sessionKey, JSON.stringify({ content_version: state.jaunt.content_version,
+      jaunt: state.jaunt.id, events: state.events })); } catch { /* memory-only */ }
+  };
+  // One queue for the light, so a season (which moves the sun's day) lands before the
+  // hour solved on it, and a give-back never overtakes the set it undoes.
+  // T-3459: `seasonHeld` is the season the outing holds ('' when none): a dated stop's own,
+  // else the jaunt's ambience; it changes only when a stop asks for another. Seasons run on
+  // their own queue, and the hour waits only for a season to BEGIN (its day moves at once;
+  // its woods re-grow after, seconds on a slow device): an hour held back behind the
+  // re-growing left a stop in the last stop's light and date.
+  let hourSet = false, hourHeld = '', seasonHeld = '', lightQueue = Promise.resolve(), seasonQueue = Promise.resolve();
+  const queueLight = fn => { lightQueue = lightQueue.then(fn).catch(() => { /* the light stays; the outing goes on */ }); };
+  const queueSeason = fn => {
+    let begun;
+    const begin = new Promise(resolve => { begun = resolve; });
+    seasonQueue = seasonQueue.then(() => { try { return fn(); } finally { begun(); } })
+      .catch(() => { /* the season stays; the outing goes on */ });
+    queueLight(() => begin);
+  };
+  const restoreHour = () => {
+    if (!hour || !hourSet) return;
+    hourSet = false; hourHeld = '';
+    queueLight(() => hour.restore());
+  };
+  const restoreLight = () => {
+    restoreHour();
+    if (!season || !seasonHeld) return;
+    seasonHeld = '';
+    queueSeason(() => season.restore());
+  };
+  const applyHour = stop => {
+    const ambience = state.jaunt?.ambience, wanted = stopSeason(state.jaunt, stop);
+    if (season && wanted && wanted !== seasonHeld) {
+      seasonHeld = wanted;
+      queueSeason(() => season.set(wanted, { transient: true }));
+    }
+    if (!hour) return;
+    const value = stop?.hour || ambience?.hour;
+    if (!value) { restoreHour(); return; }
+    const date = stop?.hour ? stop.date : undefined, key = `${value}@${date || ''}`;
+    // A relight is a sky bake: the jaunt's one hour, held stop after stop, is set once.
+    if (hourSet && hourHeld === key) return;
+    hourSet = true; hourHeld = key;
+    queueLight(() => hour.set(value, { date, transient: true }));
+  };
+  // T-3495: the key of the people held to ('' = nobody kept), or null when nobody is held.
+  let crowdHeld = null;
+  const restoreCrowd = () => {
+    if (!crowd || crowdHeld === null) return;
+    crowdHeld = null;
+    try { crowd.restore(); } catch { /* the people stay as they were; the outing goes on */ }
+  };
+  const syncCrowd = () => {
+    if (!crowd) return;
+    if (!state.jaunt || ['menu', 'outcome'].includes(state.phase)) { restoreCrowd(); return; }
+    const ids = keptPeople(state), key = ids.join(' ');
+    if (crowdHeld === key) return;
+    crowdHeld = key;
+    try { crowd.hold(ids); } catch { /* the people stay as they were; the outing goes on */ }
+  };
+  // T-3525: the stop whose hosts are out ('' = none), and whether the visitor has arrived.
+  let hostsKey = null;
+  let hostCut = false; // true only after an actual synchronous camera cut, before its first frame
+  const releaseHosts = () => {
+    if (!hosts || hostsKey === null) return;
+    hostsKey = null;
+    try { hosts.release(); } catch { /* the people stay as they were; the outing goes on */ }
+  };
+  const syncHosts = () => {
+    if (!hosts) return;
+    if (!state.jaunt || state.phase === 'outcome') { releaseHosts(); return; }
+    if (state.phase === 'menu') return; // pause keeps the existing host at their mark for Resume
+    const stop = currentStop(state), arrived = state.phase === 'atStop' || (state.phase === 'detail' && state.detailPhase === 'atStop');
+    const key = `${state.session}:${stop?.id ?? ''}:${arrived ? 'here' : 'coming'}`;
+    const cut = hostCut; hostCut = false;
+    if (hostsKey === key && !cut) return;
+    hostsKey = key;
+    let waiting = false;
+    try {
+      waiting = !!hosts.sync(stop ?? null, { arrived, retain: keptPeople(state), cut,
+        onReady: () => {
+          if (hostsKey !== key || !state.hostWaiting) return;
+          state = { ...state, hostWaiting: false }; render(state);
+        } })?.waiting;
+    } catch { /* the outing goes on without them */ }
+    state = { ...state, hostWaiting: arrived && waiting };
+  };
+  const restore = () => { if (previousMode !== undefined) travel.setMode(previousMode); previousMode = undefined; };
+  const cancel = (reason = 'jaunt') => travel.stop(reason);
+  const dismissDetail = () => { detailRequest?.abort(); detailRequest = null; closeDetail(); };
+  function dispatch(event) {
+    const old = state;
+    state = reduce(state, event);
+    if (state === old) return false;
+    // T-1258: the one moment an outing completes; the daybook's award is idempotent anyway.
+    if (state.phase === 'outcome' && old.phase !== 'outcome') {
+      countField('jauntFinished'); // T-2660
+      try { onComplete(state); } catch { /* the outing still ends */ }
+    }
+    if (old.phase === 'detail' && state.phase !== 'detail') dismissDetail();
+    if (state.jaunt && !['DETAIL', 'RETURN'].includes(event.type) && (state.leg !== old.leg || state.phase !== old.phase || state.mode !== old.mode || state.modeChosen !== old.modeChosen))
+      state = { ...state, estimate: estimate(state) };
+    if (event.cut === true) hostCut = true;
+    syncCrowd();
+    syncHosts();
+    render(state);
+    if (state.phase === 'atStop' && (old.phase !== 'atStop' || old.stopIndex !== state.stopIndex || old.session !== state.session))
+      applyHour(currentStop(state));
+    if (old.phase === 'opening' && state.phase !== 'opening' && event.type !== 'ARRIVE') cancel('jaunt'); // T-3432: lands the flight
+    if (state.phase === 'travelling' && (old.leg !== state.leg || old.phase !== state.phase)) {
+      cancel(['MODE', 'INSTANT'].includes(event.type) ? 'replan' : 'jaunt'); dismissDetail();
+      if (previousMode === undefined) previousMode = travel.mode;
+      const token = { session: state.session, leg: state.leg }, target = resolve(currentStop(state).destination);
+      const instant = legMode(state) === 'instantly';
+      travel.setMode(legMode(state));
+      if (!target || !travel.go(target, { token,
+        onArrive: tags => dispatch({ type: 'ARRIVE', ...tags, cut: instant }),
+        onStop: tags => dispatch({ type: 'STOPPED', ...tags }),
+        onRoute: route => {
+          if (state.session !== token.session || state.leg !== token.leg || state.phase !== 'travelling') return;
+          dispatch({ type: 'CONTEXT', ...token, context: contextForRoute(state, route) });
+        } }))
+        dispatch({ type: 'FAILED', ...token, message: 'This stop could not be reached. Try again, go back, or end the jaunt.' });
+    } else if (state.phase === 'detail') {
+      cancel('detail');
+    } else if (state.phase === 'paused') {
+      cancel(); restore();
+    } else if (['menu', 'outcome'].includes(state.phase)) {
+      cancel(); dismissDetail(); restore(); restoreLight(); showMenu({ state, returnId: state.jaunt?.id ?? old.jaunt?.id });
+    }
+    persist();
+    return true;
+  }
+  async function start(id, { mode, chosen } = {}) {
+    const generation = ++serial; request?.abort(); request = new AbortController();
+    state = emptyState(); clearSaved(); cancel(); dismissDetail(); restore(); restoreLight(); restoreCrowd(); releaseHosts(); render(state);
+    try {
+      const jaunt = await load(id, { signal: request.signal });
+      if (destroyed || generation !== serial) return false;
+      if (!jaunt?.stops?.length || jaunt.review_required) throw new Error('Jaunt unavailable');
+      const target = resolve(jaunt.stops[0].destination);
+      const flight = target ? approach?.(target) ?? null : null;   // T-3432: before the visitor is set down
+      if (!target || !enter(target) || !place(target)) throw new Error('Starting place unavailable');
+      previousMode = travel.mode;
+      // T-3405: a mode handed in by the visitor's own switch (Move › Jaunts use my choice)
+      // is a pick; a restart keeps whether the outing's mode was picked.
+      const preferred = mode == null ? preferredMode(jaunt) : null;
+      state = reduce(state, { type: 'START', jaunt, session: generation, mode: mode ?? preferred ?? undefined,
+        chosen: chosen ?? preferred != null });
+      // T-3432: fly to the first stop, the welcome page open on the way; a visitor who asked
+      // for Instantly still jumps. A landing for any reason is the arrival.
+      const token = { session: generation, leg: state.leg };
+      const land = () => dispatch({ type: 'ARRIVE', ...token });
+      if (state.mode !== 'instantly' && flight?.begin?.({ token, label: jaunt.places?.[jaunt.stops[0].destination.id] ?? target.label,
+        onArrive: land, onStop: land })) {
+        state = { ...state, estimate: estimate(state) }; syncCrowd(); syncHosts(); render(state); applyHour(currentStop(state)); persist();
+      } else land();
+      countField('jauntStarted'); // T-2660
+      return true;
+    } catch (error) { if (generation === serial && error.name !== 'AbortError') onError(error); return false; }
+    finally { if (generation === serial) request = null; }
+  }
+  async function restoreSession() {
+    let saved;
+    try {
+      const raw = storage?.getItem(sessionKey);
+      if (!raw) return false;
+      saved = JSON.parse(raw);
+      if (!saved || typeof saved.jaunt !== 'string' || !Array.isArray(saved.events)) throw new Error('corrupt');
+    } catch {
+      clearSaved(); state = { ...emptyState(), notice: 'A damaged saved outing was discarded.' }; render(state); return false;
+    }
+    try {
+      const jaunt = await load(saved.jaunt);
+      if (saved.content_version !== jaunt.content_version) throw new Error('version');
+      state = replaySession(jaunt, saved, ++serial); render(state); persist();
+      if (state.phase === 'atStop') applyHour(currentStop(state));
+      return true;
+    } catch (error) {
+      clearSaved(); state = { ...emptyState(), notice: error.message === 'version'
+        ? 'A saved outing from an older version was discarded.' : 'A damaged saved outing was discarded.' };
+      render(state); return false;
+    }
+  }
+  const explore = () => { ++serial; request?.abort(); state = emptyState(); clearSaved(); cancel(); dismissDetail(); restore(); restoreLight(); restoreCrowd(); releaseHosts(); render(state); };
+  return { start, get state() { return state; }, next: () => dispatch({ type: 'NEXT' }), prev: () => dispatch({ type: 'PREV' }),
+    choose: id => dispatch({ type: 'CHOOSE', id }), retry: () => dispatch({ type: 'RETRY' }),
+    revise: () => dispatch({ type: 'REVISE' }), restore: restoreSession,
+    setMode: mode => dispatch({ type: 'MODE', mode }), straight: () => dispatch({ type: 'INSTANT' }),
+    resumeRide: () => dispatch({ type: 'RIDE' }),
+    end() { ++serial; request?.abort(); return dispatch({ type: 'END' }); }, menu: () => dispatch({ type: 'MENU' }),
+    resume() { if (state.phase !== 'menu' || !state.jaunt) return false;
+      const target = state.restored ? resolve(currentStop(state).destination) : null;
+      if (state.restored && (!target || !enter(target) || !place(target))) return false;
+      if (!state.restored && !enter(null, { resume: true })) return false;
+      if (state.restored) hostCut = true; // place(target) above is the actual camera cut
+      previousMode = travel.mode; state = { ...state, restored: false }; return dispatch({ type: 'RESUME' }); },
+    restart: () => state.jaunt && start(state.jaunt.id, { mode: state.mode, chosen: state.modeChosen }),
+    detail(link) {
+      if (!dispatch({ type: 'DETAIL' })) return false;
+      detailRequest = new AbortController();
+      const signal = detailRequest.signal;
+      Promise.resolve().then(() => { if (!signal.aborted) return openDetail(link, { signal }); }).catch(() => {
+        if (!signal.aborted) dispatch({ type: 'RETURN' });
+      });
+      return true;
+    },
+    dismissContext: () => dispatch({ type: 'DISMISS_CONTEXT' }),
+    returnFromDetail: () => dispatch({ type: 'RETURN' }), explore,
+    destroy() { destroyed = true; explore(); },
+  };
+}
