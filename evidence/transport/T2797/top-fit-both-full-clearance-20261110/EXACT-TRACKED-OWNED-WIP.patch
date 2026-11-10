@@ -1,0 +1,715 @@
+diff --git a/chicago/4d/renderers/web/js/brougham-door.js b/chicago/4d/renderers/web/js/brougham-door.js
+index 6a3b183b98..f83254d35c 100644
+--- a/chicago/4d/renderers/web/js/brougham-door.js
++++ b/chicago/4d/renderers/web/js/brougham-door.js
+@@ -80,6 +80,7 @@ export function broughamDoorRig({ root, midRoot, spec, vehicleHashes }) {
+  */
+ export function createCoachmanDoorActions({ parkedTransport, humans, days, router, visitor, interactions }) {
+   const held = new Map();
++  let disposed = false;
+   const release = actor => {
+     if (!held.has(actor.id)) return;
+     held.delete(actor.id);
+@@ -101,7 +102,7 @@ export function createCoachmanDoorActions({ parkedTransport, humans, days, route
+     });
+   };
+   const actionsFor = actor => {
+-    if (actor.personId !== CHARLES_NELSON || actor.indoors || actor.disposed
++    if (disposed || actor.personId !== CHARLES_NELSON || actor.indoors || actor.disposed
+       || humans.shown === false || humans.isHeld?.(actor) || days?.isHosted?.(actor)) return [];
+     const instance = live();
+     if (!instance) return [];
+@@ -111,7 +112,13 @@ export function createCoachmanDoorActions({ parkedTransport, humans, days, route
+     const open = door.fraction < 1, target = open ? 1 : 0;
+     let arrived = false, refusal = null;
+     let start = door.fraction;
+-    const isLive = () => live() === instance && !actor.disposed && !actor.indoors && humans.shown !== false;
++    const isLive = () => !disposed && live() === instance && !actor.disposed && !actor.indoors && humans.shown !== false;
++    const unavailable = () => {
++      if (isLive()) return false;
++      refusal ??= 'The carriage is no longer available';
++      release(actor);
++      return true;
++    };
+     const short = (a, b) => Math.hypot(a.e - b.e, a.n - b.n) <= .15;
+     return [{ id: open ? 'carriage:open' : 'carriage:close',
+       label: open ? 'Ask Charles to open the carriage door' : 'Ask Charles to close the carriage door',
+@@ -140,7 +147,7 @@ export function createCoachmanDoorActions({ parkedTransport, humans, days, route
+         ? `Charles has ${open ? 'opened' : 'closed'} the carriage door. Boarding is not available.`
+         : 'The carriage door has stopped'),
+       steps: [
+-        { label: 'Charles is walking to the carriage', until: () => arrived || !!refusal, timeout: 60,
++        { label: 'Charles is walking to the carriage', until: () => unavailable() || arrived || !!refusal, timeout: 60,
+           run: t => {
+             if (t === 1 && !arrived) {
+               actor.stopPath(); refusal ??= 'Charles has not reached the carriage door';
+@@ -150,7 +157,7 @@ export function createCoachmanDoorActions({ parkedTransport, humans, days, route
+           seconds: door.plan.duration_s, run: t => {
+             if (t === 0) start = door.fraction;
+             if (refusal || !arrived) return;
+-            if (!isLive()) { refusal = 'The carriage is no longer available'; return; }
++            if (unavailable()) return;
+             const result = door.pose(start + (target - start) * t, bodies());
+             if (!result.ok) refusal = result.why;
+           } },
+@@ -158,6 +165,7 @@ export function createCoachmanDoorActions({ parkedTransport, humans, days, route
+     }];
+   };
+   actionsFor.dispose = () => {
++    disposed = true;
+     unsubscribe();
+     for (const actor of [...held.values()]) release(actor);
+   };
+diff --git a/chicago/4d/tools/transport/brougham/DOOR-FOUNDATION.md b/chicago/4d/tools/transport/brougham/DOOR-FOUNDATION.md
+index 858cd92b07..4a9e84fbed 100644
+--- a/chicago/4d/tools/transport/brougham/DOOR-FOUNDATION.md
++++ b/chicago/4d/tools/transport/brougham/DOOR-FOUNDATION.md
+@@ -415,3 +415,173 @@ boarding, full four-part checks/preflight and exact-head hosted/published delive
+ gates remain OPEN/UNRUN.** This is an explicitly authorized unqualified source
+ checkpoint on the owned feature branch only; no PR, installed delivery or DEV/MAIN
+ merge is included. All recipe capability/qualification flags remain false.
++
++
++## Six-view bounded source decision and interval caller proposal
++
++ROOT personally reviewed all six original1280×800PNGs from the admitted source
++study (14.361379s, originalSUP120/floors, cleanup0). The bounded source appearance
++is acceptable **to continue engineering**: the closed overall U/glass/cabin/roof,
++lamps, wheels and pole are retained at the one chosen low curbside quarter camera;
++rear hinges and narrow bright running seams are visible. The open leaf reveals
++the actual cabin/seat. The188mm lower-stem route is not dominant at this camera,
++but is not established as invisible. This resolves review of these six chosen
++source views only. It is not full near/mid published/phone/photo appearance
++approval, passage/fit proof or adoption, and no recipe flag changes follow.
++Original capture report SHA256
++`03e28dc6f76938e718590b6fd22657703de6f1180c2b1b9cf98d2aa2156f194c`
++remains immutable; ROOT's later bounded decision is recorded separately.
++
++The proposed interval helper ports the sealed GPL-3.0-or-later outside-app
++`interval_batch.py` SHA256
++`1aa9d3de5b51ab7404a7aa74312d43f0d30f24a5a1ff40b3616359f7c469b45c`
++from sealed checkpoint
++`6e0534cc` (full hash in the source packet). Its only semantic import adaptation
++is `sat_batch`→`sampled_sat`, which is already the exact same reviewed SAT source.
++Only the inner independent-pair interval loop uses chunks of at most128; original
++scalar axes/separation/turn/recursive interval code, full-circle broadphase,
++fixed candidate order, all15 sampled poses, and the original final proof verdict
++remain authoritative. Each independent pair keeps its original left-first DFS,
++short-circuit and unresolved-as-NONPASS rules. Both original SAT decision bounds
++retain scalar numerical fallback. Default actual depth12/tolerance1e-8 and finite
++helper-supported endpoint intervals use the accelerator. Every other accepted
++scalar setting, including stricter tolerance/depth13–16 or an endpoint span>pi,
++uses the unchanged original scalar path; no CLI argument range is narrowed.
++Atomic progress remains bounded in frequency and records current chunk/counters
++before expensive work when due. An interruption/timeout cannot become PASS.
++
++New native caller controls are prepared for ordered259-pair/128-row boundaries,
++independent original outcomes and per-pair DFS hashes, omitted/false-clear/order
++corruptions, unsupported-setting scalar fallback, both numerical thresholds and
++full-check orchestration (all15 samples and unresolved/contact rejection).
++These controls and a complete actual-model interval proof are **UNRUN for this
++integration proposal**. The earlier64 OLD-model pair study (50clear/14contact),
++though useful for helper equivalence, supplies no current-model/full-domain
++clearance. The new actual near/mid source geometry, all qualification flags,
++installed assets and runtime implementation remain unchanged by this numerical
++proposal. Full local/hosted/published/runtime/fit gates remain open.
++
++
++## Actual integrated interval controls and complete NEAR NONPASS checkpoint
++
++The native caller controls passed in1.369903s under originalSUP120/floors with
++zero remaining children:259ordered pairs and exact per-pair originalDFS hashes,
++128/128/3chunks, omitted-result rejection, independent false-clear/order mutation
++detection,13original-scalar fallback settings, both SAT threshold boundaries and
++full-check orchestration. Four original scalar cores, structural verifier,
++full-circle broadphase and CLI footer are exact. Control result SHA256
++`0fffc5c09a3635a903c835fef84019590a373d456c4c92649c6b3aa810684417`.
++This numerical control PASS does not qualify a carriage or interval domain.
++
++The ONE default complete NEAR proof then finished its **entire domain** in
++103.474063s, rc1/**NONPASS**, without timeout. It ran structure, all15sampled poses
++(zero contacts) and all2,824moving triangles/all2,100,050continuous candidate pairs.
++2,100,008pairs proved clear;42were nonclear. Originaldepth12/tolerance1e-8/allfixed
++surfaces were retained. Input/source/receipt hashes stayed exact; originalfloors
++passed and cleanup left zero children. Actual report SHA256
++`9de737efc931cc4333aa5ba8acc38567994079c929e162df1904a46a33dd1eef`.
++`PASS:false` and `continuous_surface_separation:false` are authoritative; FULLMID
++was not admitted after this failure and has not run.
++
++The separately admitted read-only witness diagnosis closed in77.008539s, replaying
++all2,824moving/all2,100,050interval candidate decisions without repeating structure
++or15samples. Its counts exactly matched the original42nonclear pairs; each was
++rechecked through the unchanged original recursive scalar AST with an observation
++callback only. All27bound inputs stayed unchanged; originalfloors/cleanup passed.
++It records31strictly-negative-gap scalar contacts and11positive-gap/depth0 unresolved
++pairs. The31contact gaps range−1.6929875mm to−0.00186497mm; the11unresolved positive
++gaps range31.9873–85.2773µm. **These SAT gaps are not MTD or penetration-depth estimates.**
++All42involve top interfaces at decisive angles−2.03125°…−7.36328125°: transferred
++header against roof underside/fascia/retained header, and original window frame
++against roof underside/fascia. They occur between the15sample poses; the lower
++step/floor/link repair produced no nonclear pair in this complete interval proof.
++Full42actual node paths/source occurrence IDs/triangle coordinates and originalDFS
++false-leaf intervals are retained, not replaced by a tolerance or depth waiver.
++Diagnosis progress SHA256
++`d99a278eebc5d054c467d603f0627cdb274db3db1710856ad201811af90676e7`;
++compact42witness index SHA256
++`329c41b3dc87ddc271115e4689858f31269241e6dba660163a62d5b01a19881e`.
++This diagnostic supplies explanation only and retains PASS/final_PASS false.
++No geometry repair or repeat proof is implied by this checkpoint.
++
++The separately reviewed CPU controller study exposed three original lifecycle
++counterexamples and passed the exact prepared patch across26fixtures. ROOT
++approved applying only that patch to brougham-door.js, SHA256
++`04a00cb1eb4492808de35eb5088ce561af0d25eb2b720e0a25034fa2986fd54a`.
++Runtime checkpoint SHA256
++`007b28751ed0cb3259e8879799af486e28ab6fe8fbc4125000b2c0889d2b41f1`
++and exact one-file application receipt
++`d6a1ed4b13c9ff956379a2cdbc373721ce340362ce18cd21f7567195a08c2224`
++are preserved. This is CPU-fixture evidence only; actual world interaction,
++external host replacement/date/year/cancel paths and fit/boarding stay unqualified.
++
++This explicitly authorized periodic feature-branch source checkpoint changes no
++raw producer/recipe/geometry, installed asset or capability flag. It creates no
++PR and merges neither DEV nor MAIN. Full local checks/preflight, exact-head hosted
++and published/phone gates remain unrun; all original failures stay retained. Next
++geometry work requires a source-bound upper-interface decision and review, not a
++contact exemption, tolerance/depth change or automatic repeat.
++
++
++## UNGENERATED ordinary top-fit candidate — precise partial source contract
++
++The three predeclared rear/outboard vertical-hinge offsets were rejected in a
++source-only analytic point study: retained real vertices still cross the interior
++of unchanged actual fascia triangles, only at earlier angles. No rejected offset
++was exported. This next candidate keeps the original vertical hinge and **every
++protected roof/fascia/drip/end-lip/cabin/wheel/lamp/team/placement stream unchanged**.
++It does not use an inclined, powered or retracting hinge.
++
++`top-fit-profiles.json` declares actual per-detail roof-edge lower profiles
++(36near/15mid native knots), conservative forward-Z construction and3mm nominal
++running clearance. The analytical whole-sweep certificate is explicitly UNPROVEN;
++no sampled or symbolic claim replaces the mandatory complete actual SAT proof.
++Only the moving window-frame top and transferred header are cut against their
++source-derived piecewise ceilings. Original V19 inputs remain immutable. The
++frame changes are limited to14near/6mid original facets in this source proposal;
++all remaining original frame facets keep their closed-WORLD points within the
++existing Float32 bound and exact NORMAL bytes. Clipped fragments retain nominated
++original-facet position/normal provenance and independently checked areas.
++
++The reviewed geometry budgets are <=6.0mm roof-height relief for frame and<=6.5mm
++for the derived header. Nominal pre-export source measurements are5.727/5.917mm
++frame and6.153/6.344mm header near/mid; source-coordinate canonicalization adds only
++explicit Float32-grid construction margins. Roof profiles use essential native
++roof/inverse knots, not redundant sub-ULP source-vertex splits. Retained geometry
++is encoded at actual output precision before cut/cap construction; any encoded
++degenerate fragment is rejected, never silently dropped. These are unqualified
++construction decisions, not accepted production appearance.
++
++The header alone also receives exactly5mm NORMAL inset at original source-profile
++support planes24/25. A steep plane can cause larger vertical removal; the guard
++uses the actual plane-normal offset and exact original-facet coverage, not a
++blanket5mm vertical waiver. The rest of each original/derived facet remains on its
++actual original source surface. Whole glass PN stays exact: no glass cut is needed
++and its measured transverse thickness remains8.999944mm. The expected surviving
++crest vertical stock is23.6024/23.4126mm near/mid, with8.9378/8.7479mm cover over the
++original glass-edge centre; minimum guarded values are23mm stock/6mm cover. MID
++uses its actual four-sided sections, not near's eight-sided layout or denominator.
++
++Mandatory actual-output checks include nominated original-facet membership and
++NORMALs; per-facet/total retained areas; exact untouched facets; retained surfaces
++below every declared ceiling/base plane including edge/knot intersections; source
++lower/midline stock; crest and between-section cover; actual cap-to-skin attachment,
++true per-triangle cap normals, winding and full thickness coverage; connected
++material and closed coherent frame/cap edges. Roof and every other protected PN
++assertion remain active. New closure faces are separately labelled engineering
++material. Closed occlusion/visible-face retention is NOT claimed before matched
++views: the next visual protocol must compare old/new closed and open at the same
++low curbside camera, examine seam/rail silhouette and any new gap, and may reject
++this candidate despite numerical structure success.
++
++ONE fresh near/mid producer +structure cell is prepared for originalSUP120/floors/
++solelock after independent source review. It plans all original24 real corruption
++controls plus8 targeted controls (untargeted frame, protected roof, cap stock and
++cap gap, each detail), with refreshed candidate/receipt hashes. It stops on an
++unexpected baseline/control failure and retains it; no original control is omitted
++from a successful result. Source forecasts keep output below128MiB; the actual
++runner must also reject over-budget output. This source candidate, all its meshes,
++new structural controls, all15poses and complete intervals are **UNRUN**. No APP
++commit/push is allowed before the complete required gate. All prior74/raw165e/039d
++meshes,42witnesses and external source snapshots remain immutable. No optical
++export, installed asset, PR/DEV/MAIN change or capability flag follows.
+diff --git a/chicago/4d/tools/transport/brougham/check_door_aperture.py b/chicago/4d/tools/transport/brougham/check_door_aperture.py
+index 32749f240b..15c541016f 100644
+--- a/chicago/4d/tools/transport/brougham/check_door_aperture.py
++++ b/chicago/4d/tools/transport/brougham/check_door_aperture.py
+@@ -21,6 +21,8 @@ from check_near import read, values, component, world_nodes
+ from check_mid import bind_parts
+ from sampled_sat import separation_batch, BATCH_CAP
+ from sampled_broadphase import FixedYBroadphase
++from interval_batch import interval_clear_batch, PAIR_CAP as INTERVAL_PAIR_CAP
++import check_top_fit
+ 
+ CLOSED_WORLD_POSITION_TOLERANCE_M = 2e-7
+ CUT_SURFACE_AREA_TOLERANCE_M2 = 2e-6
+@@ -184,20 +186,18 @@ def original_surface_error(points, normals, original_triangles, original_normals
+     d00 = np.einsum('ij,ij->i', e0, e0); d01 = np.einsum('ij,ij->i', e0, e1); d11 = np.einsum('ij,ij->i', e1, e1)
+     denominator = d00 * d11 - d01 * d01
+     assert np.all(denominator > 0)
+-    slack = CLOSED_WORLD_POSITION_TOLERANCE_M / np.maximum(np.minimum(np.sqrt(d00), np.sqrt(d11)), 1e-9)
+     worst = 0.
+     for point, normal in zip(points, normals):
+         v = point - a; d20 = np.einsum('ij,ij->i', v, e0); d21 = np.einsum('ij,ij->i', v, e1)
+         u = (d11 * d20 - d01 * d21) / denominator; w = (d00 * d21 - d01 * d20) / denominator
+-        closest = a + u[:, None] * e0 + w[:, None] * e1
+-        distance = np.linalg.norm(closest - point, axis=1)
+         interpolated = ((1 - u - w)[:, None] * original_normals[:, 0]
+                         + u[:, None] * original_normals[:, 1] + w[:, None] * original_normals[:, 2])
+         interpolated /= np.linalg.norm(interpolated, axis=1)[:, None]
+-        possible = ((u >= -slack) & (w >= -slack) & (u + w <= 1 + slack)
+-                    & (np.abs(interpolated - normal).max(axis=1) <= 2e-7))
++        possible = np.abs(interpolated - normal).max(axis=1) <= 2e-7
+         assert possible.any(), 'Transferred header/pillar normal is not from an original facet'
+-        best = float(distance[possible].min())
++        matching = original_triangles[possible]
++        distance = check_top_fit.point_triangle_distance(np.repeat(point[None], len(matching), axis=0), matching)
++        best = float(distance.min())
+         assert best <= CLOSED_WORLD_POSITION_TOLERANCE_M, 'Transferred header/pillar closed-WORLD surface changed'
+         worst = max(worst, best)
+     return worst
+@@ -213,6 +213,14 @@ def verify_structure(args):
+     recipe = json.loads(args.recipe.read_text())
+     original, source_bin = read(args.input); doc, binary = read(args.candidate)
+     receipt = json.loads(args.source_receipt.read_text())
++    fit_path = args.recipe.with_name(recipe['top_fit']['profiles'])
++    assert sha(fit_path) == recipe['top_fit']['profiles_sha256'], 'Top-fit source profile hash changed'
++    fit_profiles = json.loads(fit_path.read_text())
++    assert fit_profiles['analytic_whole_sweep_certificate'] is False
++    fit_detail = fit_profiles['details'][receipt['detail']]
++    fit_reports = {row['name']: row for row in receipt['top_fit_parts']}
++    assert set(fit_reports) == {'side_window_frame', 'door_transferred_closed_upper_side_header'}
++    top_fit_checks = {}
+     assert receipt['input_sha256'] == sha(args.input)
+     assert receipt['output_sha256'] == sha(args.candidate)
+     assert receipt['recipe_sha256'] == sha(args.recipe)
+@@ -260,6 +268,72 @@ def verify_structure(args):
+                 return False
+             node_index = parents[node_index]
+ 
++    def verify_top_part(name, source_id, source_positions, source_normal_bytes, target):
++        is_frame = name == 'side_window_frame'
++        original = source_positions.reshape((-1, 3, 3))
++        original_normals = np.frombuffer(source_normal_bytes, dtype='<f4').reshape((-1, 3, 3)).astype(float)
++        actual, normal_bytes, actual_node, _ = geometry(target, False, target_world)
++        assert under_door(actual_node) and target['frame'] == 'vehicle_door_right'
++        actual = actual.reshape((-1, 3, 3))
++        actual_normals = np.frombuffer(normal_bytes, dtype='<f4').reshape((-1, 3, 3)).astype(float)
++        report = fit_reports[name]
++        assert report['source_occurrence_id'] == source_id and report['profiles_sha256'] == sha(fit_path)
++        assert report['analytic_swept_ceiling_certified'] is report['closed_occlusion_verified'] is False
++        roof_profile = fit_detail['frame_roof_ZY_m' if is_frame else 'header_roof_ZY_m']
++        ceiling_profile = roof_profile if is_frame else fit_detail['header_combined_ZY_m']
++        assert np.array_equal(np.asarray(report['ceiling_ZY_m']), np.asarray(ceiling_profile))
++        base_planes = []
++        if not is_frame:
++            points = np.asarray(recipe['aperture_profile_yz_m'])
++            for a, b in zip(points, np.roll(points, -1, axis=0)):
++                edge = b - a; n = np.array([-edge[1], edge[0]]); n /= np.linalg.norm(n)
++                base_planes.append(([0., float(n[0]), float(n[1])], float(n @ a)))
++        front_planes = []
++        if not is_frame:
++            for row in fit_profiles['support_planes']:
++                i = row['source_profile_edge_index']
++                assert i in [24, 25] and row['moving_inset_m'] == .005
++                points = np.asarray(recipe['aperture_profile_yz_m']); a, b = points[i:i+2]
++                edge = b - a; n = np.array([-edge[1], edge[0]]); n /= np.linalg.norm(n)
++                assert np.abs(n - row['inward_normal_yz']).max() < 1e-12
++                assert abs(float(n @ a) - row['source_bound']) < 1e-12
++                front_planes.append(([0., float(n[0]), float(n[1])], float(n @ a) + .005))
++        scope = check_top_fit.check_profile_scope(ceiling_profile, roof_profile, front_planes)
++        result = check_top_fit.verify_facets(original, original_normals, actual, actual_normals,
++            report['original_source_triangle_for_retained'], ceiling_profile, base_planes,
++            fit_detail['expected_frame_roof_source_triangles'] if is_frame else None)
++        roof_before, roof_after = check_top_fit.expected_areas(original, roof_profile, base_planes)
++        roof_changed = np.flatnonzero(roof_before - roof_after > 1e-11).tolist()
++        roof_max = check_top_fit.maximum_roof_removal(original, roof_profile, base_planes)
++        limit = .006 if is_frame else .0065
++        assert roof_max <= limit + CLOSED_WORLD_POSITION_TOLERANCE_M, 'Top-fit roof cut exceeds the narrow 6mm/6.5mm scope'
++        # This is separately a 5mm NORMAL inset. It is not incorrectly treated
++        # as a 5mm maximum vertical displacement on the steep front planes.
++        for normal, bound in front_planes:
++            assert np.min(actual.reshape((-1, 3)) @ np.asarray(normal) - bound) >= -CLOSED_WORLD_POSITION_TOLERANCE_M, 'Header front running inset is missing'
++        cap_name = 'door_top_fit_frame_cap' if is_frame else 'door_top_fit_header_cap'
++        caps = [part for part in output_parts if part['name'] == cap_name]
++        assert len(caps) == 1
++        cap, = caps
++        cap_xyz, cap_n, cap_node, _ = geometry(cap, False, target_world)
++        assert under_door(cap_node) and cap['frame'] == 'vehicle_door_right' and cap['material'] == target['material']
++        roof_source_id, = [i for i, part in enumerate(source_parts) if part['name'] == 'roof_underside']
++        assert cap['engineering_source_part_indices'] == [source_id, roof_source_id]
++        cap_xyz = cap_xyz.reshape((-1, 3, 3))
++        cap_normals = np.frombuffer(cap_n, dtype='<f4').reshape((-1, 3, 3)).astype(float)
++        stock = check_top_fit.verify_stock(original, actual, cap_xyz, ceiling_profile,
++            fit_detail['minimum_crest_vertical_stock_m'], fit_detail['minimum_glass_edge_cover_m']) if is_frame else []
++        cap_reading = check_top_fit.verify_caps(actual, cap_xyz, cap_normals, ceiling_profile)
++        connection = check_top_fit.verify_connection(actual, cap_xyz, closed=is_frame)
++        result.update(name=name, roof_cut_original_facets=roof_changed,
++            additional_front_inset_source_facets=[i for i in result['changed_original_source_facets'] if i not in roof_changed],
++            maximum_source_roof_vertical_relief_m=roof_max, front_normal_inset_m=0. if is_frame else .005,
++            actual_cap=cap_reading, actual_crest_sections=stock, actual_connection=connection,
++            source_profile_scope=scope, whole_sweep_ceiling_certificate=False,
++            closed_occlusion_verified=False, full_actual_surface_proof_still_required=True)
++        top_fit_checks[name] = result
++        return result
++
+     move_names = {'deep_U_closed_door', 'door_edge_lining', 'side_door_glass',
+                   'side_window_frame', 'side_glass_division'}
+     moved_rows, cut_rows, step_rows = [], [], []
+@@ -283,13 +357,20 @@ def verify_structure(args):
+             expected_changed_rows.append((source_index, part))
+             assert target['frame'] == 'vehicle_door_right' and under_door(target_node), (
+                 'Required leaf part is not under vehicle_door_right', part['name'])
+-            assert all(target[k] == part[k] for k in ['name', 'material', 'triangles']), 'Retained leaf inventory changed'
+-            assert actual_normals == normal_bytes, ('Retained leaf NORMAL changed', part['name'])
+-            error = float(np.abs(actual - positions).max())
+-            assert error <= CLOSED_WORLD_POSITION_TOLERANCE_M, ('Retained leaf closed-WORLD POSITION changed', part['name'], error)
+-            moved_rows.append({'source_part_index': source_index, 'name': part['name'],
+-                               'closed_world_position_max_error_m': error, 'normals_exact': True,
+-                               'actual_required_door_ancestry': True})
++            if part['name'] == 'side_window_frame':
++                assert all(target[k] == part[k] for k in ['name', 'material'])
++                scoped = verify_top_part(part['name'], source_index, positions, normal_bytes, target)
++                moved_rows.append({'source_part_index': source_index, 'name': part['name'],
++                    'whole_PN_unchanged': False, 'precise_top_fit_contract': scoped,
++                    'all_other_original_facets_PN_preserved': True, 'actual_required_door_ancestry': True})
++            else:
++                assert all(target[k] == part[k] for k in ['name', 'material', 'triangles']), 'Retained leaf inventory changed'
++                assert actual_normals == normal_bytes, ('Retained leaf NORMAL changed', part['name'])
++                error = float(np.abs(actual - positions).max())
++                assert error <= CLOSED_WORLD_POSITION_TOLERANCE_M, ('Retained leaf closed-WORLD POSITION changed', part['name'], error)
++                moved_rows.append({'source_part_index': source_index, 'name': part['name'],
++                                   'closed_world_position_max_error_m': error, 'normals_exact': True,
++                                   'actual_required_door_ancestry': True})
+         elif required_cut or required_interface:
+             (expected_cut if required_cut else expected_interfaces).add(source_index)
+             expected_changed_rows.append((source_index, part))
+@@ -452,20 +533,26 @@ def verify_structure(args):
+         assert backing['frame'] == 'vehicle_door_right' and under_door(backing_node), 'Cut-shell backing is not moving'
+         assert backing['material'] == part['material'], 'Transferred source finish changed'
+         backing_triangles = backing_positions.reshape((-1, 3, 3)); backing_area = area(backing_triangles)
+-        if is_wall:
+-            assert backing_positions[:, 1].min() >= recipe['backing_min_root_y_m'] - CLOSED_WORLD_POSITION_TOLERANCE_M, 'Added backing remains below the declared actual-floor cut'
+-        assert abs(fixed_area - (source_area - opening_area)) <= CUT_SURFACE_AREA_TOLERANCE_M2, 'Fixed cut-shell surface accounting changed'
+-        assert abs(backing_area - expected_backing_area) <= CUT_SURFACE_AREA_TOLERANCE_M2, 'Moving cut-shell backing/relief accounting changed'
++        pre_top_fit_backing_area = expected_backing_area
+         transferred_error = None
+         if not is_wall:
+             actual_n = np.frombuffer(component(doc, binary, backing, 'NORMAL'), dtype='<f4').reshape((-1, 3))
+             source_n = np.frombuffer(original_normals, dtype='<f4').reshape((-1, 3, 3))
+             transferred_error = original_surface_error(backing_positions, actual_n, original_triangles, source_n)
++        if part['name'] == 'closed_upper_side_header':
++            scoped = verify_top_part(derived_name, source_index_for_part[id(part)],
++                                     original_triangles.reshape((-1, 3)), original_normals, backing)
++            expected_backing_area = scoped['expected_retained_source_area_m2']
++        if is_wall:
++            assert backing_positions[:, 1].min() >= recipe['backing_min_root_y_m'] - CLOSED_WORLD_POSITION_TOLERANCE_M, 'Added backing remains below the declared actual-floor cut'
++        assert abs(fixed_area - (source_area - opening_area)) <= CUT_SURFACE_AREA_TOLERANCE_M2, 'Fixed cut-shell surface accounting changed'
++        assert abs(backing_area - expected_backing_area) <= CUT_SURFACE_AREA_TOLERANCE_M2, 'Moving cut-shell backing/relief accounting changed'
+         cut_accounting.append({'name': part['name'], 'source_surface_area_m2': source_area,
+             'fixed_retained_surface_area_m2': fixed_area, 'removed_aperture_surface_area_m2': opening_area,
+             'moving_backing_surface_area_m2': backing_area,
+             'declared_running_relief_surface_area_m2': opening_area - full_backing_area,
+-            'removed_lower_backing_source_surface_area_m2': full_backing_area - expected_backing_area,
++            'removed_lower_backing_source_surface_area_m2': full_backing_area - pre_top_fit_backing_area,
++            'top_fit_removed_header_surface_area_m2': pre_top_fit_backing_area - expected_backing_area,
+             'fixed_running_relief_m': recipe['fixed_running_relief_m'],
+             'backing_inset_m': recipe['backing_relief_m'] if is_wall else 0,
+             'transferred_original_closed_surface_max_error_m': transferred_error, 'not_claimed_unchanged': True})
+@@ -611,6 +698,8 @@ def verify_structure(args):
+         'protected_actual_world_occurrences': protected_world_rows,
+         'retained_original_leaf_parts': moved_rows, 'cut_shell_accounting': cut_accounting,
+         'hidden_step_stem_repairs': step_rows, 'source_derived_profile_vertices': len(profile),
++        'top_fit_partial_source_contracts': top_fit_checks,
++        'top_fit_whole_sweep_ceiling_certified': False, 'top_fit_closed_occlusion_verified': False,
+         'actual_floor_top_m': float(floor_max[1]), 'actual_floor_bottom_m': float(floor_min[1]),
+         'actual_backing_min_y_m': float(back_positions[:, 1].min()),
+         'actual_floor_edge_cap_triangles': len(cap_positions) // 3,
+@@ -627,6 +716,55 @@ def verify_structure(args):
+     return summary, (recipe, doc, binary, protected, triangles, moving, labels, mobile, fixed)
+ 
+ 
++def interval_pair_results(triangle, fixed, candidates, start, end, depth, tolerance,
++                          totals, on_chunk=None):
++    """Ordered complete pair results; only original defaults use the bounded helper.
++
++    Other CLI-supported tolerances/depths retain the original scalar authority.
++    The full-circle candidate array is supplied unchanged by the original caller.
++    """
++    # Exact Python endpoints match the native CLI. NumPy endpoint arithmetic
++    # may retain another precision; preserve its original scalar semantics.
++    endpoints_supported = (type(start) in (int, float)
++                           and type(end) in (int, float)
++                           and math.isfinite(start) and math.isfinite(end)
++                           and abs(float(end) - float(start)) <= math.pi)
++    if type(depth) is not int or depth != 12 or tolerance != 1e-8 or not endpoints_supported:
++        for k in candidates:
++            result = interval_clear(triangle, fixed[k], start, end, depth, tolerance)
++            totals['scalar_fallback_pairs'] += 1
++            yield int(k), *result
++        return
++    for offset in range(0, len(candidates), INTERVAL_PAIR_CAP):
++        chunk = candidates[offset:offset + INTERVAL_PAIR_CAP]
++        if on_chunk is not None:
++            on_chunk({'candidate_offset': offset, 'candidate_count': len(chunk),
++                      'first_fixed_index': int(chunk[0]), 'last_fixed_index': int(chunk[-1]),
++                      'state': 'ENTERING_BOUNDED_INTERVAL_CHUNK'})
++        repeated = np.repeat(triangle[None], len(chunk), axis=0)
++        results, info = interval_clear_batch(repeated, fixed[chunk], start, end, depth,
++                                             tolerance, scalar=separation, turn=turn)
++        assert len(results) == len(chunk), 'Interval helper omitted or added an independent pair'
++        assert info['pairs'] == len(chunk) and info['pair_order_preserved']
++        totals['accelerated_chunks'] += 1
++        totals['helper_pairs_evaluated'] += len(chunk)
++        totals['max_pairs_per_chunk'] = max(totals['max_pairs_per_chunk'], len(chunk))
++        totals['node_visits'] += info['node_visits']
++        for key in ['scalar_fallback_rows', 'axis_cutoff_ambiguous_rows', 'decision_ambiguous_rows']:
++            totals[key] += info[key]
++        totals['max_owned_helper_workspace_bound_bytes'] = max(
++            totals['max_owned_helper_workspace_bound_bytes'], info['owned_workspace_conservative_bound_bytes'])
++        for k, result in zip(chunk, results):
++            yield int(k), *result
++
++
++def interval_batch_counters():
++    return {'accelerated_chunks': 0, 'helper_pairs_evaluated': 0, 'scalar_fallback_pairs': 0,
++            'max_pairs_per_chunk': 0, 'node_visits': 0, 'scalar_fallback_rows': 0,
++            'axis_cutoff_ambiguous_rows': 0, 'decision_ambiguous_rows': 0,
++            'max_owned_helper_workspace_bound_bytes': 0}
++
++
+ def check(args):
+     started = time.monotonic()
+     progress_path = args.progress or Path(str(args.report) + '.progress.json')
+@@ -637,7 +775,7 @@ def check(args):
+         'recipe_sha256': sha(args.recipe), 'source_receipt_sha256': sha(args.source_receipt),
+         'checker_sha256': sha(Path(__file__)),
+         'source_file_sha256': {name: sha(Path(__file__).with_name(name)) for name in [
+-            'door_aperture.py', 'check_door_aperture.py', 'door-aperture.json', 'check_near.py', 'check_mid.py', 'sampled_sat.py', 'sampled_broadphase.py']},
++            'door_aperture.py', 'check_door_aperture.py', 'door-aperture.json', 'check_near.py', 'check_mid.py', 'sampled_sat.py', 'sampled_broadphase.py', 'interval_batch.py', 'top_fit.py', 'check_top_fit.py', 'top-fit-profiles.json']},
+         'settings': {'max_interval_depth': args.max_depth, 'tolerance_m': args.tolerance,
+                      'sample_count': 15, 'fixed_surface_exemptions': [],
+                      'sampled_only_diagnostic': args.sampled_only, 'sampled_batch_cap': BATCH_CAP},
+@@ -725,6 +863,7 @@ def check(args):
+         return not contacts
+     unresolved = 0
+     interval_started = time.monotonic()
++    interval_batch_totals = interval_batch_counters()
+     interval_counts = {'moving_triangles_completed': 0, 'moving_triangles_total': len(mobile),
+                        'broadphase_pairs': 0, 'pairs_completed': 0, 'pairs_proven_clear': 0,
+                        'unresolved_or_intersecting_pairs': 0}
+@@ -740,18 +879,26 @@ def check(args):
+             candidates = np.flatnonzero(np.all(fhi >= lo - args.tolerance, axis=1)
+                                         & np.all(flo <= hi + args.tolerance, axis=1))
+             interval_counts['broadphase_pairs'] += len(candidates)
+-            for k in candidates:
+-                clear, _ = interval_clear(tri, fixed[k], 0, total_angle, args.max_depth, args.tolerance)
++            def entering_chunk(chunk):
++                nonlocal last_update
++                if time.monotonic() - last_update >= 1:
++                    save_progress(interval_counts=interval_counts, interval_batch_totals=interval_batch_totals,
++                                  interval_current_chunk=chunk, interval_seconds=time.monotonic() - interval_started)
++                    last_update = time.monotonic()
++            for k, clear, _ in interval_pair_results(tri, fixed, candidates, 0, total_angle,
++                    args.max_depth, args.tolerance, interval_batch_totals, entering_chunk):
+                 interval_counts['pairs_completed'] += 1
+                 interval_counts['pairs_proven_clear'] += int(clear)
+                 if not clear:
+                     unresolved += 1
+                 interval_counts['unresolved_or_intersecting_pairs'] = unresolved
+                 if time.monotonic() - last_update >= 1:
+-                    save_progress(interval_counts=interval_counts, interval_seconds=time.monotonic() - interval_started)
++                    save_progress(interval_counts=interval_counts, interval_batch_totals=interval_batch_totals,
++                      interval_seconds=time.monotonic() - interval_started)
+                     last_update = time.monotonic()
+             interval_counts['moving_triangles_completed'] += 1
+-        save_progress(interval_counts=interval_counts, interval_seconds=time.monotonic() - interval_started)
++        save_progress(interval_counts=interval_counts, interval_batch_totals=interval_batch_totals,
++                      interval_seconds=time.monotonic() - interval_started)
+     else:
+         unresolved = None
+         save_progress(phase='CONTINUOUS_NOT_QUALIFIED_SAMPLED_CONTACTS', interval_counts=interval_counts,
+@@ -766,6 +913,8 @@ def check(args):
+               'sampled_broadphase': sampled_broadphase.reading(),
+               'sampled_batch_totals': sampled_batch_totals,
+               'progress_path': str(progress_path), 'interval_counts': interval_counts,
++              'interval_batch_totals': interval_batch_totals,
++              'interval_helper_sha256': sha(Path(__file__).with_name('interval_batch.py')),
+               'all_actual_triangles': len(triangles), 'moving_triangles': int(moving.sum()),
+               'sampled': sampled, 'failure_examples': failures, 'unresolved_continuous_pairs': unresolved,
+               'continuous_surface_separation': unresolved == 0,
+diff --git a/chicago/4d/tools/transport/brougham/door-aperture.json b/chicago/4d/tools/transport/brougham/door-aperture.json
+index 24aa41742a..894d47dc44 100644
+--- a/chicago/4d/tools/transport/brougham/door-aperture.json
++++ b/chicago/4d/tools/transport/brougham/door-aperture.json
+@@ -59,7 +59,8 @@
+     "The two right step stems retain the25mm base taper plus the declared additional whole-source-ring route, reaching188.04mm at the lower bow; original terminal rings, attachments and tread pads remain exact. Lower-bow closed appearance remains OPEN. New straps attach at outer barrel wall and actual source shell/old fitting centres.",
+     "Strap starts engage the outer14mm barrel wall by2mm (radius12mm), retaining positive attachment without entering the6mm bore or5mm pin; this is new engineered joinery, not a contact exception.",
+     "Only the added backing is removed belowY.926 (3.300012mm above actual floor); new downward edge closure and two12mm fixed carry links are engineering reconstructions, not copied catalogue hardware.",
+-    "Whole source-ring movement retains actual source section and terminal loops but can reach188.04mm in the lower turn. Potential visible lower-bow appearance change remains OPEN until actual matched low-angle renders; this is not measured as invisible."
++    "Whole source-ring movement retains actual source section and terminal loops but can reach188.04mm in the lower turn. Potential visible lower-bow appearance change remains OPEN until actual matched low-angle renders; this is not measured as invisible.",
++    "Unqualified ordinary doorfit: movingtopframe/header roof-derived relief <=6.0/6.5mm and header-only5mm inset atsourcefrontsupportplanes24/25. Glass/roof/closedsourcegeometry outside declaredcut facets remainsunchanged. Newcutcaps/hiddenwoodfit are engineering; closedocclusion/appearance/fullcontinuousclearance remainunqualified."
+   ],
+   "aperture_profile_yz_m": [
+     [
+@@ -299,5 +300,23 @@
+     "original_near_sha256": "206cd7a9141896361abd312ce73cd4de0e0868eca532b097a995a0488fa3dfe4",
+     "floor_ring_link_source_observation_sha256": "69fe867ac035b07560dcd67ee93131effed16e35a9cd206753e5b19eeeeb5b41",
+     "complete_118_contact_envelope_sha256": "12cbb9bf1e286289c06878662d9cc5bde48f61e859cc2f28625d3f7e3cd05620"
++  },
++  "top_fit": {
++    "profiles": "top-fit-profiles.json",
++    "profiles_sha256": "90e3263db1e6423a9420572f3759cf924bb134d07b4b2a8df53db1cabec54b76",
++    "status": "UNQUALIFIED ordinary moving-frame/header fit; not a clearance or optical approval",
++    "roof_running_gap_m": 0.003,
++    "frame_roof_max_relief_m": 0.006,
++    "header_roof_max_relief_m": 0.0065,
++    "header_front_planes": [
++      24,
++      25
++    ],
++    "header_front_inset_m": 0.005,
++    "glass_source_PN_unchanged": true,
++    "protected_roof_source_PN_unchanged": true,
++    "analytic_whole_sweep_certificate": false,
++    "closed_occlusion_verified": false,
++    "source_bounds": "Only sourcefacets above the source-derived ceiling and/or the two inward5mm frontsupportplanes may change; all other frame/headerfacets retained, glasswholePN and allprotectedroofPN exact"
+   }
+ }
+diff --git a/chicago/4d/tools/transport/brougham/door_aperture.py b/chicago/4d/tools/transport/brougham/door_aperture.py
+index 7ba5ea51b4..1644a6ae57 100644
+--- a/chicago/4d/tools/transport/brougham/door_aperture.py
++++ b/chicago/4d/tools/transport/brougham/door_aperture.py
+@@ -17,6 +17,7 @@ import numpy as np
+ 
+ from check_near import read, values
+ from check_mid import bind_parts
++from top_fit import retain_source, encoded_local, edge_caps, combine_front_planes
+ 
+ 
+ def digest(data):
+@@ -348,6 +349,13 @@ def build(source, recipe_path, detail, destination):
+     nodes[frames['vehicle_body']].setdefault('children', []).append(frames[door])
+     source_bindings = bind_parts(doc, binary)
+     batches, parts, protected, changed = {}, [], [], []
++    fit_path = recipe_path.with_name(recipe['top_fit']['profiles'])
++    if digest(fit_path.read_bytes()) != recipe['top_fit']['profiles_sha256']:
++        raise ValueError('Unreviewed top-fit source profiles')
++    fit_profiles = json.loads(fit_path.read_text())
++    fit_detail = fit_profiles['details'][detail]
++    top_fit_reports = []
++    roof_source_id, = [i for i, p in enumerate(doc['extras']['parts']) if p['name'] == 'roof_underside']
+ 
+     def emit(name, frame, material, data, source_part_index=None, derived_source_part_index=None,
+              engineering_source_part_indices=None):
+@@ -367,6 +375,42 @@ def build(source, recipe_path, detail, destination):
+                       **({'derived_source_part_index': derived_source_part_index} if derived_source_part_index is not None else {}),
+                       **({'engineering_source_part_indices': engineering_source_part_indices} if engineering_source_part_indices is not None else {})})
+ 
++    def fit_moving(name, material, data, source_id, source_origins=None):
++        is_frame = name == 'side_window_frame'
++        ceiling = fit_detail['frame_roof_ZY_m' if is_frame else 'header_combined_ZY_m']
++        # Clip the actual output precision, not unrepresentable sub-ULP
++        # intermediate strips. Original closed WORLD points remain within the
++        # unchanged Float32 allowance; their NORMAL bytes stay unchanged.
++        data = encoded_local(data, pivot)
++        data[:, :, :3] += pivot
++        retained, mapping = retain_source(data, ceiling)
++        if not len(retained):
++            raise ValueError('Top fit removed an entire required moving part')
++        if is_frame and mapping['changed_source_triangles'] != fit_detail['expected_frame_roof_source_triangles']:
++            raise ValueError('Frame changes escaped the declared original source facets')
++        encoded = encoded_local(retained, pivot)
++        lengths = np.linalg.norm(np.cross(encoded[:, 1, :3] - encoded[:, 0, :3],
++                                          encoded[:, 2, :3] - encoded[:, 0, :3]), axis=1)
++        if (lengths <= 1e-12).any():
++            raise ValueError('Encoded top-fit retained fragment collapsed; no fragment may be silently dropped')
++        caps, cap_report = edge_caps(encoded, pivot, ceiling)
++        emit(name, door, material, encoded,
++             source_part_index=source_id if is_frame else None,
++             derived_source_part_index=None if is_frame else source_id)
++        cap_name = 'door_top_fit_frame_cap' if is_frame else 'door_top_fit_header_cap'
++        emit(cap_name, door, material, caps,
++             engineering_source_part_indices=[source_id, roof_source_id])
++        if source_origins is None:
++            source_origins = list(range(len(data)))
++        top_fit_reports.append({'name': name, 'source_occurrence_id': source_id,
++            'source_fragment_triangle_count': len(data),
++            'original_source_triangle_for_retained': [source_origins[i] for i in mapping['source_triangle_for_retained']],
++            'source_fragment_provenance': mapping, 'cap_name': cap_name,
++            'cap_construction': cap_report, 'ceiling_ZY_m': ceiling,
++            'profiles_sha256': digest(fit_path.read_bytes()),
++            'analytic_swept_ceiling_certified': False, 'closed_occlusion_verified': False,
++            'whole_surface_sweep_qualified': False})
++
+     moving_names = {'deep_U_closed_door', 'door_edge_lining', 'side_door_glass',
+                     'side_window_frame', 'side_glass_division'}
+     profile = recipe['aperture_profile_yz_m']
+@@ -433,19 +477,26 @@ def build(source, recipe_path, detail, destination):
+             changed.append({**part, 'source_part_index': part_index, 'source_node_path': binding['node_path'],
+                             'operation': 'source-leaf-profile aperture; actual backing moves with declared running relief'})
+         elif right and part['name'] in recipe['transfer_fixed_interfaces']:
+-            outside, transferred = [], []
+-            for tri in data:
++            outside, transferred, transferred_source_ids = [], [], []
++            for source_triangle_id, tri in enumerate(data):
+                 fixed, _ = partition_profile(tri, profile, recipe['fixed_running_relief_m'])
+                 _, leaf = partition_profile(tri, profile, 0)
+                 outside.extend(fixed); transferred.extend(leaf)
++                transferred_source_ids.extend([source_triangle_id] * len(leaf))
+             if not transferred or not outside:
+                 raise ValueError('Interface must retain fixed roof/pillar remainder and transfer actual leaf overlap')
+             emit(part['name'], parent, part['material'], outside, part_index)
+-            transferred = np.asarray(transferred); transferred[:, :, :3] -= pivot
+-            emit('door_transferred_' + part['name'], door, part['material'], transferred,
+-                 derived_source_part_index=part_index)
++            transferred = np.asarray(transferred)
++            if part['name'] == 'closed_upper_side_header':
++                fit_moving('door_transferred_' + part['name'], part['material'], transferred,
++                           part_index, transferred_source_ids)
++            else:
++                transferred[:, :, :3] -= pivot
++                emit('door_transferred_' + part['name'], door, part['material'], transferred,
++                     derived_source_part_index=part_index)
+             changed.append({**part, 'source_part_index': part_index, 'source_node_path': binding['node_path'],
+-                            'operation': 'hidden fixed-interface rebate; original inside fragment transfers at same closed-world surface'})
++                            'operation': ('fixed remainder unchanged; retained transferred source facets plus declared roof/5mm-front top fit and cap'
++                                          if part['name'] == 'closed_upper_side_header' else 'hidden fixed-interface rebate; original inside fragment transfers at same closed-world surface')})
+         elif right and part['name'] == 'step_support':
+             repaired, ring_report = reroute_step(data, recipe['step_stem_repair'])
+             emit(part['name'], parent, part['material'], repaired, part_index)
+@@ -463,10 +514,14 @@ def build(source, recipe_path, detail, destination):
+             changed.append({**part, 'source_part_index': part_index, 'source_node_path': binding['node_path'],
+                             'operation': '19 whole source rings translate inboard; original terminal rings/section retained; appearance unqualified'})
+         elif move:
+-            shifted = data.copy(); shifted[:, :, :3] -= pivot
+-            emit(part['name'], door, part['material'], shifted, part_index)
++            if part['name'] == 'side_window_frame':
++                fit_moving(part['name'], part['material'], data, part_index)
++            else:
++                shifted = data.copy(); shifted[:, :, :3] -= pivot
++                emit(part['name'], door, part['material'], shifted, part_index)
+             changed.append({**part, 'source_part_index': part_index, 'source_node_path': binding['node_path'],
+-                            'operation': 'rigid leaf; closed world positions retained'})
++                            'operation': ('retained original facets with declared moving top-fit removal and cap; not whole-PN unchanged'
++                                          if part['name'] == 'side_window_frame' else 'rigid leaf; closed world positions retained')})
+         else:
+             emit(part['name'], parent, part['material'], data, part_index)
+             protected.append({**part, 'source_part_index': part_index, 'source_node_path': binding['node_path'],
+@@ -574,6 +629,8 @@ def build(source, recipe_path, detail, destination):
+               'actual_floor_source': {'source_occurrence_id': floor_id, 'top_root_y_m': floor_top, 'bottom_root_y_m': floor_bottom,
+                                       'backing_min_root_y_m': recipe['backing_min_root_y_m']},
+               'source_ring_construction_reports': step_repairs, 'fixed_step_carry_links': carry_links,
++              'top_fit_parts': top_fit_reports, 'top_fit_profiles_sha256': digest(fit_path.read_bytes()),
++              'top_fit_analytic_ceiling_certificate': False, 'top_fit_closed_occlusion_verified': False,
+               'protected_parts': protected, 'changed_parts': changed, 'qualification': recipe['qualification'],
+               'boarding_enabled': False, 'driver_passenger_fit': False}
+     (destination / 'DOOR-SOURCE-RECEIPT.json').write_text(json.dumps(report, indent=2, allow_nan=False) + '\n')

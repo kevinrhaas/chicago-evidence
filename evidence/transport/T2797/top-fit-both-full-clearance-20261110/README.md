@@ -1,0 +1,11 @@
+T2797 ordinary door top-fit — uncommitted source checkpoint
+
+Both current raw near/mid candidates pass the full native actual-surface checker, independently under original SUP120/floors/sole lock. Near: 113.474786s, 3,604 moving triangles and all2,190,221 continuous pairs clear. Mid: 95.165698s, 2,758 moving triangles and all1,718,283 continuous pairs clear. Each completed all15 sampled angles with zero contacts, at original1e-8m/depth12; all38 parent hashes stayed unchanged and cleanup left zero children. These are actual complete source-geometry proofs, with no contact exemptions or old-source coverage transfer.
+
+The two actual near/mid structural baselines and all32 checksum-refreshed corruption controls passed in67.933565s. World-distance controls cover all3,558 retained corners and just-over-bound face/edge/vertex negatives. The legacy caller controls cover all1,185 header vertices, all6 recorded false rejections, normal bounds and exact failure semantics. The encoded ceiling-cap regression retains the actual unordered triangle and area while correcting its downward winding, and rejects deliberately inverted caps with true inverted normals.
+
+The exact18 source files are included under CURRENT-UNCOMMITTED-SOURCE. The tracked WIP patch does not include untracked-file contents; the full source snapshot does. APP HEAD remains74aea12; no APP commit or push was made. ROOT requires complete native check/preflight before any APP commit. Every raw mesh qualification/boarding capability flag remains false.
+
+Updated matched source appearance of the current85ee/997d meshes, optical/web delivery, production integration/runtime, visitor passage and occupant fit remain open. The prior bounded six-view source decision concerned earlier165/039 meshes and is not transferred. Actual surface SAT is not a solid-containment, strength or occupant proof.
+
+Prior false facet-unit rejection, diagnostic selection/setup failures, downward-cap failure and misleading legacy normal/membership rejection remain preserved as NONPASS. Source inputs and raw/negative GLBs are intentionally omitted; exact SHA pins, receipts, commands and parent manifests are included. This is a safe reviewable source/evidence checkpoint, not adoption or broad ticket closure.

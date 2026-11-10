@@ -1,0 +1,27 @@
+--- immutable-v3/check_door_aperture.py
++++ legacy-unit-v4/check_door_aperture.py
+@@ -186,20 +186,18 @@
+     d00 = np.einsum('ij,ij->i', e0, e0); d01 = np.einsum('ij,ij->i', e0, e1); d11 = np.einsum('ij,ij->i', e1, e1)
+     denominator = d00 * d11 - d01 * d01
+     assert np.all(denominator > 0)
+-    slack = CLOSED_WORLD_POSITION_TOLERANCE_M / np.maximum(np.minimum(np.sqrt(d00), np.sqrt(d11)), 1e-9)
+     worst = 0.
+     for point, normal in zip(points, normals):
+         v = point - a; d20 = np.einsum('ij,ij->i', v, e0); d21 = np.einsum('ij,ij->i', v, e1)
+         u = (d11 * d20 - d01 * d21) / denominator; w = (d00 * d21 - d01 * d20) / denominator
+-        closest = a + u[:, None] * e0 + w[:, None] * e1
+-        distance = np.linalg.norm(closest - point, axis=1)
+         interpolated = ((1 - u - w)[:, None] * original_normals[:, 0]
+                         + u[:, None] * original_normals[:, 1] + w[:, None] * original_normals[:, 2])
+         interpolated /= np.linalg.norm(interpolated, axis=1)[:, None]
+-        possible = ((u >= -slack) & (w >= -slack) & (u + w <= 1 + slack)
+-                    & (np.abs(interpolated - normal).max(axis=1) <= 2e-7))
++        possible = np.abs(interpolated - normal).max(axis=1) <= 2e-7
+         assert possible.any(), 'Transferred header/pillar normal is not from an original facet'
+-        best = float(distance[possible].min())
++        matching = original_triangles[possible]
++        distance = check_top_fit.point_triangle_distance(np.repeat(point[None], len(matching), axis=0), matching)
++        best = float(distance.min())
+         assert best <= CLOSED_WORLD_POSITION_TOLERANCE_M, 'Transferred header/pillar closed-WORLD surface changed'
+         worst = max(worst, best)
+     return worst

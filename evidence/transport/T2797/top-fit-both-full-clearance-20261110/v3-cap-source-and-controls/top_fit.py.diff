@@ -1,0 +1,15 @@
+--- immutable-failed-v1/top_fit.py
++++ cap-fix-v3/top_fit.py
+@@ -143,6 +143,12 @@
+             positions=np.asarray(quad[ids]-pivot,dtype='<f4').astype(float)
+             normal=np.cross(positions[1]-positions[0],positions[2]-positions[0]);length=np.linalg.norm(normal)
+             if length<=1e-12:continue
++            # A strip can narrow to one point, making the first quad cross
++            # zero. Orient each surviving encoded ceiling triangle itself.
++            if normal[1]<0:
++                positions=positions[[0,2,1]]
++                normal=np.cross(positions[1]-positions[0],positions[2]-positions[0])
++                length=np.linalg.norm(normal)
+             normal/=length
+             caps.append(np.concatenate([positions,np.tile(normal,(3,1))],axis=1))
+     if not caps:raise ValueError('No nondegenerate top-fit closure')
