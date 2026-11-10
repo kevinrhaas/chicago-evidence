@@ -1,0 +1,174 @@
+#!/usr/bin/env bash
+# The portable-human export path, Blender -> GLB -> web derivative (T-1787).
+#
+#   tools/human_export.sh                    rebuild the CI fixture: its master from
+#                                            tools/human_fixture_blend.py, its four
+#                                            LODs into assets/humans/, their Meshopt
+#                                            derivatives into assets/humans/web/
+#   tools/human_export.sh --verify           the same into a scratch tree, then hold
+#                                            it to the committed files BYTE FOR BYTE
+#                                            (what .github/workflows/chicago-4d-humans.yml
+#                                            runs). A difference fails, by file
+#   tools/human_export.sh --master F.blend   export an authored master (T-1789 on):
+#                                            same exporter, same derivative, same gate
+#
+# Each step is one command and none is a dialog (docs/HUMAN-ASSET-CONTRACT.md § 13):
+#
+#   1. Blender, the pinned binary (generators/blender.pin, sha256-verified exactly as
+#      tools/bake.sh does), runs tools/human_export.py over the master. Every exporter
+#      setting the contract depends on is written there with its reason.
+#   2. gltf-transform, THE SAME PIN as tools/web_derivatives.sh (read from that file,
+#      so there is one pin and not two), writes `meshopt` derivatives. Meshopt is the
+#      authored MODE=master first caps textures by LOD and converts audited opaque
+#      color maps to native JPEG quality 92; fixture/verify bytes keep their old path.
+#      Meshopt is the only geometry compression the renderer decodes; KTX2 and Draco are refused by the
+#      contract, so nothing here asks for either.
+#   3. tools/human_contract.py --glb gates the masters and the derivatives. A
+#      derivative's quantised frame is read beside its master (check_glb's `master`).
+#
+# The browser half — skinning deforms, both clips play, a morph moves, materials and
+# the texture load, every LOD opens with no console error, at 1280x800 and 390x780 —
+# is tools/human_fixture.mjs, which also measures the per-LOD costs it records.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+MODE=fixture
+MASTER=""
+OUTPUT_OVERRIDE=""
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --verify) MODE=verify; shift ;;
+    --master)
+      [ $# -ge 2 ] && [ -n "$2" ] && [[ "$2" != --* ]] || { echo "--master requires a file" >&2; exit 2; }
+      MODE=master; MASTER="$2"; shift 2 ;;
+    --output-dir)
+      [ $# -ge 2 ] && [ -n "$2" ] && [[ "$2" = /* ]] || { echo "--output-dir requires an absolute fresh directory" >&2; exit 2; }
+      OUTPUT_OVERRIDE="$2"; shift 2 ;;
+    *) echo "unknown argument: $1" >&2; exit 2 ;;
+  esac
+done
+
+if [ -n "$OUTPUT_OVERRIDE" ]; then
+  [ "$MODE" = master ] || { echo "--output-dir requires explicit --master mode" >&2; exit 2; }
+  [ -f "$MASTER" ] || { echo "--master file does not exist" >&2; exit 2; }
+  [ ! -e "$OUTPUT_OVERRIDE" ] || { echo "--output-dir must be fresh; preserving prior artifacts" >&2; exit 2; }
+fi
+
+# shellcheck disable=SC1091
+source generators/blender.pin
+CACHE="${BLENDER_CACHE:-/opt/blender-dl}"
+BIN="$CACHE/$BLENDER_DIR/blender"
+TARBALL="$CACHE/$(basename "$BLENDER_URL")"
+if [ ! -x "$BIN" ]; then
+  mkdir -p "$CACHE"
+  [ -f "$TARBALL" ] || { echo "fetching Blender $BLENDER_VERSION ..."; curl -fL --retry 3 -o "$TARBALL" "$BLENDER_URL"; }
+  echo "$BLENDER_SHA256  $TARBALL" | sha256sum -c - || {
+    echo "SHA256 MISMATCH on the Blender tarball — refusing to run (see tools/bake.sh)." >&2
+    exit 1
+  }
+  tar -xf "$TARBALL" -C "$CACHE"
+fi
+"$BIN" --version | head -1
+
+eval "$(grep -E '^GT_(CLI|CORE|FUNCTIONS|EXTENSIONS)_VERSION=' tools/web_derivatives.sh)"
+GT_NPX=(npx --yes
+  --package "@gltf-transform/cli@$GT_CLI_VERSION"
+  --package "@gltf-transform/core@$GT_CORE_VERSION"
+  --package "@gltf-transform/functions@$GT_FUNCTIONS_VERSION"
+  --package "@gltf-transform/extensions@$GT_EXTENSIONS_VERSION")
+
+SCRATCH="$(mktemp -d -t humanexport.XXXXXX)"
+trap 'rm -rf "$SCRATCH"' EXIT
+OUT=assets/humans
+[ -n "$OUTPUT_OVERRIDE" ] && OUT="$OUTPUT_OVERRIDE"
+[ "$MODE" = "verify" ] && OUT="$SCRATCH/out"
+
+if [ "$MODE" != "master" ]; then
+  MASTER="$SCRATCH/c4d_fixture.blend"
+  echo "== master: tools/human_fixture_blend.py"
+  "$BIN" -b -noaudio --factory-startup --python-exit-code 1 \
+    --python tools/human_fixture_blend.py -- "$MASTER" | grep -E '^wrote ' || true
+  [ -f "$MASTER" ] || { echo "the fixture master was not written" >&2; exit 1; }
+fi
+
+echo "== export: tools/human_export.py"
+mkdir -p "$SCRATCH/lods"
+if [ "$MODE" = "master" ]; then
+  "$BIN" -b -noaudio "$MASTER" --python-exit-code 1 --python tools/human_export.py -- "$SCRATCH/lods" \
+    | grep -E '^(wrote |rigid-frame receipt )' | sed "s#$SCRATCH/lods/##"
+else
+"$BIN" -b -noaudio "$MASTER" --python-exit-code 1 --python tools/human_export.py -- "$SCRATCH/lods" \
+  | grep -E '^wrote ' | sed "s#$SCRATCH/lods/##"
+fi
+CHARLES_TARGET=""
+if [ "$MODE" = master ] && [ -f "$SCRATCH/lods/nelson_charles_1904_coachman.lod0.glb" ]; then
+  # This resident has a reviewed material-only terminal. Keep ALL fresh exports
+  # in scratch until its complete parent compatibility check passes. Unknown
+  # body/UV/rig/clip/provenance changes must not erase the adopted coat or FARs.
+  CHARLES_TARGET="$OUT"
+  OUT="$SCRATCH/charles-canonical"
+fi
+mkdir -p "$OUT/web"
+written=()
+for f in "$SCRATCH"/lods/*.glb; do
+  name="$(basename "$f")"
+  if [ "$MODE" = "master" ]; then
+    # Exact binding equality only. A distinct palette fails instead of being
+    # hidden by the derivative guard; canonical Blender data stays untouched.
+    python3 tools/human_skin_canonicalize.py "$f" "$SCRATCH/canonical-$name" --diagnostics "$SCRATCH/${name%.glb}.skin-diagnostics.json"
+    cp "$SCRATCH/canonical-$name" "$OUT/$name"
+  else
+  cp "$f" "$OUT/$name"
+  fi
+  if [ "$MODE" = "master" ]; then
+    # Native JPEG requires no decoder/extension. Preserve alpha maps and non-color
+    # slots; cap every texture before compression. Source image bytes are preserved.
+    case "$name" in
+      *.lod0.glb) cap=2048 ;;
+      *.lod1.glb) cap=1024 ;;
+      *.lod2.glb) cap=512 ;;
+      *.lod3.glb) cap=256 ;;
+      *) echo "unrecognized authored LOD: $name" >&2; exit 1 ;;
+    esac
+    python3 tools/human_web_texture_inputs.py "$OUT/$name" "$SCRATCH/labeled.glb"
+    "${GT_NPX[@]}" gltf-transform resize "$SCRATCH/labeled.glb" "$SCRATCH/resized.glb" --width "$cap" --height "$cap"
+    "${GT_NPX[@]}" gltf-transform jpeg "$SCRATCH/resized.glb" "$SCRATCH/color.glb" --formats '*' --quality 92 --pattern 'c4d_web_opaque_*' --slots '{baseColorTexture,emissiveTexture}'
+    # High mode caps normals at 8 bits even with --quantize-normal 16.
+    # Preserve unit hair normals under the loaded runtime contract.
+    "${GT_NPX[@]}" gltf-transform meshopt "$SCRATCH/color.glb" "$OUT/web/$name" --quantization-volume scene --level medium --quantize-normal 16
+    echo "authored web $name: texture cap ${cap}px; opaque color JPEG quality 92; $(wc -c < "$OUT/web/$name") bytes"
+  else
+  "${GT_NPX[@]}" gltf-transform meshopt "$OUT/$name" "$OUT/web/$name" 2>&1 | grep -E '→' | sed 's/^info: //' || true
+  fi
+  written+=("$OUT/$name" "$OUT/web/$name")
+done
+
+if [ -n "$CHARLES_TARGET" ]; then
+  # Same existing pinned codec closure; official Mikk is needed only for this
+  # explicit Charles master, never for fixture/verify or other resident builds.
+  C4D_CHARLES_EXPORTED="$OUT" C4D_CHARLES_TARGET="$CHARLES_TARGET" \
+    "${GT_NPX[@]}" --package "mikktspace@1.1.1" -c \
+    'python3 tools/human_charles_coat.py --finish-export "$C4D_CHARLES_EXPORTED" --target "$C4D_CHARLES_TARGET"'
+  OUT="$CHARLES_TARGET"
+  written=()
+  for lod in 0 1 2 3; do
+    written+=("$OUT/nelson_charles_1904_coachman.lod$lod.glb" "$OUT/web/nelson_charles_1904_coachman.lod$lod.glb")
+  done
+fi
+
+echo "== gate: tools/human_contract.py --glb"
+python3 tools/human_contract.py --glb "${written[@]}"
+
+if [ "$MODE" = "verify" ]; then
+  echo "== reproduction: the rebuilt bytes against the committed ones"
+  bad=0
+  for f in "${written[@]}"; do
+    rel="${f#"$OUT"/}"
+    if ! cmp -s "$f" "assets/humans/$rel"; then
+      echo "   DIFFERS: assets/humans/$rel — rebuild with tools/human_export.sh and commit it" >&2
+      bad=1
+    fi
+  done
+  [ "$bad" = "0" ] && echo "   all ${#written[@]} files reproduce byte for byte"
+  exit "$bad"
+fi
