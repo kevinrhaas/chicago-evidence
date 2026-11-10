@@ -1,0 +1,465 @@
+diff --git a/chicago/4d/changelog.d/T-3341.json b/chicago/4d/changelog.d/T-3341.json
+deleted file mode 100644
+index ba95a231e0..0000000000
+--- a/chicago/4d/changelog.d/T-3341.json
++++ /dev/null
+@@ -1,7 +0,0 @@
+-{
+-  "title": "Brick and clay surfaces across the early town",
+-  "kind": "feature",
+-  "items": [
+-    "Brick walls and masonry chimneys in 1812 and 1835 show mortar joints, relief and varied brick faces. Exterior log-cabin stacks have the rough surface of stick-and-clay construction. Existing period brickwork retains its own fabric."
+-  ]
+-}
+diff --git a/chicago/4d/data/research/check_gate_baseline.json b/chicago/4d/data/research/check_gate_baseline.json
+index fdf35949ec..b00a60a061 100644
+--- a/chicago/4d/data/research/check_gate_baseline.json
++++ b/chicago/4d/data/research/check_gate_baseline.json
+@@ -4,8 +4,8 @@
+   "what": "The tools carrying a --check mode that tools/check.sh does not run with --check, and WHY each one is not. A ratchet, not a target: this list may shrink, and audit_check_gates.py --gate fails when it grows, when it is left standing above what the tree actually shows, or when a row states no reason.",
+   "how_to_change_it": "Gate the tool in tools/check.sh and re-run --write, or, if it cannot be gated today, write why_not_gated on its row here — --write carries that field forward — and point owner_ticket at whoever owns the answer. The gate fails on a row with no reason, and on a row the gate has since started running.",
+   "counts": {
+-    "check_capable": 389,
+-    "gated": 377,
++    "check_capable": 390,
++    "gated": 378,
+     "ungated": 12
+   },
+   "ungated": [
+diff --git a/chicago/4d/docs/RESEARCH/research-signoff-2026-09.md b/chicago/4d/docs/RESEARCH/research-signoff-2026-09.md
+index 7db1253aa5..da397fd596 100644
+--- a/chicago/4d/docs/RESEARCH/research-signoff-2026-09.md
++++ b/chicago/4d/docs/RESEARCH/research-signoff-2026-09.md
+@@ -230,7 +230,7 @@ Reproduce: `python3 tools/location_reconciliation.py --check` · `python3 tools/
+ | `outside_chicago` | 118 |
+ | `refused` | 8,791 |
+ 
+-The same rule over the gate itself: of **389** tools carrying a `--check`, **377** are run by `tools/check.sh` and **12** are not. Each of those declares why and who owns the answer, and **0** state no reason (C9):
++The same rule over the gate itself: of **390** tools carrying a `--check`, **378** are run by `tools/check.sh` and **12** are not. Each of those declares why and who owns the answer, and **0** state no reason (C9):
+ 
+ | Ungated check | Owner | States why |
+ | --- | ---: | ---: |
+diff --git a/chicago/4d/docs/ROADMAP.md b/chicago/4d/docs/ROADMAP.md
+index 666157c43f..8f45305f8d 100644
+--- a/chicago/4d/docs/ROADMAP.md
++++ b/chicago/4d/docs/ROADMAP.md
+@@ -1,3 +1,15 @@
++## T-2795 — ground 1904 people on the visible pedestrian surface (2026-11-10)
++
++The coachman placement and safe tour/errand handoff shipped through PR #1917.
++The next native support candidate now has actual world evidence: Charles's centre
++matches the drawn parkway rather than the discarded raw field. Retain the measured
++2.315/2.850 mm slope/pose residuals and conservative mask-edge height transitions
++as open contact work; do not add a per-person height fudge or claim fitted feet.
++Preserve existing decks/yards/water, explicit stair heights, horse roadway contact,
++geometry and models. Require complete current-head hosted gate, moving and phone
++checks before DEV merge. Boarding/ride, full gait/contact and photographic acceptance
++continue on the existing tickets; no new ticket or broad closure is introduced.
++
+ ## T-2795 — bring the existing coachman beside his waiting team (2026-11-10)
+ 
+ Place Charles Nelson on the Prairie Avenue parkway beside the existing Glessner
+diff --git a/chicago/4d/docs/STATUS.md b/chicago/4d/docs/STATUS.md
+index 1774d1a4b5..499ae67f9c 100644
+--- a/chicago/4d/docs/STATUS.md
++++ b/chicago/4d/docs/STATUS.md
+@@ -1,3 +1,40 @@
++## T-2795 — 1904 figures follow the visible pavement (2026-11-10)
++
++The preceding coachman and safe errand/tour handoff increment is merged into DEV
++through PR #1917, normal merge `f2346303048398c0f8597861ba0bcbeac6772e15`,
++after every required exact-head check passed. The broader transport acceptance
++remains open. This next candidate corrects the existing hidden-field support base
++for 1904 people, using an actual Float32 pedestrian surface only where both enabled
++terrain-cut materials admit the same actual mask. Geometry, terrain shaders, raw
++heightfield, horse-road sampling, explicit stair heights, water/deck rules, positive
++yard lifts, anchors, models and render budgets are retained.
++
++The actual source-bound a1bc31a8 world probe confirms the correction: Charles's
++root is now at the visible parkway centre, 4.311735338 m, while the raw field remains
++4.341757225 m. All 1,466/1,476 original foot-domain vertices are covered and masked
++by both actual compiled terrain materials. Foot minima still penetrate the sloping
++surface by 2.315/2.850 mm; this centre-height correction is not fitted soles, gait,
++continuous contact or photographic acceptance. Original horse contact assertions
++passed for the finite pose. The strict observer remains NONPASS because 30 native
++aborted requests were recorded; actual page/HTTP/server and physical-observer
++errors were zero. It closed under the original 600-second cap with accepted
++resource floors and no remaining owned children. The earlier attempt stopped on
++the original workspace floor before measuring feet; that failure is retained.
++
++Actual district controls retain geometry byte-for-byte and price a 215,176-byte
++lazy index with no duplicated XYZ, about 19 ms initialization and 13 ms for 10,000
++queries. The world confirms the same 18,166 triangles on five surfaces. These are
++CPU/owned-byte and finite physical observations, not a phone or frame-time pass.
++The 47 mask/material/height-composition controls and native zero-write isolation
++pass; all 976 prior isolation rows are retained. A sparse six-pixel replay covers
++all recorded vertices but is not a rebuilt full GPU mask. Conservative blend-edge
++fallback can cause a height jump; continuous walking remains unqualified.
++
++The original complete document bytes below are preserved. Full local preflight
++has not passed in this sparse asset checkout. Complete current-head hosted gates,
++including moving-frame and phone release checks, remain mandatory before DEV merge.
++No screenshot, UI, tour, quiet-clock or full-world pass is claimed for this probe.
++
+ ## T-2795 — Charles Nelson beside the Glessner carriage team (2026-11-10)
+ 
+ The current proposal places existing coachman Charles Nelson on the Prairie Avenue
+diff --git a/chicago/4d/renderers/web/js/changelog.js b/chicago/4d/renderers/web/js/changelog.js
+index 74a639ea6c..6c3c63c292 100644
+--- a/chicago/4d/renderers/web/js/changelog.js
++++ b/chicago/4d/renderers/web/js/changelog.js
+@@ -1,4 +1,12 @@
+ export const CHANGELOG = [ // newest first
++  { v: 2869, ts: '2026-11-10T14:33:45.475Z', date: 'Nov 10, 2026, 8:33 AM CT', title: 'Better footing on 1904 walks', kind: 'improvement',
++    items: [
++      'Reduced hovering above walks and parkways for people in 1904.',
++    ] },
++  { v: 2868, ts: '2026-11-10T13:58:16.040Z', date: 'Nov 10, 2026, 7:58 AM CT', title: 'Brick and clay surfaces across the early town', kind: 'feature',
++    items: [
++      'Brick walls and masonry chimneys in 1812 and 1835 show mortar joints, relief and varied brick faces. Exterior log-cabin stacks have the rough surface of stick-and-clay construction. Existing period brickwork retains its own fabric.',
++    ] },
+   { v: 2867, ts: '2026-11-10T12:58:08.942Z', date: 'Nov 10, 2026, 6:58 AM CT', title: 'Glessner’s coachman waits beside his team', kind: 'improvement',
+     items: [
+       'Charles Nelson now keeps watch beside the waiting carriage horses, with his household routine preserved.',
+diff --git a/chicago/4d/renderers/web/js/deck-surface.js b/chicago/4d/renderers/web/js/deck-surface.js
+index e834371d2d..8aed8a1899 100644
+--- a/chicago/4d/renderers/web/js/deck-surface.js
++++ b/chicago/4d/renderers/web/js/deck-surface.js
+@@ -106,13 +106,25 @@ export function profiledGroundHeight(terrain, decks, e, n) {
+  * heightfield under it. Over water a deck wins; with no deck the terrain's own surface
+  * answers (not walkHeight's wading barrier: nobody is placed standing in the river).
+  */
+-export function deckGroundHeight(terrain, decks, e, n) {
++export function deckGroundHeight(terrain, decks, e, n, visibleBase = null) {
+   let height = null;
+   for (const d of decks) {
+     if (!insideDeck(e, n, d.pts)) continue;
+     const y = deckHeightAt(d, e, n);
+     if (typeof y === 'number' && (height === null || y > height)) height = y;
+   }
+-  if (height === null) return terrain.surfaceHeight(e, n);
+-  return terrain.isWater(e, n) ? height : Math.max(height, terrain.surfaceHeight(e, n));
++  if (height === null) return visibleBase ?? terrain.surfaceHeight(e, n);
++  return terrain.isWater(e, n) ? height : Math.max(height, visibleBase ?? terrain.surfaceHeight(e, n));
++}
++
++/** Existing field/deck/yard policy, with one explicitly mask-admitted street base.
++ * A positive yard lift still names a real laid surface over the raw field; zero
++ * lift names no extra surface and must not put discarded terrain back under a shoe.
++ * Navigation's water barrier and explicit actor stair/path heights are not involved. */
++export function figureGroundHeight(terrain, decks, e, n, yardLift = 0, maskedStreetHeight = null) {
++  if (!finite(maskedStreetHeight) || terrain.isWater(e, n)) {
++    return Math.max(deckGroundHeight(terrain, decks, e, n), terrain.surfaceHeight(e, n) + yardLift);
++  }
++  const floor = deckGroundHeight(terrain, decks, e, n, maskedStreetHeight);
++  return Math.max(floor, yardLift > 0 ? terrain.surfaceHeight(e, n) + yardLift : maskedStreetHeight);
+ }
+diff --git a/chicago/4d/renderers/web/js/main.js b/chicago/4d/renderers/web/js/main.js
+index ddddd5236b..6b94ab7312 100644
+--- a/chicago/4d/renderers/web/js/main.js
++++ b/chicago/4d/renderers/web/js/main.js
+@@ -47,7 +47,7 @@ import { createIntent, createBackendSwitch } from './controls/intent.js';
+ import { createPointerLockBackend, isTyping } from './controls/pointerlock.js';
+ import { createTouchBackend, prefersTouch } from './controls/touch.js';
+ import { createWalker, footprintsFrom, decksFrom, WALK, HEADROOM_MARGIN_M } from './walker.js';
+-import { profiledGroundHeight, deckGroundHeight } from './deck-surface.js';
++import { profiledGroundHeight, figureGroundHeight } from './deck-surface.js';
+ import { passageGroundFrom } from './passage-ground.js';
+ import { createFlora } from './flora.js';
+ import { createTrees } from './trees.js';
+@@ -3812,8 +3812,8 @@ async function boot() {
+   // the ground as drawn: a deck where there is one, else the heightfield plus the couple of
+   // centimetres a yard's laid earth or a worn trail is draped above it (yards.js), which
+   // otherwise swallow a shoe whose trousers come down over it.
+-  const figureGround = (e, n) => Math.max(deckGroundHeight(terrain, decks, e, n),
+-    terrain.surfaceHeight(e, n) + (yards.groundLiftAt?.(e, n) ?? 0));
++  const figureGround = (e, n) => figureGroundHeight(terrain, decks, e, n,
++    yards.groundLiftAt?.(e, n) ?? 0, String(YEAR) === '1904' ? streetGrid.pedestrianHeight?.(e, n) ?? null : null);
+   api.humans = await mountHumans({
+     dataBase: layerBase('humans'), assetBase: bases.assetBase, sceneId: loaded.scene.id ?? YEAR,
+     people, terrain, tier: detailLevel, problems: layerProblems('humans'),
+diff --git a/chicago/4d/renderers/web/js/pedestrian-ground.js b/chicago/4d/renderers/web/js/pedestrian-ground.js
+new file mode 100644
+index 0000000000..4e7afb57f8
+--- /dev/null
++++ b/chicago/4d/renderers/web/js/pedestrian-ground.js
+@@ -0,0 +1,50 @@
++/** Mask-admitted support from existing Float32 street geometry. No geometry is copied. */
++import { createLazyRoadTriangleHeight } from './road-triangle-height.js';
++
++/** A conservative proof of the cut shader's red>0.5 test. Blend edges keep the old floor.
++ * Every contributing unsigned-byte red texel must itself exceed0.5; consequently any
++ * nonnegative linear filtering of those texels exceeds the shader threshold too. */
++export function definitelyCutByRedMask(mask, box, e, n) {
++  const image = mask?.image, data = image?.data, w = image?.width, h = image?.height;
++  if (!Number.isFinite(e) || !Number.isFinite(n) || !(data instanceof Uint8Array)
++    || !Number.isSafeInteger(w) || !Number.isSafeInteger(h) || w < 1 || h < 1 || data.length !== w * h
++    || mask.flipY || !box || ![box.x, box.y, box.z, box.w].every(Number.isFinite) || box.z <= 0 || box.w <= 0) return false;
++  // These are the uploaded uniform and world-position float lanes. No raster is
++  // regenerated, and no geometric polygon is substituted for the actual texture.
++  const f = Math.fround;
++  const u = f(f(f(e) - f(box.x)) * f(box.z));
++  const v = f(f(f(-n) - f(box.y)) * f(box.w));
++  if (!(u > 0 && v > 0 && u < 1 && v < 1)) return false;
++  const x = u * w - 0.5, y = v * h - 0.5;
++  const x0 = Math.floor(x), y0 = Math.floor(y);
++  const clampX = a => Math.max(0, Math.min(w - 1, a));
++  const clampY = a => Math.max(0, Math.min(h - 1, a));
++  const a = clampX(x0), b = clampX(x0 + 1), c = clampY(y0), d = clampY(y0 + 1);
++  return data[c * w + a] > 127 && data[c * w + b] > 127 && data[d * w + a] > 127 && data[d * w + b] > 127;
++}
++
++export function isPedestrianSurface(mesh) {
++  return mesh?.userData?.pedestrianSurface === true
++    && ['walk', 'parkway', 'curb', 'alley'].includes(mesh.userData.cls);
++}
++
++/** The old field is replaced only after mask admission AND an actual top triangle hit.
++ * Uses the already-retained picking position/index arrays; the lazy index owns only
++ * typed bucket references and transform snapshots, exactly as the roadway reader does. */
++export function createMaskedPedestrianHeight(getMeshes, admits) {
++  if (typeof getMeshes !== 'function' || typeof admits !== 'function') throw new Error('Pedestrian support requires surface and mask readers');
++  const surface = createLazyRoadTriangleHeight(() => getMeshes().filter(isPedestrianSurface));
++  let disposed = false, calls = 0, admitted = 0;
++  return {
++    heightAt(e, n) {
++      if (disposed || !Number.isFinite(e) || !Number.isFinite(n)) return null;
++      calls++;
++      if (!admits(e, n)) return null;
++      admitted++;
++      const height = surface.heightAt(e, n);
++      return Number.isFinite(height) ? height : null;
++    },
++    reading() { return { ...surface.reading(), calls, admitted }; },
++    dispose() { disposed = true; surface.dispose(); getMeshes = admits = null; },
++  };
++}
+diff --git a/chicago/4d/renderers/web/js/street-grid.js b/chicago/4d/renderers/web/js/street-grid.js
+index 57488a676c..c5ea168740 100644
+--- a/chicago/4d/renderers/web/js/street-grid.js
++++ b/chicago/4d/renderers/web/js/street-grid.js
+@@ -50,6 +50,7 @@
+ 
+ import * as THREE from 'three';
+ import { createLazyRoadTriangleHeight } from './road-triangle-height.js';
++import { createMaskedPedestrianHeight } from './pedestrian-ground.js';
+ import { ktx2Beside, loadSheet } from './ktx2.js';
+ import {
+   SEASON_HEAD, SEASON_VERTEX_DECL, SEASON_VERTEX_ASSIGN, SEASON_FRAGMENT_DECL, SEASON_FRAGMENT_APPLY,
+@@ -785,6 +786,8 @@ export async function createStreetGrid({
+     census: { carriageways: 0, faces: 0, alleys: 0, parcels: 0, triangles: 0, surfaced: 0, textured: 0 },
+     parcelAt: () => null,
+     carriagewayHeight: () => null,
++    pedestrianHeight: () => null,
++    pedestrianSupportReading: () => ({ initialized: false, owned_buffer_bytes: 0, duplicated_xyz_bytes: 0 }),
+     setLotLines: () => {},
+     pickAt: () => null,
+     dispose: () => {},
+@@ -1409,6 +1412,9 @@ export async function createStreetGrid({
+       mesh.userData.roadLevel = buf.level;
+     }
+     mesh.userData.cls = buf.cls;
++    // Only the main flat band/crossing/join/alley surfaces enter human support.
++    // Separate curb walls and carriage posts below never receive this marker.
++    if (!buf.seam && ['walk', 'parkway', 'curb', 'alley'].includes(buf.cls)) mesh.userData.pedestrianSurface = true;
+     mesh.userData.material = buf.material;
+     mesh.userData.spans = buf.spans;
+     mesh.castShadow = false;
+@@ -1749,7 +1755,13 @@ export async function createStreetGrid({
+   // the actual drawn base+overlay triangles; posed contact checks read both.
+   carriagewaySurface = createLazyRoadTriangleHeight(() => [...meshes, ...overlays]
+     .filter(mesh => mesh.userData.cls === 'carriageway'));
++  const pedestrianSurface = createMaskedPedestrianHeight(() => meshes, (e, n) =>
++    !!out.groundCut?.mask && !terrain.isWater(e, n)
++      && terrain.pedestrianGroundCutAt?.(e, n, out.groundCut.mask) === true);
++  out.pedestrianHeight = (e, n) => pedestrianSurface.heightAt(e, n);
++  out.pedestrianSupportReading = () => pedestrianSurface.reading();
+   out.dispose = () => {
++    pedestrianSurface.dispose();
+     carriagewaySurface?.dispose(); carriagewaySurface = null;
+     if (out.groundCut) { terrain.setGroundCut?.({}); out.groundCut.mask.dispose(); }
+     for (const m of [...meshes, ...overlays]) m.geometry.dispose();
+diff --git a/chicago/4d/renderers/web/js/terrain.js b/chicago/4d/renderers/web/js/terrain.js
+index 256d2d8dac..e83eb02ab6 100644
+--- a/chicago/4d/renderers/web/js/terrain.js
++++ b/chicago/4d/renderers/web/js/terrain.js
+@@ -48,6 +48,7 @@
+ 
+ import { fetchPublishedAssetBytes, registerPublishedTextureBuffers } from './published-assets.js';
+ import * as THREE from 'three';
++import { definitelyCutByRedMask } from './pedestrian-ground.js';
+ import { spatialBatch, spatialBatchAsync, batchPieces } from './spatial-batch.js';
+ import { adaptiveGroundGrid } from './terrain-base.js';
+ import { contextSample, replaceApron } from './coast-extension.js';
+@@ -1034,6 +1035,19 @@ export async function createTerrain({
+       walkOffset = typeof offset === 'function' ? offset : null;
+     },
+ 
++    /** Read-only admission for human support. Both detailed and base terrain must
++     * actually share this enabled cut. Unexpected mask formats keep the old floor. */
++    pedestrianGroundCutAt(e, n, expectedMask) {
++      const cut = groundMat?.userData?.cut, base = groundBase?.material?.userData?.cut;
++      if (!expectedMask || !cut || !(cut.on.value > 0.5) || cut.tex.value !== expectedMask
++        || (groundBase && (!base || !(base.on.value > 0.5) || base.tex.value !== expectedMask || !base.box.value.equals(cut.box.value)))
++        || expectedMask.format !== THREE.RedFormat || expectedMask.type !== THREE.UnsignedByteType
++        || expectedMask.minFilter !== THREE.LinearFilter || expectedMask.magFilter !== THREE.LinearFilter
++        || expectedMask.wrapS !== THREE.ClampToEdgeWrapping || expectedMask.wrapT !== THREE.ClampToEdgeWrapping
++        || expectedMask.generateMipmaps) return false;
++      return definitelyCutByRedMask(expectedMask, cut.box.value, e, n);
++    },
++
+     /** Backward-compatible names for older harnesses and external consumers. */
+     height(e, n) {
+       const h = heightfield.sample(e, n);
+diff --git a/chicago/4d/tools/check.sh b/chicago/4d/tools/check.sh
+index 4a3f631828..b910a5282e 100755
+--- a/chicago/4d/tools/check.sh
++++ b/chicago/4d/tools/check.sh
+@@ -680,6 +680,8 @@ step "A woman's skirt swings off her legs as she walks and never parts between t
+   node tools/test_human_skirt.mjs
+ step "Each man of the 1812 garrison has his own complexion, hair, eyes and height from the period's registers, drawn on clones, on his card with a stand-in portrait (T-3491)" \
+   node tools/test_human_looks.mjs
++step "1904 people use actual drawn pedestrian tops only beneath enabled terrain-cut masks, preserving decks, positive yards and other epochs (T-2795)" \
++  node tools/test_pedestrian_ground.mjs --check
+ step "The 1812 garrison's looks files are what looks.py writes (T-3491)" \
+   python3 docs/RESEARCH/people-1812-3491/looks.py --check
+ step "The 1812 garrison is dressed by rank and duty: NCOs' epaulettes on the shoulder, musicians' coats, drum and fife case, officers' sashes, men at work in fatigue clothes, sentries' muskets in the hand and the cornfield party's arms piled (T-3523)" \
+diff --git a/chicago/4d/tools/step_isolation.json b/chicago/4d/tools/step_isolation.json
+index 91b01366a2..cbb76401af 100644
+--- a/chicago/4d/tools/step_isolation.json
++++ b/chicago/4d/tools/step_isolation.json
+@@ -6530,6 +6530,10 @@
+       "wrote": [],
+       "wrote_ignored": []
+     },
++    "tools/test_pedestrian_ground.mjs": {
++      "wrote": [],
++      "wrote_ignored": []
++    },
+     "tools/test_people_directory.mjs": {
+       "wrote": [],
+       "wrote_ignored": []
+diff --git a/chicago/4d/tools/test_pedestrian_ground.mjs b/chicago/4d/tools/test_pedestrian_ground.mjs
+new file mode 100644
+index 0000000000..4d74c74656
+--- /dev/null
++++ b/chicago/4d/tools/test_pedestrian_ground.mjs
+@@ -0,0 +1,118 @@
++/** Pure mask/Float32 support controls. No world, GPU, feet-contact or phone acceptance claim. */
++import assert from 'node:assert/strict';
++import fs from 'node:fs';
++import { performance } from 'node:perf_hooks';
++import { definitelyCutByRedMask, isPedestrianSurface, createMaskedPedestrianHeight } from '../renderers/web/js/pedestrian-ground.js';
++import { deckGroundHeight, figureGroundHeight } from '../renderers/web/js/deck-surface.js';
++import { createLazyRoadTriangleHeight } from '../renderers/web/js/road-triangle-height.js';
++
++if (process.argv.slice(2).some(arg => arg !== '--check')) throw new Error('Only --check is supported');
++let checks = 0;
++const check = (condition, why) => { assert(condition, why); checks++; };
++const near = (a, b, why, eps = 1e-9) => check(Math.abs(a - b) <= eps, `${why}: ${a} versus ${b}`);
++const mask = { image: { data: new Uint8Array([255,255,255,255]), width: 2, height: 2 }, flipY: false };
++const box = { x: 0, y: 0, z: 1, w: 1 };
++check(definitelyCutByRedMask(mask, box, .5, -.5), 'four actual red texels prove the shader discards');
++mask.image.data[0] = 128;
++check(definitelyCutByRedMask(mask, box, .5, -.5), 'unsigned128 remains strictly above shader0.5');
++mask.image.data[0] = 127;
++check(!definitelyCutByRedMask(mask, box, .5, -.5), 'mixed blend edge conservatively retains original floor');
++mask.image.data.fill(255);
++for (const [e,n] of [[0,-.5],[1,-.5],[.5,0],[.5,-1],[2,-2],[NaN,0]])
++  check(!definitelyCutByRedMask(mask, box, e, n), 'strict shader-box boundary/outside/nonfinite stays unchanged');
++mask.flipY = true; check(!definitelyCutByRedMask(mask, box, .5, -.5), 'unqualified flipped texture rejected'); mask.flipY = false;
++check(!definitelyCutByRedMask({ image: { ...mask.image, data: new Uint8Array(16) } }, box, .5, -.5), 'RGBA data cannot masquerade as red texture');
++
++// Execute the exact active-material admission method, with interface-only
++// material/constant doubles. No duplicate implementation of that method.
++const terrainSource = fs.readFileSync(new URL('../renderers/web/js/terrain.js', import.meta.url), 'utf8');
++const at = terrainSource.indexOf('pedestrianGroundCutAt(e, n, expectedMask) {');
++const end = terrainSource.indexOf('\n    },', at);
++assert(at > 0 && end > at);
++const THREE = { RedFormat: 1, UnsignedByteType: 2, LinearFilter: 3, ClampToEdgeWrapping: 4 };
++Object.assign(mask, { format:1, type:2, minFilter:3, magFilter:3, wrapS:4, wrapT:4, generateMipmaps:false });
++const vector = () => ({ ...box, equals(other) { return ['x','y','z','w'].every(key => this[key] === other[key]); } });
++const cut = () => ({ on:{value:1},tex:{value:mask},box:{value:vector()} });
++const groundMat = { userData:{cut:cut()} }, groundBase = { material:{userData:{cut:cut()}} };
++const method = Function('groundMat','groundBase','THREE','definitelyCutByRedMask',
++  `return {${terrainSource.slice(at,end+6)}}.pedestrianGroundCutAt;`)(groundMat,groundBase,THREE,definitelyCutByRedMask);
++check(method(.5,-.5,mask), 'both actual material-cut interfaces admit the same mask');
++for (const owner of [groundMat.userData.cut,groundBase.material.userData.cut]) {
++  owner.on.value = 0; check(!method(.5,-.5,mask), 'either disabled material retains raw terrain'); owner.on.value = 1;
++  owner.on.value = NaN; check(!method(.5,-.5,mask), 'invalid material toggle cannot admit support'); owner.on.value = 1;
++  owner.tex.value = {}; check(!method(.5,-.5,mask), 'either changed texture retains raw terrain'); owner.tex.value = mask;
++}
++groundBase.material.userData.cut.box.value.x = .1;
++check(!method(.5,-.5,mask), 'near/base uniform-box disagreement rejects replacement');
++groundBase.material.userData.cut.box.value.x = 0;
++for (const [key,value] of [['format',8],['type',8],['minFilter',8],['magFilter',8],['wrapS',8],['wrapT',8],['generateMipmaps',true]]) {
++  const old = mask[key]; mask[key] = value; check(!method(.5,-.5,mask), 'unqualified sampler state rejected'); mask[key] = old;
++}
++
++function mesh(cls, points, { marked = true, indexed = false, translation = [0,0,0] } = {}) {
++  const array = new Float32Array(points.flatMap(([e,n,y]) => [e,y,-n]));
++  const position = { array, count:array.length/3, itemSize:3,
++    getX:i=>array[i*3],getY:i=>array[i*3+1],getZ:i=>array[i*3+2] };
++  const indices = indexed ? new Uint16Array([0,1,2,0,2,3]) : null;
++  const index = indices && {array:indices,count:indices.length,getX:i=>indices[i]};
++  const elements = new Float64Array([1,0,0,0,0,1,0,0,0,0,1,0,...translation,1]);
++  return { userData:{cls,pedestrianSurface:marked},matrixWorld:{elements},updateWorldMatrix(){},
++    geometry:{index,getAttribute:name=>name==='position'?position:null} };
++}
++const plane = mesh('parkway', [[0,0,3],[4,0,3.08],[4,4,3.04],[0,4,2.96]], { indexed:true,translation:[1393.2,1.3,3247.955] });
++const prop = mesh('curb', [[0,0,30],[4,0,30],[4,4,30]], {marked:false,translation:[1393.2,0,3247.955]});
++const road = mesh('carriageway', [[0,0,20],[4,0,20],[4,4,20]], {translation:[1393.2,0,3247.955]});
++const vertical = mesh('curb', [[2,0,10],[2,4,10],[2,4,20]], {translation:[1393.2,0,3247.955]});
++check(isPedestrianSurface(plane) && !isPedestrianSurface(prop) && !isPedestrianSurface(road), 'explicit top-surface marker excludes props and roadways');
++const original = Buffer.from(plane.geometry.getAttribute('position').array.buffer).toString('hex');
++let admitted = false;
++const support = createMaskedPedestrianHeight(()=>[plane,prop,road,vertical],()=>admitted);
++check(support.heightAt(1395.2,-3245.955) === null && !support.reading().initialized, 'no mask admission never builds an index');
++admitted = true;
++const first = performance.now(), mid = support.heightAt(1395.2,-3245.955), buildMs = performance.now()-first;
++near(mid,4.32,'transformed actual Float32 top plane',3e-7);
++near(support.heightAt(1395.2,-3243.955),4.3,'vertical face cannot become a floor',3e-7);
++check(support.heightAt(1300,-3200) === null, 'mask without actual support keeps fallback');
++// Independent plane equation on the represented Float32 vertices, rather than
++// a copy of the production bucket/barycentric reader.
++function planeAt(points,e,n) {
++  const [a,b,c] = points;
++  const u=b.map((x,i)=>x-a[i]),v=c.map((x,i)=>x-a[i]);
++  const normal=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]];
++  return a[1]-(normal[0]*(e-a[0])+normal[2]*(-n-a[2]))/normal[1];
++}
++const p=plane.geometry.getAttribute('position'),m=plane.matrixWorld.elements;
++const world=i=>[p.getX(i)+m[12],p.getY(i)+m[13],p.getZ(i)+m[14]];
++let maxResidual=0;const hot=performance.now();
++for(let i=0;i<10000;i++){
++  const x=.01+3.98*((i*137%997)/996),n=.01+3.98*((i*269%991)/990);
++  const e=1393.2+x,north=-3247.955+n;
++  const expected=planeAt((n<=x?[0,1,2]:[0,2,3]).map(world),e,north);
++  maxResidual=Math.max(maxResidual,Math.abs(support.heightAt(e,north)-expected));
++}
++const queryMs=performance.now()-hot;
++check(maxResidual<1e-10,'independent represented-triangle plane agrees over10000 points');
++check(support.reading().duplicated_xyz_bytes===0 && support.reading().owned_buffer_bytes>0,'index aliases retained attributes without XYZ duplication');
++check(Buffer.from(p.array.buffer).toString('hex')===original,'no geometry or vertex buffer mutation');
++const roadReader=createLazyRoadTriangleHeight(()=>[road]);near(roadReader.heightAt(1395.2,-3245.955),20,'original roadway reader untouched');roadReader.dispose();
++admitted=false;check(support.heightAt(1395.2,-3245.955)===null,'cleared mask immediately returns old floor');
++const reading=support.reading();support.dispose();admitted=true;
++check(support.heightAt(1395.2,-3245.955)===null && support.reading().owned_buffer_bytes===0,'disposed support cannot resurrect');
++
++const terrain={surfaceHeight:()=>6,isWater:()=>false};
++const deck={y:6.4,pts:[[-2,-2],[2,-2],[2,2],[-2,2]]};
++near(figureGroundHeight(terrain,[],0,0,0,null),6,'no admitted street keeps raw terrain');
++near(figureGroundHeight(terrain,[],0,0,0,5.97),5.97,'zero yard lift cannot reinstate hidden terrain');
++near(figureGroundHeight(terrain,[deck],0,0,0,5.97),6.4,'higher scalar deck remains authoritative');
++near(figureGroundHeight(terrain,[],0,0,.02,5.97),6.02,'positive laid yard surface remains authoritative');
++near(deckGroundHeight(terrain,[],0,0),6,'old deck helper signature unchanged');
++const water={surfaceHeight:()=>-2,isWater:()=>true};
++near(figureGroundHeight(water,[deck],0,0,0,5.97),6.4,'water and deck precedence unchanged');
++near(figureGroundHeight(water,[],0,0,0,5.97),-2,'human ground never substitutes the navigation water barrier');
++const profile={y:6.1,pts:[[-2,-2],[2,-2],[2,2],[-2,2]],profile:{version:1,axis:'local_x',stations_m:[[0,6.1],[2,6.8],[4,6.1]]},profileFrame:{e0:-2,n0:0,cos:1,sin:0}};
++near(figureGroundHeight(terrain,[profile],0,0,0,5.97),6.8,'declared profiled deck still wins');
++const main=fs.readFileSync(new URL('../renderers/web/js/main.js',import.meta.url),'utf8');
++check(/String\(YEAR\) === '1904' \? streetGrid\.pedestrianHeight/.test(main),'integration is scoped to1904');
++check(/const figureGround = [^;]*yards\.groundLiftAt/s.test(main),'existing actual yard lift callback retained');
++console.log(JSON.stringify({status:'PASS',checks,fixtureBuildMs:buildMs,fixture10000QueryMs:queryMs,maxIndependentPlaneResidual:maxResidual,
++  fixtureIndex:reading,qualification:'Synthetic Float32/mask/composition controls only; actual district cost and post-change feet remain unmeasured'}));

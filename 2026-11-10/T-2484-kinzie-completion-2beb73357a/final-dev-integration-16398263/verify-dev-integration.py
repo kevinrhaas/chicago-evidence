@@ -1,0 +1,17 @@
+import pathlib,subprocess,json,hashlib
+r=pathlib.Path('/tmp/nov10-kinzie-completion');h='16398263d526268ef8fb89f31368c6e5d966da35';pub='c7f15e3db13660d7e6d2599effcee6c6d3304d86';dev='115f62fa85227236eb90fb5a4196cd861148819b';native='d6076c038f5d7e103c922110b568c3188436ec25'
+def git(*args):return subprocess.check_output(['git','-C',str(r),*args],text=True).strip()
+assert git('rev-parse','HEAD')==h;assert not git('status','--porcelain')
+paths=['chicago/4d/assets/gltf','chicago/4d/assets/web','chicago/4d/assets/manifest.json','chicago/4d/assets/manifest.web.json','chicago/4d/assets/manifest.versions.json','chicago/4d/assets/packages']
+native_diff=git('diff','--name-only',native,h,'--',*paths).splitlines();assert not native_diff
+scoped=['chicago/4d/data/structures/kinzie_house_1812.json','chicago/4d/data/structures/kinzie_house_1812_green.json','chicago/4d/data/flora/plantings/kinzie_house_1812_trees.json','chicago/4d/data/reference_views/kinzie_house_1812','chicago/4d/data/sidecars/1812/kinzie_house_1812.json','chicago/4d/data/sidecars/1812/kinzie_house_1812_green.json','chicago/4d/data/humans/doors_1812.json','chicago/4d/data/scenes/1812.json','chicago/4d/docs/LIBERTIES.md','chicago/4d/data/liberties.json','chicago/4d/generators/archetypes/log_dwelling.py','chicago/4d/renderers/web/js/trees.js','chicago/4d/renderers/web/js/walker.js']
+scoped_diff=git('diff','--name-only',pub,h,'--',*scoped).splitlines();assert not scoped_diff
+runtime=['main.js','deck-surface.js','terrain.js','street-grid.js','pedestrian-ground.js'];inherited={}
+for n in runtime:
+ p='chicago/4d/renderers/web/js/'+n;current=git('rev-parse',h+':'+p);assert current==git('rev-parse',dev+':'+p);inherited[n]=current
+m=(r/'chicago/4d/renderers/web/js/main.js').read_text();d=(r/'chicago/4d/renderers/web/js/deck-surface.js').read_text()
+assert "String(YEAR) === '1904' ? streetGrid.pedestrianHeight?.(e, n) ?? null : null"in m
+assert "if (!finite(maskedStreetHeight) || terrain.isWater(e, n))"in d
+assert 'return Math.max(deckGroundHeight(terrain, decks, e, n), terrain.surfaceHeight(e, n) + yardLift);'in d
+q={'status':'PASS_FINAL_DEV_ANCESTRY_TARGET_NATIVE_EQUIVALENCE_WITH_INHERITED_1904_RUNTIME_DELTA','final_source':h,'published_source':pub,'integrated_dev':dev,'parents':git('show','-s','--format=%P',h).split(),'all_native_paths_vs_audited_retained':native_diff,'all_kinzie_source_camera_match_planting_sidecar_cache_and_tree_walker_bytes_vs_actual_publication':scoped_diff,'inherited_runtime_git_blobs_exact_current_dev':inherited,'full_app_equivalence':False,'qualification':'The final source is not byte-identical to published c7f: current dev adds independently inherited1904 pedestrian support plus changelog/docs/guard updates. YEAR1812 passes null to the adapter and takes the literal old deck+terrain+yard expression;47 inherited synthetic mask/composition controls pass. No final-app publication or runtime recapture is falsely claimed. The actual c7f target images/resource reviews remain the target-specific runtime evidence; final current-source protected checks remain prerequisite.','changes_from_actual_publication':git('diff','--name-only',pub,h).splitlines(),'owned_delta_from_current_dev':git('diff','--name-only',dev,h).splitlines()}
+p=pathlib.Path('/tmp/nov10-kinzie-ui/DEV-FINAL-TARGET-NATIVE-AND-1904-INTEGRATION.json');p.write_text(json.dumps(q,indent=2)+'\n');print(json.dumps({k:v for k,v in q.items()if k not in ['changes_from_actual_publication','owned_delta_from_current_dev']},indent=2))
