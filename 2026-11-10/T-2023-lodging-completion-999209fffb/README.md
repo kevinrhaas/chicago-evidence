@@ -1,7 +1,7 @@
 # T-2023 — completed lodging remainder evidence
 
 Source PR: https://github.com/kevinrhaas/chicago/pull/1920
-Final source: `999209fffb4abdaa08005c9776c35eb91d27264d`.
+Final app implementation: `999209fffb4abdaa08005c9776c35eb91d27264d`; final PR head: `997203a6ad5a2392520f043aeebbd815fe18a449`.
 
 The live person and household debts are zero. Exactly13 ordered reconstructed residents and2 already-existing resident seats were appended. All157 original person records,52 original layer seats and1,807 accepted housing/roof pairs remain exact.56 reconstructed shared household economies plus20 known-house receipts have368 disjoint members; the global165 known-house receipts are exclusive. The census ratio8.204,252 ordinary beds and32 initial mint authorization remain unchanged. Seven older crowded-roof excesses are disclosed and receive no new admissions.
 
@@ -22,3 +22,7 @@ No new3D avatar or frame-performance claim is made. Root's official full-publish
 Initial attempts used the wrong punctuation for T Welsh, then read the orderbook before its asynchronous mount, then used innerText while Households details were collapsed. Those failed attempts are retained. The final runner opened the real details control and checked the actual six rows. No application data was changed to satisfy a harness expectation.
 
 Source checks and evidence do not substitute for GitHub protection: PR1920 merges only after current-head all8 native parts and aggregate are green.
+
+## Final reference-index owner correction
+
+Final head997203a6ad changes only chicago/reference/resident-research/README.md, restoring existing XLSX links after the sparse index owner had not seen their input files. With actual full CSV/XLSX inputs, normal --index and --check pass; that README is byte-identical to dev0d64. Git proves the entire chicago/4d app tree is identical between implementation999 and final997, so no new publication or UI capture is needed. The sole remaining999 part8 failure and its exact owner remedy are retained in CI-PART8-999-DIAGNOSIS.json. Final current-head protected CI remains the merge requirement; this is not a waived check.
