@@ -1,0 +1,15 @@
+# Queue refresh: portable foundations complete, remaining scope explicit
+
+Published tickets MAIN: [255e954c](https://github.com/kevinrhaas/chicago-tickets/commit/255e954c76a039d5b452cef68c3f6b50dda23ed7). The normal settle/board workflow [42745177729](https://github.com/kevinrhaas/chicago-tickets/actions/runs/42745177729) succeeded; public board README confirms `main@255e954c`.
+
+**The portable-human foundation is already done:** T-1786 contract (merged PR #606), T-1787 Blender/GLB/web export pipeline (PR #644), and T-1788 browser actor (PR #669). Each merged into DEV on 10 October 2026. Completed component work also includes T-3409 wardrobe kit (PR #1746), T-3412 face/body variation (PR #1755), T-3414 hair/eyes (PR #1763) and T-3423 female shared-rig base (PR #1787). These must be reused rather than rebuilt.
+
+Current committed DEV `e8342e42555d65481080bbd5450bcf905006c910` measures 248 GLBs: 31 asset families × four LODs × source/web, all 56 joints. This is metadata evidence of the existing path, not a new render test. Idle/walk appear in all 248 files; sit_drive 24, look 8, natural_idle 8. There are no exported talk/gesture/carry/work clips.
+
+No new whole-ticket closure was justified: the completed foundation rows were already closed. Nine ticket bodies and the existing queue comments now distinguish completed work from remaining library/photo/Mark, portable motion, crowd, master/hitch and boarding acceptance. The original queue order and every original acceptance clause remain unchanged. Reference T-2792/T-2799 and placed-vehicle T-2979 were already done via PR #1174; carriage-lamp T-3083, horse-eye T-3086 and safe-view T-3087 via PR #1279. Other open work is listed precisely in RESULT.json; it was not falsely closed on an incremental merge. T-2980 remains open, rather than being called complete from the two delivered covered variants.
+
+Still open: T-1789 modular library/posed photographic/Mark-assembly stop; T-1790 missing portable vocabulary; T-1792 crowd scaling; T-2673/2674/2675 Mark; T-3410 paired catalogue, T-3416 shadows, T-3420/3421 actions/tails; T-2793 master qualification; T-2795/2801 complete hitch/gear; T-2796 traffic, T-2797 boarding/rides; T-2802/2803/2804 riding gear/gait/rider fit; T-3085/3088/3089 carriage/horse qualification.
+
+Verified same-session ROOT leases were renewed normally, with current claims and the absence of competing human/transport PRs checked first: T-1789 at 02:45:05 UTC (8fbb3f9), T-2795 at 02:45:08 UTC (c6c5665). Both remain claimed with pr:null and partial acceptance open.
+
+Unchanged official CLI ran from isolated DEV tools with its documented CHICAGO_TICKETS_DIR targeting ROOT's proper tickets clone. `board` and strict check passes: 3390 tickets / 81 queued / 1 waiting. ROOT's published tickets mirror and four frozen application-module hashes remain exact; no APP/index/source edit or heavy browser/Blender/native test occurred. PR #1906 remains draft/unmerged. Current app-doc top sections do not falsely call the foundation pending; dated historical L1/future-fixture paragraphs should be preserved, with a new current summary added by ROOT if needed.
