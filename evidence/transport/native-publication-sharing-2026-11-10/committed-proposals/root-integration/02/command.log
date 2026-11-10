@@ -1,0 +1,392 @@
+RUN node tools/check_detail_ladder.mjs
+  ok    the declared ceilings descend — it is a ladder, not three numbers
+          full 3,470,000 > balanced 2,625,000 > light 1,190,000
+  ok    no rung is running clamped — the table and the scene agree
+          every rung carries the ceiling its table declares
+  ok    the seal is silent on a table that is already a ladder
+          no clamp reported at boot
+  ok    every rung says what it protects and what measurement set it
+          full 3,470,000 · balanced 2,625,000 · light 1,190,000
+  0 failure(s)
+RUN node tools/rederive.mjs --check
+derived manifest OK — 206 step(s), 774 resolvable file(s), none hand-authored; second pass of 7 step(s), then the tail from tools/compile_scene.py until it settles
+RUN node tools/rederive.mjs --self-test
+
+  the manifest that ships
+derived manifest OK — 206 step(s), 774 resolvable file(s), none hand-authored; second pass of 7 step(s), then the tail from tools/compile_scene.py until it settles
+  ok    is well-formed, and check() passes it
+  ok    every step rebuilds at least one thing or says it rebuilds nothing
+these conflicts are NOT the manifest's to clear:
+  - chicago/4d/data/research/land_sales/resident_rulings.json (declares hand_authored)
+
+They want the run that owns the ticket. Add a file here only when a tool
+rewrites it from its inputs and check.sh asserts that it does.
+  ok    the hand-authored file is NOT resolvable
+these conflicts are NOT the manifest's to clear:
+  - chicago/4d/data/residents/households/hh_taylor_c.json (not in tools/derived_manifest.json)
+
+They want the run that owns the ticket. Add a file here only when a tool
+rewrites it from its inputs and check.sh asserts that it does.
+  ok    a file that is its own input is NOT resolvable
+  ok    no household card is listed — a card is its own writers' input (T-1282)
+all 1 conflicting file(s) are rebuilt from source by the manifest
+  ok    a file the manifest owns IS resolvable
+these conflicts are NOT the manifest's to clear:
+  - chicago/4d/data/residents/households/hh_taylor_c.json (not in tools/derived_manifest.json)
+
+They want the run that owns the ticket. Add a file here only when a tool
+rewrites it from its inputs and check.sh asserts that it does.
+  ok    a MIXED set is refused as a whole — half a merge is not a merge
+  ok    mint_civic_residents resolves nothing, because its outputs are resident cards
+  ok    the spends come after the crosswalks they read
+  ok    mint comes after consolidate, which moves the inputs it reads (PR #1055)
+  ok    both readers of the location reconciliation declare it and sit below it (T-2080)
+
+  the second pass that closes the cycle (T-1363)
+  ok    the shipped manifest declares one — 7 step(s)
+  ok    every entry re-runs a command the sequence already runs — no new tool sneaks in
+  ok    the model leads it, lagging on the scene and the census rebuilt below it (T-1602)
+  ok    and the arrival stage, which draws from the model, follows it
+  ok    every file an entry lags on IS rebuilt by a later step — the lag is real, not cargo
+  ok    every entry says why it is re-run
+
+  and after the pass, the tail that reads what it moved, until it settles (T-1602)
+  ok    the shipped manifest declares it, from compile_scene.py — the lap's own late step
+  ok    it may take more than one lap, because the scene and its generators read each other — max_laps 3
+
+  a late re-run is that step and everything below it (T-1661)
+  ok    the step a caller re-runs late is found, and it is not the last one — step 148 of 206
+  ok    the scene tail rebuilds entrance aprons before their downstream consumers (T-3081)
+  ok    the scene tail rebuilds jaunts before source-use consumes their claims (T-1253, T-2747)
+  ok    woodpiles rebuild after outbuildings and before kept ground (T-3081)
+--tail tools/no_such.py: no step of the manifest runs that
+  ok    a name no step runs is refused, not silently skipped
+--tail tools/generate_: 30 steps run that — name one
+    [131] python3 tools/generate_canal_approach_trade.py
+    [149] python3 tools/generate_entrances.py
+    [154] python3 tools/generate_block_infill.py
+    [155] python3 tools/generate_business_signboards.py
+    [156] python3 tools/generate_dooryard_pickets.py
+    [159] python3 tools/generate_dooryard_plantings.py
+    [160] python3 tools/generate_fort_apron.py
+    [161] python3 tools/generate_fort_trees.py
+    [162] python3 tools/generate_frontage_works.py
+    [163] python3 tools/generate_inferred_infill.py
+    [164] python3 tools/generate_lot_building_material.py
+    [165] python3 tools/generate_lot_line_fences.py
+    [166] python3 tools/generate_north_infill.py
+    [167] python3 tools/generate_planted_rows.py
+    [168] python3 tools/generate_shore_grove_1835.py
+    [169] python3 tools/generate_fruit_plantings_1835.py
+    [170] python3 tools/generate_shore_grove_1812.py
+    [171] python3 tools/generate_plat_lots.py
+    [174] python3 tools/generate_river_wharves.py
+    [175] python3 tools/generate_school_section_grid.py
+    [176] python3 tools/generate_west_infill.py
+    [177] python3 tools/generate_west_freight.py
+    [178] python3 tools/generate_south_lumber.py
+    [179] python3 tools/generate_north_freight.py
+    [180] python3 tools/generate_south_freight.py
+    [181] python3 tools/generate_yard_goods.py
+    [182] python3 tools/generate_trade_yards.py
+    [183] python3 tools/generate_yard_outbuildings.py
+    [184] python3 tools/generate_woodpiles.py
+    [185] python3 tools/generate_kept_ground.py
+  ok    a name MANY steps run is refused — the tail has one start
+--tail needs the step to start from, e.g. --tail tools/compile_scene.py
+  ok    no argument at all is refused
+  ok    the second pass sits ABOVE the tail, so the tail must not re-run it
+
+  check() refuses a manifest that would be unsafe
+derived manifest FAILED:
+  - step 1 (python3 tools/no_such_tool.py): tools/no_such_tool.py does not exist
+  ok    a step naming a script that does not exist
+derived manifest FAILED:
+  - step 2 (python3 tools/town_census.py): chicago/4d/data/town_census.json is also resolved by step 1 (python3 tools/compile_scene.py) — one owner per file
+  ok    the SAME file resolved by two steps — one owner per file
+derived manifest FAILED:
+  - step 1 (python3 tools/read_land_sales.py --build): chicago/4d/data/research/land_sales/resident_rulings.json declares hand_authored — a judgement is not a derivation and a tool may not rewrite it. Remove it from the manifest.
+  ok    a hand-authored file listed as resolvable
+derived manifest FAILED:
+  - step 1 (python3 tools/compile_scene.py): chicago/4d/data/nope.json is listed but does not exist in the tree
+  ok    a listed path that is not in the tree
+derived manifest FAILED:
+  - step 1 (python3 tools/location_spend.py --build): reads chicago/4d/data/research/location_reconciliation.json.gz, which step 2 (python3 tools/location_reconciliation.py --build) rebuilds BELOW it. On a merged tree this step reads the pre-merge file — T-2080 measured location_spend.py refusing a business whose seat had moved, and report_convergence_coverage.py writing a stale join without a word. Move the writer above step 1; if they read each other, it is a cycle and belongs in second_pass with reads_rebuilt.
+  ok    a reader ABOVE the step that rebuilds what it reads — the order before T-2080
+derived manifest OK — 2 step(s), 1 resolvable file(s), none hand-authored; second pass of 0 step(s)
+  ok    the same reader BELOW it is accepted
+derived manifest FAILED:
+  - step 2 (python3 tools/location_spend.py --build): declares it reads chicago/4d/data/town_census.json, which no step rebuilds — there is no edge to hold. Declare only files the sequence itself rewrites.
+  - step 2 (python3 tools/location_spend.py --build): declares it reads chicago/4d/data/town_census.json, and tools/location_spend.py never names town_census.json. A read the tool does not make is an edge that holds nothing.
+  ok    a declared read of a file no step rebuilds — no edge to hold
+derived manifest FAILED:
+  - step 2 (python3 tools/compile_scene.py): declares it reads chicago/4d/data/research/location_reconciliation.json.gz, and tools/compile_scene.py never names location_reconciliation.json.gz. A read the tool does not make is an edge that holds nothing.
+  ok    a declared read the tool's own source never names — cargo
+derived manifest FAILED:
+  - step 2 (python3 tools/location_spend.py --build): reads must be a non-empty array of paths
+  ok    an empty reads list
+derived manifest OK — 2 step(s), 1 resolvable file(s), none hand-authored; second pass of 1 step(s)
+  ok    a well-formed pass is accepted
+derived manifest FAILED:
+  - second_pass 1 (python3 tools/no_such_tool.py): names no step in the sequence. The second pass may only re-run the sequence's own commands — a command listed only here is a derivation nothing gated, proved, or wrote down as part of the layer.
+  - second_pass 1 (python3 tools/no_such_tool.py): is the first entry and states no reads_rebuilt. The pass exists because something reads a file the sequence rebuilds after it; an entry that follows no such reader is repairing nothing. Lead with the lagging reader.
+  ok    an entry naming no step in the sequence — an ungated, unproved derivation
+derived manifest FAILED:
+  - second_pass 1 (python3 tools/compile_scene.py): needs a why. A step re-run for an unstated reason is one nobody can ever remove.
+  ok    an entry with no why — a re-run nobody can ever remove
+derived manifest FAILED:
+  - second_pass 2 (python3 tools/compile_scene.py): is listed twice — a pass, not a loop
+  ok    the same entry twice — a pass, not a loop
+derived manifest FAILED:
+  - second_pass 1 (python3 tools/compile_scene.py): claims to read chicago/4d/data/town_census.json, which no step rebuilds — so there is no lag here and nothing to re-run for. Name the file the sequence actually rewrites under it.
+  ok    a claimed lag on a file NO step rebuilds
+derived manifest FAILED:
+  - second_pass 1 (python3 tools/model_town_1835.py --build): claims to lag on chicago/4d/data/reconstruction/1835_town_model.json, which it rebuilds itself at step 2. A step cannot be behind its own output.
+  ok    a claimed lag on a file rebuilt BEFORE the entry runs — the sequence settles it
+derived manifest FAILED:
+  - second_pass 1 (python3 tools/compile_scene.py): is the first entry and states no reads_rebuilt. The pass exists because something reads a file the sequence rebuilds after it; an entry that follows no such reader is repairing nothing. Lead with the lagging reader.
+  ok    a repair with no lagging reader above it — it is repairing nothing
+derived manifest OK — 3 step(s), 1 resolvable file(s), none hand-authored; second pass of 1 step(s), then the tail from tools/town_census.py until it settles
+  ok    a settled tail below the pass is accepted
+derived manifest FAILED:
+  - after_the_pass: tail_from (step 1) is at or above second-pass step(s) 1. The tail would re-run the cycle the pass just closed; start it below the pass.
+  - after_the_pass.between: lists python3 tools/model_town_1835.py --build, which does not sit between the pass and the tail. The answer is a reading of the steps actually there; take it off.
+  ok    a settled tail starting AT a pass step — it would re-open the cycle
+derived manifest FAILED:
+  - after_the_pass: tail_from must name exactly one step of the sequence; "tools/no_such.py" matches 0
+  ok    a settled tail naming no step
+derived manifest FAILED:
+  - after_the_pass: max_laps must be an integer from 2 to 5 — one lap cannot show that the tree has stopped moving, and more than five is a loop that is not settling
+  ok    a settled tail of one lap — one lap cannot show the tree stopped moving
+derived manifest FAILED:
+  - after_the_pass: needs a why
+  ok    a settled tail with no why
+
+  and the steps between the pass and the tail are a measured answer, held (T-2082)
+  ok    the shipped answer lists steps, and says when and how it was taken — 48 step(s)
+  ok    seat_trade_roofs_1835.py, measured to move with the deals, is in the pass and not the answer
+derived manifest FAILED:
+  - after_the_pass.between: steps 2 sit between the second pass and the tail, where nothing re-runs them after the pass moves the population, and no measured answer says they are safe there. Perturb what the pass writes, --check each of them, and record what you found here.
+  ok    a window with no answer at all — the hole T-1671 found
+derived manifest FAILED:
+  - after_the_pass.between: step 2 (python3 tools/model_town_1835.py --build) sits between the pass and the tail and was never measured there. If it reads what the pass moves, a --run ends with it stale and nothing says so. Measure it the way `how` says and list it, or, if it moves, put it in second_pass or below tail_from.
+  ok    a step INSERTED into the window that nobody measured
+derived manifest FAILED:
+  - after_the_pass.between: lists python3 tools/town_census.py, which does not sit between the pass and the tail. The answer is a reading of the steps actually there; take it off.
+  ok    a listed step that is not between the pass and the tail
+derived manifest FAILED:
+  - after_the_pass.between: lists python3 tools/model_town_1835.py --build twice
+  ok    a step listed twice
+derived manifest FAILED:
+  - after_the_pass.between: measured must be the date the answer was taken (YYYY-MM-DD)
+  ok    an answer with no date
+derived manifest FAILED:
+  - after_the_pass.between: needs how: the perturbation that took the answer, so the next step inserted here can be measured the same way
+  ok    an answer that does not say how it was taken
+derived manifest OK — 3 step(s), 2 resolvable file(s), none hand-authored; second pass of 1 step(s), then the tail from tools/compile_scene.py until it settles
+  ok    a step declaring it reads what the pass rewrites, with its measured why, is accepted
+derived manifest FAILED:
+  - after_the_pass.between: step 2 (python3 tools/town_census.py) declares it reads chicago/4d/data/reconstruction/1835_town_model.json (rewritten by pass step 1). Say in declared_readers why that rewrite does not move it, measured, or put it in the pass.
+  ok    the same declared read with no why — the edge most likely to move
+derived manifest FAILED:
+  - after_the_pass.between: declared_readers names python3 tools/compile_scene.py, which declares no read of a file the pass rewrites, or is not between the pass and the tail. A why for an edge that is not there is cargo.
+  ok    a why for a read the step does not declare is cargo
+
+  and a merge in a clone resolves the way the lap does (--resolve)
+  ok    #137's three source backlinks are all the manifest's to clear — []
+  ok    and they cost a tail from compile_source_use, not the whole sequence — first 151, full false
+  ok    an authored input still unmerged refuses the set — the rebuild would read its markers
+  ok    a listed file whose ours declares hand_authored is refused
+  ok    a conflict above the second pass takes the whole --run — a tail cannot settle the cycle
+
+  and no caller re-runs a manifest step bare (T-1661)
+callers of the derived manifest OK — 1 script(s) read, 0 manifest step(s) re-run bare, none with a step below it
+  ok    the lap that ships is in sequence
+  /workspace/.cloud-setup/queue-refresh-20261109/native-alias-integrated-02/owned-tmp/c4d-rederive-RgSliZ/caller.sh: runs `python3 tools/compile_scene.py` bare, and the manifest places 58 step(s) after it (it is step 148 of 206) — re-run it with `node tools/rederive.mjs --tail tools/compile_scene.py`
+callers of the derived manifest: 1 out-of-sequence re-run(s)
+  ok    a bare re-run of the scene is refused — this is T-1661 itself
+callers of the derived manifest OK — 1 script(s) read, 0 manifest step(s) re-run bare, none with a step below it
+  ok    the same call through --tail is accepted
+callers of the derived manifest OK — 1 script(s) read, 0 manifest step(s) re-run bare, none with a step below it
+  ok    a COMMENT naming the tool is not a call — pr-lap.sh explains itself at length
+callers of the derived manifest OK — 1 script(s) read, 1 manifest step(s) re-run bare, none with a step below it
+  ok    the manifest LAST step re-run bare is accepted — nothing is below it
+  /workspace/.cloud-setup/queue-refresh-20261109/native-alias-integrated-02/owned-tmp/c4d-rederive-RgSliZ/no-such-script.sh: no such file
+callers of the derived manifest: 1 out-of-sequence re-run(s)
+  ok    a script that is not there is refused, not read as clean
+--callers needs the script(s) to read
+  ok    no script at all is refused
+
+rederive self-test: all pass
+RUN python3 tools/rebuild_closing_set.py --check
+OK: the closing set is 5 member(s), each rebuilt by a gated manifest step or exempted in writing, and the report re-derives
+RUN python3 tools/report_research_signoff.py --check
+OK: the research sign-off re-derives, and still says GO
+RUN python3 tools/report_research_signoff.py --self-test
+RESEARCH SIGN-OFF SELF-TEST PASS — 0 failure(s), 11 case(s), live verdict GO
+RUN python3 tools/audit_check_gates.py --gate --quiet
+RUN node tools/audit_step_isolation.mjs --check --quiet
+RUN node tools/audit_manifest_coverage.mjs
+manifest coverage: OK — 354 gated tool(s), every one measured and counted once.
+  203 in the manifest · 76 measured to reproduce and not yet placed
+  19 cannot rebuild, each with its number · 56 write nothing
+  203 + 76 + 19 + 56 = 354, which is the total above.
+  The pending ones are recorded, not hidden, and here they are — 76 gated
+  writer(s) that check.sh asserts re-derive and rederive.mjs --run does not rebuild:
+    tools/build_context_1904.py
+      not yet — measured to reproduce. It reads the committed Sanborn rasters, Robinson's 1886 plate 10 (T-2491) and their GCP fits, the school section's corner GCPs…
+    tools/build_former_residents_1904.py
+      not yet — measured to reproduce. It reads data/residents_1904/households/, the two RESEARCH readings and data/structures, and writes data/residents_1904/former…
+    tools/build_lodging_model_1835.py
+      not yet — measured to reproduce, but the manifest's order is its own measured pass and this tool reads data/structures/, which several reconstruction stages wr…
+    tools/build_modern_streets.py
+      Not placed, because it needs the City's 87 MB centerline file, fetched over the network from GitHub (Chicago/osd-street-center-line), and a rederive must run o…
+    tools/build_trade_table_1839.py
+      not yet — measured to reproduce. It writes data/research/directories/fergus_1839_trade_table.json, read by manifest steps tools/build_staffing_model_1835.py an…
+    tools/carry_policy_only_division.py
+      after seat_known_1835.py --build, which writes the address book this reads, and before rebuild_resident_index.py, which denormalises the block's value into the…
+    tools/carry_west_tiers_west.py
+      not yet — measured to reproduce. It writes data/streets/1835.json, which many manifest steps read, so a slot for it has to sit ahead of the street-reading laye…
+    tools/census_prairie_1904_background.py
+      pending, 2026-10-22 (T-3008): a reader of the street grid, the sheet censuses and the footprint traces tools/trace_prairie_1904_footprints.py writes, so it mus…
+    tools/compile_pictures.py
+      not to be placed: its output is a build product, not a committed derivation. publish.sh writes it from the Prairie library and data/sources/ at the moment it s…
+    tools/compile_summaries.py
+      not to be placed: its output is a build product, not a committed derivation. publish.sh writes it from data/summaries/, data/sources/ and the scenes' people di…
+    tools/complete_inwindow_trades.py
+      not yet, AND ITS ORDER IS KNOWN, because three red gates on #1560 paid for it (T-1453): RUN IT BEFORE `rederive.mjs --run` AND NEVER AFTER. It reads data/resea…
+    tools/cut_north_division_tier.py
+      not yet — measured to reproduce, and its inputs are all committed readings rather than anything a later stage writes, so it has no ordering hazard of its own; …
+    tools/cut_school_section_second_tier.py
+      not yet — every input it reads is a committed reading (the block grid, the 1833 register, the heightfield) rather than anything a later stage writes, so it has…
+    tools/cut_school_section_tier.py
+      not yet — measured to reproduce, and every input it reads is a committed reading rather than anything a later stage writes, so it has no ordering hazard of its…
+    tools/derive_doors_1812.py
+      not yet — measured to reproduce. It reads the 1812 sidecars and their GLBs (door leaves off the models) and the lodge camp records; tools/test_human_days.mjs a…
+    tools/derive_doors_scene.py
+      not yet — measured to reproduce. It reads the 1835 and 1904 people records' days, the buildings they name (sidecars, and the 1835 GLBs' door leaves as derive_d…
+    tools/execute_roof_redeal.py
+      not yet — measured to reproduce, but it reads the redeal ledger, which tools/redeal_anonymous_roofs.py writes and which is itself `pending` for the same reason…
+    tools/extend_ic_lakefront_1904.py
+      Requires the core heightfield, shoreline and railway writers before it, and build_context_1904.py after it. Manifest ordering remains a separate measured pass.
+    tools/fit_portrait_face.py
+      not yet — measured to reproduce. It reads the portrait records, data/sources/, axes.json, the variation kit and base.obj; tools/human_variation_kit.py reads it…
+    tools/generate_alley_lanes.py
+      not yet placed: it reads data/traces/vectors/thompson_lots.json, data/sidecars/1835/ and data/streets/1835.json and nothing reads its output, so its slot is af…
+    tools/generate_camp_ground_1812.py
+      not yet: it reads the six lodge_camp sidecars (compile_scene.py's output), and data/enclosures/1812/index.json lists it through generate_fort_parade_ground.py'…
+    tools/generate_fort_parade_ground.py
+      not yet: it reads the two parade sidecars, the two forts' wall sidecars (compile_scene.py's output) and the other enclosure records of its scene, so its slot i…
+    tools/generate_glessner_finish.py
+      The original flat-brick maps read authored surface_finish and existing committed original clay/mortar maps, before the Blender master and reduced derivative. G…
+    tools/generate_glessner_vines.py
+      The atlas reads the authored Glessner record and shared numeric vine layout, and is consumed by the Blender master and reduced masked-occlusion bake. It is gen…
+    tools/generate_worn_ground_1812.py
+      not yet: it reads the 1812 sidecars (compile_scene.py's output), the 1812 enclosure records and the e1830_natural terrain, so its slot is after the sidecars an…
+    tools/generate_yard_goods_1812.py
+      not yet: it reads the 1812 sidecars, the 1812 enclosure records (worn yards and trails written by generate_worn_ground_1812.py) and the 1812 plantings, so its …
+    tools/generated_card_kin.py
+      not yet — measured to reproduce. It writes the households/ mirror of the register's parent ties onto cards the mints re-derive (they carry `kin` through), and …
+    tools/glessner_cupola_read.py
+      not yet — measured to reproduce. It reads T-2758's re-solved cameras (tools/glessner_stable_roof_read.py), data/reference_views/glessner_house/habs-01-northwes…
+    tools/glessner_north_finial_read.py
+      not yet — measured to reproduce. It reads data/structures/glessner_house.json, the habs-01-northwest and habs-14-north-inclined reference cameras, the two HABS…
+    tools/glessner_north_pairs.py
+      not yet — measured to reproduce. It reads data/comparisons/glessner/observations.json, data/reference_views/glessner_house/habs-14-north-inclined.json and data…
+    tools/glessner_opening_schedule.py
+      not yet — measured to reproduce. It reads only data/structures/glessner_house.json, which no reconstruction stage writes, and nothing reads its four outputs, s…
+    tools/glessner_prairie_front.py
+      not yet — measured to reproduce. It reads docs/RESEARCH/glessner-prairie-front-T-2857/read_front.py (T-2857's picks), the three front reference cameras and dat…
+    tools/glessner_stable_end_read.py
+      not yet — measured to reproduce. It reads T-2758's cameras and projection (tools/glessner_stable_roof_read.py), data/reference_views/glessner_house/habs-01-nor…
+    tools/glessner_stable_roof_read.py
+      not yet — measured to reproduce. It reads data/reference_views/glessner_house/habs-01-northwest.json, cornell-northwest-west-windows.json and data/structures/g…
+    tools/human_garment_retention.py
+      Canonical human exports precede the original Otis-only standing stage and the original Otis/Hans seated stages; this explicit final garment stage must follow t…
+    tools/human_seated_look.py
+      Not yet in the derived manifest: canonical human exports and the selected natural-standing derivative must precede this exact-parent animation child; installat…
+    tools/human_variation_kit.py
+      not yet — measured to reproduce. It reads the vendored MakeHuman targets, prepared.json, axes.json, the humans instances, data/transport/driven/loops.json, the…
+    tools/human_wardrobe.py
+      Not yet in the derived manifest: it reads the drivers' lod0 masters and their vehicles' GLBs, and each output's sha is pinned in data/transport/driven/loops.js…
+    tools/ktx2_sheets.py
+      not yet — it reads only the committed PNG masters under assets/textures/chicago_1835_pbr/ and prairie_1904_pbr/, which no manifest step writes, so it has no or…
+    tools/lay_crossing_boats_1812.py
+      not yet: it reads the e1830_natural heightfield and South Branch apron and data/structures (the footprints standing on 1812-08-14 and the first fort wharf's fo…
+    tools/lay_prairie_1904_back_yards.py
+      A reader of BUILT assets as well as committed originals: every 1904 sidecar's baked GLB (walls, glass, doors, K14 lawns), the traced footprints, data/street_gr…
+    tools/lay_prairie_1904_walk_joins.py
+      A reader of BUILT assets as well as committed originals: the K01/K16 GLBs' node extras (generators/k01_emit.py, k16_emit.py), the K13 records, the 1904 sidecar…
+    tools/measure_block_redeal_remedies.py
+      not yet — measured to reproduce, but it reads the roof redeal ledger, the platted-block recipe and the placement policy, and the first two are written by stage…
+    tools/measure_roof_id_migration.py
+      not yet — measured to reproduce, and it is a pure reader: every input it touches is a committed file some other stage owns, so it has no ordering hazard of its…
+    tools/model_refamily_rule.py
+      not yet — measured to reproduce, and the ordering is the thing to settle. This tool reads the order book, and build_order_book_1835.py then reads the rung ids …
+    tools/name_the_keepers_1835.py
+      not yet — measured to reproduce, but it stands between two passes already in the order: it reads the platted deal and the household cards, and the roofs that c…
+    tools/native_cards_1812.py
+      Reads nothing derived: its three cards are its own research. Gated by its own --check beside cards.py; it can join the manifest's order with the 1812 people wr…
+    tools/person_associations.py
+      not yet — measured to reproduce. T-1405 per its header: `--write` puts association rows ONTO the person records as well as into data/research/residents/person_…
+    tools/place_camp_grounds_1835.py
+      not yet — measured to reproduce. T-1804: it writes structure records, so it precedes compile_scene.py, and it reads every other footprint, so it follows whiche…
+    tools/place_landing_camps_1835.py
+      not yet — measured to reproduce. T-1803: it writes structure records, so it precedes compile_scene.py, and it reads every other footprint, so it follows whiche…
+    tools/placement_policy_1835.py
+      not yet — measured to reproduce. It writes data/reconstruction/1835_placement_policy.json, which the reconstruction stages that raise roofs read, so it sits ah…
+    tools/read_south_bank_swell_1834.py
+      not yet — measured to reproduce. Its inputs are the two 1834 rasters, which no stage writes, and the committed e1834_harbor_cut waterline, which tools/trace_ri…
+    tools/readmit_borderline_roster.py
+      not yet — it reads the borderline roster and is read by everything that COUNTS people, so its slot is a measured pass rather than an append (T-1302's note abov…
+    tools/reconstruct_businesses_1835.py
+      not yet — measured to reproduce. Its header states that the quota lives in the reconstruction order book and nothing about it lives in the tool, so any ticket …
+    tools/reconstruct_church_register.py
+      not yet — measured to reproduce. Stage `underdocumented`, sub-stage `church_register` (T-1504, of T-1177). It is the THIRD writer of data/residents/underdocume…
+    tools/reconstruct_free_black.py
+      not yet — measured to reproduce. Stage `underdocumented`, sub-stage `free_black` (T-1377, of T-1177). Its header records that it SHARES data/residents/underdoc…
+    tools/reconstruct_institutional_households.py
+      Waiting on nothing but its own slot being proved stable. It IS in the resident layer's rebuild order as `stage_institutional_households`, after `transients` an…
+    tools/reconstruct_transients_1835.py
+      not yet — measured to reproduce. Stage `transients` (T-1353): it draws against the lodging model and writes data/reconstruction/1835_transient_cohort.json, and…
+    tools/reconstruct_underdocumented.py
+      not yet — measured to reproduce. Stage `underdocumented`, sub-stage `native_and_metis` (T-1376, of T-1177), sharing data/residents/underdocumented/ with tools/…
+    tools/record_lot_seating.py
+      not yet — measured to reproduce, but it reads the lot layers and every committed footprint and must run before compile_scene.py carries the seat onto the card,…
+    tools/redeal_anonymous_roofs.py
+      not yet — measured to reproduce, but it reads the structure layer, the order book and the placement policy, all of which earlier reconstruction stages write, s…
+    tools/refamily_moves_1835.py
+      not yet — measured to reproduce, and it wants the same second-pass ordering model_refamily_rule.py does. This tool reads the residents layer's cards and writes…
+    tools/report_refamily_programme.py
+      not yet — measured to reproduce, and its slot is the one model_refamily_rule.py is waiting on. This tool reads BOTH the order book and the rule, so it can only…
+    tools/reprogramme_roofs_1835.py
+      not yet — measured to reproduce, but this tool reads the order book and the lodging model, both of which later reconstruction stages write, so its place in the…
+    tools/seat_lodgers_1835.py
+      not yet — measured to reproduce, but the manifest's order is its own measured pass and this tool reads data/structures/ through the lodging model AND data/resi…
+    tools/seat_reconstructed_trades_1835.py
+      not yet — measured to reproduce. T-1433, piece 2 of 3 of T-1189: it writes persons[].employment for the residents this project reconstructed, so it follows eve…
+    tools/spend_appearance_bounds.py
+      NOT PLACED. It reproduces, so it is pending rather than not_derivable, and it is counted out loud on every run instead of sitting silently outside the layer — …
+    tools/spend_departure_rulings.py
+      not yet — measured to reproduce, but the manifest's order is its own measured pass and this tool reads the resident cards and data/research/residents/spend_rul…
+    tools/spend_enrichment_arrivals.py
+      not yet — measured to reproduce. T-1330: `--write` spends thirty corroborated_enrichment units ONTO the cards they name, so it follows the pass that writes tho…
+    tools/spend_land_sale_bounds.py
+      T-1332 landed after T-1302 batch 2 placed its layer; placement in the manifest dependency order is that pass's to make, not this one's
+    tools/spend_press_bounds.py
+      NOT PLACED. It reproduces, so it is pending rather than not_derivable, and it is counted out loud on every run instead of sitting silently outside the layer — …
+    tools/staff_businesses_1835.py
+      not yet — measured to reproduce. T-1432, piece 1 of 3 of T-1189: it writes persons[].workplaces across the household records for the rows the business layer na…
+    tools/staff_the_houses_1835.py
+      not yet — measured to reproduce. T-1462, piece 2 of 2 of T-1449. Its header states the ordering constraint itself: data/businesses/*.json is DERIVED and the co…
+    tools/staffing_mint_order_1835.py
+      not yet — measured to reproduce. T-1448, of T-1434, of T-1189: it mints nobody and only sets the staffing model beside the reconstruction order book and counts…
+    tools/trace_south_branch_bridgeport_rees_1849.py
+      Not placed, because it needs the uncommitted Rees 1849 raster, fetched over the network, as its sibling trace_south_branch_rees_1849.py does, and a rederive mu…
+    tools/web_textures.py
+      not yet — it reads only the committed PNG masters under assets/textures/chicago_1835_pbr/, which no manifest step writes (the library's generator is not in the…
+  Ordering is its own measured pass: on #1452 three reconstruction stages
+  OSCILLATED until they sat in the right slot, so these cannot be appended to
+  the manifest blind (T-1302 batch 2). Measure what `_must_reproduce` asks —
+  run the build on a clean tree, require that git reports nothing moved — then
+  place ONE, with its slot argued in the step's own `why`.

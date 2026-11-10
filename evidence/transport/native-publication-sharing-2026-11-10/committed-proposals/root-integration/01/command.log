@@ -1,0 +1,43 @@
+RUN python3 tools/audit_check_gates.py --write
+wrote data/research/check_gate_baseline.json — 12 of 389 --check-capable tool(s) ungated
+RUN node tools/measure_step_isolation.mjs --tool tools/test_published_assets.mjs
+  step     node tools/test_published_assets.mjs --check
+
+tools/test_published_assets.mjs: 1 declared command(s) measured — wrote nothing in-tree
+RUN python3 tools/rebuild_closing_set.py --build
+wrote docs/RESEARCH/closing-convergence-2026-09.md
+RUN python3 tools/report_research_signoff.py --build
+wrote docs/RESEARCH/research-signoff-2026-09.md — GO
+RUN node tools/test_published_assets.mjs --check
+{"status":"PASS","checks":38,"realHTTP":true,"browserOffline":"separate required fixture","threeYears":["1812","1835","1904"],"requestCount":4}
+RUN node tools/test_ktx2_texture_policy.mjs
+{"profile":"full","initialWidth":1024,"reloadWidth":1024,"sheetWidth":1024,"keptLevels":11,"keptBytes":1398128,"originalBytes":1398128}
+{"profile":"light","initialWidth":512,"reloadWidth":512,"sheetWidth":512,"keptLevels":10,"keptBytes":349552,"originalBytes":1398128}
+PASS 72 device texture policy checks. Actual pinned Three/KTX2 constructor layout; controlled decode delivery/support detection, no browser/GPU/appearance claim.
+RUN node tools/write_year_packs.mjs --self-test
+write_year_packs self-test: ok (pack membership, the update diff, the kill switch)
+RUN node tools/test_detail_ladder.mjs
+node:internal/modules/cjs/loader:1386
+  throw err;
+  ^
+
+Error: Cannot find module '/tmp/chicago-queue-refresh-20261109/chicago/4d/tools/test_detail_ladder.mjs'
+    at Function._resolveFilename (node:internal/modules/cjs/loader:1383:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)
+    at Function._load (node:internal/modules/cjs/loader:1192:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)
+    at node:internal/main/run_main_module:36:49 {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+
+Node.js v22.22.0
+Traceback (most recent call last):
+  File "/workspace/.cloud-setup/queue-refresh-20261109/validate-native-alias-integration.py", line 23, in <module>
+    subprocess.run(command,check=True)
+  File "/workspace/.cloud-setup/uv-python/cpython-3.11.17-linux-x86_64-gnu/lib/python3.11/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['node', 'tools/test_detail_ladder.mjs']' returned non-zero exit status 1.

@@ -1,0 +1,82 @@
+{
+  "schema": "pr1915_initial_ci_failure_summary_v1",
+  "recorded_at": "2026-11-10T08:25:30.325882+00:00",
+  "head_sha": "68c3abd16e0bbb9704ebf3017fa5efba4190d6c0",
+  "pr": 1915,
+  "workflow_run": 42779746579,
+  "status": "OFFICIAL_NONPASS_FOUR_PARTITIONS_FIVE_HARNESS_COMMANDS",
+  "failed_partitions": [
+    {
+      "part": 1,
+      "job_id": 129706639313,
+      "public_job_url": "https://github.com/kevinrhaas/chicago/actions/runs/42779746579/job/129706639313",
+      "footer": [
+        "2026-11-10T08:11:02.9474104Z CHECK FAIL \u2014 part 1/8: 2 of 162 steps failed:",
+        "2026-11-10T08:11:02.9474924Z   * Plankwalk subpixel gaps preserve geometry and material contracts (T-2037)",
+        "2026-11-10T08:11:02.9475807Z   * Buildings share an image they carry identically: one decode, closed by its last holder (T-2464)"
+      ],
+      "failed_steps": [
+        {
+          "label": "Plankwalk subpixel gaps preserve geometry and material contracts (T-2037)",
+          "command": "node tools/check_plank_gap_filter.mjs"
+        },
+        {
+          "label": "Buildings share an image they carry identically: one decode, closed by its last holder (T-2464)",
+          "command": "node tools/test_shared_images.mjs"
+        }
+      ]
+    },
+    {
+      "part": 3,
+      "job_id": 129706639631,
+      "public_job_url": "https://github.com/kevinrhaas/chicago/actions/runs/42779746579/job/129706639631",
+      "footer": [
+        "2026-11-10T08:12:19.8555989Z CHECK FAIL \u2014 part 3/8: 1 of 163 steps failed:",
+        "2026-11-10T08:12:19.8556845Z   * Emitted plank crossings remain above the distant terrain (T-2037)"
+      ],
+      "failed_steps": [
+        {
+          "label": "Emitted plank crossings remain above the distant terrain (T-2037)",
+          "command": "node tools/check_plank_ground.mjs"
+        }
+      ]
+    },
+    {
+      "part": 4,
+      "job_id": 129706639448,
+      "public_job_url": "https://github.com/kevinrhaas/chicago/actions/runs/42779746579/job/129706639448",
+      "footer": [
+        "2026-11-10T08:11:52.4370224Z CHECK FAIL \u2014 part 4/8: 1 of 163 steps failed:",
+        "2026-11-10T08:11:52.4371043Z   * Culled plankwalks retain exact, tier-eligible deck tops (T-2037)"
+      ],
+      "failed_steps": [
+        {
+          "label": "Culled plankwalks retain exact, tier-eligible deck tops (T-2037)",
+          "command": "node tools/check_far_plank_tops.mjs"
+        }
+      ]
+    },
+    {
+      "part": 8,
+      "job_id": 129706639501,
+      "public_job_url": "https://github.com/kevinrhaas/chicago/actions/runs/42779746579/job/129706639501",
+      "footer": [
+        "CHECK FAIL \u2014 part 8/8: 1 of 161 steps failed"
+      ],
+      "failed_steps": [
+        {
+          "label": "\u2026the address bar swaps one committed version and falls back ALOUD on every miss (T-1727)",
+          "command": "node tools/test_structure_versions.mjs --self-test"
+        }
+      ]
+    }
+  ],
+  "common_first_actual_error": "TypeError [ERR_UNSUPPORTED_RESOLVE_REQUEST]: Failed to resolve module specifier ./published-assets.js from a data:text/javascript module: Invalid relative URL or base scheme is not hierarchical.",
+  "diagnosis": "Each identified command exited nonzero on an uncaught fixture module import. The source embedding harness did not rebase the new relative published-assets dependency. These are actual CHECK FAIL footer findings, not passing negative controls.",
+  "source_repair_owner": "ROOT; correction head and fresh checks pending",
+  "source_edits_or_reruns_by_monitor": false,
+  "pr_marked_ready_or_merged": false,
+  "lap_released": false,
+  "MAIN_or_deploy_claim": false,
+  "contains_private_job_logs_signed_urls_tokens_or_base64_payloads": false
+}

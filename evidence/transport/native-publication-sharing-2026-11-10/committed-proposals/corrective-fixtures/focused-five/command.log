@@ -1,0 +1,174 @@
+RUN node tools/check_plank_gap_filter.mjs
+PASS 13 plank-gap source checks; zero added triangles. Browser visual validation pending.
+RUN node tools/check_plank_ground.mjs
+PASS only emitted crossings request terrain protection
+PASS baseline reproduces buried crossing top faces
+PASS all actual emitted top faces clear protected terrain
+PASS adaptive transitions share every internal edge with upward winding
+PASS crossing refinement stays local and below its measured 10000-triangle allocation
+PASS partial edge cells keep their shared transitions closed
+PASS repeated terrain replacement disposes each geometry once
+PASS batching and repeated crossing protection preserve placement and release every buffer
+PASS publication protects accepted crossings at their actual default width
+PASS plank ground: 9 checks; 113850 top triangles, 2075 buried before / 0 after; 47.90 mm minimum clearance; +9660 triangles
+RUN node tools/check_far_plank_tops.mjs
+PASS all proxy attributes copy actual top vertices exactly; no furniture tops or invented gaps
+PASS proxy shares the gap-filter material and normal occlusion; adds at most one noncasting draw
+PASS reach, tier exclusion, frustum and far-merge hiding compose without resurrection
+PASS a stationary selected set reuses its index without another upload
+PASS enabling cross-street walks adds only their culled tops
+PASS returning inside reach removes every proxy before the detailed surface draws
+PASS a visible source cannot draw with its far replacement
+PASS moving out again restores the exact same selection without mutating source attributes
+PASS production frontage exposes an inert exact-top batch before any reach cull
+PASS 9 far-plank checks; 113850 total / 60262 light-eligible candidate triangles; at most one added draw
+RUN node tools/test_shared_images.mjs
+ok   two houses carrying the same picture decode it once
+ok   …and both hold the very same decoded image
+ok   …each through its own texture, never the original
+ok   different pictures stay different
+ok   the counts say so
+ok   retiring house A keeps the bitmap house B still draws with
+ok   …retiring house B lets the last holder close it
+ok   a picture whose bitmap was closed is decoded afresh, not shared closed
+ok   an image the module never shared may always be closed
+ok   same length, different bytes: two decodes
+ok   a GLB picture is recorded against the source its clones share
+ok   …without its bytes by default
+ok   a texture the module never saw has no record
+ok   keepEncoded keeps the bytes and their mime type to decode from again
+ok   a texture with no source is shared, not a TypeError
+PASS register returns original GLTF loader
+PASS embedded light GLB drops exactly mip0
+PASS cached original texture/source/chain stay full
+PASS sampler and color space survive
+PASS remaining mip payloads stay exact
+PASS light retained bytes equal exact existing tail sum
+PASS idle transcode resolver no longer retains full reply
+PASS repeat decode never trims cached source twice
+PASS repeat delivery shares reduced GPU source identity
+PASS full cache and reduced deliveries own their mip descriptors
+PASS releasing one delivery preserves all cached original payloads
+PASS releasing one delivery preserves another delivery payloads
+PASS cached reduced variant still serves populated mips after release
+PASS decode rejection propagates
+PASS full profile uses an ownership-isolating adapter
+PASS full GLB retains every mip byte and original GPU source identity
+PASS single-mip texture remains valid
+PASS real GLTFLoader receives reduced embedded basecolor and emissive images
+PASS real GLTFLoader preserves distinct sampler settings
+PASS two real GLTF parses share reduced image source identity
+PASS real GLTFLoader full transcoder cache remains unmodified
+PASS full: combined real parser delivery releases uploaded mip arrays
+PASS full: combined release keeps cached raw full payloads exact
+PASS full: cached real GLTF reread after release gets populated exact selected mips
+PASS full: combined original GLTF residency revisit uploads exact selected bytes
+PASS full: combined refill preserves full cache and reports zero errors
+PASS light: combined real parser delivery releases uploaded mip arrays
+PASS light: combined release keeps cached raw full payloads exact
+PASS light: cached real GLTF reread after release gets populated exact selected mips
+PASS light: combined original GLTF residency revisit uploads exact selected bytes
+PASS light: combined refill preserves full cache and reports zero errors
+PASS desktop uploaded compressed source levels are released
+PASS desktop original material and GPU handle remain unchanged
+PASS released source can become a populated tail-mip stand-in
+PASS returning source is transcoded exactly once
+PASS restored desktop uploads every original mip byte exactly
+PASS restored desktop returns to original material slot
+PASS refilled arrays release again after upload
+PASS desktop roundtrip reports zero problems
+PASS source without encoded recovery is never released
+PASS legacy desktop option retains source levels
+PASS source awaiting GPU upload keeps every byte
+PASS failed encoded refill reports the real decoding failure
+PASS failed encoded refill keeps the valid stand-in without a pending upload
+PASS false: regular image retains its source record
+PASS false: regular encoded retention matches the explicit mode
+PASS false: compressed encoded retention matches the explicit mode
+PASS true: regular image retains its source record
+PASS true: regular encoded retention matches the explicit mode
+PASS true: compressed encoded retention matches the explicit mode
+PASS compressed: regular image retains its source record
+PASS compressed: regular encoded retention matches the explicit mode
+PASS compressed: compressed encoded retention matches the explicit mode
+PASS desktop regular source creates no eager stand-in canvas
+PASS desktop regular source keeps decoded image open without encoded duplicate
+PASS desktop regular source lazily creates valid stand-in on actual eviction
+PASS desktop regular return reuses the live original image and Source
+PASS desktop regular return uploads without decoding or pending work
+PASS desktop recoverable compressed source eagerly prepares its tail stand-in
+PASS desktop recoverable compressed source releases only after upload
+PASS desktop compressed-only mode recovers through actual encoded refill path
+PASS compressed source without encoded recovery does not eagerly allocate a stand-in
+PASS compressed source without encoded recovery retains every original level
+PASS phone true/all mode still eagerly prepares regular bitmap stand-in
+PASS phone native uploaded-image release still closes its original bitmap
+PASS phone true/all mode decodes, uploads and closes returning image
+PASS phone blob mode keeps a Blob and no page view of the bytes
+PASS residency counts a blob record's bytes
+PASS phone blob mode decodes again from the Blob's own bytes
+PASS phone blob mode uploads and closes the returning image like the view mode
+PASS without blob mode a record keeps its view (desktop unchanged)
+PASS real source release collapses the node tree and clears the row node
+PASS collapsed source retains only primitive original texture-slot keys and counts
+PASS actual released GLTF accepts an intact raw GLTF reread
+PASS actual released GLTF still refuses a reread missing the base-color slot
+PASS actual released GLTF still refuses a reread missing the second sampler slot
+PASS a required texture on the wrong node cannot replace its original slot
+PASS restored raw GLTF reread passes the unchanged required-slot contract
+PASS collapsed source preserves repeated original material-slot multiplicity
+PASS deduplicating a required original material slot is refused
+PASS reordering distinct original material nodes is refused
+PASS restoring every repeated slot and original node restores acceptance
+82 controls PASS; NO actual-browser/GPU/memory/visual qualification claimed
+0 failure(s)
+RUN node tools/test_structure_versions.mjs --self-test
+   self-test | ok   the committed versions index lists the smoke fixture, marked as a test fixture
+   self-test | ok   no ?version= asks for nothing and fetches nothing
+   self-test | ok   ?structure= alone asks for nothing yet (reserved for opening a structure)
+   self-test | ok   a committed label swaps exactly that structure, and names its sidecar
+   self-test | ok   …fetching only the versions index, once
+   self-test | ok   …and the HUD chip names the version and says it is a test fixture
+   self-test | ok   version=default shows the canonical record and the chip says so, with no fetch
+   self-test | ok   ?version=fixture falls back to the default and SAYS so
+   self-test | ok   ?structure=no_such_house&version=v1 falls back to the default and SAYS so
+   self-test | ok   ?structure=Bad-Id!&version=v1 falls back to the default and SAYS so
+   self-test | ok   ?structure=bates_auction_room&version=zzz falls back to the default and SAYS so
+   self-test | ok   ?structure=bates_auction_room&version=Hall_Plan falls back to the default and SAYS so
+   self-test | ok   ?structure=sauganash_hotel&version=v2 falls back to the default and SAYS so
+   self-test | ok   an unreadable versions index falls back to the default and says why
+   self-test | ok   v4 full keeps its high asset and BOTH lower tiers select its declared derivative
+   self-test | ok   a default, v3, unrelated structure or missing LOD retains its ordinary asset
+   self-test | ok   the promoted default uses its own light asset in both lower tiers
+   self-test | ok   LOD uses the published gltf address, the source web address, and respects explicit asset bases
+   self-test | ok   returning to the displayed tier discards an in-flight replacement without any commit
+   self-test | ok   the newest pending tier wins; its predecessor is disposed before it becomes visible
+   self-test | ok   a failed replacement keeps the visible tier and reports requested and retained detail
+   self-test | ok   the same failed request can be retried successfully
+   self-test | ok   retiring an asset disposes its unique source geometry, material, textures and bitmap exactly once
+   self-test | ok   a light boot fetches only the light GLB while retaining canonical sidecar and version identity
+   self-test | ok   switching caches each fetched byte stream but reparses fresh material owners every time
+   self-test | ok   a 200 response with corrupt GLB bytes is evicted so a later retry fetches repaired data
+   self-test | ok   no-bank Full to Balanced to Full re-fetches every raw GLB without retaining a bank
+   self-test | ok   no-bank real GLTF parser preserves exact Full geometry, UVs, indices, material and sampler on return
+   self-test | ok   no-bank reparsing owns fresh geometry/material objects while retaining stable structure and sidecar identity
+   self-test | ok   no-bank corrupt replacement reports its error and the next normal refetch restores exact Full without a bank
+   self-test | ok   no-bank refetch preserves the loader normal HTTP revalidation policy
+   self-test | ok   the public default bank still holds its two streams independently of the application no-bank choice
+   self-test | ok   released source detector reads empty raw and cloned compressed payloads without userData markers
+   self-test | ok   released source detector rejects regular, no-mip, live compressed and absent source cases
+   self-test | ok   required source texture presence accepts compressed-to-RGBA fallback without relying on runtime IDs
+   self-test | ok   required source texture presence rejects a missing map and a dropped duplicate slot
+   self-test | ok   a same-name texture on another node cannot compensate for a missing required slot
+   self-test | ok   another material-array position cannot compensate for a missing required slot
+   self-test | ok   handoff fixture performs a real first production residency payload release and cache retirement
+   self-test | ok   negative control reproduces zero-byte second-manager tail when the required reread is omitted
+   self-test | ok   actual main reread extends old phone geometry selection, skips fresh Glessner and keeps regular live rows
+   self-test | ok   actual main reread keeps new candidates and old retired owners separate before commit
+   self-test | ok   required real refetch/reparse makes second-manager far tail populated at every mip
+   self-test | ok   reread second manager returns through the existing encoded refill path without errors or a raw bank
+THREE.GLTFLoader: Couldn't load texture blob:nodedata:ecb709a2-5a56-4f89-9a6e-da5431bd041a
+   self-test | ok   failed actual encoded candidate preserves the visible world and discards successful partial rereads
+   self-test | ok   failed actual corrupt-glb candidate preserves the visible world and discards successful partial rereads
+   self-test | ok   failed actual http candidate preserves the visible world and discards successful partial rereads
+   self-test | 0 failure(s)
