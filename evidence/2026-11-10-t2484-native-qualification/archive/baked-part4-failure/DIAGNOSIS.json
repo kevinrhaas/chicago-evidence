@@ -1,0 +1,45 @@
+{
+  "status": "ACTUAL_BAKED_PART4_TWO_DERIVED_OWNER_FAILURES",
+  "job_id": 129843913501,
+  "job_name": "bake gate part 4/8",
+  "job_conclusion": "failure",
+  "source": "6b11594bbd1d1a4e9fdd864878359ccf1c54edfc",
+  "run": 42818215260,
+  "failures": [
+    {
+      "owner": "tools/generate_worn_ground_1812.py",
+      "check": [
+        "python3",
+        "tools/generate_worn_ground_1812.py",
+        "--check"
+      ],
+      "literal_error": "data/enclosures/1812/worn_trails_1812.json is not what the rule derives",
+      "stale_output": "data/enclosures/1812/worn_trails_1812.json",
+      "owner_rebuild": [
+        "python3",
+        "tools/generate_worn_ground_1812.py"
+      ]
+    },
+    {
+      "owner": "tools/resolve_land_tracts.py",
+      "check": [
+        "python3",
+        "tools/resolve_land_tracts.py",
+        "--check"
+      ],
+      "literal_error": "data/research/land_sales/ground.json has drifted from what tools/resolve_land_tracts.py --build derives; kinzie_house_1812_green: its land_owner block would be updated by --build",
+      "stale_outputs": [
+        "data/research/land_sales/ground.json",
+        "data/structures/kinzie_house_1812_green.json land_owner"
+      ],
+      "owner_rebuild": [
+        "python3",
+        "tools/resolve_land_tracts.py",
+        "--build"
+      ]
+    }
+  ],
+  "relationship_to_existing_flora_and_match_updates": "Flora placement and photo verdict updates alone do not rebuild either stale owner output; explicit official owner regeneration is needed. Source6b native83 audit remains independently qualified.",
+  "mutations_performed": false,
+  "raw_log_sha256": "14a0379d574e0947d963bc5a1d617e719ae00ef96c881214574df9842dc76b96"
+}
