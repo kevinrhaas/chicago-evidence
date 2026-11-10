@@ -1,0 +1,13 @@
+# Actual native pavement support, finite physical observation
+
+Exact committed source: `a1bc31a8df080f2e5956056fe0800761bd47bc10`, based on committed11d4bb. This is a local source-bound fixture, not a live DEV/publication claim: saved9d/actual recipe/alias fixture plus23 explicit current overlays. Seven original native consumers remain exact; terrain's admission import/method and the new pedestrian helper are intentional changes. Removing those two reviewed terrain additions reproduces the frozen alias-aware terrain bytes. Fort-gate and1904source-use dependencies are explicitly current.
+
+In the actual1280/Balanced1904 world, Charles is at postA(1395.2,-3245.955), heading90, nativeLOD1/wanted1/no pending. The root now equals the actual visible parkway centre:4.311735338458686m. Raw terrain remains4.341757225227355m. Runtime cut admission is true. This is the intended centre-support correction.
+
+Both actual compiled ground materials share the enabled cut, GL box and texture identity. The actual1,017,792byte Red mask has SHAef7c5c8e3044c87b3e8e9840aab362e12743e73214f8eeea9f2d658a0c32aab9, matching06. All1466left/1476right original foot-domain vertices are covered by the drawn street and masked in both materials. Actual minimum gaps are-2.3149546mm(left) and-2.8503888mm(right). The previously predicted slope/pose penetration remains; this is not full stance/contact PASS and supplies no new tolerance or pose fudge.
+
+The runtime lazy index reports5surfaces/18166triangles/215176ownedbytes/653976aliasedgeometrybytes/zero duplicatedXYZ. Original horse-hoof contact assertions remain unchanged and pass this held finite pose. Those numbers do not establish phone peak memory, continuous route/pose contact or boundary-transition acceptance.
+
+The strict global observer is NONPASS because30 native ERR_ABORTED requests are retained; there are zero actual page/HTTP/server/physical-observer errors. Abort records alone do not prove a product regression. The supervised run closed376.176seconds under the original600cap, original4GiB/512MiB/1GiB resource floors accepted, cleanup complete/no remaining owned children. There were no screenshot/UI-cleanup/quiet-time/tour stages after the ordinary Roam bootstrap. No budget, photographic, phone or whole-world acceptance is claimed.
+
+Predecessor08 failed the original workspace floor before physical capture(533749760bytes<536870912bytes) and remains NONPASS. With ROOT's existing explicit permission, normal sparse checkout removed only verified-clean old9d extras: workspace533463040→871829504bytes; all11dirty hashes/status and all proofs/receipts remained exact. ROOT then authorized exactly one unchanged-source retry09.
