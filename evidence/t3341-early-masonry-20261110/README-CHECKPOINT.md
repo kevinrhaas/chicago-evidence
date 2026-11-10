@@ -3,13 +3,13 @@
 Source PR: https://github.com/kevinrhaas/chicago/pull/1918.
 Runtime source: `cab45145391cccb84ab408123b70207c32634fcc`.
 
-**Runtime acceptance passes.** Both scenes boot with ordinary upload release and default device selection. The 28 accepted surface frames and two detail-roundtrip frames were directly opened and reviewed. The source changes do not edit native assets, geometry, confidence, or 1904 material bindings. Nine protected source checks (eight parts and aggregate) are green on `cab4514539`. The captured moving-frame/upload-release states are identified separately; final GitHub checks and the dev merge remain release gates, not assumed successes.
+**Runtime acceptance passes.** Both scenes boot with ordinary upload release and default device selection. The 28 accepted surface frames and two detail-roundtrip frames were directly opened and reviewed. The source changes do not edit native assets, geometry, confidence, or 1904 material bindings. Nine protected source checks (eight parts and aggregate) are green on `cab4514539`. Moving-frame and upload-release checks also pass on that runtime. The final documentation head must pass its own protected checks before the ordinary dev merge; no unmerged work is called released.
 
 | Actual gate | Result | Ceiling |
 | --- | ---: | ---: |
-| Default 1835 first-visit gzip wire | 46,888,266 bytes / 44.716135 MiB | 44.9 MiB |
-| Default 1812 phone memory |320,512,587 bytes / 305.664622 MiB | 350 MiB, unchanged |
-| Default 1835 phone memory |533,963,944 bytes / 509.227699 MiB | 550 MiB, unchanged |
+| Default 1835 first-visit gzip wire | 46,888,266 bytes / 44.716135  MiB | 44.9  MiB |
+| Default 1812 phone memory |320,512,587 bytes / 305.664622  MiB | 350 MiB, unchanged |
+| Default 1835 phone memory |533,963,944 bytes / 509.227699  MiB | 550 MiB, unchanged |
 
 Official tools are run unmodified: `measure_boot_payload.mjs --check --json --entries …`, and `measure_memory.mjs --gate --year 1812,1835 --only mobile --no-snapshot --json …`. The raw memory meter's ticket field names its own T-2546 provenance; this packet's wrapper identifies the T-3341 qualification. No refused resources, forced tier, retained-geometry route, cap waiver, or phone-geometry removal is used. The boot's 1,207 requests have zero failures. Both memory rows use Light and have zero page errors. Whole-boot before/after source/build identity stays fixed.
 
