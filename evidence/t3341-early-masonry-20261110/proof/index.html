@@ -1,0 +1,22 @@
+<!doctype html><html><head><meta charset="utf-8"><style>body{margin:0;background:#202933;color:#fff;font:16px sans-serif}#note{position:absolute;top:12px;left:16px;padding:10px;background:#111b}canvas{display:block}</style><script type="importmap">{"imports":{"three":"/vendor/three-0.185.1/three.module.js","three/addons/":"/vendor/three-0.185.1/addons/"}}</script></head><body><div id="note">Development shader proof · T-3341<br>Brick and lime mortar (left) · exterior clay stack (right)</div><script type="module">
+import * as THREE from 'three';
+import {loadMasonrySurfaces} from '/js/masonry-surfaces.js';
+import {packScalars} from '/js/compact-attributes.js';
+import {initKTX2,ktx2State} from '/js/ktx2.js';
+try {
+ const renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(1);renderer.setClearColor(0x27313b);document.body.append(renderer.domElement);
+ renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.1;
+ const errors=[];renderer.debug.onShaderError=(gl,p,v,f)=>errors.push({vertex:gl.getShaderInfoLog(v),fragment:gl.getShaderInfoLog(f),program:gl.getProgramInfoLog(p)});
+ const q=new URLSearchParams(location.search);initKTX2(renderer,{textures:q.has('light')?'light':'full',disabled:q.has('fallback')});
+ const surfaces=await loadMasonrySurfaces({wanted:true,lowSpec:q.has('light'),off:q.has('before'),shuffle:!q.has('tiled'),assetBase:new URL('/assets/',location)});
+ if(surfaces.problem)throw new Error(surfaces.problem);
+ const scene=new THREE.Scene();scene.add(new THREE.HemisphereLight(0xffffff,0x755333,2));const sun=new THREE.DirectionalLight(0xffffff,4);sun.position.set(-4,6,7);scene.add(sun);
+ const camera=new THREE.PerspectiveCamera(43,innerWidth/innerHeight,.1,100);camera.position.set(0,2.8,10.0);camera.lookAt(0,1.6,0);
+ function material(kind){const m=new THREE.MeshStandardMaterial({roughness:.85});m.color.setRGB(...(kind==='brick'?[.45,.23,.17]:[.5,.42,.28]));m.name='chimney';surfaces.apply(m,{scene:'1835',archetype:kind==='brick'?'frame_dwelling':'log_dwelling'});return m;}
+ const wallGeo=new THREE.BoxGeometry(3.8,2.8,.3);wallGeo.translate(0,1.4,0);wallGeo.setAttribute('_roughness',new THREE.BufferAttribute(new Float32Array(wallGeo.getAttribute('position').count).fill(.85),1));packScalars(wallGeo,255);const wall=new THREE.Mesh(wallGeo,material('brick'));wall.position.x=-2.05;scene.add(wall);
+ const clayGeo=new THREE.BoxGeometry(.95,3.0,.95);clayGeo.translate(0,1.5,0);clayGeo.setAttribute('_roughness',new THREE.BufferAttribute(new Float32Array(clayGeo.getAttribute('position').count).fill(.9),1));packScalars(clayGeo,255);const clay=new THREE.Mesh(clayGeo,material('clay'));clay.position.x=1.15;scene.add(clay);
+ await renderer.compileAsync(scene,camera);renderer.render(scene,camera);
+ window.PROOF={status:errors.length?'SHADER_FAIL':'READY',errors,maps:surfaces.sets,ktx2:ktx2State,renderer:renderer.info.render,query:location.search};
+ if(errors.length)throw new Error(JSON.stringify(errors));
+} catch(e){window.PROOF={status:'FAIL',error:e.stack};document.getElementById('note').textContent=e.stack;console.error(e);}
+</script></body></html>
