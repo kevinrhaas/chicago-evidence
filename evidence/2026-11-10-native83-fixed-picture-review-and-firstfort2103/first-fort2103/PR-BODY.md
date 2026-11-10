@@ -1,0 +1,5 @@
+The first fort’s northwest blockhouse has no canonical review records for two already credited reference pictures. This adds a northwest anchor for Currey’s fourteen-member bird’s-eye group and the existing thirty-member Kurz & Allison panel1 group. Both preserve exact world framing, source credits and surveyed scene placements; neither is a new historical camera solve.
+
+This is a bounded internal picture-coverage increment for T-3041/T-2387. It does not change town geometry or the visitor Images card. The source checkpoint is separate from PR1903’s grouped model work. Fresh comparisons and actual current-native review records are pending, and the original all-pictures ticket remains partial.
+
+Validation: actual affine proof differs by at most7.39e-13 pixels/depth units across the14 Currey members; before/after Images-card compiler output is identical; existing picture-compiler self-tests, group owner and changelog owner pass. Full required source CI and actual picture acceptance remain pending. No native bake, main or production promotion is requested for these camera files.
