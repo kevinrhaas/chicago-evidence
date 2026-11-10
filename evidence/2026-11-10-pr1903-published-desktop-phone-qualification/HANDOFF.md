@@ -1,0 +1,11 @@
+# Final grouped published desktop and phone QA checkpoint
+
+Frozen final source: `cba1b76af4c34077c9ffcb3a31fa55bc39dc9ef0` in the full `/tmp/chicago-west-wicket-20261109` checkout. Native package `47f5ecbbe3a15cd0011eb6d87a619e4bd0144c4f` binds raw parent `5484f145fb02e51a4f43a773c4bf818ab9e46b8f`, native run `42730943430`. The binary-capable full net patch from `c5382c727ae06e0ba1cd6816cc072cbfba4d963d` to final head and GitHub compare/commit IDs are included for recovery.
+
+Both actual desktop and phone processes exited 0. Each bound the four fetched WEB assets and all fourteen exact review annotations, with zero page/network/HTTP/console errors and zero hard problems. This packet includes all 26 final PNGs: thirteen desktop and thirteen phone. Runtime reviewer directly viewed all 26; parent reports ten key final images directly viewed. Jail top above actual terrain: 2.440929808471526 m desktop and 2.4409077029331705 m phone.
+
+The literal first desktop FAIL receipt, failed log, original helper source, and correction explanation are included. Its ten completed images and FAIL.png remain locally retained but are omitted from this packet; exact omitted hashes/bytes are disclosed in `runtime/INITIAL-RED-SCREENSHOT-OMISSION.json`. The immutable runtime summary says those first-attempt pictures are preserved locally; it is not a claim that they are included here. No app/source changes were made for that helper assertion correction.
+
+The final source API snapshot and final CI run `42734527776` snapshot are time-bounded: CI is in progress with null conclusion, PR1903 is open/draft and unmerged. Final CI and merge remain pending. Do not reinterpret bounded runtime PASS as final CI green, full smoke, complete picture-gate acceptance or closure of T-2374/T-2376/T-2380; those tickets remain partial. `source/FINAL-DOC-APPEND-PROOF.json` records byte-prefix preservation of STATUS and ROADMAP.
+
+Prior checkpoint commits and recovered exact readback receipt are referenced in `PREVIOUS-CHECKPOINTS.json`; their payloads are not duplicated. The 84-file packet already exists at `a89980977a1ac9d5d4eac2d4228b6e7d34f67ee7`, recovered by read-only actual Git blob comparisons; the preparer performed no GitHub mutations. Root alone publishes this frozen packet.
