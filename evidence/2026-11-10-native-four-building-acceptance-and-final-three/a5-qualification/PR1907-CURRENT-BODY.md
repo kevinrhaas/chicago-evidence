@@ -1,0 +1,13 @@
+This group visibly reconstructs five early Chicago buildings and completes the picture work for Cobweb Castle (T-2374), the log jail (T-2380), and Sauganash Hotel (T-2383). Lake House (T-2379) becomes an explicitly reconstructed open July worksite; its known completed-hotel pictures concern later states and are not claimed as July matches.
+
+Green Tree (T-2376) is **partial**: its raised rear gable, low connector and foreground sash are improved, but review found three upper front windows in Trowbridge against two in the model. All three current comparison records retain that categorical omission OPEN. That same original ticket finishes with the two forts in the next group, without filing a photo follow-up.
+
+Pinned native run [42745792113](https://github.com/kevinrhaas/chicago/actions/runs/42745792113) exported 375 bindings from `64a752353bc66fa6bfa58c853b90c32625f7b739`; retained commit `9dd9ba7ddd22c6ff87e52522497205f62133fa1f` has that exact raw parent. All selected bindings are fresh. The audit proves 370 controls preserve geometry/materials/confidence/consumed UVs and all published model bytes; six MASTER differences are proven unused-UV packing only. All 671 foreign defaults and four variants remain exact. Three door-cache hash changes independently rederive with unchanged physical doors.
+
+Actual current image gates pass for Cobweb, jail, Sauganash and all three Carpenter contexts. Existing accepted Currey comparisons were actually refreshed, without closing the first-fort original. Official surrounding-yard/ground derivations fix the old Cobweb prop clash; all 11 dependent owners and the actual dataset validator pass (zero errors). Sources, dated conflicts and liberties are compiled; the companion Cobweb illustration now appears with real credits in Images.
+
+Three smoke consumer assertions now follow the current collapsed review note, enabled building-destination action and exact stand-in-face disclosure; product behavior and budgets are unchanged. The broad earlier native smoke had existing failures and is not represented as a full pass.
+
+Final qualification at `c5551fdd66fc79d673155a20138f7d331df51b8b`: [protected source CI](https://github.com/kevinrhaas/chicago/actions/runs/42749721172) and actual published desktop/phone review are in progress. Lake House’s wrong-state image exception will be durably recorded before closure; no fictitious July camera or empty accepted match will be created.
+
+Source/before checkpoint: [116 verified files](https://github.com/kevinrhaas/chicago-evidence/tree/91a88b05f845fe9c752faeb51c4b40ead8ad4a3b/evidence/2026-11-10-five-building-completion-source). Production is untouched.
