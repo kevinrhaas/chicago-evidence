@@ -1,0 +1,5 @@
+
+
+**Completed 2026-11-10:** [PR #1918](https://github.com/kevinrhaas/chicago/pull/1918) merged to dev at 2026-11-10T13:55:59Z, squash `0d64b936734a6a87e50244885054711a388c77e4`, from qualified source `4ec8b2578578416fa7c5535d1a788b26cd0b9bf5`. Early 1812/1835 brick walls and interior ridge stacks now use the existing local clay brick/lime mortar surface with per-brick shuffle and relief; exterior log stacks retain clay daub. Fourteen already mapped early materials and 1904 exclusions remain. Native assets were not rebaked. All eight protected source parts, aggregate and moving-frames passed on the final source.
+
+[Exact public visual and integrated resource qualification](https://github.com/kevinrhaas/chicago-evidence/tree/bfeb2ceccd37d3b9ffdfdf6a7c74a9ee5e435d7a/evidence/t3341-early-masonry-20261110) retains desktop/default-phone before/after coverage and explicitly rejected obstructed fixtures. Final integrated boot: 44.717962 MiB of 44.9; default Light phone memory: 1812 304.613722 MiB of 350, 1835 500.817724 MiB of 550; zero page errors or failed boot requests. Official normal done/settle recorded the actual merge instant; no closure override.
