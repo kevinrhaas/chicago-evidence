@@ -1,0 +1,187 @@
+--- capture-source-six.cjs
++++ capture-optical.cjs
+@@ -1,105 +1,112 @@
+ // SPDX-License-Identifier: GPL-3.0-or-later
+-// UNRUN source-engineering study; explicit ROOT admission under original SUP120.
+-const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),crypto=require('node:crypto'),assert=require('node:assert/strict');
++// Prepared native optical plates; no installed rig/boarding/world qualification.
++const fs=require('node:fs'),path=require('node:path'),http=require('node:http');
++const crypto=require('node:crypto'),assert=require('node:assert/strict');
+ const {chromium}=require('/workspace/.cloud-setup/npm/node_modules/playwright');
+ const args=process.argv.slice(2);
+-assert.equal(args.length,4,'--output PATH --binding-sha SHA256 required');
+-assert.equal(args[0],'--output');assert.equal(args[2],'--binding-sha');assert.match(args[3],/^[0-9a-f]{64}$/);
+-const out=path.resolve(args[1]);assert(!fs.existsSync(out),'Fresh output required');fs.mkdirSync(out);
++assert.equal(args.length,4);assert.equal(args[0],'--output');assert.equal(args[2],'--binding-sha');
++const out=path.resolve(args[1]);assert(!fs.existsSync(out));fs.mkdirSync(out);
+ const prep=__dirname,sha=bytes=>crypto.createHash('sha256').update(bytes).digest('hex');
+-const bindingPath=path.join(prep,'PREPARATION-BINDING.json'),bindingBytes=fs.readFileSync(bindingPath);
++const bindingBytes=fs.readFileSync(path.join(prep,'PREPARATION-BINDING.json'));
+ assert.equal(sha(bindingBytes),args[3]);const binding=JSON.parse(bindingBytes);
+ const config=JSON.parse(fs.readFileSync(path.join(prep,'protocol.json')));
+-const readJSON=p=>JSON.parse(fs.readFileSync(p));
+ const write=(name,value)=>fs.writeFileSync(path.join(out,name),JSON.stringify(value,null,2)+'\n');
+-const parentSnapshot=()=>Object.fromEntries(binding.files.map(row=>{const bytes=fs.readFileSync(row.path);assert.equal(bytes.length,row.bytes,row.path);return[row.path,sha(bytes)];}));
++const snapshot=()=>Object.fromEntries(binding.files.map(row=>{
++  const bytes=fs.readFileSync(row.path);assert.equal(bytes.length,row.bytes);return[row.path,sha(bytes)];
++}));
+ const expected=Object.fromEntries(binding.files.map(row=>[row.path,row.sha256]));
+-const before=parentSnapshot();assert.deepEqual(before,expected);write('PARENTS-BEFORE.json',before);
+-assert.equal(binding.geometry_checkpoint,'74aea12face3705206cf9fd29ddde46ca967c592');
+-assert.deepEqual(config.viewport,[1280,800]);assert.equal(config.cases.length,6);
+-assert.deepEqual(config.cases.map(x=>[x.id,x.input,x.variant,x.angle_deg]),[
+-  ['near-OLD-closed','old_near','old',0],['near-NEW-closed','new_near','new',0],['near-NEW-open-65','new_near','new',-65],
+-  ['mid-OLD-closed','old_mid','old',0],['mid-NEW-closed','new_mid','new',0],['mid-NEW-open-65','new_mid','new',-65]]);
+-for(const input of Object.values(config.inputs)) {assert.equal(expected[input.path],input.sha256);assert.equal(fs.statSync(input.path).size,input.bytes);}
++const before=snapshot();assert.deepEqual(before,expected);write('PARENTS-BEFORE.json',before);
++assert.equal(config.cases.length,14);
++assert.deepEqual(config.profiles.desktop.viewport,[1280,800]);
++assert.deepEqual(config.profiles.phone.viewport,[390,780]);
++for(const input of Object.values(config.inputs)) assert.equal(expected[input.path],input.sha256);
+ const endpoints=new Map(binding.http_files.map(row=>[row.route,row]));
+-const journal={schema:'chicago-t2797-source-six-geometry-study-v1',state:'RUNNING',qualification:false,visual_review:'PENDING',
+-  scope:config.scope,checkpoint:binding.geometry_checkpoint,binding_sha256:args[3],runner_sha256:sha(fs.readFileSync(__filename)),
+-  viewport:config.viewport,camera:config.camera,studio:config.studio,cases:[],errors:[],console:[],requests:[],http:[],body_tasks:[],
+-  parents_verified:false,context_closed:false,browser_closed:false,server_closed:false,pass:false,final_PASS:false};
++const journal={schema:'chicago-t2797-native-optical-fourteen-plates-v1',state:'RUNNING',scope:config.scope,
++  binding_sha256:args[3],runner_sha256:sha(fs.readFileSync(__filename)),cases:[],errors:[],console:[],
++  contexts:[],requests:[],http:[],body_tasks:[],parents_verified:false,browser_closed:false,
++  server_closed:false,pass:false,final_PASS:false,photographic_accepted:false,boarding_enabled:false};
+ const started=Date.now(),pending=new Set();let server,browser,context,page,failure,origin;
+ const persist=()=>write('RESULT.json',{...journal,elapsed_s:(Date.now()-started)/1000,pending_body_tasks:pending.size});
+ const recordError=(type,detail)=>{journal.errors.push({type,detail});persist();};
+ const track=promise=>{pending.add(promise);promise.finally(()=>pending.delete(promise));};
+ const drain=async()=>{while(pending.size) await Promise.allSettled([...pending]);};
+-
+ (async()=>{
+   try {
+     persist();
+     server=http.createServer((req,res)=>{
+       journal.requests.push({method:req.method,url:req.url});
+       try {
+-        assert.equal(req.method,'GET','Only source GET requests allowed');
+-        assert.equal(req.url,new URL(req.url,'http://localhost').pathname,'No query/fragment or route rewrite allowed');
+-        const row=endpoints.get(req.url);assert(row,'Undeclared HTTP route '+req.url);
+-        const bytes=fs.readFileSync(row.path);assert.equal(sha(bytes),row.sha256,'Served source bytes changed');
++        assert.equal(req.method,'GET');
++        assert.equal(req.url,new URL(req.url,'http://localhost').pathname,'No route rewrite/query');
++        const row=endpoints.get(req.url);assert(row,'Undeclared local route '+req.url);
++        const bytes=fs.readFileSync(row.path);assert.equal(sha(bytes),row.sha256);
+         res.writeHead(200,{'content-type':row.content_type,'content-length':bytes.length,'cache-control':'no-store'});res.end(bytes);
+         journal.http.push({route:req.url,status:200,bytes:bytes.length,sha256:sha(bytes)});
+-      } catch(error) {recordError('local_server',String(error.stack??error));res.writeHead(500);res.end('Source binding rejected');}
++      }catch(error){recordError('local_server',String(error.stack??error));res.writeHead(500);res.end('Binding rejected');}
+     });
+     await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(0,'127.0.0.1',resolve);});
+     origin='http://127.0.0.1:'+server.address().port;journal.origin=origin;
+     browser=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--enable-unsafe-swiftshader']});
+     journal.browser_version=browser.version();
+-    context=await browser.newContext({viewport:{width:1280,height:800},deviceScaleFactor:1,ignoreHTTPSErrors:false});
+-    await context.route('**/*',async route=>{
+-      if(new URL(route.request().url()).origin!==origin) {recordError('unexpected_origin',route.request().url());await route.abort();}
+-      else await route.continue();
+-    });
+-    page=await context.newPage();
+-    page.on('pageerror',error=>recordError('pageerror',String(error.stack??error)));
+-    page.on('console',message=>{journal.console.push({type:message.type(),text:message.text(),location:message.location()});if(message.type()==='error') recordError('console.error',message.text());});
+-    page.on('requestfailed',request=>recordError('requestfailed',{url:request.url(),failure:request.failure()}));
+-    page.on('response',response=>{
+-      const task=(async()=>{
+-        const url=new URL(response.url());const row=endpoints.get(url.pathname);
+-        assert.equal(url.origin,origin);assert(row,'Undeclared browser response');assert.equal(response.status(),200,'Non-200 browser response');
+-        const body=await response.body();assert.equal(sha(body),row.sha256,'Browser response body differs from exact served source');
+-        journal.body_tasks.push({route:url.pathname,status:response.status(),bytes:body.length,sha256:sha(body)});
+-      })().catch(error=>recordError('response_body',String(error.stack??error)));
+-      track(task);
+-    });
+-    const response=await page.goto(origin+'/',{waitUntil:'load',timeout:30000});assert.equal(response.status(),200);
+-    await page.waitForFunction(()=>window.sourceStudyReady===true,{},{timeout:30000});
+-    for(const item of config.cases) {
+-      const caseStarted=Date.now();
+-      const observed=await page.evaluate(key=>window.captureSourceCase(key),item.id);
+-      assert.equal(observed.case,item.id);assert.equal(observed.sha256,config.inputs[item.input].sha256);
+-      assert.equal(observed.angle_deg,item.angle_deg);assert.deepEqual(observed.materials_json,config.original_materials);
+-      assert.deepEqual(observed.camera.eye,config.camera.eye);assert.deepEqual(observed.camera.target,config.camera.target);
+-      assert.equal(observed.renderer.gl_error,0);
+-      if(item.variant==='new') assert(Math.abs(observed.door_angle_actual_deg-item.angle_deg)<1e-10);
+-      const image=await page.screenshot({path:path.join(out,item.id+'.png'),type:'png',fullPage:false,animations:'allow'});
+-      assert.equal(image.subarray(0,8).toString('hex'),'89504e470d0a1a0a');assert.equal(image.readUInt32BE(16),1280);assert.equal(image.readUInt32BE(20),800);
+-      await drain();assert.equal(journal.errors.length,0,'Actual source render/network error');
+-      journal.cases.push({...observed,screenshot:{path:item.id+'.png',bytes:image.length,sha256:sha(image),width:1280,height:800,postprocessing:false},elapsed_s:(Date.now()-caseStarted)/1000});
+-      persist();
++    for(const [key,profile]of Object.entries(config.profiles)) {
++      const contextRecord={profile:key,...profile,disposed:false,closed:false};journal.contexts.push(contextRecord);
++      context=await browser.newContext({viewport:{width:profile.viewport[0],height:profile.viewport[1]},
++        deviceScaleFactor:1,isMobile:profile.isMobile,hasTouch:profile.hasTouch,ignoreHTTPSErrors:false});
++      await context.route('**/*',async route=>{
++        if(new URL(route.request().url()).origin!==origin){recordError('unexpected_origin',route.request().url());await route.abort();}
++        else await route.continue();
++      });
++      page=await context.newPage();
++      page.on('pageerror',e=>recordError('pageerror',String(e.stack??e)));
++      page.on('console',m=>{journal.console.push({type:m.type(),text:m.text(),location:m.location()});if(m.type()==='error')recordError('console.error',m.text());});
++      page.on('requestfailed',r=>recordError('requestfailed',{url:r.url(),failure:r.failure()}));
++      page.on('response',response=>{
++        const task=(async()=>{
++          const url=new URL(response.url()),row=endpoints.get(url.pathname);
++          assert.equal(url.origin,origin);assert(row);assert.equal(response.status(),200);
++          const body=await response.body();assert.equal(sha(body),row.sha256);
++          journal.body_tasks.push({profile:key,route:url.pathname,status:response.status(),bytes:body.length,sha256:sha(body)});
++        })().catch(error=>recordError('response_body',String(error.stack??error)));track(task);
++      });
++      const response=await page.goto(origin+'/',{waitUntil:'load',timeout:30000});assert.equal(response.status(),200);
++      await page.waitForFunction(()=>window.opticalStudyReady===true,{},{timeout:30000});
++      for(const item of config.cases.filter(x=>x.profile===key)) {
++        const caseStarted=Date.now(),observed=await page.evaluate(id=>window.captureOpticalCase(id),item.id);
++        assert.equal(observed.case,item.id);assert.equal(observed.sha256,config.inputs[item.input].sha256);
++        assert.equal(observed.angle_deg,item.angle_deg);assert.deepEqual(observed.materials_json,config.optical_materials);
++        assert.deepEqual(observed.viewport,profile.viewport);assert.equal(observed.renderer.gl_error,0);
++        assert.deepEqual(observed.camera.eye,config.cameras[item.camera].eye);
++        assert.deepEqual(observed.camera.target,config.cameras[item.camera].target);
++        if(item.variant==='new')assert(Math.abs(observed.door_angle_actual_deg-item.angle_deg)<1e-10);
++        const image=await page.screenshot({path:path.join(out,item.id+'.png'),type:'png',fullPage:false,animations:'allow'});
++        assert.equal(image.subarray(0,8).toString('hex'),'89504e470d0a1a0a');
++        assert.equal(image.readUInt32BE(16),profile.viewport[0]);assert.equal(image.readUInt32BE(20),profile.viewport[1]);
++        await drain();assert.equal(journal.errors.length,0);
++        journal.cases.push({...observed,screenshot:{path:item.id+'.png',bytes:image.length,sha256:sha(image),
++          width:profile.viewport[0],height:profile.viewport[1],postprocessing:false},elapsed_s:(Date.now()-caseStarted)/1000});persist();
++      }
++      assert.deepEqual(await page.evaluate(()=>window.disposeOpticalStudy()),{disposed:true});contextRecord.disposed=true;
++      await context.close();context=null;contextRecord.closed=true;await drain();
+     }
+-    assert.equal(journal.cases.length,6);await page.evaluate(()=>window.disposeSourceStudy());
+-  } catch(error) {failure=String(error.stack??error);journal.failure=failure;journal.state='NONPASS';}
++    assert.equal(journal.cases.length,14);
++  }catch(error){failure=String(error.stack??error);journal.failure=failure;journal.state='NONPASS';}
+   finally {
+-    if(context) try{await context.close();journal.context_closed=true;}catch(error){recordError('context_close',String(error.stack??error));}
++    if(context)try{await context.close();}catch(error){recordError('context_close',String(error.stack??error));}
+     await drain();
+-    if(browser) try{await browser.close();journal.browser_closed=true;}catch(error){recordError('browser_close',String(error.stack??error));}
++    if(browser)try{await browser.close();journal.browser_closed=true;}catch(error){recordError('browser_close',String(error.stack??error));}
+     await drain();
+-    if(server) try{await new Promise((resolve,reject)=>server.close(error=>error?reject(error):resolve()));journal.server_closed=true;}catch(error){recordError('server_close',String(error.stack??error));}
+-    try {const after=parentSnapshot();write('PARENTS-AFTER.json',after);assert.deepEqual(after,before);journal.parents_verified=true;} catch(error){recordError('final_source_binding',String(error.stack??error));}
+-    const bytes=fs.readdirSync(out).map(name=>fs.statSync(path.join(out,name)).size).reduce((a,b)=>a+b,0);
+-    if(bytes>128*1024*1024) recordError('output_limit',String(bytes));
+-    journal.pass=!failure&&journal.cases.length===6&&journal.errors.length===0&&pending.size===0&&journal.parents_verified&&journal.context_closed&&journal.browser_closed&&journal.server_closed;
+-    journal.state=journal.pass?'CAPTURE_COMPLETE_REQUIRES_VISUAL_REVIEW':'NONPASS';
+-    journal.final_PASS=false;persist();
+-    fs.writeFileSync(path.join(out,'OUTPUT-MANIFEST.json'),JSON.stringify(fs.readdirSync(out).filter(name=>name!=='OUTPUT-MANIFEST.json').sort().map(name=>{const p=path.join(out,name),b=fs.readFileSync(p);return{path:name,bytes:b.length,sha256:sha(b)};}),null,2)+'\n');
+-    if(!journal.pass) process.exitCode=1;
+-    console.log(JSON.stringify({state:journal.state,cases:journal.cases.length,error_count:journal.errors.length,pending_body_tasks:pending.size,final_PASS:false,elapsed_s:(Date.now()-started)/1000}));
++    if(server)try{await new Promise((resolve,reject)=>server.close(e=>e?reject(e):resolve()));journal.server_closed=true;}catch(error){recordError('server_close',String(error.stack??error));}
++    try{const after=snapshot();write('PARENTS-AFTER.json',after);assert.deepEqual(after,before);journal.parents_verified=true;}catch(error){recordError('final_binding',String(error.stack??error));}
++    const size=fs.readdirSync(out).map(n=>fs.statSync(path.join(out,n)).size).reduce((a,b)=>a+b,0);
++    if(size>128*1024*1024)recordError('output_limit',String(size));
++    journal.pass=!failure&&journal.cases.length===14&&journal.errors.length===0&&pending.size===0&&journal.parents_verified
++      &&journal.contexts.length===2&&journal.contexts.every(c=>c.closed&&c.disposed)&&journal.browser_closed&&journal.server_closed;
++    journal.state=journal.pass?'CAPTURE_COMPLETE_REQUIRES_VISUAL_REVIEW':'NONPASS';journal.final_PASS=false;persist();
++    write('OUTPUT-MANIFEST.json',fs.readdirSync(out).filter(n=>n!=='OUTPUT-MANIFEST.json').sort().map(n=>{
++      const bytes=fs.readFileSync(path.join(out,n));return{path:n,bytes:bytes.length,sha256:sha(bytes)};
++    }));
++    if(!journal.pass)process.exitCode=1;
++    console.log(JSON.stringify({state:journal.state,cases:journal.cases.length,errors:journal.errors.length,
++      final_PASS:false,elapsed_s:(Date.now()-started)/1000}));
+   }
+ })().catch(error=>{console.error(error.stack??error);process.exitCode=1;});
