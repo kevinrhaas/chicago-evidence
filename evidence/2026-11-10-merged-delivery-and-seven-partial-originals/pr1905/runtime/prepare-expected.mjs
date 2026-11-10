@@ -1,0 +1,28 @@
+/** External read-only pin preparation, after parent integration and publish. */
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import assert from 'node:assert/strict';
+import {execFileSync} from 'node:child_process';
+const o=Object.fromEntries(process.argv.slice(2).map((v,i,a)=>v.startsWith('--')?[v.slice(2),a[i+1]]:null).filter(Boolean));
+for(const k of ['root','source-sha','native-run','build-prefix','out'])assert(o[k],`--${k} required`);
+assert(/^[a-f0-9]{40}$/.test(o['source-sha']));assert(/^\d+$/.test(o['native-run']));assert(o['build-prefix'].length>=7);
+const root=path.resolve(o.root),id='first_fort_dearborn_blockhouse_nw';
+const read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8'));
+const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
+const base='c5382c727ae06e0ba1cd6816cc072cbfba4d963d';
+const old=rel=>JSON.parse(execFileSync('git',['show',`${base}:chicago/4d/${rel}`],{cwd:root,encoding:'utf8',maxBuffer:20*1024*1024}));
+const sc=read(`data/sidecars/1812/${id}.json`);
+assert(sc.id===id&&sc.scene==='1812'&&sc.target_date==='1812-08-14');
+const grade={value:'attested',why:'Pictured: 2 of the pictures on the Images tab show it.',pictures:['early-currey-1912-first-fort-birdseye','kurz_allison_1893']};assert.deepEqual(sc.grade,grade);
+const oldsc=old(`data/sidecars/1812/${id}.json`),withoutGrade=x=>Object.fromEntries(Object.entries(x).filter(([k])=>k!=='grade'));
+assert.deepEqual(withoutGrade(sc),withoutGrade(oldsc),'all non-grade sidecar content must retain baseline');
+assert.deepEqual(read(`data/structures/${id}.json`),old(`data/structures/${id}.json`),'source structure must retain baseline');
+const pics=read('data/pictures/1812.json').by_structure[id];
+const baseline=JSON.parse(fs.readFileSync('/tmp/nov10-firstfort-nw-coverage/IMAGES-CARD-BEFORE-AFTER.json')).before;
+assert.deepEqual(pics,baseline,'published source pictures must remain the original exact two credited entries');
+assert.equal(pics.length,2);assert(pics.every(p=>!p.spot));
+const file=path.join(root,'assets/web',path.basename(sc.asset)),bytes=fs.readFileSync(file);
+const expected={kind:'PARENT_QUALIFIED_FIRSTFORT_NATIVE_AND_PUBLISHED_BUILD_PIN',source_sha:o['source-sha'],native_run:o['native-run'],asset_provenance:{kind:'preserved_dev_asset',base:'c5382c727ae06e0ba1cd6816cc072cbfba4d963d',current_dev:'4ef',native_run_role:'town-bundle preservation context only; this run did not produce the northwest model',identity_proof:'/tmp/nov10-firstfort-picture/BASE-AND-ACTUAL-GROUP-IDENTITY.json'},build_prefix:o['build-prefix'],prepared_from:root,id,scene:'1812',date:'1812-08-14',grade,attributes:sc.attributes,placement:sc.placement,sourceProof:{base,source_structure_unchanged:true,all_non_grade_sidecar_unchanged:true},asset:{file,sha256:hash(bytes),bytes:bytes.length},pictures:pics,review_ids:fs.readdirSync(path.join(root,'data/sidecars/1812')).filter(f=>f.endsWith('.json')).map(f=>read(`data/sidecars/1812/${f}`)).filter(d=>d.review_required===true).map(d=>{assert.equal(d.scene,'1812');return d.id;}).sort()};
+assert.equal(new Set(expected.review_ids).size,expected.review_ids.length);
+fs.mkdirSync(path.dirname(path.resolve(o.out)),{recursive:true});fs.writeFileSync(o.out,JSON.stringify(expected,null,2)+'\n');console.log(o.out);

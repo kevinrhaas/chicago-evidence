@@ -1,0 +1,65 @@
+/** One actual published 1812 boot per viewport, serial and GPU-slot authorized only. */
+import fs from 'node:fs';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+import {pathToFileURL} from 'node:url';
+const o=Object.fromEntries(process.argv.slice(2).map((v,i,a)=>v.startsWith('--')?[v.slice(2),a[i+1]]:null).filter(Boolean));
+for(const k of ['url','viewport','out','expected'])assert(o[k],`--${k} required`);
+assert(['desktop','phone'].includes(o.viewport));assert(process.env.PW_MODULE,'use the already-installed pinned Playwright; no installs');
+const expected=JSON.parse(fs.readFileSync(o.expected));
+assert.equal(expected.id,'first_fort_dearborn_blockhouse_nw');assert(/^[a-f0-9]{64}$/.test(expected.asset?.sha256));assert(expected.build_prefix&&/^[a-f0-9]{40}$/.test(expected.source_sha));assert.equal(expected.pictures.length,2);assert(expected.pictures.every(p=>!p.spot));
+const out=path.resolve(o.out);fs.mkdirSync(out,{recursive:true});
+const phone=o.viewport==='phone',viewport=phone?{width:390,height:780}:{width:1280,height:800};
+const url=new URL(o.url);url.searchParams.set('year','1812');assert(!url.pathname.includes('/renderers/web/'),'published layout required');
+const receipt={kind:'BOUNDED_FIRSTFORT_PUBLISHED_BADGE_SOURCES_IMAGES_QA_NOT_FULL_SMOKE_OR_PHOTO_ACCEPTANCE',status:'RUNNING',url:String(url),viewport,deviceScaleFactor:phone?2:1,expected,screenshots:[],pageErrors:[],failedRequests:[],badResponses:[],consoleErrors:[]};
+const save=()=>fs.writeFileSync(path.join(out,'receipt.json'),JSON.stringify(receipt,null,2)+'\n');save();
+function classify(raw,declared){
+ assert(Array.isArray(raw)&&raw.every(v=>typeof v==='string'));
+ for(const r of declared)assert(r.flag===true&&r.key===r.recordId&&r.key===r.sidecarId,'annotation must bind actual registry key, record and flagged sidecar');
+ const ids=declared.map(r=>r.key).sort();assert.equal(new Set(ids).size,ids.length);assert.deepEqual(ids,expected.review_ids);
+ const allowed=ids.map(id=>`${id}: review_required is set — review annotation retained; this flag does not block scene release`);
+ for(const msg of allowed)assert.equal(raw.filter(x=>x===msg).length,1,`missing/duplicate annotation ${msg}`);
+ return {ids,annotations:raw.filter(x=>allowed.includes(x)),hard:raw.filter(x=>!allowed.includes(x))};
+}
+const {chromium}=await import(pathToFileURL(process.env.PW_MODULE).href);let browser,page;
+try{
+ browser=await chromium.launch({executablePath:process.env.PW_EXECUTABLE||undefined,args:['--enable-unsafe-swiftshader']});
+ const ctx=await browser.newContext({viewport,deviceScaleFactor:phone?2:1,hasTouch:phone,isMobile:false});page=await ctx.newPage();page.setDefaultTimeout(60_000);
+ page.on('pageerror',e=>{receipt.pageErrors.push(String(e));save();});page.on('requestfailed',r=>receipt.failedRequests.push({url:r.url(),error:r.failure()?.errorText}));page.on('response',r=>{if(r.status()>=400)receipt.badResponses.push({url:r.url(),status:r.status()});});page.on('console',m=>{if(m.type()==='error')receipt.consoleErrors.push(m.text());});
+ const started=Date.now();await page.goto(String(url),{waitUntil:'domcontentloaded',timeout:90_000});
+ await page.waitForFunction(()=>window.__chicago4d?.ready||window.__chicago4d?.error,null,{timeout:240_000,polling:1000});
+ receipt.identity=await page.evaluate(async id=>{
+  const a=window.__chicago4d;if(!a.ready)throw Error(a.error||'not ready');const r=a.registry.get(id);if(!r?.gltf||r.loadFailed||!r.assetUrl)throw Error('actual NW WEB asset not loaded');
+  const res=await fetch(r.assetUrl,{cache:'no-store'});if(!res.ok)throw Error(`WEB HTTP${res.status}`);const bytes=await res.arrayBuffer();
+  const sha256=[...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(v=>v.toString(16).padStart(2,'0')).join('');
+  return {scene:a.scene.id,date:a.scene.target_date,dataBase:String(a.dataBase),build:document.getElementById('gate-build')?.textContent.trim(),asset:{url:r.assetUrl,bytes:bytes.byteLength,sha256,detail:r.assetDetail},grade:r.sidecar.grade,attributes:r.sidecar.attributes,placement:r.sidecar.placement,problems:[...a.problems],declared:[...a.registry.entries()].filter(([,x])=>x.sidecar?.review_required).map(([key,x])=>({key,recordId:x.id,sidecarId:x.sidecar.id,flag:x.sidecar.review_required}))};
+ },expected.id);receipt.bootSeconds=(Date.now()-started)/1000;save();
+ const a=receipt.identity;assert.equal(a.scene,expected.scene);assert.equal(a.date,expected.date);assert(a.build.startsWith(`build ${expected.build_prefix}`));assert(a.dataBase.includes('/data/')&&!a.dataBase.includes('/chicago/4d/data/'));assert(a.asset.url.includes('/data/gltf/'));assert.equal(a.asset.sha256,expected.asset.sha256);assert.equal(a.asset.bytes,expected.asset.bytes);assert.deepEqual(a.grade,expected.grade);assert.deepEqual(a.attributes,expected.attributes);assert.deepEqual(a.placement,expected.placement);receipt.problemClassification=classify(a.problems,a.declared);assert.equal(receipt.problemClassification.hard.length,0);save();
+ await page.waitForFunction(()=>['welcome','world'].includes(window.__chicago4d.welcome?.state),null,{timeout:90_000,polling:500});
+ await page.evaluate(()=>{const a=window.__chicago4d;if(a.welcome.state!=='world')a.welcome.enter('spawn');document.exitPointerLock?.();document.getElementById('control-help-gotit')?.click();a.popup.close();a.navigator.select('home');a.navigator.dock();a.intent.clear();a.setAnimationHold(true);a.setFloraSpread(true);});
+ await page.waitForFunction(()=>window.__chicago4d.welcome.state==='world',null,{timeout:90_000,polling:500});
+ // Same real-frame holdDraws policy as retained group helper: no synthetic pixels.
+ await page.evaluate(()=>{const r=window.__chicago4d.renderer;window.__firstfortHeldDraw=r.render;r.render=(s,c)=>{c?.updateMatrixWorld?.();};});
+ async function shot(name){await page.evaluate(()=>{const a=window.__chicago4d,r=a.renderer;r.render=window.__firstfortHeldDraw;try{a.step();}finally{r.render=(s,c)=>{c?.updateMatrixWorld?.();};}});await page.screenshot({path:path.join(out,name+'.png'),timeout:90_000});receipt.screenshots.push(name+'.png');save();console.log(`SHOT ${name}`);}
+ // Use actual walker/terrain for card background only; no gate walk or geometry acceptance.
+ receipt.pose=await page.evaluate(id=>{const a=window.__chicago4d,p=a.registry.get(id).sidecar.placement,e=p.local_e-13,n=p.local_n+16,centre=a.buildings.positionOf(id),eye=a.walker.surfaceAt(e,n)+a.walkBudget.eyeHeight,yaw=(Math.atan2(p.local_e-e,p.local_n-n)*180/Math.PI+360)%360,pitch=Math.atan2(centre.y+4-eye,Math.hypot(p.local_e-e,p.local_n-n))*180/Math.PI;a.setFly(false);a.intent.clear();a.walker.teleport({local_e:e,local_n:n,yaw_deg:yaw,pitch_deg:pitch});return {e,n,yaw,pitch,actual:{e:a.walker.state.e,n:a.walker.state.n,eyeY:a.walker.state.eyeY,flying:a.walker.state.flying}};},expected.id);
+ await page.evaluate(id=>{const a=window.__chicago4d;a.pick(id);document.querySelector('#popup [data-pop-tab="evidence"]')?.click();},expected.id);
+ await page.waitForFunction(()=>{const p=document.querySelector('#popup [data-pop-pane="images"]');return p&&!/LOADING IMAGE INDEX/.test(p.textContent)&&p.querySelectorAll('.pop-pic-list li,.pop-pic-tile').length===2;},null,{timeout:45_000,polling:250});
+ receipt.badge=await page.evaluate(()=>{const root=document.querySelector('#popup'),fact=[...root.querySelectorAll('.fact')].find(x=>x.querySelector('dt')?.textContent.trim()==='Grade');fact?.scrollIntoView({block:'center'});return {openId:window.__chicago4d.popup.openId,text:fact?.querySelector('dd')?.textContent.trim(),attestedDot:!!fact?.querySelector('.fact-attested'),bounds:fact?.getBoundingClientRect().toJSON()};});
+ assert.equal(receipt.badge.openId,expected.id);assert.equal(receipt.badge.text,`Attested. ${expected.grade.why}`);assert(receipt.badge.attestedDot);assert(receipt.badge.bounds.top>=0&&receipt.badge.bounds.bottom<=viewport.height,'grade row must fit visibly in viewport');save();await shot('01-attested-badge');
+ receipt.pictures=await page.evaluate(id=>window.__chicago4d.popup.picturesDoc.by_structure[id],expected.id);assert.deepEqual(receipt.pictures,expected.pictures);assert(receipt.pictures.every(p=>!p.spot),'diagnostic source must supply no historical spot');
+ receipt.sources=await page.evaluate(()=>{const p=document.querySelector('#popup [data-pop-pane="evidence"]'),cites=p.querySelector('.cites');const focus=[...cites.querySelectorAll('li')].find(x=>/Currey/i.test(x.textContent));(focus??cites).scrollIntoView({block:'start'});return {focus:focus?.innerText,shown:!p.hidden&&p.checkVisibility(),citationText:cites.innerText,links:[...cites.querySelectorAll('a[href]')].map(a=>({text:a.innerText,href:a.href})),tab:document.querySelector('#popup [data-pop-tab="evidence"]').textContent.trim()};});
+ assert(receipt.sources.shown);assert.equal(receipt.sources.tab,'Sources');assert(/Currey/i.test(receipt.sources.citationText));assert(/Kurz.*Allison/i.test(receipt.sources.citationText));assert(/Whistler/i.test(receipt.sources.citationText));save();await shot('02-sources');
+ receipt.imagesBefore=await page.evaluate(()=>{const p=document.querySelector('#popup [data-pop-pane="images"]');return {src:p.querySelectorAll('img[src]').length,deferred:p.querySelectorAll('img[data-src]').length};});assert.equal(receipt.imagesBefore.src,0);assert.equal(receipt.imagesBefore.deferred,1);
+ await page.evaluate(()=>{document.querySelector('#popup [data-pop-tab="images"]').click();document.querySelector('#popup [data-pop-pane="images"]').scrollIntoView({block:'start'});});
+ await page.waitForFunction(()=>{const p=document.querySelector('#popup [data-pop-pane="images"]'),i=p?.querySelector('img[src]');return p&&!p.hidden&&i?.complete&&i.naturalWidth>0;},null,{timeout:60_000,polling:500});
+ receipt.images=await page.evaluate(()=>{const p=document.querySelector('#popup [data-pop-pane="images"]');return {shown:!p.hidden&&p.checkVisibility(),status:p.querySelector('.pop-pic-status')?.innerText,tabCount:document.querySelector('#popup [data-pop-tab="images"] .pop-count')?.textContent.trim(),held:[...p.querySelectorAll('.pop-pic-tile')].map(x=>({label:x.getAttribute('aria-label'),credit:x.querySelector('.pop-pic-tile-credit')?.textContent.trim()})),linked:[...p.querySelectorAll('.pop-pic-list li')].map(x=>({text:x.innerText,href:x.querySelector('a')?.href,credit:x.querySelector('.pop-pic-meta')?.textContent.trim()})),spotButtons:[...document.querySelectorAll('#popup button,#popup a')].filter(x=>/from this spot/i.test(x.textContent)).length,thumbs:[...p.querySelectorAll('img')].map(i=>({src:i.src,complete:i.complete,naturalWidth:i.naturalWidth}))};});
+ const im=receipt.images;assert(im.shown);assert.equal(im.status,'2 ON FILE · 1 HELD · 1 LINK ONLY');assert.equal(im.tabCount,'2');assert.equal(im.held.length,1);assert.equal(im.linked.length,1);assert.equal(im.held[0].credit,expected.pictures[0].creator);assert(im.held[0].label.includes(expected.pictures[0].title));assert.equal(im.linked[0].href,expected.pictures[1].url);assert(im.linked[0].credit.includes(expected.pictures[1].creator));assert(im.linked[0].credit.includes(expected.pictures[1].holder));assert.equal(im.spotButtons,0);save();await shot('03-two-credited-images');
+ // Full held credit is rendered by the actual viewer; inspect DOM without an extra screenshot.
+ await page.locator('#popup .pop-pic-tile').click();await page.waitForFunction(()=>{const e=document.querySelector('.pic-viewer');return e&&!e.hidden;});
+ receipt.heldFullCredit=await page.locator('.pic-viewer-credit').innerText();for(const s of [expected.pictures[0].title,expected.pictures[0].creator,expected.pictures[0].holder])assert(receipt.heldFullCredit.includes(s));await page.locator('.pic-viewer-close').click();
+ const final=await page.evaluate(()=>{const a=window.__chicago4d;return {problems:[...a.problems],declared:[...a.registry.entries()].filter(([,r])=>r.sidecar?.review_required).map(([key,r])=>({key,recordId:r.id,sidecarId:r.sidecar.id,flag:r.sidecar.review_required}))};});receipt.finalProblems=final.problems;receipt.finalProblemClassification=classify(final.problems,final.declared);assert.equal(receipt.finalProblemClassification.hard.length,0);
+ for(const key of ['pageErrors','failedRequests','badResponses','consoleErrors'])assert.equal(receipt[key].length,0,key);
+ receipt.status='PASS_BOUNDED_BADGE_AND_CARD_QA_REQUIRES_DIRECT_SCREENSHOT_REVIEW';save();console.log(JSON.stringify({status:receipt.status,viewport,screenshots:receipt.screenshots.length,receipt:path.join(out,'receipt.json')}));
+}catch(e){receipt.status='FAIL';receipt.error=String(e.stack||e);save();if(page)await page.screenshot({path:path.join(out,'FAIL.png'),timeout:30_000}).catch(()=>{});throw e;
+}finally{if(page)await page.evaluate(()=>{const a=window.__chicago4d;if(a?.renderer&&window.__firstfortHeldDraw){a.renderer.render=window.__firstfortHeldDraw;delete window.__firstfortHeldDraw;}a?.setAnimationHold?.(false);}).catch(()=>{});if(browser)await browser.close();}
