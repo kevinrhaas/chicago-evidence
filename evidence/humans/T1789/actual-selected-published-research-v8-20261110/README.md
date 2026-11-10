@@ -1,0 +1,15 @@
+# Charles coat: six original research views, release still NONPASS
+
+This packet records a bounded material study on the existing Charles Nelson model. ROOT reviewed the original walking full/close pairs and verified both idle images match the previously viewed originals. The dark-green livery, silhouette and sampled poses remain consistent; the fine cloth change is subtle. The material increment is acceptable to continue. Broad diagonal folds and inherited waist/armhole fit gaps remain stylized. This is **not photographic or full-fit acceptance**.
+
+The research collection completed in **14.884 seconds** under the original 120-second supervisor, resource floors and sole lock. Six original unedited PNGs and two actual recolor/clone/refcount/disposal controls were collected. All 107 bound runtime/data/published resources remained exact before and after; cleanup completed with zero owned children.
+
+**Strict release qualification remains NONPASS, with exit code 1.** All seven native ERR_ABORTED events are retained. Each research continuation required the current existing native parser's exact buffer size and SHA256, the corresponding HTTP 200, and full CDP body-byte totals. Those facts permit these research observations; they do not establish cancellation ownership, a source fix or release acceptance. The earlier strict v6 and v7 failures and OLD-only nonreproduction remain separate and unchanged.
+
+The real selected publisher applied the pinned sharing writer with streams and verified readback against canonical WEB inputs. Raw WEB and actual published hashes remain separate; all referenced sheets/streams are inventoried. This is a selected cohort, not the full native town sharing cohort or a live deployment. No KTX2/BasisU texture is present in these actual selected inputs/outputs.
+
+The actual repository meter observed **+262,140 bytes of GPU textures and +56,584 bytes of GPU buffers**, with no added renderbuffer bytes. Three decoded 128-square coat images total 196,608 RGBA readback bytes. These are isolated Full-studio observations, not phone or whole-town resident-memory/FPS acceptance. Both normal actor releases and final diagnostic source releases returned GPU allocations to the empty-scene baseline.
+
+The actual recolor control cloned and cleared the color map before the common fabric patch. The new coat retained normal/ORM maps, macro rumple and sheen; common heather returned to 0.16 while duplicate fine weave stayed disabled. Cached source materials remained unchanged, owned clones disposed once, and retained source resources survived until their final reference was released. This does not claim that changing an already-patched material dynamically updates its uniforms.
+
+The prior implementation/source evidence remains separate. This packet includes only new observer, proof-guard, protocol and control hashes, numeric/provenance summaries and the six original screenshots. It includes no model bodies, source textures, raw event logs, HTML, private paths or signed URLs. No APP asset adoption, live delivery, PR merge or ticket completion is claimed.
