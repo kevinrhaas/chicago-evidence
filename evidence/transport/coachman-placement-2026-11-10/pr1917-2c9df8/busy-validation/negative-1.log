@@ -1,0 +1,49 @@
+PASS a stop keeps its hosts, and the last stop's hosts while walking on
+PASS the controller brings each stop's hosts, greets on arrival and lets them go at the end
+PASS a host with no day walks to the mark, greets once there, and goes back; a route walker resumes her route
+PASS human-days takes a host out of her day, out by the nearest door, and gives her back
+PASS a host whose door is a passage comes out by its stair and door, then to the mark
+PASS hidden day-host handoff and handback in walk/instant/fly, back, repeated stop and cleanup
+PASS visible hosts await safe routing and arrival, with safe visible handback and no fake takeover
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: the running errand keeps its path and original callback
++ actual - expected
+
+  {
++   endHeading: null,
+-   endHeading: 90,
+    onArrive: [Function: onArrive],
+    pts: [
+      {
+        e: 0,
+        n: 0
+      },
+      {
++       e: 8,
+-       e: 2,
+        n: 0
+      }
+    ]
+  }
+
+    at file:///tmp/chicago-queue-refresh-20261109/chicago/4d/tools/test_jaunt_hosts.mjs:244:10 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: {
+    pts: [ { e: 0, n: 0 }, { e: 8, n: 0 } ],
+    endHeading: null,
+    onArrive: [Function: onArrive]
+  },
+  expected: {
+    pts: [ { e: 0, n: 0 }, { e: 2, n: 0 } ],
+    endHeading: 90,
+    onArrive: [Function: onArrive]
+  },
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v22.22.0
