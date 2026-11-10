@@ -1,0 +1,50 @@
+RUN python3 docs/RESEARCH/people-days-1835-1904/days.py
+days 1835/1904: 12 people have a day (L-t3516-days)
+RUN python3 docs/RESEARCH/people-days-1835-1904/days.py --check
+days 1835/1904: 12 people have a day (L-t3516-days)
+RUN python3 /workspace/.cloud-setup/coachman-placement-plan-20261110/check-current-invariants.py
+PASS: four seasonal variants and every indoor/break span exact; seven foreign household records, current errands/budgets/tests and old Liberties exact
+RUN python3 tools/compile_source_use.py
+SOURCE USE PASS — 656 sources; 268670 index bytes; all source IDs resolve
+RUN python3 tools/compile_source_use.py --check
+SOURCE USE PASS — 656 sources; 268670 index bytes; all source IDs resolve
+RUN node tools/test_jaunt_hosts.mjs
+PASS a stop keeps its hosts, and the last stop's hosts while walking on
+PASS the controller brings each stop's hosts, greets on arrival and lets them go at the end
+PASS a host with no day walks to the mark, greets once there, and goes back; a route walker resumes her route
+PASS human-days takes a host out of her day, out by the nearest door, and gives her back
+PASS a host whose door is a passage comes out by its stair and door, then to the mark
+PASS hidden day-host handoff and handback in walk/instant/fly, back, repeated stop and cleanup
+PASS visible hosts await safe routing and arrival, with safe visible handback and no fake takeover
+PASS explicit camera-cut handoff, retained departing host, long pause/Back and hidden release
+PASS dayless handback survives unavailable/rejected/throwing routes, indoor return and a superseding takeover
+PASS real-path visible-host narration waits for arrival; hidden handoff is ready in its first render
+JAUNT HOSTS PASS
+RUN node tools/test_jaunts_reducer.mjs
+PASS Previous and forward history are immutable and apply effects once
+PASS stale leg and replaced session callbacks are ignored
+PASS rapid Next creates one leg and arrival; Previous cancels mid-ride
+PASS required choices gate Next; two fixtures complete through the same reducer
+PASS Menu/Resume preserves stop and invalidates interrupted travel
+PASS replacement and destroy release callbacks, timers and listeners
+PASS End clears immediately, restores mode, and cannot be revived
+PASS a late content load cannot replace the newer session
+PASS live mode changes invalidate old travel without replaying choices
+PASS T-3328: a stop with an hour sets it on arrival; a stop without, and the end, give it back
+PASS T-3377: a jaunt's ambience holds its season for the outing and its hour at every stop without one
+PASS T-3459: a dated stop holds its date's season from the first scene, and a later date in another season changes it
+PASS T-3355: a leg with its own mode rides that way on the default mode; a picked mode wins
+PASS T-3405: picking the jaunt's own mode on a leg that goes its own way is honoured, then and after
+JAUNT REDUCER PASS — 14 cases
+RUN node tools/test_human_days.mjs
+human days: dates, spans, talk, work, walk, doors and asking hold (279 1812 records with a day or quarters; 47 buildings with doors)
+1904 seasonal coverage, door calls, temporary activities and jaunt priority hold
+RUN node tools/test_human_rounds.mjs
+human rounds: 865 talks are rounds (764 jobs, 101 at play, 91 lone jobs), clear of buildings; 7h 18% talk (most 54%), 54/56 knots gather, 314 breaks, children out 15% (0 together at most without grown-ups); 10h 4% talk (most 48%), 7/8 knots gather, 355 breaks, children out 34% (3 together at most without grown-ups); 15.5h 15% talk (most 47%), 32/34 knots gather, 363 breaks, children out 35% (3 together at most without grown-ups); 19.5h 22% talk (most 49%), 34/35 knots gather, 303 breaks, children out 15% (0 together at most without grown-ups); 1835: 4 with a day, 2 homes with doors, 7h 3 breaks, 0% talk, 12.5h 3 breaks, 0% talk, 16h 3 breaks, 0% talk; 1904: 8 with a day, 1 homes with doors, 10.5h 5 breaks, 0% talk, 11.25h 5 breaks, 14% talk, 15.5h 5 breaks, 0% talk, 19.25h 1 breaks, 42% talk: PASS
+RUN node tools/test_jaunt_start_finish.mjs
+PASS glide seconds: 3.5 s for a hop, never more than 8 s
+PASS glide path: up, along, down, onto the given framing
+PASS glide controller: lands exactly, on time, when stopped and at the first move
+PASS jaunt start: flies with the welcome up, arrives on landing, jumps when asked or declined
+PASS final stop: known on a walk and on a branching stop
+JAUNT START/FINISH PASS — glide clock, path and landings, welcome phase, final stop, readable road notes

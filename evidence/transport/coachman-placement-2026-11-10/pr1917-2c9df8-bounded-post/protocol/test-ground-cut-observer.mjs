@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import { sampleGroundCut } from './ground-cut-observer.mjs';
+const image = { data: new Uint8Array([0, 255, 255, 0]), width: 2, height: 2, box: [0, 0, 1, 1], on: 1 };
+const at = (u, v, extra = {}) => sampleGroundCut({ ...image, ...extra }, u, -v);
+assert.equal(at(.25, .25).red, 0);
+assert.equal(at(.75, .25).red, 1);
+assert.equal(at(.25, .75).red, 1);
+assert.equal(at(.75, .75).red, 0);
+assert.equal(at(.5, .5).red, .5);
+assert.equal(at(.5, .5).discarded, false, 'GLSL strict > .5 is retained');
+assert.equal(at(.6, .25).discarded, true, 'linear fractional sample crosses original threshold');
+assert.equal(at(.6, .25, { on: .5 }).discarded, false);
+assert.equal(at(.75, 0).discarded, false, 'GLSL excludes exact box boundary');
+assert.equal(at(.75, .01).red, 1, 'clamp-to-edge samples the actual edge texel');
+assert.equal(at(.25, .25, { flipY: true }).red, 1);
+assert.throws(() => at(.25, .25, { data: [] }), /Incomplete/);
+console.log('PASS: texel centres, bilinear interpolation, strict shader threshold, box edges, clamp and Y orientation');

@@ -1,0 +1,11 @@
+# PR1917 bounded coachman post: first image and physical ground finding
+
+The source remains exact2c9df872. ROOT viewed the original1280x800 PNG and accepts the bounded placement improvement: Charles, horses and carriage clear the former tree obstruction and the walking strip remains open. The native click-to-engage-look overlay remains visible. This is a local saved9d fixture with17 overlays independently verified against2c plus the pinned native consumers/recipe. Its banner still says dev9d; it is not deployed2c.
+
+Observer06 preserves complete actualLOD1 foot domains—1,466 left and1,476 right vertices including incident triangles. Both actual compiled terrain materials discard the raw field at every measured point. Minimum shoe gaps to the actually drawn parkway are27.706932mm left and27.171498mm right in one held pose. This is an unresolved ground-contact mismatch. Existing horse contact limits pass that frame; no new offset, tolerance or ground correction is adopted here.
+
+Observer07 remains globally NONPASS after482.770seconds. Its first original PNG succeeded, but the second cleared screenshot hit the unchanged90-second timeout and native Escape left pointer lock active. Actual page/HTTP/server errors are zero; the observer screenshot error and all29 native aborted requests remain recorded. One Balanced spot reading is2,052,390/2,625,000triangles and3,311/7,800draws. Point resident usage1,219,273,893bytes is not phone-memory or whole-world acceptance. Resource guards and cleanup passed with zero owned children. Observer06's earlier native UI-click timeout also remains NONPASS.
+
+Both original supervisor closures, full07 browser closure and full06 immutable physical records are included. The5.10MB06 aggregate browser closure is hash-referenced because its physical record duplicates the complete preserved physical-first JSON; all other original closure metadata is extracted exactly. Existing complete source patch is referenced at the prior immutable checkpoint, avoiding duplicate patches.
+
+No full UI, quiet/all-pose, phone, native tour, boarding/ride, photographic quality or whole-world performance pass is asserted. No source, clocks, budget bars, image pixels or resource floors were changed by this collection. Existing third-party credits remain in the earlier immutable attribution packet. ROOT/APP/tickets/MAIN are unchanged.
