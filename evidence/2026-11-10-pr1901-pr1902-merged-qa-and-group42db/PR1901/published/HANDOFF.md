@@ -1,0 +1,13 @@
+# Actual Sauganash published review, 2026-11-09
+
+Both desktop1280x800 DPR1 and phone390x780 DPR2 actual runs EXIT0, fresh browsers serial against root's existing4188 published mirror. Both browsers closed; exclusive GPU slot released. Node22.21.1, Playwright1.56.1, Chromium154.0.8037.57. No source changes, publish/install or GitHub mutation.
+
+Actual app ready1835/1835-07-01, published stampbuild254bc9871d, independently fetched actualregistry Hotel /data/gltf web URL SHA2568c1d4870d49c7717cd472ef9b1c120530b4ef9468dad2ebaf908e12e26987090 /38536B exactly matches newly retained native rootassets/webfile. No source master substituted.
+
+Both viewports show3actual images with0uncredited: held Andreas/Braunhold thumbnail (400pxloaded) plus linked Kurz&Allison1893 and Trowbridge/Gale1902. No img[src] before Images opens,1deferred thumbnail then real successful load aftertabclick. New actual Liberty entry opens, shows reconstructed-trial status and0.60m shaft section in the real card. Both have0pageerrors/networkerrors/consoleerrors/hardapp loading problems. Raw14retainedreview_required annotations remain, each exactexpectedrecord bound to its actualregistryflag; no raw-zero claim.
+
+All6actual screenshots inspected with view_image. Card Images/credits and Liberty disclosure readable at both sizes. The requested streetcamera, actualplacement+18E/-8N, stands behind a servicefence: upperHotel wall/gable/one stack visible, lowerbuilding and fullroofjoin cropped/occluded. Preserve this limitation; it is not wholebuilding picture acceptance. Phone Liberty image shows0.60m qualification but title lies aboveviewport because the expanded entry is taller than the panel. DOMfulltext is preserved inreceipt and visitor can scroll. No authored/referencecamera was changed.
+
+First desktop run was RED because the externalhelper incorrectly required rawproblems.length0; actual14messages were explicitly retained, nonblocking reviewannotations. Existing smoke_renderer1892–1906 validates and excludes those notes. Corrected helper pins exact14IDs/fullmessages andactualregistryflags, keeps allnotes, refuses every otherproblem; it does not broadly exempt placeholders/provisionalconditions. REDreceipt andFAIL screenshot remain underdesktop-attempt1-raw-review-flags.
+
+Actual PASSreceipts/logs/screenshots in desktop/ andphone/. SUMMARY.json binds allartifacts bySHA256 andrecords toolversions/claims/limits. review.mjs andPLAN.md preserved. This is focusedpublishedstreet/cardreview, notfullsmoke, nativecontrol audit, fixed-source photocomparison, image-matches verdict or originalticketcompletion. Parent owns those qualifications and merging.
