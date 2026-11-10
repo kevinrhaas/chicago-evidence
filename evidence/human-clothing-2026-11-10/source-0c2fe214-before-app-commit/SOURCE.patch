@@ -1,0 +1,935 @@
+diff --git a/.github/workflows/chicago-4d-humans.yml b/.github/workflows/chicago-4d-humans.yml
+index 98793dee23..548c9cd910 100644
+--- a/.github/workflows/chicago-4d-humans.yml
++++ b/.github/workflows/chicago-4d-humans.yml
+@@ -74,6 +74,14 @@ on:
+         description: 'Immutable reviewed source SHA, required only for the separate dress study'
+         type: string
+         default: ''
++      render_library_stills:
++        description: 'Render three library masters from a successful canonical build; no asset promotion'
++        type: boolean
++        default: false
++      library_source_run:
++        description: 'Successful portable-human workflow run containing the three teamster masters'
++        type: string
++        default: ''
+ 
+ concurrency:
+   group: chicago-4d-humans-${{ github.ref }}
+@@ -84,6 +92,7 @@ permissions:
+ 
+ jobs:
+   humans:
++    if: github.event_name != 'workflow_dispatch' || !inputs.render_library_stills
+     runs-on: ubuntu-24.04
+     timeout-minutes: 45
+     outputs:
+@@ -188,6 +197,102 @@ jobs:
+         working-directory: chicago/4d
+         run: NODE_PATH="$(npm root -g)" node tools/human_actor.mjs
+ 
++  # Render the immutable, already fixture-qualified producer's masters. The
++  # receipt distinguishes that source SHA from this renderer's own checkout.
++  # Separate from the 30-minute canonical builder: no rebuild, export or writes
++  # to the source tree, and the existing builder/fixture timeouts stay unchanged.
++  library-stills:
++    if: github.event_name == 'workflow_dispatch' && inputs.render_library_stills
++    runs-on: ubuntu-24.04
++    timeout-minutes: 15
++    permissions:
++      contents: read
++      actions: read
++    steps:
++      - name: Validate the render-only request
++        env:
++          SOURCE_RUN: ${{ inputs.library_source_run }}
++          TEAMSTERS: ${{ inputs.build_teamsters }}
++          SEATED: ${{ inputs.build_seated_driver_study }}
++          DRESS: ${{ inputs.build_dress_study }}
++          SOURCE_REF: ${{ inputs.source_ref }}
++        run: |
++          python3 - <<'PY'
++          import os,re
++          if not re.fullmatch(r'[1-9][0-9]*',os.environ['SOURCE_RUN']):
++              raise SystemExit('library_source_run must be a positive run ID')
++          if any(os.environ[k]=='true' for k in ('TEAMSTERS','SEATED','DRESS')) or os.environ['SOURCE_REF']:
++              raise SystemExit('Library stills consume a completed build and must run separately')
++          PY
++      - uses: actions/checkout@v4
++        with:
++          persist-credentials: false
++          sparse-checkout: |
++            chicago/4d/tools
++            chicago/4d/data/humans
++            chicago/4d/generators/blender.pin
++          sparse-checkout-cone-mode: false
++      - uses: actions/setup-python@v5
++        with:
++          python-version: '3.11'
++      - name: Read the Blender pin
++        id: pin
++        run: |
++          source chicago/4d/generators/blender.pin
++          echo "version=$BLENDER_VERSION" >> "$GITHUB_OUTPUT"
++      - name: Restore pinned Blender
++        uses: actions/cache@v4
++        with:
++          path: /opt/blender-dl
++          key: blender-${{ steps.pin.outputs.version }}
++      - name: Fetch only the three verified source masters
++        working-directory: chicago/4d
++        env:
++          GH_TOKEN: ${{ github.token }}
++          SOURCE_RUN: ${{ inputs.library_source_run }}
++        run: python3 tools/human_library_stills_intake.py --run "$SOURCE_RUN" --output-dir /tmp/library-source
++      - name: Ensure the pinned Blender worker
++        working-directory: chicago/4d
++        run: |
++          set -euo pipefail
++          source generators/blender.pin
++          cache=/opt/blender-dl
++          binary="$cache/$BLENDER_DIR/blender"
++          if [ ! -x "$binary" ]; then
++            mkdir -p "$cache"
++            archive="$cache/$(basename "$BLENDER_URL")"
++            [ -f "$archive" ] || curl -fL --retry 3 -o "$archive" "$BLENDER_URL"
++            echo "$BLENDER_SHA256  $archive" | sha256sum -c -
++            tar -xf "$archive" -C "$cache"
++          fi
++          "$binary" --version | head -1
++      - name: Render front, three-quarter and profile in Blender
++        working-directory: chicago/4d
++        env:
++          OMP_NUM_THREADS: '2'
++        run: |
++          set -euo pipefail
++          source generators/blender.pin
++          mkdir -p /tmp/library-stills
++          cp /tmp/library-source/source-binding.json /tmp/library-stills/
++          git rev-parse HEAD > /tmp/library-stills/renderer-source-sha.txt
++          for resident in bardwell_otis_1835 dufresne_joseph_1835 flynn_martin_1835; do
++            timeout --signal=TERM --kill-after=10s 180s \
++              "/opt/blender-dl/$BLENDER_DIR/blender" -b -noaudio --factory-startup --threads 2 --python-exit-code 1 \
++              --python tools/human_library_stills.py -- \
++              --master "/tmp/library-source/$resident/canonical.blend" --asset-id "$resident" \
++              --output-dir "/tmp/library-stills/$resident" \
++              2>&1 | tee "/tmp/library-stills/$resident.log"
++          done
++      - name: Preserve Blender assembly review outputs
++        if: always()
++        uses: actions/upload-artifact@v4
++        with:
++          name: resident-library-stills-${{ github.sha }}
++          path: /tmp/library-stills/
++          if-no-files-found: warn
++          retention-days: 14
++
+   # Explicit dispatch on the owner-visible authoring PR. No branch writes, scene
+   # placements or production promotion: canonical masters and measurements are
+   # reviewable artifacts. Existing fixture verification must pass first.
+diff --git a/chicago/4d/changelog.d/T-1789.json b/chicago/4d/changelog.d/T-1789.json
+new file mode 100644
+index 0000000000..cad085d77c
+--- /dev/null
++++ b/chicago/4d/changelog.d/T-1789.json
+@@ -0,0 +1,9 @@
++{
++  "title": "More natural fabric on existing residents",
++  "kind": "improvement",
++  "items": [
++    "Standing and walking residents receive the linen and wool fabric finish already used by drivers, while keeping their individual clothing colours and style. No image textures are added.",
++    "Short-jacket authoring now cuts a level lower hem instead of retaining jagged triangle edges. Freshly generated coats still need rendered review before adoption.",
++    "The human library gains repeatable Blender assembly previews. Full library and photographic-quality acceptance remain open."
++  ]
++}
+diff --git a/chicago/4d/docs/ROADMAP.md b/chicago/4d/docs/ROADMAP.md
+index 3536ef4344..e0b03b610b 100644
+--- a/chicago/4d/docs/ROADMAP.md
++++ b/chicago/4d/docs/ROADMAP.md
+@@ -1,3 +1,18 @@
++## T-1789 — refine existing residents and review their kit (2026-11-09)
++
++Reuse the drivers' linen/wool shading on ordinary residents, preserving their own
++clothing colours and material choices. Correct the visibly jagged short-jacket source
++hem, then judge fresh canonical coats in the actual Blender and exported views. No
++existing Otis animation or human asset is replaced by these source refinements.
++
++The real three-resident canonical build and its fixture prerequisite passed on
++`dc998577d76a09a31a5519b7deb0c0c0f6e1f869`. Reuse its exact artifact for the missing
++Blender assembly views through the separate opt-in portable-human rendering job.
++Review the resulting Otis/Joseph/Martin views before adopting generated assets, retaining
++Otis's already delivered driver and natural-idle animation. Full library coverage and
++photographic/posed garment acceptance stay on existing open T-1789; no follow-up ticket
++is introduced by this increment.
++
+ ## T-2379 — retain the editor's comparison without making it a measurement (2026-11-04)
+ 
+ An editor requesting a hotel “about double” the Lake House's size expresses a desired
+diff --git a/chicago/4d/docs/STATUS.md b/chicago/4d/docs/STATUS.md
+index c212b6c95c..10673c7296 100644
+--- a/chicago/4d/docs/STATUS.md
++++ b/chicago/4d/docs/STATUS.md
+@@ -1,3 +1,38 @@
++## T-1789 — cloth finish and canonical library previews (2026-11-09)
++
++Standing and walking residents now receive the same existing reconstructed linen/wool
++fabric shading as the drivers, after their individual clothing colours and uniform
++materials are chosen. This preserves their clothing choices and adds no image textures
++or garment geometry. Driver calls remain idempotent. The canonical short-jacket producer
++also clips its lower seam to the declared hem plane instead of keeping jagged whole
++triangles; source cloth UVs and skin weights interpolate at that cut. Default shirt
++construction and Otis's adopted exports remain unchanged. Fresh canonical generation
++and rendered review of Joseph's/Martin's changed coat hems are still required.
++
++The real [portable-human build 42703941214](https://github.com/kevinrhaas/chicago/actions/runs/42703941214)
++passed on source `dc998577d76a09a31a5519b7deb0c0c0f6e1f869`, including its human fixture prerequisite.
++Otis Bardwell, Joseph Dufresne and Martin Flynn each produced a canonical Blender master
++and four source/four WEB LODs. All 24 container validations reported zero errors and
++warnings; both inspection reports passed. Existing identities retain their reconstructed
++appearance and original source/licence records. The builder's PNGs are Three inspection
++views and do not satisfy the three-resident Blender-render requirement.
++
++The opt-in `render_library_stills` job consumes a successful canonical build's exact
++teamster artifact, verifies GitHub's SHA256 digest and extracts only its three masters.
++It records the producer source separately from the renderer source, then renders front,
++three-quarter and profile views in pinned Blender 4.5.3. The render-only studio evaluates
++the original shared rig and idle pose with packed materials, LOD0 and Cycles. Master
++hashes must remain unchanged. Source binding, image hashes and actual rendering settings
++travel with the review artifact. This separate job preserves the original canonical
++builder and fixture timeouts.
++
++Native execution and visual acceptance of this new renderer remain pending. No runtime
++human assets are replaced: generated Otis lacks his subsequently delivered seated and
++natural-idle clips. T-1789 stays open for complete modular-library, garment/pose, material,
++measured-export and appearance acceptance. The previews unblock the missing Blender review
++before the next library asset adoption. This increment refines existing figures and
++claims no photographic-quality acceptance.
++
+ ## T-3445 — the first-time tour and in-app help brought up to date (2026-11-07)
+ 
+ The owner asked whether the first-time tour was current and to drop the wordy "why this
+diff --git a/chicago/4d/renderers/web/js/humans.js b/chicago/4d/renderers/web/js/humans.js
+index 88236aa917..c0a89a3855 100644
+--- a/chicago/4d/renderers/web/js/humans.js
++++ b/chicago/4d/renderers/web/js/humans.js
+@@ -50,6 +50,7 @@ import { dressLooks, dressCloth, looksHairStyle } from './human-looks.js';
+ import { dressHat } from './human-hats.js';
+ import { dressSpectacles } from './human-spectacles.js';
+ import { dressGarrison, garrisonCarry, createArmsPiles } from './human-garrison.js';
++import { clothHuman } from './fabric.js';
+ 
+ /** § 8: the LODs each scene-detail tier may draw. `light` stays the floor. */
+ export const HUMAN_TIERS = Object.freeze({ full: [0, 1, 2, 3], balanced: [1, 2, 3], light: [2, 3] });
+@@ -446,6 +447,10 @@ export class HumanActor {
+     // his height. The wearer's own fitted geometries go with the level.
+     const armed = dress?.garrison ? dressGarrison(scene, dress.garrison, { lod }) : null;
+     if (armed) looked.push(...armed.owned);
++    // The same reconstructed linen/wool weave and wear as the drivers, after
++    // each resident's colours and any replacement uniform materials are chosen.
++    // No texture or material is allocated; a driver's later call is idempotent.
++    clothHuman(scene);
+     const extras = [];
+     for (const g of armed?.meshes ?? []) g.traverse((o) => { if (o.isMesh) extras.push(o); });
+     const clips = new Map();
+diff --git a/chicago/4d/tools/check.sh b/chicago/4d/tools/check.sh
+index 222a3760b1..4ec5680f8e 100755
+--- a/chicago/4d/tools/check.sh
++++ b/chicago/4d/tools/check.sh
+@@ -8689,5 +8689,10 @@ step "World smoke keeps exact structure batches and both source-owned Green Tree
+ step "Green Tree yard generator preserves enclosed, open and blocked source readings (T-1790)" \
+   python3 tools/test_green_tree_yard_modes.py
+ 
++step "Human assembly still controls reject wrong identities, invalid bounds and missing outputs (T-1789)" \
++  python3 tools/test_human_library_stills.py
++step "Human assembly still intake rejects stale runs, mismatched jobs and unsafe archives (T-1789)" \
++  python3 tools/test_human_library_stills_intake.py
++
+ check_summary
+ exit $CHECK_FAILED
+diff --git a/chicago/4d/tools/human_library_stills.py b/chicago/4d/tools/human_library_stills.py
+new file mode 100644
+index 0000000000..4ffa586ffd
+--- /dev/null
++++ b/chicago/4d/tools/human_library_stills.py
+@@ -0,0 +1,214 @@
++# SPDX-License-Identifier: GPL-3.0-or-later
++"""Render reconstructed assembly review stills; never save or export the source master.
++
++blender -b --factory-startup --python tools/human_library_stills.py -- \
++  --master canonical.blend --asset-id bardwell_otis_1835 --output-dir /tmp/stills
++Requires Blender 4.5.3. These are render-only reconstructions, not historical photos
++or acceptance of likeness, garment fit, period accuracy or photographic quality.
++"""
++from __future__ import annotations
++import argparse
++import hashlib
++import itertools
++import json
++import math
++from pathlib import Path
++import struct
++import sys
++
++ROOT = Path(__file__).resolve().parents[1]
++SIZE = (512, 768)
++VIEWS = (('front', 0), ('threequarter', 45), ('profile', 90))
++
++
++def sha256(path):
++    with path.open('rb') as stream:
++        return hashlib.file_digest(stream, 'sha256').hexdigest()
++
++
++def validate_paths(master, output):
++    master, output = master.resolve(), output.resolve()
++    if master.suffix != '.blend' or not master.is_file():
++        raise ValueError('master must be an existing .blend file')
++    if output == master or (output.exists() and not output.is_dir()):
++        raise ValueError('output-dir must be a directory separate from the master')
++    if any((output / name).exists() for name in ['manifest.json', *[v[0]+'.png' for v in VIEWS]]):
++        raise ValueError('refusing existing still outputs; choose a fresh output directory')
++    return master, output
++
++
++def validate_identity(metadata, asset_id, root=ROOT):
++    if metadata.get('asset_id') != asset_id or metadata.get('skeleton') != 'c4d_humanoid_v1':
++        raise ValueError('master asset identity/shared skeleton differs from request')
++    recipe_path = (root / metadata.get('recipe', '')).resolve()
++    if not recipe_path.is_relative_to((root / 'data/humans/recipes').resolve()) or not recipe_path.is_file():
++        raise ValueError('master must name an existing project human recipe')
++    recipe = json.loads(recipe_path.read_text())
++    variants = [v for v in recipe.get('proof_variants', []) if v['id'] == asset_id]
++    if len(variants) != 1:
++        raise ValueError('master asset must match exactly one actual recipe variant')
++    fields = ('person_reference_id', 'person_reference_scene', 'person_reference_grade')
++    if any(not metadata.get(k) or metadata[k] != variants[0].get(k) for k in fields):
++        raise ValueError('master person identity differs from actual recipe variant')
++    if metadata.get('grade') != 'reconstructed':
++        raise ValueError('assembly appearance must remain reconstructed')
++    return {'asset_id': asset_id, **{k: metadata[k] for k in fields},
++            'recipe': str(recipe_path.relative_to(root)), 'recipe_sha256': sha256(recipe_path)}
++
++
++def framing(points):
++    """One conservative orthographic scale encloses all three camera projections."""
++    points = [tuple(p) for p in points]
++    if not points or any(len(p) != 3 or not all(math.isfinite(x) for x in p) for p in points):
++        raise ValueError('evaluated LOD0 bounds must be finite nonempty 3D points')
++    lo = [min(p[i] for p in points) for i in range(3)]
++    hi = [max(p[i] for p in points) for i in range(3)]
++    if any(hi[i] - lo[i] <= 1e-6 for i in range(3)) or not .45 <= hi[2]-lo[2] <= 2.5:
++        raise ValueError('evaluated LOD0 bounds are degenerate or outside human metre scale')
++    center = [(a+b)/2 for a, b in zip(lo, hi)]
++    corners = list(itertools.product(*zip(lo, hi)))
++    width = max(2*abs((p[0]-center[0])*math.cos(math.radians(a)) +
++                      (p[1]-center[1])*math.sin(math.radians(a))) for p in corners for _, a in VIEWS)
++    return {'min_m': lo, 'max_m': hi, 'target_m': center,
++            'ortho_scale_m': max(hi[2]-lo[2], width*SIZE[1]/SIZE[0])*1.16}
++
++
++def verify_outputs(output):
++    """Refuse missing, truncated or wrong-size PNG render receipts."""
++    records = []
++    for name, _ in VIEWS:
++        path = output / (name+'.png')
++        if not path.is_file():
++            raise ValueError(f'missing rendered output: {path.name}')
++        with path.open('rb') as stream:
++            header = stream.read(24)
++            stream.seek(max(0, path.stat().st_size-12))
++            trailer = stream.read()
++        if len(header) != 24 or header[:16] != b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR' or struct.unpack('>II', header[16:24]) != SIZE:
++            raise ValueError(f'invalid PNG header/resolution: {path.name}')
++        if path.stat().st_size < 100 or trailer != b'\x00\x00\x00\x00IEND\xaeB`\x82':
++            raise ValueError(f'truncated rendered output: {path.name}')
++        records.append({'view': name, 'file': path.name, 'sha256': sha256(path), 'bytes': path.stat().st_size})
++    return records
++
++
++def render(master, asset_id, output):
++    import bpy
++    from mathutils import Vector
++    master, output = validate_paths(master, output)
++    before = sha256(master)
++    try:
++        if bpy.app.version != (4, 5, 3):
++            raise ValueError('assembly still producer requires Blender 4.5.3')
++        bpy.ops.wm.open_mainfile(filepath=str(master), load_ui=False, use_scripts=False)
++        source = bpy.context.scene
++        metadata = source.get('chicago4d_human', {})
++        identity = validate_identity(metadata, asset_id)
++        rig = bpy.data.objects.get('c4d_armature')
++        lod = bpy.data.collections.get('lod0')
++        rigcol = bpy.data.collections.get('rig')
++        contract = json.loads((ROOT/'data/humans/contract.json').read_text())
++        expected = dict(contract['skeleton']['bones'])
++        if rig is None or rig.type != 'ARMATURE' or rigcol is None or rig not in rigcol.all_objects[:]:
++            raise ValueError('master must carry its shared c4d_armature in rig')
++        if {b.name: b.parent.name if b.parent else None for b in rig.data.bones} != expected:
++            raise ValueError('master shared rig bone names/parents differ from contract')
++        meshes = sorted((o for o in lod.all_objects if o.type == 'MESH'), key=lambda o: o.name) if lod else []
++        if not meshes or any(not any(m.type == 'ARMATURE' and m.object == rig for m in o.modifiers) for o in meshes):
++            raise ValueError('master needs LOD0 meshes bound to the same shared rig')
++        images = {node.image for o in meshes for mat in o.data.materials if mat and mat.use_nodes
++                  for node in mat.node_tree.nodes if node.type == 'TEX_IMAGE' and node.image}
++        if any(image.source == 'FILE' and not image.packed_file for image in images):
++            raise ValueError('master texture images must remain packed, without external substitutions')
++        idle = bpy.data.actions.get('idle')
++        if idle is None:
++            raise ValueError('master lacks explicit idle action')
++        studio = bpy.data.scenes.new('RENDER_ONLY_assembly_studio')
++        bpy.context.window.scene = studio
++        for obj in [rig, *meshes]:
++            studio.collection.objects.link(obj)
++            obj.hide_render = False
++            obj.hide_viewport = False
++            obj.hide_set(False)
++        rig.animation_data_create()
++        rig.animation_data.use_nla = False
++        rig.animation_data.action = idle
++        if idle.slots:
++            rig.animation_data.action_slot = idle.slots[0]
++        studio.frame_set(1)
++        bpy.context.view_layer.update()
++        deps = bpy.context.evaluated_depsgraph_get()
++        bounds = framing([o.evaluated_get(deps).matrix_world @ Vector(p)
++                          for o in meshes for p in o.evaluated_get(deps).bound_box])
++        target = Vector(bounds['target_m'])
++        studio.render.engine = 'CYCLES'
++        studio.cycles.device = 'CPU'
++        studio.cycles.samples = 32
++        studio.cycles.seed = 1789
++        studio.cycles.use_denoising = True
++        studio.cycles.denoiser = 'OPENIMAGEDENOISE'
++        studio.render.resolution_x, studio.render.resolution_y = SIZE
++        studio.render.resolution_percentage = 100
++        studio.render.image_settings.file_format = 'PNG'
++        studio.render.image_settings.color_mode = 'RGB'
++        studio.render.image_settings.color_depth = '8'
++        studio.view_settings.view_transform = 'AgX'
++        studio.world = bpy.data.worlds.new('RENDER_ONLY_neutral_world')
++        studio.world.use_nodes = True
++        studio.world.node_tree.nodes['Background'].inputs['Color'].default_value = (.18, .18, .18, 1)
++        studio.world.node_tree.nodes['Background'].inputs['Strength'].default_value = .35
++        bpy.ops.mesh.primitive_plane_add(size=200, location=(target.x, target.y, bounds['min_m'][2]-.002))
++        floor = bpy.context.object
++        floor.name = 'RENDER_ONLY_floor'
++        mat = bpy.data.materials.new('RENDER_ONLY_floor')
++        mat.diffuse_color = (.18, .18, .18, 1)
++        floor.data.materials.append(mat)
++        lights = []
++        for name, offset, energy, size in [('key', (-3, -4, 4), 650, 4), ('fill', (3, -2, 2), 350, 3), ('rim', (1, 3, 3), 500, 3)]:
++            data = bpy.data.lights.new('RENDER_ONLY_'+name, 'AREA')
++            data.energy, data.shape, data.size = energy, 'DISK', size
++            obj = bpy.data.objects.new(data.name, data)
++            studio.collection.objects.link(obj)
++            obj.location = target + Vector(offset)
++            obj.rotation_euler = (target-obj.location).to_track_quat('-Z', 'Y').to_euler()
++            lights.append({'name': name, 'location_m': list(obj.location), 'energy_w': energy, 'size_m': size})
++        camera = bpy.data.objects.new('RENDER_ONLY_camera', bpy.data.cameras.new('RENDER_ONLY_camera'))
++        studio.collection.objects.link(camera)
++        studio.camera = camera
++        camera.data.type, camera.data.ortho_scale = 'ORTHO', bounds['ortho_scale_m']
++        camera.data.sensor_fit = 'VERTICAL'
++        output.mkdir(parents=True, exist_ok=True)
++        cameras = []
++        for name, angle in VIEWS:
++            rad = math.radians(angle)
++            camera.location = target + Vector((5*math.sin(rad), -5*math.cos(rad), 0))
++            camera.rotation_euler = (target-camera.location).to_track_quat('-Z', 'Y').to_euler()
++            studio.render.filepath = str(output/(name+'.png'))
++            bpy.ops.render.render(write_still=True, scene=studio.name)
++            cameras.append({'view': name, 'azimuth_deg': angle, 'location_m': list(camera.location), 'rotation_euler_rad': list(camera.rotation_euler)})
++        manifest = {'schema': 'chicago4d_human_assembly_stills_v1', 'identity': identity,
++                    'source_master': str(master), 'source_sha256': before, 'blender_version': bpy.app.version_string,
++                    'pose': {'action': 'idle', 'frame': 1, 'nla_enabled': False, 'basis': str(idle.get('motion_basis', 'reconstructed mechanical pose'))}, 'lod': 0,
++                    'bone_count': len(rig.data.bones), 'mesh_count': len(meshes),
++                    'parts': [{'name': o.name, 'materials': [m.name if m else None for m in o.data.materials]} for o in meshes],
++                    'textures': [{'name': image.name, 'packed': bool(image.packed_file), 'size': list(image.size)} for image in sorted(images, key=lambda image: image.name)],
++                    'bounds_and_framing': bounds, 'cameras': cameras, 'lights': lights,
++                    'render': {'engine': 'CYCLES', 'device': 'CPU', 'samples': 32, 'seed': 1789, 'denoiser': 'OPENIMAGEDENOISE', 'resolution': SIZE, 'view_transform': 'AgX', 'world_strength': .35, 'world_color_linear_rgba': [.18, .18, .18, 1], 'camera_sensor_fit': 'VERTICAL'},
++                    'provenance': {'grade': 'reconstructed', 'render_only': True, 'historical_photo_reference': False,
++                                   'likeness_accepted': False, 'fit_accepted': False, 'photo_quality_accepted': False,
++                                   'basis': str(metadata.get('basis', '')), 'sources': list(metadata.get('sources', [])), 'liberty': metadata.get('liberty')},
++                    'outputs': verify_outputs(output)}
++    finally:
++        if sha256(master) != before:
++            raise RuntimeError('source master changed during render')
++    manifest['source_sha256_after'] = before
++    (output/'manifest.json').write_text(json.dumps(manifest, indent=2)+'\n')
++
++
++if __name__ == '__main__':
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--master', required=True, type=Path)
++    parser.add_argument('--asset-id', required=True)
++    parser.add_argument('--output-dir', required=True, type=Path)
++    args = parser.parse_args(sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else [])
++    render(args.master, args.asset_id, args.output_dir)
+diff --git a/chicago/4d/tools/human_library_stills_intake.py b/chicago/4d/tools/human_library_stills_intake.py
+new file mode 100644
+index 0000000000..c615bfc682
+--- /dev/null
++++ b/chicago/4d/tools/human_library_stills_intake.py
+@@ -0,0 +1,151 @@
++# SPDX-License-Identifier: GPL-3.0-or-later
++"""Fetch three unchanged canonical masters from a successful same-repository build.
++
++Only the explicitly requested completed human workflow is a source. The source and
++consumer commits are recorded separately; this does not regenerate or adopt assets.
++Authentication is inherited by gh; credentials never enter arguments or receipts.
++"""
++from __future__ import annotations
++import argparse
++import hashlib
++import json
++import os
++from pathlib import Path, PurePosixPath
++import re
++import shutil
++import stat
++import subprocess
++import tempfile
++import zipfile
++
++ASSETS = ('bardwell_otis_1835', 'dufresne_joseph_1835', 'flynn_martin_1835')
++LIMIT = 1024 ** 3
++WORKFLOW = '.github/workflows/chicago-4d-humans.yml'
++
++
++def sha256(path):
++    with path.open('rb') as stream:
++        return hashlib.file_digest(stream, 'sha256').hexdigest()
++
++
++def select_artifact(repo, run_id, run, jobs, artifacts):
++    if (run.get('id') != int(run_id) or run.get('path') != WORKFLOW or
++        run.get('event') != 'workflow_dispatch' or run.get('status') != 'completed' or
++        run.get('conclusion') != 'success' or
++        run.get('head_repository', {}).get('full_name', '').lower() != repo.lower() or
++        not re.fullmatch(r'[0-9a-f]{40}', run.get('head_sha', ''))):
++        raise ValueError('source must be the completed successful same-repository human workflow')
++    for name in ('humans', 'teamster-studies'):
++        matches = [job for job in jobs if job.get('name') == name]
++        if len(matches) != 1 or any(matches[0].get(k) != v for k, v in
++                                  (('status', 'completed'), ('conclusion', 'success'))):
++            raise ValueError(f'source prerequisite {name} must have completed successfully')
++    matches = [a for a in artifacts if a.get('name') == 'resident-teamster-studies-'+run['head_sha']]
++    if len(matches) != 1:
++        raise ValueError('source must contain exactly one canonical teamster artifact')
++    artifact = matches[0]
++    if (artifact.get('expired') is not False or not isinstance(artifact.get('id'), int) or
++        not 0 < artifact.get('size_in_bytes', 0) <= LIMIT or
++        not re.fullmatch(r'sha256:[0-9a-f]{64}', artifact.get('digest') or '')):
++        raise ValueError('source artifact must be unexpired, bounded and SHA256-bound')
++    return artifact
++
++
++def verify_archive(path, digest):
++    if not re.fullmatch(r'sha256:[0-9a-f]{64}', digest) or sha256(path) != digest[7:]:
++        raise ValueError('artifact bytes do not match the server SHA256 digest')
++
++
++def selected_members(archive):
++    selected, names = {}, set()
++    for entry in archive.infolist():
++        name = entry.filename
++        parts = name.rstrip('/').split('/')
++        if (not name or PurePosixPath(name).is_absolute() or '\\' in name or
++            any(p in ('', '.', '..') for p in parts) or name in names or
++            stat.S_ISLNK(entry.external_attr >> 16)):
++            raise ValueError('artifact contains an unsafe or duplicate ZIP path')
++        names.add(name)
++        for asset in ASSETS:
++            suffix = f'assets/authored/humans/teamsters/{asset}/canonical.blend'
++            if name == suffix or name.endswith('/'+suffix):
++                if asset in selected or entry.is_dir() or not 0 < entry.file_size <= LIMIT:
++                    raise ValueError('canonical master is duplicated, empty or oversized')
++                selected[asset] = entry
++    if set(selected) != set(ASSETS) or sum(i.file_size for i in selected.values()) > LIMIT:
++        raise ValueError('artifact must contain exactly the three bounded canonical masters')
++    return selected
++
++
++def extract_masters(archive_path, output):
++    if output.exists():
++        raise ValueError('output-dir must be fresh; preserving existing evidence')
++    with zipfile.ZipFile(archive_path) as archive:
++        members = selected_members(archive)
++        output.mkdir(parents=True)
++        records = []
++        for asset in ASSETS:
++            dest = output / asset / 'canonical.blend'
++            dest.parent.mkdir()
++            with archive.open(members[asset]) as source, dest.open('xb') as target:
++                shutil.copyfileobj(source, target)
++            records.append({'asset_id': asset, 'archive_path': members[asset].filename,
++                            'path': str(dest.relative_to(output)), 'bytes': dest.stat().st_size,
++                            'sha256': sha256(dest)})
++    return records
++
++
++def api(path):
++    return json.loads(subprocess.check_output(['gh', 'api', path], text=True, timeout=60))
++
++
++def pages(path, key):
++    result = []
++    for page in range(1, 11):
++        batch = api(f'{path}?per_page=100&page={page}')[key]
++        result.extend(batch)
++        if len(batch) < 100:
++            return result
++    raise ValueError('source metadata exceeded the bounded pagination limit')
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--run', required=True)
++    parser.add_argument('--output-dir', required=True, type=Path)
++    args = parser.parse_args()
++    repo = os.environ.get('GITHUB_REPOSITORY', '')
++    consumer = os.environ.get('GITHUB_SHA', '')
++    if not re.fullmatch(r'[1-9][0-9]{0,19}', args.run):
++        parser.error('--run must be a positive numeric GitHub run ID')
++    if not re.fullmatch(r'[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+', repo) or not re.fullmatch(r'[0-9a-f]{40}', consumer):
++        parser.error('GITHUB_REPOSITORY and immutable GITHUB_SHA are required')
++    output = args.output_dir.absolute()
++    if output.exists():
++        parser.error('output-dir must be fresh')
++    prefix = f'repos/{repo}/actions/runs/{args.run}'
++    run = api(prefix)
++    artifact = select_artifact(repo, args.run, run, pages(prefix+'/jobs', 'jobs'),
++                               pages(prefix+'/artifacts', 'artifacts'))
++    with tempfile.TemporaryDirectory(prefix='human-library-intake-') as scratch:
++        archive = Path(scratch)/'source.zip'
++        with archive.open('xb') as target:
++            subprocess.run(['gh', 'api', f'repos/{repo}/actions/artifacts/{artifact["id"]}/zip'],
++                           stdout=target, check=True, timeout=180)
++        if archive.stat().st_size > LIMIT:
++            raise ValueError('download exceeded the archive byte limit')
++        verify_archive(archive, artifact['digest'])
++        masters = extract_masters(archive, output)
++    binding = {'schema': 'chicago4d_human_library_stills_source_v1', 'repository': repo,
++               'source_run_id': int(args.run), 'source_run_url': run['html_url'],
++               'source_head_sha': run['head_sha'], 'source_workflow': run['path'],
++               'consumer_head_sha': consumer,
++               'artifact': {key: artifact[key] for key in ('id', 'name', 'digest', 'size_in_bytes')},
++               'masters': masters, 'scope': 'render-only source snapshot; no runtime asset adoption'}
++    (output/'source-binding.json').write_text(json.dumps(binding, indent=2)+'\n')
++    print(json.dumps({'source_run_id': int(args.run), 'source_head_sha': run['head_sha'],
++                      'consumer_head_sha': consumer, 'artifact_id': artifact['id'], 'masters': len(masters)}))
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/chicago/4d/tools/human_period_wardrobe.py b/chicago/4d/tools/human_period_wardrobe.py
+index 920931fefc..a890e68847 100644
+--- a/chicago/4d/tools/human_period_wardrobe.py
++++ b/chicago/4d/tools/human_period_wardrobe.py
+@@ -163,7 +163,7 @@ def round_jacket(body_mesh, bones, recipe, height, profile, scale=1.):
+         raise ValueError('unsupported reconstructed jacket ease/length')
+     source = garment_shell(body_mesh, 'shirt', spec['ease_m'],
+                            {**recipe, 'shirt_hem_fraction': spec['hem_fraction']},
+-                           bones, height, scale)
++                           bones, height, scale, lower_hem_clip=True)
+     waist = recipe['waist_height_fraction']*height/scale
+     neck = bones['neck_01']['head_m'][1]
+     def opening(y):
+@@ -230,7 +230,7 @@ def round_jacket(body_mesh, bones, recipe, height, profile, scale=1.):
+     if not lapel_edges:
+         raise ValueError('jacket has no connected front lapels')
+     out['receipt'] = {'construction': 'source-fitted short round jacket with connected folded front edges',
+-                      'connected_lapel_edges': len(lapel_edges), 'source_body_mutated': False,
++                      'connected_lapel_edges': len(lapel_edges), 'lower_hem_clip_y_m': source['receipt']['lower_hem_clip_y_m'], 'source_body_mutated': False,
+                       'source_body_uvs_mutated': False, 'grade': 'reconstructed', 'fit_accepted': False}
+     return out
+ 
+diff --git a/chicago/4d/tools/human_workwear_fit.py b/chicago/4d/tools/human_workwear_fit.py
+index 4b74d56d8e..33375741be 100644
+--- a/chicago/4d/tools/human_workwear_fit.py
++++ b/chicago/4d/tools/human_workwear_fit.py
+@@ -43,7 +43,7 @@ def _clip(poly,field):
+     return clean
+ 
+ 
+-def garment_shell(m,kind,offset,recipe,bones,height,scale=1.):
++def garment_shell(m,kind,offset,recipe,bones,height,scale=1.,*,lower_hem_clip=False):
+     """A source-derived shell with coincident UV seams and clipped vest edges.
+ 
+     Original source UVs and exact weights survive on original vertices. New vest
+@@ -115,12 +115,20 @@ def garment_shell(m,kind,offset,recipe,bones,height,scale=1.):
+             # Candidate next trim: retain every face crossing the torso slab;
+             # continuous source fields, never centroid ownership, cut its edges.
+             keep=(max(ps[i][1] for i in face)>=waist-.04 and min(ps[i][1] for i in face)<=vest_top)
++        if kind=='shirt' and lower_hem_clip:
++            # Jacket-only pattern: retain crossing source faces before cutting.
++            # Centroid selection leaves the body triangulation as a sawtooth hem.
++            keep=((max(ps[i][1] for i in face)>=hem and
++                   min(ps[i][1] for i in face)<=neck+.035 and abs(p[0])<.23)
++                  or (arm>.35 and abs(p[0])<wrist-.012))
+         if not keep:continue
+         selected.append(fi)
+         poly=[{'p':ps[i],'uv':m['uvs'][i],'w':m['weights'][i],'n':ns[i],'basis':{sids[i]:1.}} for i in face]
+         # End the shirt on the actual existing collar's base plane. This
+         # clips triangles and interpolates UVs/weights, instead of selecting
+         # jagged whole faces by head weight. Neck/skin anatomy stays exact.
++        if kind=='shirt' and lower_hem_clip:
++            poly=_clip(poly,lambda v:v['p'][1]-hem)
+         polys=[_clip(poly,lambda v:neck-v['p'][1])] if kind=='shirt' else [poly]
+         if kind=='waistcoat':
+             # Clip source corners/UVs/weights exactly on the declared lower/top
+@@ -148,6 +156,11 @@ def garment_shell(m,kind,offset,recipe,bones,height,scale=1.):
+                     ease=1. if kind!='shirt' else max(0.,min(1.,(shirt_ease['axis_y_m']-vertex['p'][1])/shirt_ease['transition_width_m']))
+                     p[0]+=ease*math.copysign(.007/scale,p[0])
+                 if kind=='shirt':
++                    if lower_hem_clip:
++                        # Preserve the hem plane and ease into the full offset;
++                        # clamping eased interior vertices would fold hem fans.
++                        gain=min(1.,max(0.,vertex['p'][1]-hem)/(2*offset/scale))
++                        p[1]=vertex['p'][1]+n[1]*offset/scale*gain
+                     # Cut-edge normals can have a small vertical component.
+                     # The garment seam itself stays on its declared collar
+                     # plane instead of sagging into a near-planar stair edge.
+@@ -207,6 +220,8 @@ def garment_shell(m,kind,offset,recipe,bones,height,scale=1.):
+         'waistcoat_front_closure_y_m':closure_y if kind=='waistcoat' else None,
+         'body_mutated':False,'maximum_discarded_cut_weight':maximum_drop,'degenerate_cut_fans_discarded':discarded_zero,
+         'fit_accepted':False,'scope':'Original source construction; actual deformation and rendered clothing still need review'}
++    if lower_hem_clip:
++        result['receipt']['lower_hem_clip_y_m']=hem
+     if shoulder_pattern:result['receipt'].update(waistcoat_shoulder_pattern=shoulder_pattern,waistcoat_top_clip_y_m=vest_top)
+     if kind=='trousers':result=level_trouser_hems(result,bones)
+     return result
+diff --git a/chicago/4d/tools/step_isolation.json b/chicago/4d/tools/step_isolation.json
+index f85324cd8f..ccc7d32a60 100644
+--- a/chicago/4d/tools/step_isolation.json
++++ b/chicago/4d/tools/step_isolation.json
+@@ -6054,6 +6054,14 @@
+       "wrote": [],
+       "wrote_ignored": []
+     },
++    "tools/test_human_library_stills.py": {
++      "wrote": [],
++      "wrote_ignored": []
++    },
++    "tools/test_human_library_stills_intake.py": {
++      "wrote": [],
++      "wrote_ignored": []
++    },
+     "tools/test_human_life.mjs": {
+       "wrote": [],
+       "wrote_ignored": []
+diff --git a/chicago/4d/tools/test_human_library_stills.py b/chicago/4d/tools/test_human_library_stills.py
+new file mode 100644
+index 0000000000..df2ddfcbe5
+--- /dev/null
++++ b/chicago/4d/tools/test_human_library_stills.py
+@@ -0,0 +1,88 @@
++# SPDX-License-Identifier: GPL-3.0-or-later
++"""Pure refusal/framing controls using the real recipe; no BPy or mocked renders."""
++import itertools
++import json
++import math
++from pathlib import Path
++import tempfile
++import unittest
++
++from human_library_stills import ROOT, SIZE, VIEWS, framing, validate_identity, validate_paths, verify_outputs
++
++
++class AssemblyStillControls(unittest.TestCase):
++    def setUp(self):
++        self.recipe = json.loads((ROOT/'data/humans/recipes/worker_1835.json').read_text())
++
++    def metadata(self, variant):
++        return {'asset_id': variant['id'], 'skeleton': 'c4d_humanoid_v1', 'grade': 'reconstructed',
++                'recipe': 'data/humans/recipes/worker_1835.json',
++                **{key: variant[key] for key in ('person_reference_id', 'person_reference_scene', 'person_reference_grade')}}
++
++    def test_actual_three_recipe_identities(self):
++        self.assertEqual(len(self.recipe['proof_variants']), 3)
++        for variant in self.recipe['proof_variants']:
++            receipt = validate_identity(self.metadata(variant), variant['id'])
++            self.assertEqual(receipt['person_reference_id'], variant['person_reference_id'])
++            self.assertEqual(len(receipt['recipe_sha256']), 64)
++
++    def test_wrong_asset_or_person_or_grade_refused(self):
++        variant = self.recipe['proof_variants'][0]
++        metadata = self.metadata(variant)
++        changes = ({'asset_id': 'invented'}, {'person_reference_id': 'invented'},
++                   {'person_reference_scene': '1904'}, {'person_reference_grade': 'attested'},
++                   {'grade': 'attested'}, {'skeleton': 'invented'},
++                   {'recipe': 'data/humans/recipes/../../../../AGENTS.md'})
++        for change in changes:
++            with self.subTest(change=change), self.assertRaises(ValueError):
++                validate_identity({**metadata, **change}, variant['id'])
++
++    def test_missing_variant_in_actual_recipe_refused(self):
++        metadata = self.metadata(self.recipe['proof_variants'][0])
++        metadata['asset_id'] = 'invented'
++        with self.assertRaisesRegex(ValueError, 'actual recipe variant'):
++            validate_identity(metadata, 'invented')
++
++    def test_every_view_fits_same_portrait_frame_with_margin(self):
++        # Wide off-origin assembly exercises the horizontal rather than height limit.
++        points = list(itertools.product((2.1, 3.5), (-4.0, -3.5), (.08, 1.88)))
++        result = framing(points)
++        target, scale = result['target_m'], result['ortho_scale_m']
++        self.assertEqual(target, [2.8, -3.75, .98])
++        for _, angle in VIEWS:
++            radians = math.radians(angle)
++            for x, y, z in points:
++                screen_x = (x-target[0])*math.cos(radians)+(y-target[1])*math.sin(radians)
++                self.assertLess(abs(screen_x), scale*SIZE[0]/SIZE[1]/2)
++                self.assertLess(abs(z-target[2]), scale/2)
++
++    def test_invalid_geometry_bounds_refused(self):
++        bad = ([], [(0, 0, 0)], [(0, 0, 0), (1, 1, float('nan'))],
++               [(0, 0, 0), (1, float('inf'), 1.8)], [(0, 0, 0), (1, 1, 180)],
++               [(0, 0, 0), (0, 1, 1.8)], [(0, 0), (1, 1)])
++        for points in bad:
++            with self.subTest(points=points), self.assertRaises(ValueError):
++                framing(points)
++
++    def test_missing_master_and_existing_outputs_refused(self):
++        with tempfile.TemporaryDirectory() as directory:
++            directory = Path(directory)
++            master = directory/'canonical.blend'
++            with self.assertRaisesRegex(ValueError, 'existing .blend'):
++                validate_paths(master, directory/'renders')
++            # Only path validation reads this sentinel; no Blender loading is simulated.
++            master.write_bytes(b'source sentinel')
++            self.assertEqual(validate_paths(master, directory/'renders')[0], master)
++            with self.assertRaisesRegex(ValueError, 'separate'):
++                validate_paths(master, master)
++            (directory/'front.png').write_bytes(b'stale output')
++            with self.assertRaisesRegex(ValueError, 'existing still outputs'):
++                validate_paths(master, directory)
++            with self.assertRaisesRegex(ValueError, 'missing rendered output'):
++                verify_outputs(directory/'renders')
++            with self.assertRaisesRegex(ValueError, 'invalid PNG'):
++                verify_outputs(directory)
++
++
++if __name__ == '__main__':
++    unittest.main()
+diff --git a/chicago/4d/tools/test_human_library_stills_intake.py b/chicago/4d/tools/test_human_library_stills_intake.py
+new file mode 100644
+index 0000000000..05d2df544e
+--- /dev/null
++++ b/chicago/4d/tools/test_human_library_stills_intake.py
+@@ -0,0 +1,89 @@
++# SPDX-License-Identifier: GPL-3.0-or-later
++"""Exercise source binding and safe extraction without credentials or Blender."""
++import copy
++import hashlib
++import io
++from pathlib import Path
++import stat
++import tempfile
++import unittest
++import zipfile
++
++from human_library_stills_intake import (ASSETS, WORKFLOW, extract_masters,
++                                        select_artifact, selected_members, verify_archive)
++
++
++class IntakeTest(unittest.TestCase):
++    def setUp(self):
++        self.run = {'id': 7, 'path': WORKFLOW, 'event': 'workflow_dispatch', 'status': 'completed',
++                    'conclusion': 'success', 'head_repository': {'full_name': 'owner/repo'}, 'head_sha': 'a'*40}
++        self.jobs = [{'name': name, 'status': 'completed', 'conclusion': 'success'}
++                     for name in ('humans', 'teamster-studies')]
++        self.artifact = {'id': 3, 'name': 'resident-teamster-studies-'+'a'*40,
++                         'expired': False, 'size_in_bytes': 123, 'digest': 'sha256:'+'b'*64}
++
++    def test_successful_source_and_required_prerequisites(self):
++        self.assertEqual(select_artifact('owner/repo', '7', self.run, self.jobs, [self.artifact]), self.artifact)
++        for key, value in [('path', 'other.yml'), ('event', 'pull_request'), ('status', 'in_progress'),
++                           ('conclusion', 'failure'), ('head_repository', {'full_name': 'fork/repo'}), ('head_sha', 'main')]:
++            with self.subTest(key=key), self.assertRaises(ValueError):
++                select_artifact('owner/repo', '7', {**self.run, key: value}, self.jobs, [self.artifact])
++        for index in (0, 1):
++            jobs = copy.deepcopy(self.jobs)
++            jobs[index]['conclusion'] = 'failure'
++            with self.assertRaises(ValueError):
++                select_artifact('owner/repo', '7', self.run, jobs, [self.artifact])
++
++    def test_missing_duplicate_expired_or_unbound_artifact(self):
++        for artifacts in ([], [self.artifact]*2, [{**self.artifact, 'expired': True}],
++                          [{**self.artifact, 'digest': None}], [{**self.artifact, 'size_in_bytes': 2**31}]):
++            with self.subTest(artifacts=artifacts), self.assertRaises(ValueError):
++                select_artifact('owner/repo', '7', self.run, self.jobs, artifacts)
++
++    def test_archive_digest_requires_actual_bytes(self):
++        with tempfile.TemporaryDirectory() as tmp:
++            path = Path(tmp)/'archive.zip'
++            path.write_bytes(b'actual archive')
++            verify_archive(path, 'sha256:'+hashlib.sha256(path.read_bytes()).hexdigest())
++            with self.assertRaises(ValueError):
++                verify_archive(path, 'sha256:'+'a'*64)
++
++    def archive(self, extra=None, omit=None, duplicate=False):
++        stream = io.BytesIO()
++        with zipfile.ZipFile(stream, 'w') as archive:
++            for asset in ASSETS:
++                if asset != omit:
++                    archive.writestr('home/runner/work/chicago/chicago/chicago/4d/assets/authored/humans/teamsters/'+asset+'/canonical.blend', asset.encode())
++            if duplicate:
++                archive.writestr('other/assets/authored/humans/teamsters/'+ASSETS[0]+'/canonical.blend', b'duplicate')
++            if extra:
++                archive.writestr(extra, b'unsafe')
++        stream.seek(0)
++        return stream
++
++    def test_exact_three_masters_extract_without_unselected_files(self):
++        with tempfile.TemporaryDirectory() as tmp:
++            path = Path(tmp)/'source.zip'
++            path.write_bytes(self.archive(extra='review/other.png').getvalue())
++            output = Path(tmp)/'output'
++            records = extract_masters(path, output)
++            self.assertEqual({r['asset_id'] for r in records}, set(ASSETS))
++            self.assertEqual(len(list(output.rglob('*.blend'))), 3)
++            self.assertFalse((output/'review').exists())
++            for record in records:
++                self.assertEqual((output/record['path']).read_bytes(), record['asset_id'].encode())
++            with self.assertRaises(ValueError):
++                extract_masters(path, output)
++
++    def test_traversal_duplicate_missing_symlink_refused_before_extraction(self):
++        link = zipfile.ZipInfo('link')
++        link.external_attr = (stat.S_IFLNK | 0o777) << 16
++        for stream in [self.archive(extra='../escape'), self.archive(extra='/absolute'),
++                       self.archive(extra='a/./b'), self.archive(extra='a\\b'),
++                       self.archive(extra=link), self.archive(omit=ASSETS[0]), self.archive(duplicate=True)]:
++            with zipfile.ZipFile(stream) as archive, self.assertRaises(ValueError):
++                selected_members(archive)
++
++
++if __name__ == '__main__':
++    unittest.main()
+diff --git a/chicago/4d/tools/test_human_workwear_shoulders.py b/chicago/4d/tools/test_human_workwear_shoulders.py
+index edcff29535..60e624d8ad 100644
+--- a/chicago/4d/tools/test_human_workwear_shoulders.py
++++ b/chicago/4d/tools/test_human_workwear_shoulders.py
+@@ -116,6 +116,19 @@ class PeriodWardrobeConstruction(unittest.TestCase):
+   for jacket in jackets:
+    self.assertGreater(jacket['receipt']['connected_lapel_edges'],0)
+    self.assert_component(jacket)
++ def test_jacket_outer_hem_has_a_level_contour_instead_of_source_triangle_teeth(self):
++  for r in self.rows:
++   if not r['profile']['jacket']:continue
++   jacket=round_jacket(r['body']['meshes'][0],r['bones'],r['recipe'],r['profile']['body_height_m'],r['profile'])
++   hem=r['profile']['jacket']['hem_fraction']*r['profile']['body_height_m']
++   self.assertGreaterEqual(min(p[1] for p in jacket['positions_m']),hem-1e-12)
++   edges=collections.Counter(tuple(sorted((a,b))) for f in jacket['triangles'] for a,b in zip(f,f[1:]+f[:1]))
++   # Exclude rising open-front edges; torso hem away from the opening is level.
++   band={i for edge,n in edges.items() if n==1 for i in edge
++         if abs(jacket['positions_m'][i][1]-hem)<.03 and abs(jacket['positions_m'][i][0])>.04}
++   self.assertGreater(len(band),10)
++   self.assertTrue(all(abs(jacket['positions_m'][i][1]-hem)<1e-10 for i in band))
++   self.assert_component(jacket)
+  def test_bad_thickness_degenerate_source_uv_and_detached_button_negative_controls(self):
+   r=self.rows[0]
+   for thickness in [0,-.001,.01]:
