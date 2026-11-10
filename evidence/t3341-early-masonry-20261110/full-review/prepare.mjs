@@ -3,7 +3,7 @@ import * as T from '/tmp/chicago-brick-3341/chicago/4d/renderers/web/vendor/thre
 import {parseGlb,readAccessor} from '/tmp/chicago-brick-3341/chicago/4d/tools/k01_contract.mjs';
 const app='/tmp/chicago-west-wicket-20261109/chicago/4d',site='/tmp/chicago-west-wicket-20261109/site/4d';
 const jobs=[['1812','first_fort_dearborn_magazine','brick'],['1812','first_fort_dearborn_north_range','chimney'],['1812','kinzie_bake_house_1812','chimney'],['1835','lake_house_construction','brick'],['1835','green_tree_tavern','brick'],['1835','miller_house','chimney']];
-const out={commit:'39df38072adad598dd7a4b9680466db8bf26351f',build:JSON.parse(fs.readFileSync(site+'/build.json')),jobs:[]};
+const out={commit:'cab45145391cccb84ab408123b70207c32634fcc',build:JSON.parse(fs.readFileSync(site+'/build.json')),jobs:[]};
 const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
 for(const [year,id,role] of jobs){const s=JSON.parse(fs.readFileSync(`${app}/data/sidecars/${year}/${id}.json`)),g=parseGlb(fs.readFileSync(`${app}/assets/${s.asset}`)),ctx={...g,views:new Map()},prims=[];
  function visit(i,parent){const n=g.json.nodes[i],local=n.matrix?new T.Matrix4().fromArray(n.matrix):new T.Matrix4().compose(new T.Vector3(...n.translation||[0,0,0]),new T.Quaternion(...n.rotation||[0,0,0,1]),new T.Vector3(...n.scale||[1,1,1])),m=parent.clone().multiply(local);
