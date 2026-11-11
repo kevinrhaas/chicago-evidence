@@ -1,0 +1,18 @@
+S3/H3 metadata authoring — PREPARED ONLY
+
+ROOT alone may execute after actual S3 all16 closure/aggregate, normal single-parent commit, preflight, owned normal feature push and remote verification. Those four accepted120 closures and receipts must all bind the same actual typed postgate binding. SourceS3/tree/freeze/aggregate/H3 are unknown now and are not fabricated in this packet. No APP/status/V2/import/test/Git/network/authoring/producer action occurred during preparation; only source text/JSON reads and AST parsing.
+
+Future operator entry, only after actual binding exists and ROOT admission:
+
+source /workspace/.cloud-setup/transport-activate.sh
+python3 /tmp/ROOT-T1789-LINEN-S3-REQUEST-AUTHORING-PREP-20261111/run.py --binding-sha256 ACTUAL_ROOT_REVIEWED_BINDING_SHA256
+
+The required CLI value is a real64hex SHA of POST/BINDING.json, not a placeholder accepted by the code. The code pins the sealed S3 postgate chain656777d7 and SOURCE-PINSba5c7646, validates the actual binding, then loads definitions into one types.ModuleType dictionary with a non-main name. It explicitly sets B/BINDING_SHA/TREE/FREEZE_SHA in that SAME function-global dictionary and asserts qualified_gate/prior/verify_worktree use that exact dictionary. It never assumes mutation of a runpy result copy changes function globals and never executes a postgate phase.
+
+The reused guard verifies actual all16 original600 receipts, full log markers/caps/resources/cleanup/aggregate and the typed APPLY/freeze binding. Four actual accepted original120 postgate closures/receipt SHAs are required. Actual sourceS3 is derived from COMMIT, with one parentc9990d8b32517612a94e339a98bd5700436b5689, the actual bound tree/freeze/aggregate and the same owned branch. All301 actual source bytes/modes, native8/fixture and protected primary9453 are checked before/after; remote branch must still equal actualS3. H3 is not generated before this point.
+
+The helper creates an official shallow/blobless physically separate sparse DRIVER at exactactualS3 outsideAPP. Exactly10 APP files are materialized: capture owner/template/Blender pin plus seven unchanged canonical tools. Clean driver root/tree and actual source/driver bodies agree. Sourceowner must be efcd568ebf5cfb16609666aa1bd4e0411b34b390deaa680773f8653b24faefb5; template83ba2447416107faa1d4a40813b5d414eda35343df6818979217fe7d52ffff79 and workflow5efef07605ae5446c8d6084f65d9c58035f27ee3893de4b937e4ae6ec0844e88 remain unchanged. No shared-Git/symlink or physical-source/driver alias bypass exists.
+
+Only the existing owner --refresh-request path executes, never capture/Blender/export/canonicalizer/codec/browser/fixture producer. It validates actual physical selected245 input bindings and canonical owners, then writes fresh external request/REFRESH. Request names must equal the immutable template closed245 set; sole settler1812/settler_1812_v1/L418, release/install/native_fitfalse/materialnull remain exact. These are selected bindings plus whole clean source Git identity, not a complete consumed-dependency claim. Actual H3 is SHA256 of real request bytes and is recorded for ROOT independent review; no metadata APP commit is needed.
+
+One original120 foreground cell uses soleROOTlock, V2, fresh unchanged guards/resourcepair and owned cleanup. Existing intent/driver/request/result refuse overwrite or automatic retry. Source/driver tracked files are unchanged; all outputs are private external/tmp. Both original failed captures remain failures with no native parents. Authoring success is metadata only. Fresh exactS3/H3 request review and separate capture admission are required; no POST or retry script is included.
