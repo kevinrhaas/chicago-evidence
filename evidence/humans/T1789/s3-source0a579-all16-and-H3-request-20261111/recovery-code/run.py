@@ -1,0 +1,18 @@
+"""ROOT admits one fresh original120 reconciliation, never an interrupted-push rerun."""
+from pathlib import Path
+import argparse,fcntl,hashlib,json,subprocess
+P=Path(__file__).resolve().parent
+parser=argparse.ArgumentParser();parser.add_argument('--binding-sha256',required=True);args=parser.parse_args()
+pins=json.loads((P/'SOURCE-PINS.json').read_text())
+for n,h in pins.items():assert hashlib.sha256((P/n).read_bytes()).hexdigest()==h,n
+assert not any((P/n).exists()for n in ['before.json','command.result.json','CLOSED.json','RECONCILIATION-RECEIPT.json','REMOTE-VERIFY']),'No overwrite or automatic retry'
+lock=Path('/workspace/.cloud-setup/transport-8cec-generated-lap-20261030/ROOT-SOLE-CANONICAL-OWNER.lock').open('a+');fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
+G='/workspace/.cloud-setup/transport-current-20261103/resource_guard.py'
+def call(a):return subprocess.run(a,check=False).returncode
+assert call(['python3',G,'capture',str(P/'before.json')])==0
+rc=call(['python3','/workspace/.cloud-setup/transport-supervise.py','--prefix',str(P/'command'),'--cwd','/workspace','--timeout','120','--','/tmp/ROOT-GATE-BIND-PREP-V2-20261110/with-cache.sh','--','python3',str(P/'recover.py'),'--binding-sha256',args.binding_sha256])
+post=call(['python3',G,'capture',str(P/'after.json')]);pair=call(['python3',G,'pair',str(P/'before.json'),str(P/'after.json'),str(P/'resources.json')])
+r=json.loads((P/'command.result.json').read_text());k=json.loads((P/'command.cleanup.json').read_text());g=json.loads((P/'resources.json').read_text());q=P/'RECONCILIATION-RECEIPT.json'
+accepted=rc==post==pair==0 and r['returncode']==0 and not r['timed_out'] and r['requested_timeout_seconds']==r['effective_timeout_seconds']==120 and r['timeout_override_reason'] is None and k['cleanup_complete'] and not k['remaining_owned_children'] and g['accepted'] and q.exists()
+proof={'accepted':accepted,'result':r,'cleanup':k,'resources':g,'binding_SHA256':args.binding_sha256,'reconciliation_receipt_SHA256':hashlib.sha256(q.read_bytes()).hexdigest()if q.exists()else None,'original_PUSH_closure_accepted':False,'original_PUSH_supervised_returncode':None,'original_PUSH_cleanup_complete':None,'push_retried':False,'automatic_retry':False}
+(P/'CLOSED.json').write_text(json.dumps(proof,indent=2)+'\n');print(json.dumps({'accepted':accepted,'seconds':r['seconds'],'push_retried':False}));raise SystemExit(0 if accepted else 1)
