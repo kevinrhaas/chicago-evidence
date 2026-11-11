@@ -1,0 +1,58 @@
+{
+  "reviewer": "/root/clothing_pose_review",
+  "status": "ACTUAL_GATE_NONPASS_CAUSE_UNATTRIBUTED",
+  "at": "2026-11-11T08:44:55.203113+00:00",
+  "head": "9453fa44842225bdb9de2c687cf7dca2f8a8211d",
+  "source_read_pins": {
+    "tools/measure_walk_frames.mjs": {
+      "bytes": 64436,
+      "sha256": "0ce44190a711bbfa951a0c4bade2e82ec70ec27a1396b78a71c4a543c3dbd056"
+    },
+    "renderers/web/js/main.js": {
+      "bytes": 401257,
+      "sha256": "b0f23c4199b397b599fa18a188318f65b19dbe76b11d5619b6b55180eacb7ea8"
+    },
+    "renderers/web/js/flora.js": {
+      "bytes": 469143,
+      "sha256": "a8c8726d4c4d183255ec7f02b74146aaa30d63908e43ac4d1ddf61b5d4b5e8d0"
+    },
+    "renderers/web/js/human-days.js": {
+      "bytes": 94518,
+      "sha256": "5ff49cf0817ec4269c18ffee948f159951dd66dfc7288fd7888366f3172d879b"
+    }
+  },
+  "original_existing_failure": {
+    "job": 130408200678,
+    "year": "1835",
+    "viewport": "desktop",
+    "tier": "full",
+    "move": "travel",
+    "frame": 89,
+    "scripted_ms": 84.9,
+    "flora_ms": 83.6,
+    "flora_ceiling_ms": 60,
+    "flora_p95_ms": 2.1,
+    "near_pass_max_ms": 20.3,
+    "far_owned_pass_max_ms": 79.4
+  },
+  "proved_source_boundaries": [
+    "measure_walk_frames wraps synchronous flora.update orig.apply in performance.now before/after, so interval includes elapsed GC/preemption/native wait inside call",
+    "driveMove setsAnimationHold(true) before warmup/settle; hold remains through driven frames",
+    "main.tick frameDt is0 while animationHold, and days.update(frameDt) is called after flora.update",
+    "Both d98 and current days.update return immediately on !(dt>0); changed routing logic is not run inside held measured frame89",
+    "one-frame label means a near/far synchronous pass completed; it does not identify leaf or distinguish CPU from a stall",
+    "Far owned-pass duration receives later carry-tail ms;79.4 cannot be equated with singleframe89"
+  ],
+  "not_proved": [
+    "Specific flora leaf, GC, GPU wait or OS scheduler attribution",
+    "No indirect startup/setDetail/unheld-between-moves state effect from changed module",
+    "An unaffected isolated test sufficient for conditional retry",
+    "A source fix or release PASS"
+  ],
+  "existing_diagnostic_option": {
+    "command_proposal_only": "node tools/measure_walk_frames.mjs --only desktop --year 1835 --tiers full --moves travel --verify --profile 30 --json EXTERNAL_BOUND_OUTPUT.json",
+    "profiler": "Existing CDP Profiler 200-microsecond sampling; tool outputs top self and inclusive totals, not raw per-frame correlated traces",
+    "limits": "Requires separate ROOT admission. Diagnostic timing perturbed; cannot replace original gate or assert cause when spike absent."
+  },
+  "performed": "Read-only source/log review and this small receipt; no APP/index/source change, runtime test, profiler, retry, browser, API or budget modification"
+}
