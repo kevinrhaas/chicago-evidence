@@ -129,7 +129,8 @@ def looks_for(p, sex, portrait):
     inches = round((64 if sex == 'female' else 68) + (draw(pid, 'height') - .5) * 6, 1)
     young = age is not None and age < 18
     if young:
-        cut = 'girl_plait_1812' if sex == 'female' else 'cropped_1812'
+        if not portrait:
+            cut = 'girl_plait_1812' if sex == 'female' else 'cropped_1812'
         facial = ['brows_fine', 'lashes_upper'] if sex == 'female' else ['brows_full']
         # Interpolate between the approved engineering bodies, not a historical measurement.
         anchors = [(2, .85), (3, .905), (4, .99), (5, 1.06), (8, 1.205), (11, 1.40), (12, 1.45), (15, 1.59 if sex == 'female' else 1.65), (17, 1.65 if sex == 'female' else 1.74)]
@@ -140,9 +141,11 @@ def looks_for(p, sex, portrait):
     basis = ('Hair cut and facial hair follow the identified portrait; facial proportions have a separate photograph fit. ' if portrait else
              'No verified individual portrait is available. This is a distinct, seeded reconstruction, not a likeness. ')
     basis += 'Skin, eye and hair colours, stature and build are artistic choices, not demographic facts or measurements. No ancestry is inferred from a surname or photograph. The body and clothes are selected from the recorded household role; exact clothes are a liberty.'
+    if young:
+        basis += ' Stature is interpolated between approved child and teen engineering bodies, with small individual variation; adult aging and body-build targets are disabled.'
     if age is None:
         basis += 'An adult age is provisional because this record gives no birth year.'
-    return {'format': 'chicago4d_human_looks_v1', 'ticket': 'T-3547', 'person_id': pid, 'scene': '1904',
+    return {'format': 'chicago4d_human_looks_v1', 'ticket': 'T-3550' if young else 'T-3547', 'person_id': pid, 'scene': '1904',
             'generated_by': 'tools/prairie_people.py', 'heritage': {'origin': 'not found'},
             'complexion': {'value': skin, 'drawn': skin, 'grade': 'reconstructed'},
             'hair': {'value': hair.replace('_', ' '), 'drawn': hair, 'cut': cut, 'facial': facial,
@@ -234,7 +237,9 @@ def generate():
                            'provenance': {'grade': 'reconstructed', 'ticket': 'T-3548', 'sources': p.get('sources', []),
                                           'liberty': LIBERTY, 'basis': 'Identity from the household record; presence remains as graded there. Appearance, daily movements, company and clothes are reconstructed.'}})
         if status == 'household_care':
-            care.append({'person': pid, 'name': p['name'], 'home': row['lives_at'], 'door': row['lives_at'] + ':front', 'ask_order': 15, 'age_1904': age, 'care_only': True})
+            care.append({'person': pid, 'name': p['name'], 'home': row['lives_at'], 'door': row['lives_at'] + ':front', 'ask_order': 15, 'age_1904': age, 'care_only': True,
+                         'provenance': {'grade': 'reconstructed', 'ticket': 'T-3550', 'sources': p.get('sources', []), 'liberty': CHILD_LIBERTY,
+                                        'basis': 'Identity and birth evidence remain on the household record; care, timing and caregivers are reconstructed.'}})
         catalog.append(item)
     # A care assignment is a same-household reconstruction, never a claim of parentage.
     for entry in inside + care:

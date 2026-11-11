@@ -1045,15 +1045,18 @@ export function createHumanDays({ humans, three = null, hour = () => null, date 
       && !currentOf(q)?.away
       && !(currentOf(q)?.duty && (q.b.duty?.kind === 'beat' || POST_RE.test(currentOf(q)?.doing ?? ''))));
     candidates.sort((a, b) => Number(a.actor.indoors) - Number(b.actor.indoors)
+      || (supervised ? p.entry.caregivers.indexOf(keyOf(a)) - p.entry.caregivers.indexOf(keyOf(b)) : 0)
       || distanceOf(a) - distanceOf(b));
     let q = candidates[0];
     if (!q && spawn && (!p.autonomousUntil || spawned.length < 3)) {
-      const entry = insideOnly.find(x => x.person !== keyOf(p) && x.home === where
+      const entry = insideOnly.filter(x => x.person !== keyOf(p) && x.home === where
         && (!supervised || p.entry.caregivers?.includes(x.person))
         && (!x.supervised || x.caregivers?.includes(keyOf(p)))
+        && (humans.crowdKept == null || humans.crowdKept.includes(x.person))
         && (!p.entry?.door || x.door === p.entry.door) && onDate(date(), x.presence)
         && !spanAt(dayOn(x, date(), x.person), hour())?.away
-        && !spawned.some(m => m.entry === x));
+        && !spawned.some(m => m.entry === x))
+        .sort((a, b) => supervised ? p.entry.caregivers.indexOf(a.person) - p.entry.caregivers.indexOf(b.person) : 0)[0];
       const door = entry && doorThings.find(t => t.door.id === entry.door);
       if (door) q = summon(entry, door.door);
     }
@@ -1385,18 +1388,20 @@ export function createHumanDays({ humans, three = null, hour = () => null, date 
               const pages = Math.ceil(inside.length / ASK_PAGE);
               page %= pages;
               const shown = inside.slice(page * ASK_PAGE, page * ASK_PAGE + ASK_PAGE);
-              const asks = shown.map(({ p, entry, name }) => (p ? {
-                id: `ask:${p.actor.personId ?? p.id}`, label: `Ask for ${name}`, said: () => `${name} comes to the door`,
+              const asks = shown.map(({ p, entry, name }) => {
+                let answer = `${name} comes to the door`;
+                return (p ? {
+                id: `ask:${p.actor.personId ?? p.id}`, label: `Ask for ${name}`, said: () => answer,
                 refuse: () => (p.social || p.called || !p.actor.indoors || p.hosted || held(p.actor) || humans.isHeld?.(p.actor) ? `${name} is not available` : null),
-                steps: [{ label: 'Knocking', seconds: ANSWER_S, run: (t) => { if (t >= 1) callOut(p, d); } }],
+                steps: [{ label: 'Knocking', seconds: ANSWER_S, run: (t) => { if (t >= 1) { const result = callOut(p, d); if (!result.ok) answer = result.why; } } }],
               } : entry.care_only ? {
                 id: `ask:${entry.person}`, label: `Ask after ${name}`, said: () => careStatus(entry.person)?.text ?? '',
                 steps: [{ label: 'Knocking', seconds: ANSWER_S, run: t => { if (t >= 1) openResident(entry.person); } }],
               } : {
-                id: `ask:${entry.person}`, label: `Ask for ${name}`, said: () => `${name} comes to the door`,
+                id: `ask:${entry.person}`, label: `Ask for ${name}`, said: () => answer,
                 refuse: () => (spawned.some((q) => q.entry === entry) ? `${name} is not in` : null),
-                steps: [{ label: 'Knocking', seconds: ANSWER_S, run: (t) => { if (t >= 1) { const q = summon(entry, d); if (q) callOut(q, d); } } }],
-              }));
+                steps: [{ label: 'Knocking', seconds: ANSWER_S, run: (t) => { if (t >= 1) { const q = summon(entry, d); const result = q ? callOut(q, d) : { ok: false, why: `${name} could not come out` }; if (!result.ok) answer = result.why; } } }],
+              }); });
               if (pages > 1) asks.push({ id: 'others', label: 'Others inside…', said: '', steps: [{ label: '', seconds: 0, run: (t) => { if (t === 0) page += 1; } }] });
               return asks;
             },
@@ -1508,7 +1513,7 @@ export function createHumanDays({ humans, three = null, hour = () => null, date 
       if (!p || unavailable(p) || p.attending || p.passing || p.actor.indoors) return null;
       const pair = p.social?.supervised ? p.social : null;
       if (p.social && !pair) endSocial(p.social);
-      const companions = pair?.members.filter(m => m !== p).map(m => ({ m, path: m.actor.path, state: m.actor.state })) ?? [];
+      const companions = pair?.members.filter(m => m !== p).map(m => ({ m, path: m.actor.path, state: m.actor.state, token: m.token })) ?? [];
       for (const { m } of companions) { m.actor.path = null; m.actor.setState?.('standing'); }
       const a = p.actor;
       const hold = { path: a.path, state: a.state, token: p.token, date: date(),
@@ -1518,7 +1523,7 @@ export function createHumanDays({ humans, three = null, hour = () => null, date 
       return () => {
         if (p.attending !== hold) return;
         p.attending = null;
-        for (const { m, path, state } of companions) if (m.social === pair) { m.actor.path = path; m.actor.setState?.(state); }
+        for (const { m, path, state, token } of companions) if (m.social === pair && m.token === token) { m.actor.path = path; m.actor.setState?.(state); }
         if (unavailable(p) || p.token !== hold.token) return;
         if (date() !== hold.date || spanAt(dayOn(p.b, date(), keyOf(p)), hour()) !== hold.span) { p.span = null; return; }
         a.path = hold.path; a.setState?.(hold.state);
@@ -1578,7 +1583,7 @@ export function createHumanDays({ humans, three = null, hour = () => null, date 
         : api.outdoorActivities(id).find((s) => s.id === activity)?.span;
       if (!span) return { ok: false, why: 'No activity available' };
       const carePair = p.social?.supervised ? p.social : null;
-      if (carePair && activity !== null) {
+      if (carePair && activity !== null && (p.entry?.supervised || ['talk', 'walk'].includes(span.activity))) {
         for (const m of carePair.members) { m.actor.stopPath?.(); m.actor.path = null; m.token = (m.token ?? 0) + 1; talk(m.actor, false); }
         carePair.outing = span.activity === 'talk' ? null : span; carePair.bases = null; carePair.moving = false; carePair.nextMove = 0; carePair.leg = false;
         carePair.started = clock; carePair.chatting = clock; carePair.visitorRequested = true;
