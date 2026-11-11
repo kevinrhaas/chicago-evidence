@@ -1,0 +1,9 @@
+# S2 source-only checkpoint: four accepted parts, fifth active
+
+Exact uncommitted staged tree1dced78ea49426b9f4c4b9f52ef79db47f06facf is backed up as the sealed9239-byte seven-path text diff from sourceS3d2d9b356db02deed9d406422f754af4de7aa5f0, SHA256 b0684ae195adaf7527725b10d8f95d5a7fd1ec06bbc8a856d48739b143c8daee. It contains the native LTS guard, compact JSON serialization and normal DEV900d changelog-fold integration. This evidence is source backup, not an S2 application commit or adoption.
+
+The exact301-file freeze, preparation handoff, apply02 closure and five-conflict resolution proof are included. Four actual source-part closures passed with original600-second limits/resources/cleanup; part5 was active at the timestamped progress snapshot. All16 PASS is NOT established. The earlier handoff is historical preparation metadata, while the progress snapshot records later actual accepted parts. No earlier1928 or sourceS gate result is reused to qualify this new tree.
+
+First capture43000644195 failed before geometry and remains retained. No successful S2/H2 capture, new native parents, full native fixture, appearance/fit/photo acceptance or DEV merge is claimed. Old8 native assets and current fixture remain unchanged per the saved apply/freeze receipts. SourceS2 remains uncommitted and the new source gate incomplete at this checkpoint.
+
+The publisher copied only existing external preparation metadata and the sealed patch. No APP filesystem/Git reads, producer/test execution, source mutation, dispatch, rerun, claim or merge was performed. Raw logs, full witness JSON, PNGs, assets, GLBs and archives are excluded. GPL license bytes accompany source excerpts. Mandatory blank unified-diff context is preserved byte-exact; any narrowly scoped artifact whitespace exception is separately retained.

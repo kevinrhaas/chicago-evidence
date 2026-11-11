@@ -1,0 +1,133 @@
+diff --git a/chicago/4d/changelog.d/T1789.json b/chicago/4d/changelog.d/T1789.json
+deleted file mode 100644
+index 3e313d29d28..00000000000
+--- a/chicago/4d/changelog.d/T1789.json
++++ /dev/null
+@@ -1,8 +0,0 @@
+-{
+-  "title": "Fine wool detail on Charles Nelson's coat",
+-  "kind": "change",
+-  "items": [
+-    "Charles's existing green livery keeps its cut and movement, with a fine wool surface in close views.",
+-    "1812 daily life uses less startup memory while keeping requested walks and conversations."
+-  ]
+-}
+diff --git a/chicago/4d/docs/ROADMAP.md b/chicago/4d/docs/ROADMAP.md
+index e7a2f133a58..ea10bcd4247 100644
+--- a/chicago/4d/docs/ROADMAP.md
++++ b/chicago/4d/docs/ROADMAP.md
+@@ -1,3 +1,7 @@
++## Linen seat build correction — 11 November 2026
++
++PR #1928 is merged and verified on public DEV (900d9166e); production is unchanged. The looser 1812 linen seat remains source-only in draft PR #1933. Its first canonical capture (43000644195) stopped before geometry: the checksum-verified Blender release reports `Blender 4.5.3 LTS`, while the capture guard expected the bare version. The guard now requires that exact LTS header and retains archive, binary and codec pins. The rear-view observer now writes compact JSON without removing fields or increasing caps; 104 baseline images across four LODs and both viewports are complete. A fresh committed source, request and canonical build are still required; no new native parents or linen fit acceptance exist. T-1789 clothing realism remains open.
++
+ ## T-1789 — first native clothing-fit increment: linen trousers (2026-11-11)
+ 
+ Address the owner's visible 1812 casual-trouser seat crease on the existing
+diff --git a/chicago/4d/docs/STATUS.md b/chicago/4d/docs/STATUS.md
+index bff6533fae1..c296343884b 100644
+--- a/chicago/4d/docs/STATUS.md
++++ b/chicago/4d/docs/STATUS.md
+@@ -1,3 +1,7 @@
++## Linen seat build correction — 11 November 2026
++
++PR #1928 is merged and verified on public DEV (900d9166e); production is unchanged. The looser 1812 linen seat remains source-only in draft PR #1933. Its first canonical capture (43000644195) stopped before geometry: the checksum-verified Blender release reports `Blender 4.5.3 LTS`, while the capture guard expected the bare version. The guard now requires that exact LTS header and retains archive, binary and codec pins. The rear-view observer now writes compact JSON without removing fields or increasing caps; 104 baseline images across four LODs and both viewports are complete. A fresh committed source, request and canonical build are still required; no new native parents or linen fit acceptance exist. T-1789 clothing realism remains open.
++
+ ## T-1789 — fuller 1812 linen trouser seat: source preparation (2026-11-11)
+ 
+ The existing settler role now has a model-specific fuller linen trouser seat.
+diff --git a/chicago/4d/renderers/web/js/changelog.js b/chicago/4d/renderers/web/js/changelog.js
+index 333bbe6fc5a..f79071f14fe 100644
+--- a/chicago/4d/renderers/web/js/changelog.js
++++ b/chicago/4d/renderers/web/js/changelog.js
+@@ -1,4 +1,9 @@
+ export const CHANGELOG = [ // newest first
++  { v: 2880, ts: '2026-11-11T10:14:24.451Z', date: 'Nov 11, 2026, 4:14 AM CT', title: 'Fine wool detail on Charles Nelson\'s coat', kind: 'change',
++    items: [
++      'Charles\'s existing green livery keeps its cut and movement, with a fine wool surface in close views.',
++      '1812 daily life uses less startup memory while keeping requested walks and conversations.',
++    ] },
+   { v: 2879, ts: '2026-11-11T05:28:49.677Z', date: 'Nov 10, 2026, 11:28 PM CT', title: 'Daily life and easier interactions', kind: 'improvement',
+     items: [
+       'Meet civilians, soldiers and Native residents through a compact Interact menu, with short activity choices and Go inside.',
+diff --git a/chicago/4d/tools/human_clothing_capture_v2.py b/chicago/4d/tools/human_clothing_capture_v2.py
+index 5f864f2169c..c045a56f5bb 100644
+--- a/chicago/4d/tools/human_clothing_capture_v2.py
++++ b/chicago/4d/tools/human_clothing_capture_v2.py
+@@ -165,7 +165,10 @@ def prepare_tools():
+     with archive.open('rb') as stream:
+         archive_hash = hashlib.file_digest(stream, 'sha256').hexdigest()
+     need(archive_hash == values['BLENDER_SHA256'], 'pinned Blender archive checksum')
+-    need(run([str(binary), '--version']).splitlines()[0] == 'Blender 4.5.3', 'pinned Blender version')
++    version_lines = run([str(binary), '--version']).splitlines()
++    version_line = version_lines[0] if version_lines else ''
++    need(version_line == 'Blender 4.5.3 LTS',
++         f'pinned Blender version: expected Blender 4.5.3 LTS; observed {version_line[:200]!r}')
+     codec = (APP/'tools/web_derivatives.sh').read_text()
+     pins = dict(re.findall(r'^GT_(CLI|CORE|FUNCTIONS|EXTENSIONS)_VERSION=([^\s#]+)', codec, re.M))
+     need(pins == dict.fromkeys(('CLI', 'CORE', 'FUNCTIONS', 'EXTENSIONS'), '4.5.0'), 'exact existing codec closure')
+diff --git a/chicago/4d/tools/human_teamster.mjs b/chicago/4d/tools/human_teamster.mjs
+index dac23793da1..ecbae20eca4 100644
+--- a/chicago/4d/tools/human_teamster.mjs
++++ b/chicago/4d/tools/human_teamster.mjs
+@@ -42,7 +42,7 @@ try{let pw;try{pw=await import('playwright');}catch{const root=(process.env.NODE
+ 
+ 
+ async function saveSeat(){
+- const data=JSON.stringify(seatReport,null,2)+'\n';
++ const data=JSON.stringify(seatReport)+'\n';
+  if(Buffer.byteLength(data)+seatInspectionBytes>(2*1024*1024-4096)*lods.length||seatPngBytes>4*1024*1024*lods.length)throw Error('finite observer output-byte cap exhausted');
+  const pending=path.join(output,'.seat-review.pending'),handle=await open(pending,'wx');try{await handle.writeFile(data);await handle.sync();}finally{await handle.close();}await rename(pending,path.join(output,'seat-review.json'));const directory=await open(output,'r');try{await directory.sync();}finally{await directory.close();}
+ }
+diff --git a/chicago/4d/tools/test_human_clothing_capture_v2.py b/chicago/4d/tools/test_human_clothing_capture_v2.py
+index fdc4cb7d610..9d9eb226a08 100644
+--- a/chicago/4d/tools/test_human_clothing_capture_v2.py
++++ b/chicago/4d/tools/test_human_clothing_capture_v2.py
+@@ -268,6 +268,47 @@ class CaptureControls(unittest.TestCase):
+             tools.assert_not_called()
+         self.assertFalse(self.output.exists())
+ 
++    def version_cache(self):
++        cache = self.root/'fixture-provisioned-cache'; cache.mkdir()
++        archive = cache/'blender-4.5.3-linux-x64.tar.xz'
++        archive.write_bytes(b'small archive checksum control')
++        binary = cache/'blender-4.5.3-linux-x64/blender'
++        binary.parent.mkdir(); binary.write_bytes(b'not executed')
++        (self.app/'generators/blender.pin').write_text(
++            'BLENDER_VERSION=4.5.3\n'
++            'BLENDER_DIR=blender-4.5.3-linux-x64\n'
++            'BLENDER_URL=https://download.blender.org/release/Blender4.5/blender-4.5.3-linux-x64.tar.xz\n'
++            'BLENDER_SHA256='+C.digest(archive.read_bytes())+'\n')
++        (self.app/'tools/web_derivatives.sh').write_text('\n'.join(
++            'GT_'+key+'_VERSION=4.5.0' for key in ('CLI','CORE','FUNCTIONS','EXTENSIONS'))+'\n')
++        return cache, archive, binary
++
++    def test_verified_blender_cache_accepts_actual_LTS_header_only(self):
++        cache, archive, binary = self.version_cache()
++        with patch.object(C,'APP',self.app),patch.dict(os.environ,{'BLENDER_CACHE':str(cache)}):
++            with patch.object(C,'run',return_value='Blender 4.5.3 LTS\nBuild date: fixture') as runner:
++                actual, cli = C.prepare_tools()
++                self.assertEqual(actual,binary)
++                runner.assert_called_once_with([str(binary),'--version'])
++                self.assertEqual(cli,['npx','--yes',
++                    '--package','@gltf-transform/cli@4.5.0',
++                    '--package','@gltf-transform/core@4.5.0',
++                    '--package','@gltf-transform/functions@4.5.0',
++                    '--package','@gltf-transform/extensions@4.5.0','gltf-transform'])
++            for wrong in ('Blender 4.5.4 LTS','Blender 4.5.3','Blender 4.5.3 LTS unexpected',''):
++                with self.subTest(header=wrong),patch.object(C,'run',return_value=wrong) as runner:
++                    with self.assertRaises(ValueError) as error:C.prepare_tools()
++                    self.assertIn('pinned Blender version',str(error.exception))
++                    self.assertIn('observed '+repr(wrong),str(error.exception))
++                    runner.assert_called_once_with([str(binary),'--version'])
++
++    def test_LTS_header_cannot_bypass_archive_checksum(self):
++        cache, archive, binary = self.version_cache()
++        archive.write_bytes(b'corrupted archive')
++        with patch.object(C,'APP',self.app),patch.dict(os.environ,{'BLENDER_CACHE':str(cache)}),patch.object(C,'run',return_value='Blender 4.5.3 LTS') as runner:
++            with self.assertRaisesRegex(ValueError,'pinned Blender archive checksum'):C.prepare_tools()
++            runner.assert_not_called()
++
+     def execute_args(self):
+         from types import SimpleNamespace
+         return SimpleNamespace(source='a'*40,definition_sha='a'*40,definition_ref='reviewed-definition',manifest_sha256='f'*64)
