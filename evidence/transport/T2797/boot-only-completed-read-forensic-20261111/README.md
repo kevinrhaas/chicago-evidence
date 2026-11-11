@@ -1,0 +1,11 @@
+# T2797 boot-only completed-read forensic evidence
+
+STRICT NONPASS research only. Release=false and strictQualificationPassed=false. This is a saved retrospective evidence packet for one separately admitted boot-only observer, not a world/door/boarding/model/resource or photographic/fit qualification. No APP source, native site, device/profile, network body or production deployment was changed for this publication. No raw TRACE, raw log, binary asset or dependency payload is included.
+
+The actual command exited1 after38.2387488s, without timeout, inside the original120s cap. Owned-child cleanup completed; original resource checks accepted before/after. The observer stopped five seconds after the first request failure. The original desktop world attempt's six failures remain NONPASS and are not retrospectively exempted.
+
+Two selected native requests returned200 and their Content-Length, CDP dataLength sums and existing native reader EOF byte totals agree:474250 and170195bytes. ROOT independently replayed the saved associations. Both still reported net::ERR_ABORTED at or after their native EOF events. The compact table preserves exact URLs/request/fetch/reader IDs, event order, source SHAs and the uncorrelated synthetic Response/ArrayBuffer observations. No client SHA was measured; source SHA is not a client digest. No abort/cancel owner or cause is established. Passive observation may perturb timing or liveness.
+
+The exact prepared source manifest8e964fa2 and used admission38050277 are preserved. SOURCE-PROPOSAL-README.md and SOURCE-FORENSIC-MANIFEST.json are historical pre-execution documents; their prepared/not-executed fields do not describe the later actual command. ADMISSION-current-consumed.json records root_original120_handoff=false and consumed=true. The one admission is consumed; this packet grants no future execution. Every file pinned by the source manifest and the earlier source-cause analysis manifest was independently checked for exact current hash and byte size, while those source/library/payload files were omitted from this packet.
+
+No owner signoff, original-six exemption or release qualification is claimed. Public DEV delivery and ongoing renderer CI are separate evidence and do not change these forensic limits.
