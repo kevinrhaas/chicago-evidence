@@ -1,0 +1,9 @@
+# Recoverable development checkpoint — 11 November 2026
+
+The owner approved all five child/teen prototypes: **“Approve these five prototypes.”** This is a work-in-progress backup, not a release or final acceptance claim. The main application branch is `steward/t3550-prairie-younger-residents`, based on `c7de594a7ef7ec484d8759ff024bdcbec9fab249`. Its first asset checkpoint is undergoing all four required source-gate parts; part 1 has passed. No child activation is committed there yet.
+
+`asset-checkpoint.patch` preserves tracked preparation changes. The new role-review file is saved separately; the 40 untracked GLBs are exact canonical artifacts from [build 42997832738](https://github.com/kevinrhaas/chicago/actions/runs/42997832738), bound by the review file's hashes. Raw exports map to `assets/humans/<role>.lodN.glb`, web exports to `assets/humans/web/<role>.lodN.glb`. The artifact ZIP hash is recorded in the admission.
+
+`stage2/` preserves the subsequent implementation under development, by application-relative path. It has not been applied to the application checkout yet. The generated plan adds 35 children/teens with five approved bodies and five infants with household-care schedules. Small children use actual paired outings with a household adult; door calls and interaction menus retain the companion. Native fixture verification passed all 40 exports on both viewports while preserving 248 prior rows. The standalone day-engine tests passed the existing tests and the new supervision/care lifecycle cases. The full integration gate and published browser demonstrations remain pending.
+
+This folder is for failure recovery. Its status snapshot records active processes only at capture time; consult the PR and later evidence for current results. It does not replace canonical source or the final evidence packet.
