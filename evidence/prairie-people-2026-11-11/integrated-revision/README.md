@@ -12,4 +12,8 @@ The manifest binds the tested published files and six source inputs to committed
 
 All four local gate parts pass: **326, 326, 326 and 327 steps, none red**. The interrupted earlier part has no verdict and is retained separately. Changelog, ticket-ID and closure checks pass. The exact commands/results are summarized in `validation-summary.json`; complete local logs are alongside it.
 
-Fresh required CI and all 15 renderer stages on both viewports are running on this commit. `integrated-smoke-runs.json` binds all ten dispatched stage groups to their run IDs and exact head. This packet does not yet claim those remote runs passed; PR #1932 remains draft pending their completion.
+The b5 code gate passed, but browser workflows failed before assertions during Ubuntu archive DNS failures. Unchanged retries reproduced that failure; logs are retained in `setup-failures/`.
+
+CI-only follow-up `bf9db83f8fa6359268058ece9c123c6da70c0b78` adds a signature-verified mirror fallback on DNS failure. The whole `chicago/4d` tree remains byte-identical (tree `20cf29d39ee118ed0993a0d3f90f5038f7d5e702`), and all six source bindings were rechecked against the new commit. Ten fallback self-tests, workflow YAML/install coverage and runner/bake contract checks pass. The four full local gate results above were run on b5, not repeated for this CI-only change.
+
+Fresh required CI and all 15 renderer stages on both viewports are running on bf9. `ci-recovery-smoke-runs.json` binds all ten new stage groups to their exact head and run IDs; the original `integrated-smoke-runs.json` is retained. The new runs have progressed past browser installation. This packet does not yet claim final remote passes; PR #1932 remains draft pending completion.
