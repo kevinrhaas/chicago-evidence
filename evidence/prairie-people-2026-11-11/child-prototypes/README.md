@@ -21,3 +21,5 @@ No owner approval, photographic acceptance or scene activation is claimed. The o
 | teen girl | [Near](teen_girl_1904-near-comparison.jpg) | [Far](teen_girl_1904-far-comparison.jpg) | [Five seconds](teen_girl_1904-motion.jpg) | [Front](teen_girl_1904.lod0-desktop-standing-front.png) |
 
 All 45 town captures completed without page errors (35 desktop stills including walk samples, 10 phone stills). The source photographs and reconstructed outfits differ in tailoring, pose and colour; the sheets present the prototypes for first-role review, not as completed photographic matches.
+
+[Additional small-child clothing comparison](supplemental-toddler-reference.md): Stieglitz’s 1901 *Spring—The Child*, added after construction. The catalogue gives no exact age or sitter identity. The original prototype and sheets remain unchanged; the different outer garment and bonnet are disclosed.
