@@ -1,0 +1,98 @@
+{
+  "base": "d98ce9c427b6e4f34f06b6f6ec6ab82b94a12ef1",
+  "branch": "steward/t1789-1812-memory-retention-fix-20261111",
+  "worktree": "/tmp/chicago-t1789-1812-memory-retention-fix-20261111",
+  "state": "SOURCE ONLY; uncommitted, unpushed",
+  "files": [
+    {
+      "path": "chicago/4d/renderers/web/js/human-days.js",
+      "bytes": 94518,
+      "sha256": "5ff49cf0817ec4269c18ffee948f159951dd66dfc7288fd7888366f3172d879b"
+    },
+    {
+      "path": "chicago/4d/tools/test_human_days_routing.mjs",
+      "bytes": 11571,
+      "sha256": "b794e017e91245a91d5221f453864e474ba56014d7aa790becf7e11243beecf2"
+    }
+  ],
+  "patch_sha256": "51b6b4b0fed5a1d7d008bc7448faaca407a22340d63332174e82c1b586327393",
+  "tests": [
+    {
+      "name": "negative-d98",
+      "command": [
+        "node",
+        "chicago/4d/tools/test_human_days_routing.mjs",
+        "/tmp/T1789-1812-MEMORY-RETENTION-FIX-SOURCE-CANDIDATE-20261111/human-days-d98-NEGATIVE-CONTROL.js"
+      ],
+      "returncode": 1,
+      "expected": 1,
+      "seconds": 0.09624320501461625,
+      "log": "negative-d98.log",
+      "expectation_met": true
+    },
+    {
+      "name": "focused-fixed",
+      "command": [
+        "node",
+        "chicago/4d/tools/test_human_days_routing.mjs"
+      ],
+      "returncode": 0,
+      "expected": 0,
+      "seconds": 0.1654773090267554,
+      "log": "focused-fixed.log",
+      "expectation_met": true
+    },
+    {
+      "name": "existing-human-days",
+      "command": [
+        "node",
+        "chicago/4d/tools/test_human_days.mjs"
+      ],
+      "returncode": 0,
+      "expected": 0,
+      "seconds": 5.138986582052894,
+      "log": "existing-human-days.log",
+      "expectation_met": true
+    },
+    {
+      "name": "syntax",
+      "command": [
+        "node",
+        "--check",
+        "chicago/4d/renderers/web/js/human-days.js"
+      ],
+      "returncode": 0,
+      "expected": 0,
+      "seconds": 0.038619021070189774,
+      "log": "syntax.log",
+      "expectation_met": true
+    }
+  ],
+  "observed_failure": {
+    "mobile_total_mib": 786.405,
+    "mobile_ceiling_mib": 375,
+    "desktop_total_mib": 1246.7,
+    "desktop_ceiling_mib": 875,
+    "mobile_arraybuffer_delta_bytes": 443403792,
+    "desktop_arraybuffer_delta_bytes": 443402188,
+    "static_route_grid_bytes": 443309659,
+    "first_heap_growth_bytes": 98304
+  },
+  "cause": "1812 blocked automatic safeRoutineTravel bypassed existing cold-grid guarded day adapter through unrestricted hostRouter; actual delta matches unchanged full-town route grid plus heap",
+  "fix": "Guard automatic1812 work/social/return through existing day router; explicit request/call/social provenance and delayed return preserve real full routing; safeHostTravel full planner priority; other-era routing policy retained",
+  "remaining_required": [
+    "ROOT peer source review",
+    "complete required source gate on integrated HEAD",
+    "actual mobile+desktop1812 memory/browser/renderer qualification",
+    "native/DEV acceptance"
+  ],
+  "explicit_not_run": [
+    "no fullgate",
+    "no browser",
+    "no city-grid performance measurement",
+    "no bake",
+    "no commit",
+    "no push",
+    "no published PASS"
+  ]
+}
