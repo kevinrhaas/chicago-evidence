@@ -25,4 +25,4 @@ Additional clothing comparison: [Pach Brothers’ Roosevelt family photograph (1
 
 [Earlier adult checkpoint validation](final-revision/README.md): Grace Meeker phone and Albertine Field desktop checks and the complete earlier adult-only renderer results, retained as baseline evidence.
 
-[Combined integration validation](integrated-revision/README.md): all five younger roles and five infant door cards on desktop and phone, inspected final views, unchanged-source commit binding, four passing local gate parts, and the final remote test inventory. Required CI and renderer runs are in progress on the pushed commit; this is not yet a merge claim.
+[Combined integration validation](integrated-revision/README.md): all five younger roles and five infant door cards on desktop and phone, inspected final views, unchanged-source commit binding, four passing local gate parts, and the final remote test inventory. All required CI and the complete renderer suite (stages 1–15 on desktop and phone) pass on pushed commit bf9db83f8. Exact run heads and conclusions were rechecked before merge.
