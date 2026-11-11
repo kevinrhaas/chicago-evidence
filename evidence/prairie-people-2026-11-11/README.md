@@ -13,3 +13,5 @@ Clothing references show other American children in 1904. They do not identify P
 Desktop native-resolution verification: [street and Interact](prairie-menu-1280.png), [portrait card](prairie-card-1280.png), [behavior and budget log](probe-desktop-1x.log). Default desktop supersampling exceeded the software-renderer startup timeout; that limitation remains in the code PR validation record.
 
 [Family genealogy p. 61](buckingham-genealogy-p61.jpg): Ebenezer Buckingham, *Solomon Sturges and His Descendants* (1907), public domain. This records Kate’s 1858-08-03 and Lucy Maud’s 1870-09-09 birth dates, correcting the inherited census transcription while retaining the conflict. Archive access n114, scan leaf 115.
+
+Corrected phone verification: [Harriet Pullman and Interact](prairie-menu-390.png), [card drawer](prairie-card-390.png), [complete behavior/asset/budget log](probe-phone-pullman-idle.log). The intended female asset and scene age 62 are asserted; a paired conversation with Miss Robinson returns both indoors, with no page errors. The portrait comparison sheets above show the complete images beyond the scrollable drawer.
