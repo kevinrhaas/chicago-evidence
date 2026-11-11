@@ -9,7 +9,7 @@ The model images use the resident’s age in 1904. Picture dates may differ or b
 - [Portrait comparisons 3](portrait-comparisons-3.jpg)
 - [Portrait comparisons 4](portrait-comparisons-4.jpg)
 
-Clothing references show other American children in 1904. They do not identify Prairie Avenue children. The new role models require canonical export and review before scene activation.
+Clothing references show other American children in 1904. They do not identify Prairie Avenue children. The five new role prototypes have canonical exports and desktop/phone comparisons in [the child review packet](child-prototypes/README.md). First-role owner review and age-appropriate scene activation remain pending.
 
 Desktop native-resolution verification: [street and Interact](prairie-menu-1280.png), [portrait card](prairie-card-1280.png), [behavior and budget log](probe-desktop-1x.log). Default desktop supersampling exceeded the software-renderer startup timeout; that limitation remains in the code PR validation record.
 
@@ -20,3 +20,7 @@ Corrected phone verification: [Harriet Pullman and Interact](prairie-menu-390.pn
 Additional clothing comparison: [Pach Brothers’ Roosevelt family photograph (1903)](roosevelt-family-1903.jpg), [catalogue, rights and checksum](roosevelt-family-1903-source.json). This is a review reference for the girls’ period clothing, not an identification or likeness of a Prairie Avenue resident. The current garment geometry was constructed before this additional comparison was found.
 
 [Tribune society page, 3 March 1907](tribune-society-women-1907.jpg): the original captions identify Grace Murray Meeker and Albertine Huck Field. MSU Libraries item 9696, Part 7, p. 4. The period print is public domain; the exposure dates are unknown. Other faces on this page were not reused.
+
+[Complete 445-entry roster index](roster-review.csv), [counts and checksum](roster-review.json), generated from code revision `c7de594a7`. The index separates scene casting age from sourced birth evidence, includes each household and canonical card link, and records the bounded search coverage. Search hits are leads, not verified portraits. `child_mesh_pending` is the runtime exclusion category: the five prototypes now exist, but the 40 younger residents are not yet activated.
+
+[Final integrated revision validation](final-revision/README.md): new Grace Meeker phone and Albertine Field desktop checks, full local gate logs, code/build identity and remote smoke dispatch inventory.
