@@ -9,3 +9,7 @@ The model images use the resident’s age in 1904. Picture dates may differ or b
 - [Portrait comparisons 3](portrait-comparisons-3.jpg)
 
 Clothing references show other American children in 1904. They do not identify Prairie Avenue children. The new role models require canonical export and review before scene activation.
+
+Desktop native-resolution verification: [street and Interact](prairie-menu-1280.png), [portrait card](prairie-card-1280.png), [behavior and budget log](probe-desktop-1x.log). Default desktop supersampling exceeded the software-renderer startup timeout; that limitation remains in the code PR validation record.
+
+[Family genealogy p. 61](buckingham-genealogy-p61.jpg): Ebenezer Buckingham, *Solomon Sturges and His Descendants* (1907), public domain. This records Kate’s 1858-08-03 and Lucy Maud’s 1870-09-09 birth dates, correcting the inherited census transcription while retaining the conflict. Archive access n114, scan leaf 115.
