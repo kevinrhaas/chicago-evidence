@@ -1,0 +1,11 @@
+# T1789 current-head CI and hosted memory checkpoint
+
+The frozen APP PR1928 remains DRAFT at `9b6c043877cd6b73ae6c2754f52ec2fbe0497193`. This packet saves existing actual CI readings and read-only source-scope analysis. No APP source, generated model, raw log, dependency payload or live-site content is included.
+
+Original moving-frame attempt1 remains NONPASS: year1835 desktop1280x800 unthrottled Full TURN frame101, flora91.7ms above the unchanged60ms ceiling. Its original log SHA and exact raw-row SHA are retained. The cause is unknown. ROOT authorized one ordinary failed-job rerun at the same source/profile/ceilings; attempt2 passed all12 tier/move readings, with Full TURN flora40.2ms. This is one controlled repeat, not a cause or flakiness finding. No further reruns were performed or authorized here.
+
+Official hosted1904 memory jobs passed on the literal frozen source commit. Desktop Full/rendererDPR1 read1377917522bytes (1314.0845509MiB) below1425MiB; mobile390x780/deviceDPR3, actual rendererDPR1/Light read425390127bytes (405.6836386MiB) below425MiB. Both errors arrays are empty. The exact JSON members were independently recovered from their small immutable GitHub artifacts, with full ZIP digest/size/member checks. The review records commands, step durations, artifact and source identities. These are hosted spawn byte readings after native publication, not total browser/OS memory or actual phone traversal. The artifacts do not archive the generated mirror/entry bytes, so no full served-byte reconstruction is claimed.
+
+Humans completed SUCCESS. The PR check rollup snapshot records23SUCCESS and3SKIPPED, with no failures or pending checks. The two separately dispatched complete renderer workflows remain independently PENDING: mobile42932767026 and desktop42932785149. Their identical job name `smoke` must not collapse those two requirements. Both all15 stages and final unfiltered/all-stages/SMOKE PASS markers are still required; this checkpoint does not claim either result.
+
+Local original600-second desktop memory timeouts remain unresolved timeouts, with no memory-overbudget verdict. No DEV merge, production action, public coat adoption, photographic signoff or fit signoff is claimed. Earlier local gate/control NONPASS evidence remains in the previously saved candidate and eight-part packets. This checkpoint adds evidence only.
