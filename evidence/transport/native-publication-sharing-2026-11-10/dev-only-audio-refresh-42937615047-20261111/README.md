@@ -1,0 +1,7 @@
+# Existing automatic audio DEV-only delivery
+
+Existing workflow42937615047 at MAIN2cecd5449820c4927d031418d9f0ed6b157b1c29 completed SUCCESS at01:22:41UTC. It seeded exact liveC4 production, assembled DEV5f04b69d8, and passed strict nonDEV byte/member/mode preservation, one fresh upload, Pages deployment, served DEV freshness and final exact PROD marker comparison. Production build/stamp steps were skipped. The observer made no dispatch, retry, source edit or production promotion.
+
+The actual completed log records956730451regular bytes below the unchanged1000000000-byte limit, leaving43269549bytes reserve, with7447protected nonDEV members unchanged. One Pages artifact13819940703 uploaded538861560compressed bytes; its logged ZIP SHA is5ead7e6fbd52a205e8f243ab1100f01b2954435b8c07a5b3d512b6e845a599c2. The large artifact was not downloaded for this bounded read-only review. The small evidence files themselves receive complete independent Git remote byte verification.
+
+Two cachebusted public marker GETs at01:47UTC independently found DEV5f04b69d8 (307bytes, SHAfa9e9f4773a387a4c56f4d2f7f8981673048a7979f77294c9a4020e376d46dcd) and PROD stillc4e994921 with exact original110-byte SHA9bfb7a7846ce21af8b3b99dd80662954a147ae6a18d57c59e589306885e4f27a. These are bounded marker observations and existing workflow outcomes, not a new asset/world/phone/photographic/fit qualification. No raw logs, artifact body, source or binary payload is included.

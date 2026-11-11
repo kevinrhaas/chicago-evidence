@@ -1,0 +1,11 @@
+# T1789 mobile all-fifteen-stage PASS — desktop PENDING
+
+This checkpoint saves actual completed native published renderer evidence for frozen source9b6c043877cd6b73ae6c2754f52ec2fbe0497193, whose integrated base is7649e0df600bfb7818ab76c828d8342e7ef8583d. It does not qualify the newer audio integration at DEV5f04b69d8428836c473bb76ad738e81cd120420b or any future source change. APP PR1928 remains DRAFT; no DEV merge or production action is recorded here.
+
+Mobile workflow42932767026/job130235334550 completed SUCCESS at01:48:09UTC. The existing raw log proves exact literal source checkout, command `node tools/smoke_renderer.mjs --published`, SMOKE_VIEWPORT=mobile and empty SMOKE_STAGE. It ends740passed/0failed,727staged-section checks(all stages)+13always-on checks,67m30s unfiltered atmobile, and SMOKE PASS. Source PARTS=15 and empty stage selection enable every part. The original150-minute job cap, tool, assertions and publication script were unchanged.
+
+This invocation explicitly warns NOT THE FULL GATE because only the mobile viewport is selected. The separate desktop run42932785149 is still PENDING at this checkpoint; both independent outcomes are required for combined renderer coverage. Historical source/dispatch receipts retain their earlier pending fields unchanged. The mobile context is390x780/touchtrue/isMobilefalse/deviceScaleFactor2, distinct from the memory tool's mobileDPR3 context and observed rendererDPR1.
+
+Existing actual Horse-picker/rider-eye-gait/settings/reduced-motion PASS lines are included as narrow UI/mode coverage. They do not prove complete horse mesh appearance, all low-power profiles or platform optimization. The unchanged smoke collector ignores ERR_ABORTED; these results do not retrospectively exempt the original strict door/world six failures. Forensic/world NONPASS and release=false remain separate.
+
+Current DEV advanced by the audio merge and generated fold after the frozen base:155changed paths, including eight paths shared with this candidate. The bounded path/blob/count delta is included for owner review, not as a merged or retested source claim. Original moving-frame NONPASS and local600-second memory timeouts remain preserved in the earlier evidence checkpoints. No actual-phone/world/door/photographic/fit signoff is made. No raw logs, source bodies, model/assets or dependencies are included.
