@@ -12,27 +12,6 @@
      "bardwell_otis_1835": {"base_age_years": 35, "sex": "male", "basis": "data/humans/recipes/worker_1835.json: prepared_adult_35 engineering body (old 2/13)."},
      "anonymous_working_driver_1904": {"base_age_years": 35, "sex": "male", "basis": "data/humans/recipes/working_driver_1904.json: 'cleared generic adult35 engineering geometry'."},
      "flynn_mary_1835_dress_study": {"base_age_years": 25, "sex": "female", "one_of_allow": {"head_shape": [0, 1, 5, 6]}, "face_draw_scale": 0.5, "face_bias": {"jaw": -0.45, "chin_height": -0.15, "chin_width": -0.15, "double_chin": -0.3, "jowls": -0.25, "brow_ridge": -0.25, "brow_angle": 0.2, "cheek_volume": 0.15, "lip_upper": 0.12, "lip_lower": 0.08, "mouth_width": -0.12, "prognathism": -0.1, "mouth_corners": 0.35, "nose_width": -0.25, "nose_length": -0.15, "nose_hump": -0.2, "nose_tip": 0.15, "nostrils": -0.2, "cheekbones": 0.2}, "basis": "data/humans/recipes/adult_dress_1835.json: prepared_adult_female_25 engineering body (MakeHuman's female-young macros, 1.65 m), T-3423."},
---- a/chicago/4d/renderers/web/js/main.js
-+++ b/chicago/4d/renderers/web/js/main.js
-@@ -3970,6 +3970,7 @@
-     api.days = createHumanDays({ humans: api.humans, three: THREE, hour: sunHour, date: () => world.sunDate ?? null,
-       doors, interactions, inside, spawn,
-       openCard: (actor) => api.humans.select(actor.id),
-+      openResident: (id) => openPersonCard(id),
-       held: (actor) => !!api.houseErrands?.get(actor.id)?.running,
-       despawn: (actor) => api.humans?.remove?.(actor.id),
-       visitor: () => (walker.state.flying ? null : { e: walker.state.e, n: walker.state.n }),
-@@ -5573,7 +5574,9 @@
-     if (!root || !id) return null;
-     personStories ??= fetch(new URL(`${root}/stories.json`, resolveBases().dataBase), { cache: 'no-cache' })
-       .then((res) => (res.ok ? res.json() : null)).then((doc) => doc?.stories ?? {}).catch(() => ({}));
--    return (await personStories)?.[id] ?? null;
-+    const story = (await personStories)?.[id] ?? null;
-+    const care = api.days?.careStatus?.(id);
-+    return care ? [...(story ?? []), care.text + ' Daily care and the choice of caregivers are liberties; infants remain in household care rather than walking outside independently.'] : story;
-   }
-   // T-3413: a face fitted to a portrait of the person, for their card's Likeness section. The
-   // file is the one the humans layer reads (assets/humans/web/hm08_variation_persons.json), read once.
 --- a/chicago/4d/renderers/web/js/human-days.js
 +++ b/chicago/4d/renderers/web/js/human-days.js
 @@ -582,7 +582,7 @@
@@ -57,16 +36,23 @@
      && (p.visitorReturn || p.called?.visitorRequested || p.social?.visitorRequested || p.override?.visitorRequested)));
    /** Walk `actor` to `to` (or put them there, far off), facing `heading`; then `done`. */
 -  function go(p, to, heading, done, { from = null } = {}) {
-+  function go(p, to, heading, done, { from = null, speed = null } = {}) {
++  function go(p, to, heading, done, { from = null, speed = null, direct = false } = {}) {
      const a = p.actor;
      const start = from ?? { e: a.e, n: a.n };
      const requested = requestedRoute(p);
-@@ -645,16 +646,16 @@
+@@ -639,22 +640,22 @@
+       // Automatic routines must respect the day router's cold-grid policy.
+       // The full planner is for actual visitor/jaunt journeys, not every nearby
+       // blocked chore. An unavailable routine route waits and retries safely.
+-      try { route = !p.safeHostTravel && (p.safeRoutineTravel || requested) && clear(start, to)
++      try { route = (direct || (!p.safeHostTravel && (p.safeRoutineTravel || requested))) && clear(start, to)
+         ? { points: [[start.e, start.n], [to.e, to.n]] }
+         : (requested || a.instance?.scene !== '1812' ? (hostRouter ?? router) : router)?.plan?.(start, to, { mode: 'walk' }); } catch { /* retry below */ }
        const pts = Array.isArray(route?.points) && route.points.every((q) => Array.isArray(q) && q.length === 2 && q.every(Number.isFinite)) ? route.points : null;
        if (!pts?.length || Math.hypot(pts.at(-1)[0] - to.e, pts.at(-1)[1] - to.n) > 0.05 || typeof a.walkPath !== 'function') {
          a.path = null; a.setState?.('standing');
 -        p.pendingHostMove = { to, heading, done, from, token: p.token, retry: clock + 0.5 };
-+        p.pendingHostMove = { to, heading, done, from, speed, token: p.token, retry: clock + 0.5 };
++        p.pendingHostMove = { to, heading, done, from, speed, direct, token: p.token, retry: clock + 0.5 };
          return; // no chord, visible teleport, or false arrival when the planner is unavailable
        }
        p.pendingHostMove = null;
@@ -77,7 +63,7 @@
 +      const ok = a.walkPath(points, { speed, endHeading: Number.isFinite(heading) ? heading : null,
          onArrive: () => { if (p.token === token) done?.(); } });
 -      if (!ok) p.pendingHostMove = { to, heading, done, from, token, retry: clock + 0.5 };
-+      if (!ok) p.pendingHostMove = { to, heading, done, from, speed, token, retry: clock + 0.5 };
++      if (!ok) p.pendingHostMove = { to, heading, done, from, speed, direct, token, retry: clock + 0.5 };
        return;
      }
      if ((safe && hidden) || (!safe && !near(start.e, start.n) && !near(to.e, to.n)) || typeof a.walkPath !== 'function' || dist(start, to) < 0.05) {
@@ -86,7 +72,7 @@
      }
      const token = (p.token = (p.token ?? 0) + 1);
 -    const ok = a.walkPath(way(start, to), { endHeading: Number.isFinite(heading) ? heading : null,
-+    const ok = a.walkPath(way(start, to), { speed, endHeading: Number.isFinite(heading) ? heading : null,
++    const ok = a.walkPath(direct && clear(start, to) ? [start, to] : way(start, to), { speed, endHeading: Number.isFinite(heading) ? heading : null,
        onArrive: () => { if (p.token === token) done?.(); } });
      if (!ok) done?.();
    }
@@ -166,12 +152,14 @@
        originals: [p, q].map((m) => spanAt(dayOn(m.b, date(), keyOf(m)), hour())) };
      socials.add(session);
      for (const [i, m] of session.members.entries()) {
-@@ -1092,22 +1102,47 @@
+@@ -1092,22 +1102,49 @@
      }
    }
  
 +  // Shared short walks use the child's pace and only clear, nearby frontage. A
 +  // caregiver waits whenever the child's menu/card holds them, and returns with them.
++  // Keep these already-clear short legs direct: independent grid snapping sends
++  // one partner on a detour and separates them even when their speeds match.
 +  function stepOuting(s) {
 +    if (!s.bases) s.bases = s.members.map(m => ({ e: m.actor.e, n: m.actor.n }));
 +    if (s.moving || clock < (s.nextMove ?? 0) || s.outing.activity === 'greet') return;
@@ -188,7 +176,7 @@
 +      go(m, targets[i], bearing(targets[i].e - m.actor.e, targets[i].n - m.actor.n), () => {
 +        if (m.social !== s) return;
 +        if (++s.arrived === s.members.length) { s.moving = false; s.leg = !s.leg; s.nextMove = clock + 3; }
-+      }, { speed: .65 });
++      }, { speed: .65, direct: true });
 +    }
 +  }
 +
@@ -215,7 +203,7 @@
        for (const [i, m] of s.members.entries()) {
          const other = s.members[1 - i].actor;
          talk(m.actor, Math.floor((clock - s.chatting) / 4) % 2 === i);
-@@ -1262,6 +1297,13 @@
+@@ -1262,6 +1299,13 @@
    const nameOf = (p) => p.entry?.name ?? p.actor.person?.name ?? p.actor.identity?.person?.name ?? p.actor.instance?.display_name ?? p.actor.personId ?? p.actor.id;
  
    function callOut(p, door) {
@@ -229,7 +217,7 @@
      p.autonomousUntil = null;
      p.override = null;
      p.called = { door, since: clock, off: 0, visitorRequested: true };
-@@ -1270,6 +1312,7 @@
+@@ -1270,6 +1314,7 @@
      p.mode = 'called';
      // Out of the door (down its stair, T-3524), then up to the visitor.
      exitBy(p, door, (from) => meet(p, from));
@@ -237,7 +225,7 @@
    }
    function meet(p, step) {
      const a = p.actor;
-@@ -1321,7 +1364,7 @@
+@@ -1321,7 +1366,7 @@
        if (p.b.shelter) wanted.add(p.b.shelter);
        for (const v of p.b.day ?? []) for (const s of v.spans ?? []) if (s.indoors && s.where) wanted.add(s.where);
      }
@@ -246,7 +234,7 @@
      for (const structure of wanted) {
        const rec = byStructure.get(structure);
        if (!rec) { problems.push(`human-days: no door is known for ${structure}; who is in it cannot be asked for`); continue; }
-@@ -1345,15 +1388,20 @@
+@@ -1345,15 +1390,20 @@
                const pages = Math.ceil(inside.length / ASK_PAGE);
                page %= pages;
                const shown = inside.slice(page * ASK_PAGE, page * ASK_PAGE + ASK_PAGE);
@@ -273,7 +261,7 @@
                if (pages > 1) asks.push({ id: 'others', label: 'Others inside…', said: '', steps: [{ label: '', seconds: 0, run: (t) => { if (t === 0) page += 1; } }] });
                return asks;
              },
-@@ -1403,6 +1451,7 @@
+@@ -1403,6 +1453,7 @@
      if (spawned.length >= 3) return;
      const v = visitor();
      const candidates = insideOnly.filter(entry => {
@@ -281,7 +269,7 @@
        if (!entry.day || !onDate(date(), entry.presence) || spawned.some(p => p.entry === entry || p.entry.door === entry.door)) return false;
        const span = spanAt(dayOn(entry, date(), entry.person), hour());
        const last = rested.get(entry.person);
-@@ -1421,7 +1470,18 @@
+@@ -1421,7 +1472,18 @@
      }
    }
  
@@ -300,7 +288,7 @@
      get people() { return people; },
      get doors() { return doorThings; },
      residence(id) {
-@@ -1451,7 +1511,10 @@
+@@ -1451,7 +1513,10 @@
      attend(id) {
        const p = people.find(q => q.id === id || q.actor.personId === id);
        if (!p || unavailable(p) || p.attending || p.passing || p.actor.indoors) return null;
@@ -312,7 +300,7 @@
        const a = p.actor;
        const hold = { path: a.path, state: a.state, token: p.token, date: date(),
          span: spanAt(dayOn(p.b, date(), keyOf(p)), hour()) };
-@@ -1460,6 +1523,7 @@
+@@ -1460,6 +1525,7 @@
        return () => {
          if (p.attending !== hold) return;
          p.attending = null;
@@ -320,7 +308,7 @@
          if (unavailable(p) || p.token !== hold.token) return;
          if (date() !== hold.date || spanAt(dayOn(p.b, date(), keyOf(p)), hour()) !== hold.span) { p.span = null; return; }
          a.path = hold.path; a.setState?.(hold.state);
-@@ -1471,6 +1535,12 @@
+@@ -1471,6 +1537,12 @@
      pause(id) {
        const p = people.find((q) => q.id === id);
        if (!p || p.hosted || p.passing) return;
@@ -333,7 +321,7 @@
        if (p.social) endSocial(p.social);
        const where = home(p);
        const door = where && homeDoor(p, where, p.actor.e, p.actor.n);
-@@ -1512,9 +1582,21 @@
+@@ -1512,9 +1584,21 @@
        const span = activity === null ? (where && { from: 0, to: 24, indoors: true, where, door: entrance?.door.id, doing: 'inside at your request' })
          : api.outdoorActivities(id).find((s) => s.id === activity)?.span;
        if (!span) return { ok: false, why: 'No activity available' };
@@ -356,16 +344,16 @@
        p.called = null;
        if (p.actor.instance?.scene === '1812' || activity === null) p.safeRoutineTravel = true;
        p.override = { span, original, date: date(), until: activity === null ? null : clock + 300, visitorRequested: true };
-@@ -1562,7 +1644,7 @@
+@@ -1562,7 +1646,7 @@
          if (p.pendingHostMove) {
            const move = p.pendingHostMove;
            if (move.token !== p.token) p.pendingHostMove = null;
 -          else if (clock >= move.retry) { p.pendingHostMove = null; go(p, move.to, move.heading, move.done, { from: move.from }); }
-+          else if (clock >= move.retry) { p.pendingHostMove = null; go(p, move.to, move.heading, move.done, { from: move.from, speed: move.speed }); }
++          else if (clock >= move.retry) { p.pendingHostMove = null; go(p, move.to, move.heading, move.done, { from: move.from, speed: move.speed, direct: move.direct }); }
          }
          if (!p.hosted && a.instance?.scene === '1812' && spanAt(dayOn(p.b, today, keyOf(p)), h)?.away) {
            p.called = null; p.override = null;
-@@ -1593,6 +1675,11 @@
+@@ -1593,6 +1677,11 @@
      },
      /** Ask for someone at their door now, as the door's Ask for does: { ok, why }. */
      ask(personOrInstance) {
@@ -377,7 +365,7 @@
        const p = people.find((x) => x.actor.personId === personOrInstance || x.id === personOrInstance);
        const entry = !p && spawn ? insideOnly.find((x) => x.person === personOrInstance) : null;
        if (entry) {
-@@ -1605,8 +1692,7 @@
+@@ -1605,8 +1694,7 @@
          if (!door) return { ok: false, why: `no door known for ${entry.home}` };
          const q = summon(entry, door.door);
          if (!q) return { ok: false, why: 'could not be built' };
@@ -387,7 +375,7 @@
        }
        if (!p) return { ok: false, why: 'no such person' };
        if (p.absent || (p.span?.away && !recallHome(p))) return { ok: false, why: 'not here on this date' };
-@@ -1615,8 +1701,7 @@
+@@ -1615,8 +1703,7 @@
        const structure = p.soldier ? p.b.quarters : (p.inside ?? recallHome(p));
        const door = doorThings.find((t) => t.structure === structure);
        if (!door) return { ok: false, why: `no door known for ${structure}` };
@@ -397,7 +385,7 @@
      },
      /**
       * T-3525: a jaunt's host. Take `personOrInstance` out of their day and walk them to
-@@ -1691,7 +1776,7 @@
+@@ -1691,7 +1778,7 @@
          || (Array.isArray(p.b.day) && (!p.span?.duty || p.mode !== 'out')));
      },
      /** Lazy residents and the number of their currently materialized figures. */
@@ -420,6 +408,27 @@
    for (const a of kit.axes) if (a.draw_as && !a.drive && a.draw_as in values) values[a.id] = values[a.draw_as];
    // The body's own lean (T-3434: the women's bodies toward MakeHuman's feminine face and a
    // resting mouth), added to the draw; a fitted face below still overrides it.
+--- a/chicago/4d/renderers/web/js/main.js
++++ b/chicago/4d/renderers/web/js/main.js
+@@ -3970,6 +3970,7 @@
+     api.days = createHumanDays({ humans: api.humans, three: THREE, hour: sunHour, date: () => world.sunDate ?? null,
+       doors, interactions, inside, spawn,
+       openCard: (actor) => api.humans.select(actor.id),
++      openResident: (id) => openPersonCard(id),
+       held: (actor) => !!api.houseErrands?.get(actor.id)?.running,
+       despawn: (actor) => api.humans?.remove?.(actor.id),
+       visitor: () => (walker.state.flying ? null : { e: walker.state.e, n: walker.state.n }),
+@@ -5573,7 +5574,9 @@
+     if (!root || !id) return null;
+     personStories ??= fetch(new URL(`${root}/stories.json`, resolveBases().dataBase), { cache: 'no-cache' })
+       .then((res) => (res.ok ? res.json() : null)).then((doc) => doc?.stories ?? {}).catch(() => ({}));
+-    return (await personStories)?.[id] ?? null;
++    const story = (await personStories)?.[id] ?? null;
++    const care = api.days?.careStatus?.(id);
++    return care ? [...(story ?? []), care.text + ' Daily care and the choice of caregivers are liberties; infants remain in household care rather than walking outside independently.'] : story;
+   }
+   // T-3413: a face fitted to a portrait of the person, for their card's Likeness section. The
+   // file is the one the humans layer reads (assets/humans/web/hm08_variation_persons.json), read once.
 --- a/chicago/4d/tools/prairie_people.py
 +++ b/chicago/4d/tools/prairie_people.py
 @@ -14,6 +14,7 @@
@@ -608,6 +617,115 @@
      outputs['data/humans/prairie_1904.json'] = {'format': 'chicago4d_prairie_cast_v1', 'ticket': 'T-3548',
          'generated_by': 'tools/prairie_people.py', 'liberty': LIBERTY, 'people': catalog}
      outputs['data/humans/variation/dress_1904_prairie.json'] = {'format': 'chicago4d_human_dress_v1', 'scene': '1904',
+--- a/chicago/4d/tools/test_human_days.mjs
++++ b/chicago/4d/tools/test_human_days.mjs
+@@ -643,3 +643,89 @@
+ 
+ // Keep the cold-grid and explicit-trip regression in the existing day-engine gate.
+ await import('./test_human_days_routing.mjs');
++
++// T-3550: approved young residents have real company, including door calls.
++{
++  const house = 'kinzie_house_1812';
++  const door = doors.structures.find(s => s.structure === house).doors[0];
++  let h = 23, d = '1904-07-01';
++  const walk = OUT(10, 12, door.step.local_e + 2, door.step.local_n, 90,
++    { activity: 'walk', doing: 'playing near home with a household adult', to_point: { local_e: door.step.local_e + 5, local_n: door.step.local_n } });
++  const day = [{ spans: [IN(0, 10, house), walk, IN(12, 17, house), { ...walk, from: 17, to: 18, activity: 'talk' }, IN(18, 24, house)] }];
++  const entries = [
++    { person: 'small_child', name: 'Child', home: house, door: door.id, asset_id: 'child_toddler_1904', supervised: true, caregivers: ['caregiver'], day },
++    { person: 'caregiver', name: 'Caregiver', home: house, door: door.id, asset_id: 'glessner_frances_m_1904', day: [{ spans: [IN(0, 24, house)] }] },
++  ];
++  const infant = { person: 'infant', name: 'Infant', home: house, door: door.id, care_only: true, caregivers: ['caregiver'], day: [{ spans: [{ ...IN(0, 24, house), doing: 'sleeping in household care' }] }] };
++  const actors = [], opened = [], removed = [];
++  const humans = { actors, shown: true };
++  const interactions = createInteractions();
++  let allowAdult = true, warmedGrid = false, clearOuting = true;
++  const layer = createHumanDays({ humans, three, hour: () => h, date: () => d, doors, interactions,
++    visitor: () => ({ e: door.step.local_e + 3, n: door.step.local_n }), inside: { people: entries, care: [infant] },
++    openResident: id => opened.push(id),
++    clear: () => clearOuting,
++    router: { plan: (a, b) => warmedGrid ? { points: [[a.e, a.n], [a.e + 5, a.n + 5], [b.e, b.n]] } : null },
++    spawn(entry) {
++      if (entry.person === 'caregiver' && !allowAdult) return null;
++      assert(!entry.care_only, 'infants never enter the mesh factory');
++      const a = actorOf({ ...rec(entry.person, {}, [door.leaf.local_e, door.leaf.local_n, 0]), scene: '1904' }, entry.name);
++      a.stopPath = () => { a.pending = null; a.path = null; };
++      actors.push(a); return a;
++    },
++    despawn(a) { removed.push(a.personId); const i = actors.indexOf(a); if (i >= 0) actors.splice(i, 1); },
++  });
++  function tick(seconds) {
++    for (let t = 0; t < seconds; t += .25) {
++      for (const a of actors) if (a.pending) { const p = a.pending; a.pending = null; a.e = p.end.e; a.n = p.end.n; p.onArrive?.(); }
++      layer.update(.25);
++    }
++  }
++  tick(1);
++  const infantAction = layer.doors.find(t => t.structure === house).actions.shut.find(a => a.id === 'ask:infant');
++  assert.equal(infantAction.label, 'Ask after Infant');
++  assert(infantAction.said().includes('sleeping in household care'));
++  assert(layer.ask('infant').householdCare); assert.deepEqual(opened, ['infant']); assert.equal(actors.length, 0);
++  allowAdult = false;
++  const childAction = layer.doors.find(t => t.structure === house).actions.shut.find(a => a.id === 'ask:small_child');
++  childAction.steps[0].run(1); assert(childAction.said().includes('household adult'), 'the door reports a missing caregiver instead of claiming the child came out'); tick(2);
++  assert.equal(layer.ask('small_child').ok, false, 'no available adult means no unaccompanied outing'); tick(2);
++  assert.equal(actors.length, 0, 'failed calls retire the hidden child');
++  allowAdult = true;
++  assert(layer.ask('small_child').ok); tick(4);
++  let child = layer.people.find(p => p.actor.personId === 'small_child');
++  let adult = layer.people.find(p => p.actor.personId === 'caregiver');
++  assert(child.social === adult.social && child.social.supervised, 'door call reserves the household adult');
++  assert(!child.actor.indoors && !adult.actor.indoors);
++  assert(Math.hypot(child.actor.e - adult.actor.e, child.actor.n - adult.actor.n) <= 2.2);
++  const activity = layer.outdoorActivities(child.id).find(a => a.span.activity === 'walk');
++  assert(layer.request(child.id, activity.id).ok, 'a normal outdoor activity can be requested at night');
++  warmedGrid = true; // an already-built router may snap nearby partners onto different cells
++  const before = [child.actor.walks.length, adult.actor.walks.length]; tick(12);
++  assert(child.actor.walks.length > before[0] && adult.actor.walks.length > before[1], 'both walk during supervised play');
++  const sharedLegs = [child, adult].map((p, i) => p.actor.walks.slice(before[i]));
++  assert(sharedLegs.flat().every(points => points.length === 2), 'clear shared frontage legs must not acquire separate grid detours');
++  assert.deepEqual(sharedLegs[0].map(([a,b]) => [b[0]-a[0],b[1]-a[1]]), sharedLegs[1].map(([a,b]) => [b[0]-a[0],b[1]-a[1]]), 'both partners walk the same short translation');
++  clearOuting = false; const blockedCount = child.actor.walks.length; tick(8);
++  assert.equal(child.actor.walks.length, blockedCount, 'a blocked next leg never takes a direct shortcut');
++  clearOuting = true; tick(4);
++  const session = child.social, release = layer.attend(child.id);
++  assert(release); assert.equal(child.social, session); assert.equal(adult.social, session, 'menu keeps the caregiver present');
++  const heldWalks = adult.actor.walks.length; tick(3); assert.equal(adult.actor.walks.length, heldWalks, 'caregiver waits with the menu'); release();
++  const oldWalk = { old: true }; adult.actor.path = oldWalk;
++  const releaseForGreeting = layer.attend(child.id); assert(releaseForGreeting);
++  layer.pause(child.id); releaseForGreeting(); tick(2);
++  assert.notEqual(adult.actor.path, oldWalk, 'closing the menu after a greeting cannot revive the caregiver old walk');
++  assert.equal(child.social, adult.social, 'greeting keeps the pair');
++  const chatActivity = layer.outdoorActivities(child.id).find(a => a.span.activity === 'talk');
++  assert(layer.request(child.id, chatActivity.id).ok);
++  tick(4); assert.equal([child, adult].filter(p => p.actor.actions.talking).length, 1, 'a real paired conversation');
++  assert(layer.request(child.id, null, { inside: 'home' }).ok); tick(5);
++  assert.equal(actors.length, 0, 'Go home returns and releases both figures');
++  assert(layer.ask('small_child').ok); tick(4); child = layer.people.find(p => p.actor.personId === 'small_child');
++  assert(layer.request(child.id, layer.outdoorActivities(child.id).find(a => a.span.activity === 'walk').id).ok);
++  tick(160); tick(5); assert.equal(actors.length, 0, 'the requested outing finishes and both return to duties');
++  assert(removed.includes('caregiver') && removed.includes('small_child'));
++  humans.crowdKept = []; assert.equal(layer.ask('infant').ok, false); assert.equal(layer.ask('small_child').ok, false, 'jaunts retain priority');
++}
++console.log('Prairie younger residents: supervision, shared walks, door care, menus, return and jaunt priority hold');
+--- a/chicago/4d/tools/test_human_variation.mjs
++++ b/chicago/4d/tools/test_human_variation.mjs
+@@ -233,3 +233,14 @@
+   assert.equal(V.applyVariation(scene, kit, V.personVariation({ kit, key: 'x' })), null); }
+ 
+ console.log(`ok human variation: ${kit.axes.length} axes, no two of 400 alike, seated face only, clothes outside the skin, LODs agree`);
++
++// T-3550: juvenile proportions stay on the approved bodies; only their face and
++// reconstructed stature vary, and the adult aging model cannot be applied to them.
++for (const assetId of ['child_boy_1904', 'child_girl_1904', 'child_toddler_1904', 'teen_boy_1904', 'teen_girl_1904']) {
++  assert.equal(header.assets[assetId].body_draw_scale, 0);
++  for (const key of ['young_1', 'young_2', 'young_3']) {
++    const p = V.personVariation({ kit, key, assetId });
++    for (const a of kit.axes) if (a.drive === 'age' || (a.scope === 'full' && a.id !== 'head_shape')) assert.equal(p.values[a.id], 0, `${assetId}: ${a.id} leaves the approved proportions intact`);
++    assert(faceAxes.some(a => Math.abs(p.values[a.id]) > .001), 'individual faces still vary');
++  }
++}
 --- a/chicago/4d/tools/test_prairie_people.py
 +++ b/chicago/4d/tools/test_prairie_people.py
 @@ -15,14 +15,15 @@
@@ -664,103 +782,3 @@
      for p in read('docs/RESEARCH/prairie-portraits-3546/portraits.json')['portraits']:
          assert p['person_id'] in ids
          portrait = read('data/humans/variation/portraits/' + p['person_id'] + '.json')
---- a/chicago/4d/tools/test_human_days.mjs
-+++ b/chicago/4d/tools/test_human_days.mjs
-@@ -643,3 +643,80 @@
- 
- // Keep the cold-grid and explicit-trip regression in the existing day-engine gate.
- await import('./test_human_days_routing.mjs');
-+
-+// T-3550: approved young residents have real company, including door calls.
-+{
-+  const house = 'kinzie_house_1812';
-+  const door = doors.structures.find(s => s.structure === house).doors[0];
-+  let h = 23, d = '1904-07-01';
-+  const walk = OUT(10, 12, door.step.local_e + 2, door.step.local_n, 90,
-+    { activity: 'walk', doing: 'playing near home with a household adult', to_point: { local_e: door.step.local_e + 5, local_n: door.step.local_n } });
-+  const day = [{ spans: [IN(0, 10, house), walk, IN(12, 17, house), { ...walk, from: 17, to: 18, activity: 'talk' }, IN(18, 24, house)] }];
-+  const entries = [
-+    { person: 'small_child', name: 'Child', home: house, door: door.id, asset_id: 'child_toddler_1904', supervised: true, caregivers: ['caregiver'], day },
-+    { person: 'caregiver', name: 'Caregiver', home: house, door: door.id, asset_id: 'glessner_frances_m_1904', day: [{ spans: [IN(0, 24, house)] }] },
-+  ];
-+  const infant = { person: 'infant', name: 'Infant', home: house, door: door.id, care_only: true, caregivers: ['caregiver'], day: [{ spans: [{ ...IN(0, 24, house), doing: 'sleeping in household care' }] }] };
-+  const actors = [], opened = [], removed = [];
-+  const humans = { actors, shown: true };
-+  const interactions = createInteractions();
-+  let allowAdult = true;
-+  const layer = createHumanDays({ humans, three, hour: () => h, date: () => d, doors, interactions,
-+    visitor: () => ({ e: door.step.local_e + 3, n: door.step.local_n }), inside: { people: entries, care: [infant] },
-+    openResident: id => opened.push(id),
-+    spawn(entry) {
-+      if (entry.person === 'caregiver' && !allowAdult) return null;
-+      assert(!entry.care_only, 'infants never enter the mesh factory');
-+      const a = actorOf({ ...rec(entry.person, {}, [door.leaf.local_e, door.leaf.local_n, 0]), scene: '1904' }, entry.name);
-+      a.stopPath = () => { a.pending = null; a.path = null; };
-+      actors.push(a); return a;
-+    },
-+    despawn(a) { removed.push(a.personId); const i = actors.indexOf(a); if (i >= 0) actors.splice(i, 1); },
-+  });
-+  function tick(seconds) {
-+    for (let t = 0; t < seconds; t += .25) {
-+      for (const a of actors) if (a.pending) { const p = a.pending; a.pending = null; a.e = p.end.e; a.n = p.end.n; p.onArrive?.(); }
-+      layer.update(.25);
-+    }
-+  }
-+  tick(1);
-+  const infantAction = layer.doors.find(t => t.structure === house).actions.shut.find(a => a.id === 'ask:infant');
-+  assert.equal(infantAction.label, 'Ask after Infant');
-+  assert(infantAction.said().includes('sleeping in household care'));
-+  assert(layer.ask('infant').householdCare); assert.deepEqual(opened, ['infant']); assert.equal(actors.length, 0);
-+  allowAdult = false;
-+  const childAction = layer.doors.find(t => t.structure === house).actions.shut.find(a => a.id === 'ask:small_child');
-+  childAction.steps[0].run(1); assert(childAction.said().includes('household adult'), 'the door reports a missing caregiver instead of claiming the child came out'); tick(2);
-+  assert.equal(layer.ask('small_child').ok, false, 'no available adult means no unaccompanied outing'); tick(2);
-+  assert.equal(actors.length, 0, 'failed calls retire the hidden child');
-+  allowAdult = true;
-+  assert(layer.ask('small_child').ok); tick(4);
-+  let child = layer.people.find(p => p.actor.personId === 'small_child');
-+  let adult = layer.people.find(p => p.actor.personId === 'caregiver');
-+  assert(child.social === adult.social && child.social.supervised, 'door call reserves the household adult');
-+  assert(!child.actor.indoors && !adult.actor.indoors);
-+  assert(Math.hypot(child.actor.e - adult.actor.e, child.actor.n - adult.actor.n) <= 2.2);
-+  const activity = layer.outdoorActivities(child.id).find(a => a.span.activity === 'walk');
-+  assert(layer.request(child.id, activity.id).ok, 'a normal outdoor activity can be requested at night');
-+  const before = [child.actor.walks.length, adult.actor.walks.length]; tick(12);
-+  assert(child.actor.walks.length > before[0] && adult.actor.walks.length > before[1], 'both walk during supervised play');
-+  const session = child.social, release = layer.attend(child.id);
-+  assert(release); assert.equal(child.social, session); assert.equal(adult.social, session, 'menu keeps the caregiver present');
-+  const heldWalks = adult.actor.walks.length; tick(3); assert.equal(adult.actor.walks.length, heldWalks, 'caregiver waits with the menu'); release();
-+  const oldWalk = { old: true }; adult.actor.path = oldWalk;
-+  const releaseForGreeting = layer.attend(child.id); assert(releaseForGreeting);
-+  layer.pause(child.id); releaseForGreeting(); tick(2);
-+  assert.notEqual(adult.actor.path, oldWalk, 'closing the menu after a greeting cannot revive the caregiver old walk');
-+  assert.equal(child.social, adult.social, 'greeting keeps the pair');
-+  const chatActivity = layer.outdoorActivities(child.id).find(a => a.span.activity === 'talk');
-+  assert(layer.request(child.id, chatActivity.id).ok);
-+  tick(4); assert.equal([child, adult].filter(p => p.actor.actions.talking).length, 1, 'a real paired conversation');
-+  assert(layer.request(child.id, null, { inside: 'home' }).ok); tick(5);
-+  assert.equal(actors.length, 0, 'Go home returns and releases both figures');
-+  assert(layer.ask('small_child').ok); tick(4); child = layer.people.find(p => p.actor.personId === 'small_child');
-+  assert(layer.request(child.id, layer.outdoorActivities(child.id).find(a => a.span.activity === 'walk').id).ok);
-+  tick(160); tick(5); assert.equal(actors.length, 0, 'the requested outing finishes and both return to duties');
-+  assert(removed.includes('caregiver') && removed.includes('small_child'));
-+  humans.crowdKept = []; assert.equal(layer.ask('infant').ok, false); assert.equal(layer.ask('small_child').ok, false, 'jaunts retain priority');
-+}
-+console.log('Prairie younger residents: supervision, shared walks, door care, menus, return and jaunt priority hold');
---- a/chicago/4d/tools/test_human_variation.mjs
-+++ b/chicago/4d/tools/test_human_variation.mjs
-@@ -233,3 +233,14 @@
-   assert.equal(V.applyVariation(scene, kit, V.personVariation({ kit, key: 'x' })), null); }
- 
- console.log(`ok human variation: ${kit.axes.length} axes, no two of 400 alike, seated face only, clothes outside the skin, LODs agree`);
-+
-+// T-3550: juvenile proportions stay on the approved bodies; only their face and
-+// reconstructed stature vary, and the adult aging model cannot be applied to them.
-+for (const assetId of ['child_boy_1904', 'child_girl_1904', 'child_toddler_1904', 'teen_boy_1904', 'teen_girl_1904']) {
-+  assert.equal(header.assets[assetId].body_draw_scale, 0);
-+  for (const key of ['young_1', 'young_2', 'young_3']) {
-+    const p = V.personVariation({ kit, key, assetId });
-+    for (const a of kit.axes) if (a.drive === 'age' || (a.scope === 'full' && a.id !== 'head_shape')) assert.equal(p.values[a.id], 0, `${assetId}: ${a.id} leaves the approved proportions intact`);
-+    assert(faceAxes.some(a => Math.abs(p.values[a.id]) > .001), 'individual faces still vary');
-+  }
-+}

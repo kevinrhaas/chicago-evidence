@@ -62,7 +62,7 @@ try {
     });
     for (const person of cases) {
       const entry = await page.evaluate(async person => {
-        const a=window.__chicago4d, {step}=window.__proof;
+        const a=window.__chicago4d, {step,until}=window.__proof;
         const roster=await fetch('../data/humans/inside_1904.json').then(r=>r.json());
         const entry=roster.people.find(p=>p.person===person); const door=a.days.doors.find(t=>t.door.id===entry.door);
         a.walker.teleport({local_e:door.at[0]+4,local_n:door.at[1]+3,yaw_deg:230});
@@ -70,8 +70,12 @@ try {
         const child=a.days.people.find(p=>p.actor.personId===person);
         window.__proof.child=child;window.__proof.entry=entry;
         if(entry.supervised && (!child.social?.supervised||child.social.members.length!==2))throw Error('No caregiver on door call');
+        const pair=child.social?.members??[child];
+        until(()=>pair.every(p=>!p.actor.indoors&&!p.actor.path&&!p.passing));step(1);
+        if(pair.some(p=>p.actor.indoors||p.actor.disposed))throw Error('Door call did not complete');
         return entry;
       }, person);
+      console.log('called',viewport.width,person);
       await page.waitForFunction(()=>{const p=window.__proof.child;return (p.social?.members??[p]).every(m=>m.actor.body);},null,{timeout:150000});
       const result=await page.evaluate(()=>{
         const a=window.__chicago4d,{step,until,child,entry}=window.__proof;
@@ -82,17 +86,19 @@ try {
         if(!child.actor.root.visible)throw Error('Child not visible');
         const walk=a.days.outdoorActivities(child.id).find(x=>x.span.activity==='walk');
         if(!a.days.request(child.id,walk.id).ok)throw Error('Walk refused');
-        until(()=>pair.every(p=>p.mode==='out'));step(4);
-        const at=pair.map(p=>[p.actor.e,p.actor.n]), moved=pair.map(()=>false);
-        for(let i=0;i<200;i++){step(.05);pair.forEach((p,j)=>{if(Math.hypot(p.actor.e-at[j][0],p.actor.n-at[j][1])>.2)moved[j]=true;});}
+        until(()=>pair.every(p=>p.mode==='out'));
+        const at=pair.map(p=>[p.actor.e,p.actor.n]), moved=pair.map(()=>false);let maxGap=0;
+        for(let i=0;i<280;i++){step(.05);if(pair.length===2)maxGap=Math.max(maxGap,Math.hypot(pair[0].actor.e-pair[1].actor.e,pair[0].actor.n-pair[1].actor.n));pair.forEach((p,j)=>{if(Math.hypot(p.actor.e-at[j][0],p.actor.n-at[j][1])>.2)moved[j]=true;});}
         if(moved.some(x=>!x))throw Error('Outing did not move both participants');
-        if(entry.supervised && Math.hypot(pair[0].actor.e-pair[1].actor.e,pair[0].actor.n-pair[1].actor.n)>2.5)throw Error('Caregiver did not stay near');
+        if(entry.supervised && maxGap>2.5)throw Error('Caregiver did not stay near: '+JSON.stringify(pair.map(p=>({id:p.id,e:p.actor.e,n:p.actor.n,heading:p.actor.heading,path:p.actor.path,mode:p.mode,bases:p.social?.bases}))));
         const release=a.days.attend(child.id);if(!release)throw Error('Cannot hold walking child');
         if(entry.supervised&&!pair.every(p=>p.social===child.social))throw Error('Menu separated caregiver');
         step(2);release();
         a.walker.teleport({local_e:child.actor.e+3,local_n:child.actor.n+3,yaw_deg:225});
         a.world.setSun({date:'1904-07-01',time:'10:00'});a.world.follow(a.camera.position);a.renderer.render(a.scene3d,a.camera);
-        return {person:entry.person,age:child.actor.variation.age,asset:entry.asset_id,supervised:!!entry.supervised,company:pair.map(p=>p.actor.personId),height:child.actor.variation.height};
+        const stats=a.stats(); if(!stats.withinBudget)throw Error('Render budget exceeded: '+JSON.stringify(stats));
+        if(a.problems.length)throw Error('App problems: '+JSON.stringify(a.problems));
+        return {person:entry.person,age:child.actor.variation.age,asset:entry.asset_id,supervised:!!entry.supervised,company:pair.map(p=>p.actor.personId),height:child.actor.variation.height,maxGap,stats};
       });
       console.log('case',viewport.width,JSON.stringify(result));
       await page.screenshot({path:`/workspace/prairie-younger/${person}-${viewport.width}.png`,timeout:120000});
@@ -102,6 +108,7 @@ try {
         const chat=a.days.outdoorActivities(child.id).find(x=>x.span.activity==='talk');
         if(!a.days.request(child.id,chat.id).ok)throw Error('Chat refused');
         window.__proof.pair=child.social.members;
+        until(()=>window.__proof.pair.every(p=>p.mode==='out'&&!p.actor.indoors&&!p.passing));step(1);
       });
       await page.waitForFunction(()=>window.__proof.pair.every(p=>p.actor.body),null,{timeout:150000});
       await page.evaluate(()=>{
@@ -141,7 +148,7 @@ try {
     await page.waitForFunction(()=>document.body.innerText.includes('infants remain in household care'),null,{timeout:30000});
     await page.screenshot({path:`/workspace/prairie-younger/infant-care-${viewport.width}.png`,timeout:120000});
     const stats=await page.evaluate(()=>({stats:window.__chicago4d.stats(),problems:window.__chicago4d.problems}));
-    assert.deepEqual(errors,[]);console.log(JSON.stringify({viewport,care,stats,status:'PASS',pageErrors:errors}));
+    assert.deepEqual(errors,[]);assert.deepEqual(stats.problems,[]);assert.equal(stats.stats.withinBudget,true);console.log(JSON.stringify({viewport,care,stats,status:'PASS',pageErrors:errors}));
     await page.close();
   }
 } finally { await browser.close(); server.close(); }

@@ -660,10 +660,12 @@ await import('./test_human_days_routing.mjs');
   const actors = [], opened = [], removed = [];
   const humans = { actors, shown: true };
   const interactions = createInteractions();
-  let allowAdult = true;
+  let allowAdult = true, warmedGrid = false, clearOuting = true;
   const layer = createHumanDays({ humans, three, hour: () => h, date: () => d, doors, interactions,
     visitor: () => ({ e: door.step.local_e + 3, n: door.step.local_n }), inside: { people: entries, care: [infant] },
     openResident: id => opened.push(id),
+    clear: () => clearOuting,
+    router: { plan: (a, b) => warmedGrid ? { points: [[a.e, a.n], [a.e + 5, a.n + 5], [b.e, b.n]] } : null },
     spawn(entry) {
       if (entry.person === 'caregiver' && !allowAdult) return null;
       assert(!entry.care_only, 'infants never enter the mesh factory');
@@ -698,8 +700,15 @@ await import('./test_human_days_routing.mjs');
   assert(Math.hypot(child.actor.e - adult.actor.e, child.actor.n - adult.actor.n) <= 2.2);
   const activity = layer.outdoorActivities(child.id).find(a => a.span.activity === 'walk');
   assert(layer.request(child.id, activity.id).ok, 'a normal outdoor activity can be requested at night');
+  warmedGrid = true; // an already-built router may snap nearby partners onto different cells
   const before = [child.actor.walks.length, adult.actor.walks.length]; tick(12);
   assert(child.actor.walks.length > before[0] && adult.actor.walks.length > before[1], 'both walk during supervised play');
+  const sharedLegs = [child, adult].map((p, i) => p.actor.walks.slice(before[i]));
+  assert(sharedLegs.flat().every(points => points.length === 2), 'clear shared frontage legs must not acquire separate grid detours');
+  assert.deepEqual(sharedLegs[0].map(([a,b]) => [b[0]-a[0],b[1]-a[1]]), sharedLegs[1].map(([a,b]) => [b[0]-a[0],b[1]-a[1]]), 'both partners walk the same short translation');
+  clearOuting = false; const blockedCount = child.actor.walks.length; tick(8);
+  assert.equal(child.actor.walks.length, blockedCount, 'a blocked next leg never takes a direct shortcut');
+  clearOuting = true; tick(4);
   const session = child.social, release = layer.attend(child.id);
   assert(release); assert.equal(child.social, session); assert.equal(adult.social, session, 'menu keeps the caregiver present');
   const heldWalks = adult.actor.walks.length; tick(3); assert.equal(adult.actor.walks.length, heldWalks, 'caregiver waits with the menu'); release();

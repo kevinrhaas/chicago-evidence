@@ -626,7 +626,7 @@ export function createHumanDays({ humans, three = null, hour = () => null, date 
   const requestedRoute = (p) => !!(p.safeHostTravel || (p.actor.instance?.scene === '1812'
     && (p.visitorReturn || p.called?.visitorRequested || p.social?.visitorRequested || p.override?.visitorRequested)));
   /** Walk `actor` to `to` (or put them there, far off), facing `heading`; then `done`. */
-  function go(p, to, heading, done, { from = null, speed = null } = {}) {
+  function go(p, to, heading, done, { from = null, speed = null, direct = false } = {}) {
     const a = p.actor;
     const start = from ?? { e: a.e, n: a.n };
     const requested = requestedRoute(p);
@@ -640,13 +640,13 @@ export function createHumanDays({ humans, three = null, hour = () => null, date 
       // Automatic routines must respect the day router's cold-grid policy.
       // The full planner is for actual visitor/jaunt journeys, not every nearby
       // blocked chore. An unavailable routine route waits and retries safely.
-      try { route = !p.safeHostTravel && (p.safeRoutineTravel || requested) && clear(start, to)
+      try { route = (direct || (!p.safeHostTravel && (p.safeRoutineTravel || requested))) && clear(start, to)
         ? { points: [[start.e, start.n], [to.e, to.n]] }
         : (requested || a.instance?.scene !== '1812' ? (hostRouter ?? router) : router)?.plan?.(start, to, { mode: 'walk' }); } catch { /* retry below */ }
       const pts = Array.isArray(route?.points) && route.points.every((q) => Array.isArray(q) && q.length === 2 && q.every(Number.isFinite)) ? route.points : null;
       if (!pts?.length || Math.hypot(pts.at(-1)[0] - to.e, pts.at(-1)[1] - to.n) > 0.05 || typeof a.walkPath !== 'function') {
         a.path = null; a.setState?.('standing');
-        p.pendingHostMove = { to, heading, done, from, speed, token: p.token, retry: clock + 0.5 };
+        p.pendingHostMove = { to, heading, done, from, speed, direct, token: p.token, retry: clock + 0.5 };
         return; // no chord, visible teleport, or false arrival when the planner is unavailable
       }
       p.pendingHostMove = null;
@@ -655,7 +655,7 @@ export function createHumanDays({ humans, three = null, hour = () => null, date 
         .filter((q, i, all) => !i || dist(q, all[i - 1]) > 0.05);
       const ok = a.walkPath(points, { speed, endHeading: Number.isFinite(heading) ? heading : null,
         onArrive: () => { if (p.token === token) done?.(); } });
-      if (!ok) p.pendingHostMove = { to, heading, done, from, speed, token, retry: clock + 0.5 };
+      if (!ok) p.pendingHostMove = { to, heading, done, from, speed, direct, token, retry: clock + 0.5 };
       return;
     }
     if ((safe && hidden) || (!safe && !near(start.e, start.n) && !near(to.e, to.n)) || typeof a.walkPath !== 'function' || dist(start, to) < 0.05) {
@@ -668,7 +668,7 @@ export function createHumanDays({ humans, three = null, hour = () => null, date 
       return;
     }
     const token = (p.token = (p.token ?? 0) + 1);
-    const ok = a.walkPath(way(start, to), { speed, endHeading: Number.isFinite(heading) ? heading : null,
+    const ok = a.walkPath(direct && clear(start, to) ? [start, to] : way(start, to), { speed, endHeading: Number.isFinite(heading) ? heading : null,
       onArrive: () => { if (p.token === token) done?.(); } });
     if (!ok) done?.();
   }
@@ -1104,6 +1104,8 @@ export function createHumanDays({ humans, three = null, hour = () => null, date 
 
   // Shared short walks use the child's pace and only clear, nearby frontage. A
   // caregiver waits whenever the child's menu/card holds them, and returns with them.
+  // Keep these already-clear short legs direct: independent grid snapping sends
+  // one partner on a detour and separates them even when their speeds match.
   function stepOuting(s) {
     if (!s.bases) s.bases = s.members.map(m => ({ e: m.actor.e, n: m.actor.n }));
     if (s.moving || clock < (s.nextMove ?? 0) || s.outing.activity === 'greet') return;
@@ -1120,7 +1122,7 @@ export function createHumanDays({ humans, three = null, hour = () => null, date 
       go(m, targets[i], bearing(targets[i].e - m.actor.e, targets[i].n - m.actor.n), () => {
         if (m.social !== s) return;
         if (++s.arrived === s.members.length) { s.moving = false; s.leg = !s.leg; s.nextMove = clock + 3; }
-      }, { speed: .65 });
+      }, { speed: .65, direct: true });
     }
   }
 
@@ -1644,7 +1646,7 @@ export function createHumanDays({ humans, three = null, hour = () => null, date 
         if (p.pendingHostMove) {
           const move = p.pendingHostMove;
           if (move.token !== p.token) p.pendingHostMove = null;
-          else if (clock >= move.retry) { p.pendingHostMove = null; go(p, move.to, move.heading, move.done, { from: move.from, speed: move.speed }); }
+          else if (clock >= move.retry) { p.pendingHostMove = null; go(p, move.to, move.heading, move.done, { from: move.from, speed: move.speed, direct: move.direct }); }
         }
         if (!p.hosted && a.instance?.scene === '1812' && spanAt(dayOn(p.b, today, keyOf(p)), h)?.away) {
           p.called = null; p.override = null;
