@@ -1,0 +1,23 @@
+PR 1934 moving-frame diagnosis — 2026-11-11 (read-only inspection)
+Workflow 43106965712; job 130812701134.
+PR head: 3df73785f8ba9093ade9d1fed98503cc45ad76dc.
+CI tested merge: 3f26f3409ef6efd03e44115e2876c8f62f87f333 (base 8a643db9e089a007668b33edcb3852cb2f85e7a9).
+Command: node tools/measure_walk_frames.mjs --only desktop --verify --gate
+
+Observed failure
+Balanced flight frame 107: scripted frame 54.0 ms, flora.update 47.9 ms, tagged one-frame pass. The near-flora re-deal maximum was 47.8 ms (median 1.1 ms). The balanced maximum ceiling is 32 ms. Balanced-flight flora p95 was 3.0 ms, below its 9 ms ceiling. Its single >16/>33/>50 ms scripted frame was this frame. Other 11 tier/move rows passed; reported zone, ground, yards and spread/synchronous identity comparisons passed. The gate correctly failed one reading. This establishes an isolated timing excursion within this run, not its cause.
+
+Measured scope
+This is the actual published town page /walk/?year=1835 in a fresh Playwright browser context, not an 1812 scene and not a standalone flora-only page. No --year override was supplied: tools/measure_walk_frames.mjs:208 defaults to 1835; :285-288 select the published mirror; :886-896 create the context and navigate. During driven measurements renderer.render is replaced with a no-op (:370 onward), animation is held (:419), then a.step() drives the real town tick. The benchmark wraps flora.update itself with performance.now() immediately around orig.apply (:344-367), separately from other layer hooks. No CPU profile was requested, so this is timed instrumentation rather than a sampling profile.
+
+Relationship to changed code
+The PR changes no flora.js, trees.js, terrain.js, flora kernel, or measure_walk_frames.mjs implementation. The new work controller/import is conditional on daysScene === '1812' (main.js:3997-4005), so it does not run in this 1835 measurement. Hoof state also returns null outside 1812 (driven-assembly-loader.js:131).
+
+New optional sound frame calls are inside the whole town tick, but after flora.update returns: main.js:6337 calls flora.update; :6366 calls transportFrame; :6394-6396 call workActivity/update and workFrame. Their direct execution time cannot be charged to the flora.update wrapper. Animation hold also passes active:false into the sound frame calls.
+
+Sound is loaded lazily on gesture (main.js:1770-1787). The harness may click a legacy gate button if one exists, so source inspection alone does not prove the sound module never loads. The fresh context has no saved audio preference and default soundMaster is 0 (settings-app.js:37); the harness does not enable sound. sound.js:37 requires positive master volume for active playback. recorded-audio.js:266-273 therefore disables ambience/effects/music. Its update early returns (:222-224), without catalog/media loading or nearbyWater work. habitat.sync may still perform its shallow environment/scope bookkeeping if the module was loaded, but returns before habitat candidate evaluation while disabled (habitat-audio.js:292-303). Thus the new active 1812 nature policy, recording fetch/decode/playback, and work controller do not execute in the measured path. Some general changed code and disabled audio guards may execute outside the flora timing interval; calling the entire PR completely absent from the page would be inaccurate.
+
+Limits and next interpretation
+Synchronous wall-time instrumentation can include GC, process scheduling or other indirect contention while a function is on-stack. This log has no CPU/GC trace, no paired base run, and no per-frame attribution sufficient to distinguish those from expensive flora work. We cannot prove that the PR has zero indirect effect or label the failure flaky/runner noise. Current evidence does not identify a direct new audio/work operation causing the 47.9 ms flora interval or a sustained timing regression. Preserve the red result and compare the already-planned fresh exact-head CI run after the unrelated help-text correction. A repeated failure should motivate targeted near-pass profiling/base comparison, not a speculative audio disable or ceiling increase.
+
+No browser rerun, repository edits, or gate changes were performed for this diagnosis.
