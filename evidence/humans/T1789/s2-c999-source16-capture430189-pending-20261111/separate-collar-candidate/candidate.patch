@@ -1,0 +1,211 @@
+diff --git a/tools/human_merchant_1835.py b/tools/human_merchant_1835.py
+--- a/tools/human_merchant_1835.py
++++ b/tools/human_merchant_1835.py
+@@ -43,6 +43,7 @@
+ from human_period_wardrobe import finish_edges
+ import human_gentleman_1904 as G
+ from human_maid_1904 import _two_sided
++from human_collar_rim import fair_stock_top_rim
+ 
+ BODY_SHA256 = 'ef5eb3ca282b29c482a67af4e3e50d1ed29a8055eed0230ee2a58ec36dddbba9'
+ ASSEMBLY = 'merchant_1835_v1'
+@@ -149,8 +150,16 @@
+         tops.append(max(top, bottom+.022))
+     # The foot of the stock rises behind, where the coat's collar stands close over it.
+     bottoms = [bottom+(t['bottom_below_neck']-t['back_bottom_below_neck'])*(1-dz)/2 for dx, dz in dirs]
+-    # Smooth the top line round the ring.
++    # Retain the existing jaw-limited profile as an upper bound. A local
++    # pointwise minimum left angular sample kinks on the visible side rim.
+     tops = [min(tops[k], (tops[k-1]+2*tops[k]+tops[(k+1) % n])/4) for k in range(n)]
++    # Protect the entire front plus angular/edge-normal guard segments: the stock's
++    # front/knot, the merchant/trader collar points (through58deg), and the
++    # private/officer coat-collar opening endpoints (20/26deg) stay exact.
++    # Back height is also a style anchor; only the two side arcs are faired.
++    front_guard = math.ceil(n/6)+1
++    anchors = [k for k in range(n) if min(k, n-k) <= front_guard] + [n//2]
++    tops, rim_fairing = fair_stock_top_rim(tops, bottoms, anchors, t['jaw_clearance'])
+     out = empty('black_silk_stock', 'accessory__silk_stock_black')
+     rows = t['rows']
+     for r in range(rows):
+@@ -166,8 +175,9 @@
+             out['triangles'] += [[a, b, d], [a, d, c]]
+     out['corner_uvs'] = [[out['uvs'][i] for i in f] for f in out['triangles']]
+     out = finish_edges(out, .0015)
+-    out['receipt'] = dict(garment='black silk stock', bottom_y_m=bottom, top_front_y_m=tops[0],
+-                          top_back_y_m=tops[n//2], ease_m=t['ease'], skinning='neck_01 (spine_03 at the foot)')
++    out['receipt'] = dict(out.get('receipt', {}), garment='black silk stock', bottom_y_m=bottom, top_front_y_m=tops[0],
++                          top_back_y_m=tops[n//2], ease_m=t['ease'], skinning='neck_01 (spine_03 at the foot)',
++                          top_rim_fairing=rim_fairing)
+     return out, (dirs, tops, (cx, cz))
+ 
+ 
+diff --git a/tools/human_collar_rim.py b/tools/human_collar_rim.py
+new file mode 100644
+--- /dev/null
++++ b/tools/human_collar_rim.py
+@@ -0,0 +1,65 @@
++"""Bounded rest-shape fairing of an existing stock rim; never a fit certificate."""
++from __future__ import annotations
++
++import math
++
++
++def fair_stock_top_rim(tops, bottoms, protected_indices, maximum_lowering_m):
++    """Fair only between caller-declared style anchors, below the old jaw limit.
++
++    The caller supplies its existing jaw-limited rim. Three neighbour-average
++    passes remove isolated sample kinks. A smooth, zero-at-anchor downward
++    correction keeps the entire result at or below that rim; a single blend
++    factor per arc bounds lowering without pointwise reclipping its shape.
++    This changes a reconstructed garment's rest shape, not body anatomy, skin
++    weights, measured jaw clearance, period evidence or posed acceptance.
++    """
++    n = len(tops)
++    if not 12 <= n <= 128 or len(bottoms) != n:
++        raise ValueError('finite matched stock rings required')
++    if any(type(x) not in (int, float) or not math.isfinite(x) for x in (*tops, *bottoms)):
++        raise ValueError('finite stock heights required')
++    if (type(maximum_lowering_m) not in (int, float)
++            or not math.isfinite(maximum_lowering_m) or not 0 < maximum_lowering_m <= .01):
++        raise ValueError('bounded existing jaw-clearance allowance required')
++    anchors = sorted(set(protected_indices))
++    if (len(anchors) < 2 or any(type(i) is not int or not 0 <= i < n for i in anchors)):
++        raise ValueError('explicit distinct stock style anchors required')
++    spans = [top - bottom for top, bottom in zip(tops, bottoms)]
++    if min(spans) <= 0:
++        raise ValueError('positive original stock height required')
++    result = list(tops)
++    arcs = []
++    for left, right in zip(anchors, anchors[1:] + [anchors[0] + n]):
++        ids = [i % n for i in range(left, right + 1)]
++        if len(ids) <= 2:
++            continue
++        old = [tops[i] for i in ids]
++        smooth = list(old)
++        for _ in range(3):
++            previous = smooth
++            smooth = [old[0]] + [math.fsum((previous[j-1], 2*previous[j], previous[j+1])) / 4
++                for j in range(1, len(ids)-1)] + [old[-1]]
++        taper = [math.sin(math.pi*j/(len(ids)-1))**2 for j in range(len(ids))]
++        downward_shift = max(0., *(max(0., smooth[j]-old[j])/taper[j]
++            for j in range(1, len(ids)-1)))
++        delta = [0.] + [min(0., smooth[j]-downward_shift*taper[j]-old[j])
++            for j in range(1, len(ids)-1)] + [0.]
++        proposed = max(-value for value in delta)
++        # Never consume more than a quarter of the existing band height.
++        allowance = min(maximum_lowering_m, min(spans[i] for i in ids)/4)
++        blend = min(1., allowance/proposed) if proposed else 0.
++        for j in range(1, len(ids)-1):
++            result[ids[j]] = old[j] + blend*delta[j]
++        arcs.append(dict(first_anchor=ids[0], last_anchor=ids[-1], blend=blend,
++            downward_correction_m=downward_shift, maximum_allowed_lowering_m=allowance))
++    if any(new > old or new <= bottom for new, old, bottom in zip(result, tops, bottoms)):
++        raise ValueError('stock fairing exceeded its original rim or inverted its band')
++    lowering = [old-new for old, new in zip(tops, result)]
++    return result, dict(method='anchored_lower_only_stock_rim_fairing_v1',
++        neighbour_passes=3, protected_indices=anchors, arcs=arcs,
++        maximum_top_lowering_m=max(lowering), maximum_top_raising_m=0.,
++        original_style_anchor_heights_preserved=all(result[i] == tops[i] for i in anchors),
++        actual_posed_clearance_accepted=False, native_fit_accepted=False,
++        photographic_accepted=False,
++        scope='Reconstructed rest-rim smoothing only. Existing radial section sampling and skin weights remain the owner; actual LOD/pose/jaw/coat/tie clearance and photographic review are pending.')
+diff --git a/tools/test_human_collar_rim.py b/tools/test_human_collar_rim.py
+new file mode 100644
+--- /dev/null
++++ b/tools/test_human_collar_rim.py
+@@ -0,0 +1,95 @@
++"""Small source controls; no native asset, body preparation or visual acceptance."""
++import copy
++import math
++import unittest
++from unittest.mock import patch
++
++from human_collar_rim import fair_stock_top_rim
++
++
++class RimControls(unittest.TestCase):
++    def test_uniform_band_and_declared_style_anchors_remain_exact(self):
++        old = [1.55]*40
++        out, receipt = fair_stock_top_rim(old, [1.5]*40, [0, 10, 20, 30], .004)
++        self.assertEqual(out, old)
++        self.assertEqual(receipt['maximum_top_lowering_m'], 0)
++        self.assertFalse(receipt['native_fit_accepted'])
++
++    def test_side_jaw_sample_kink_is_faired_below_unchanged_front_and_back(self):
++        old = [1.55]*40
++        old[13] -= .003
++        protected = [i for i in range(40) if min(i, 40-i) <= 8] + [20]
++        snapshot = list(old)
++        out, receipt = fair_stock_top_rim(old, [1.5]*40, protected, .004)
++        self.assertEqual(old, snapshot)
++        self.assertTrue(all(out[i] == old[i] for i in protected))
++        self.assertTrue(all(0 <= a-b <= .004+1e-12 for a, b in zip(old, out)))
++        # A sharp one-sample dip becomes a broader linen edge, without raising
++        # its jaw-limited low point or altering the protected front silhouette.
++        self.assertLess(out[12], old[12])
++        self.assertLess(out[14], old[14])
++        before = abs(old[12]-2*old[13]+old[14])
++        after = abs(out[12]-2*out[13]+out[14])
++        self.assertLess(after, before)
++        self.assertGreater(receipt['maximum_top_lowering_m'], 0)
++
++    def test_arc_fairing_is_rotation_equivariant_and_does_not_invert_a_short_band(self):
++        old = [1.55+.001*math.sin(i*.9) for i in range(40)]
++        bottoms = [p-.006 for p in old]
++        anchors = [0, 7, 20, 33]
++        out, _ = fair_stock_top_rim(old, bottoms, anchors, .004)
++        shift = 9
++        rotate = lambda row: row[-shift:]+row[:-shift]
++        moved, _ = fair_stock_top_rim(rotate(old), rotate(bottoms), [(i+shift)%40 for i in anchors], .004)
++        for actual, expected in zip(moved, rotate(out)):
++            self.assertAlmostEqual(actual, expected, places=12)
++        self.assertTrue(all(a-b <= .0015+1e-12 for a, b in zip(old, out)))
++
++    def test_unknown_or_unbounded_inputs_are_refused(self):
++        for tops, bottoms, anchors, allowance in [
++            ([1.]*11, [0.]*11, [0, 5], .004),
++            ([1.]*40, [0.]*39, [0, 20], .004),
++            ([float('nan')]*40, [0.]*40, [0, 20], .004),
++            ([1.]*40, [1.]*40, [0, 20], .004),
++            ([1.]*40, [0.]*40, [0], .004),
++            ([1.]*40, [0.]*40, [0, 40], .004),
++            ([1.]*40, [0.]*40, [0, 20], .02),
++        ]:
++            with self.subTest(allowance=allowance, count=len(tops)):
++                with self.assertRaises(ValueError):
++                    fair_stock_top_rim(tops, bottoms, anchors, allowance)
++
++    def test_actual_stock_constructor_preserves_body_rig_and_nonshape_channels(self):
++        # Existing source owner, synthetic neck only: no MakeHuman construction.
++        import human_merchant_1835 as owner
++        positions = [[.055*math.sin(2*math.pi*k/40), 1.44+j*.005,
++                      .045*math.cos(2*math.pi*k/40)] for j in range(29) for k in range(40)]
++        # One jaw sample produces an actual owner clamp kink at the side.
++        positions.append([.075, 1.535, 0.])
++        body = {'meshes':[{'positions_m':positions,
++            'weights':[{'neck_01':1.}]*(len(positions)-1)+[{'head':1.}]}]}
++        bones = {'neck_01':{'head_m':[0., 1.5, 0.]}}
++        before = copy.deepcopy((body, bones))
++        with patch.object(owner, 'fair_stock_top_rim', side_effect=lambda t, b, a, m:(list(t), {'control':'unfaired'})):
++            original, original_frame = owner.stock(body, bones)
++        actual, frame = owner.stock(body, bones)
++        self.assertEqual((body, bones), before)
++        for key in ('triangles', 'weights', 'uvs', 'material', 'name'):
++            self.assertEqual(actual[key], original[key], key)
++        first_return = min(actual['flat_face_indices'])
++        self.assertEqual(actual['corner_uvs'][:first_return], original['corner_uvs'][:first_return])
++        # The canonical edge finisher recomputes its bounded return texels for
++        # the changed edge length; no frozen outer cloth corners are repacked.
++        self.assertTrue(all(math.isfinite(value) for face in actual['corner_uvs'][first_return:]
++                            for uv in face for value in uv))
++        self.assertEqual(frame[0], original_frame[0])
++        self.assertEqual(frame[2], original_frame[2])
++        receipt = actual['receipt']['top_rim_fairing']
++        self.assertTrue(receipt['original_style_anchor_heights_preserved'])
++        self.assertFalse(receipt['actual_posed_clearance_accepted'])
++        self.assertGreater(receipt['maximum_top_lowering_m'], 0)
++        self.assertIn('physical_edge_return', actual['receipt'])
++
++
++if __name__ == '__main__':
++    unittest.main()
