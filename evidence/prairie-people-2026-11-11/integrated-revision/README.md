@@ -1,0 +1,11 @@
+# Integrated Prairie Avenue demonstration
+
+All five approved child/teen roles pass published behavior checks at 390×780 and 1280×800. Each sequence calls the resident through the household door, checks the actual age/body, walks, holds the interaction without abandoning the companion, chats with another person and returns indoors. Supervised pairs remain within 1.4 m throughout measured walks. All five infants open their actual card through “Ask after,” disclose reconstructed care and never acquire a walking actor. Both viewports report zero page errors and zero application problems.
+
+The first five-role logs are `final-phone-probe.log` and `final-desktop-probe.log`. Two teen stands initially hid the figures behind trees: the retained `teen-visual-retakes.log` completes the phone retakes; `teen-desktop-retakes.log` completes the desktop retakes. All ten role images and both care-card images were inspected. These demonstrate the approved reconstructed figures and do not assert an archival photographic likeness. The original role approval packet remains in `../child-prototypes/`.
+
+Phone frames pass the ordinary Light budget. The Walker desktop neighborhood frame measures 5,317,375 triangles, compared with 5,097,257 with all human roots hidden. The clearer Cunningham desktop retake measures 5,054,836. Both exceed the ordinary 4.7M Glessner-close cap and fit the existing documented Full district allowance of 6.67M triangles/8,500 draws. Logs preserve `withinBudget: false`, the original close budget, and the separate applicable district budget. No runtime cap or standard smoke assertion was changed; these are not claimed as close-frame passes.
+
+The actual route defect and before/fixed regression are retained in `../younger-integration-checkpoint/`. All 362 adult routine and appearance records remain unchanged, and all 35 juvenile ages/statures and disabled adult build/aging targets pass their checks.
+
+The manifest binds the tested published tree and source inputs. It currently records an uncommitted integrated tree based on f6c990d80 with dev62da0f4 merged. The final commit binding, full four-part local gate, required CI and final mapped renderer suite remain pending. The interrupted first local gate has no verdict and is retained as such; its replacement is running. PR #1932 remains draft until final validation completes.
