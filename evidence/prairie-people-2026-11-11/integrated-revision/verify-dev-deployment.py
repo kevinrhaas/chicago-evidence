@@ -39,7 +39,7 @@ for row in manifest['published']:
         assert len(people['people'])==397 and len(people['care'])==5
 assert len(verified)==6
 assert b'1904' in fetch('1904/')
-receipt={'expected_ancestor':expected,'deployed_dev':live,'latest_dev':dev,'build':build,
+receipt={'verified_at':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),'expected_ancestor':expected,'deployed_dev':live,'latest_dev':dev,'build':build,
          'runtime_inputs':verified,'additional_people':397,'household_care':5,
          'entry_page':'1904/ HTTP 200','result':'PASS'}
 out=Path('/workspace/prairie-younger/dev-deployment-verification.json')

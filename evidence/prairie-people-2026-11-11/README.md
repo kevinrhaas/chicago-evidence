@@ -26,3 +26,5 @@ Additional clothing comparison: [Pach Brothers’ Roosevelt family photograph (1
 [Earlier adult checkpoint validation](final-revision/README.md): Grace Meeker phone and Albertine Field desktop checks and the complete earlier adult-only renderer results, retained as baseline evidence.
 
 [Combined integration validation](integrated-revision/README.md): all five younger roles and five infant door cards on desktop and phone, inspected final views, unchanged-source commit binding, four passing local gate parts, and the final remote test inventory. All required CI and the complete renderer suite (stages 1–15 on desktop and phone) pass on pushed commit bf9db83f8. Exact run heads and conclusions were rechecked before merge.
+
+Merged [PR#1932](https://github.com/kevinrhaas/chicago/pull/1932) and verified the [live1904 dev preview](https://chicago.polecat.live/4d/dev/1904/) at `8a643db9e`. All required CI, both full renderer suites, the final deployment and independent live runtime/portrait checks pass. See the integrated packet for exact receipts and the retained first-deployment cache timeout.
