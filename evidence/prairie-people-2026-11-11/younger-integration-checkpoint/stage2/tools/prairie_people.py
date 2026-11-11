@@ -274,7 +274,7 @@ def generate():
         door = next((d for d in ds if d['id'] == entry['door']), ds[0])
         entry['door'] = door['id']
         if entry.get('care_only'):
-            entry['day'] = [{'spans': [{'from': a, 'to': b, 'indoors': True, 'where': entry['home'], 'doing': doing} for a, b, doing in [(0, 7, 'sleeping in household care'), (7, 10, 'being fed and cared for'), (10, 12, 'quiet play in household care'), (12, 15, 'feeding and a nap'), (15, 18, 'awake with a household caregiver'), (18, 24, 'evening care and sleep')]]}]
+            entry['day'] = [{'spans': [{'from': a, 'to': b, 'indoors': True, 'where': entry['home'], 'doing': doing} for a, b, doing in [(0, 7, 'sleeping in household care'), (7, 10, 'being fed and cared for'), (10, 12, 'playing quietly in household care'), (12, 15, 'being fed or taking a nap'), (15, 18, 'awake with a household caregiver'), (18, 24, 'receiving evening care or sleeping')]]}]
         else:
             entry['day'] = routine(entry['person'], entry['home'], door, roles[entry['person']], entry.get('age_1904'))
         entry.setdefault('routine_liberty', LIBERTY)

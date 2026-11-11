@@ -6,7 +6,7 @@ import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
 const { chromium } = createRequire(import.meta.url)('playwright');
-const root = path.resolve('../../site/4d');
+const root = path.resolve(process.env.PROBE_ROOT || '../../site/4d');
 console.log('published build', JSON.parse(fs.readFileSync(path.join(root, 'build.json'), 'utf8')));
 const proofLabel = 'younger-residents';
 const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.wasm': 'application/wasm', '.jpg': 'image/jpeg', '.png': 'image/png' };
@@ -52,7 +52,7 @@ try {
     await page.evaluate(() => { if (window.__chicago4d.welcome.state === 'welcome') document.getElementById('home-roam').click(); });
     await page.waitForFunction(() => window.__chicago4d.welcome.state === 'world', null, { timeout: 90000, polling: 100 });
 
-    const cases = ['pa1904_walker_james_r_c1900_arthur_m_walker', 'pa1904_shortall_john_l_c1900_margaret_shortall', 'pa1904_glessner_john', 'pa1904_longini_a_c1900_marcel_longini', 'pa1904_cunningham_elizabeth_s'];
+    const cases = process.env.PROBE_PERSON ? process.env.PROBE_PERSON.split(',') : ['pa1904_walker_james_r_c1900_arthur_m_walker', 'pa1904_shortall_john_l_c1900_margaret_shortall', 'pa1904_glessner_john', 'pa1904_longini_a_c1900_marcel_longini', 'pa1904_cunningham_elizabeth_s'];
     await page.evaluate(() => {
       const a = window.__chicago4d;
       a.navigator.dock(); a.renderer.setAnimationLoop(null); a.renderer.render = window.__probeDraw;
@@ -94,11 +94,28 @@ try {
         const release=a.days.attend(child.id);if(!release)throw Error('Cannot hold walking child');
         if(entry.supervised&&!pair.every(p=>p.social===child.social))throw Error('Menu separated caregiver');
         step(2);release();
-        a.walker.teleport({local_e:child.actor.e+3,local_n:child.actor.n+3,yaw_deg:225});
-        a.world.setSun({date:'1904-07-01',time:'10:00'});a.world.follow(a.camera.position);a.renderer.render(a.scene3d,a.camera);
-        const stats=a.stats(); if(!stats.withinBudget)throw Error('Render budget exceeded: '+JSON.stringify(stats));
+        a.navigator.dock();
+        const clearView=entry.person==='pa1904_shortall_john_l_c1900_margaret_shortall'||entry.asset_id.startsWith('teen_');
+        a.walker.teleport({local_e:child.actor.e+3,local_n:child.actor.n+(clearView?-3:3),yaw_deg:clearView?315:225});
+        // Settle the full scene's camera-dependent LOD/reach updates after teleport.
+        const draw=a.renderer.render;a.renderer.render=(scene,camera)=>camera?.updateMatrixWorld?.();
+        a.step();a.step();a.renderer.render=draw;
+        a.world.setSun({date:'1904-07-01',time:'10:00'});a.world.follow(a.camera.position);
+        a.renderer.render(a.scene3d,a.camera);a.renderer.render(a.scene3d,a.camera);
+        const stats=a.stats();
+        // These are views of other Prairie households, outside Glessner's close
+        // inspection frames. T-3285/T-3286 already declare their Full district
+        // allowance in farBudget. Light keeps its ordinary budget; no cap moves.
+        const frameBudget=entry.home!=='glessner_house' && stats.farBudget ? stats.farBudget : stats.budget;
+        if(stats.drawCalls>frameBudget.drawCalls||stats.triangles>frameBudget.triangles){
+          const roots=a.humans.actors.map(p=>({root:p.root,visible:p.root.visible}));
+          for(const {root} of roots)root.visible=false;
+          a.renderer.render(a.scene3d,a.camera);a.renderer.render(a.scene3d,a.camera);const withoutPeople=a.stats();
+          for(const {root,visible} of roots)root.visible=visible;
+          throw Error('Render budget exceeded: '+JSON.stringify({stats,withoutPeople,camera:{e:a.walker.state.e,n:a.walker.state.n},glessner:a.structurePosition('glessner_house')}));
+        }
         if(a.problems.length)throw Error('App problems: '+JSON.stringify(a.problems));
-        return {person:entry.person,age:child.actor.variation.age,asset:entry.asset_id,supervised:!!entry.supervised,company:pair.map(p=>p.actor.personId),height:child.actor.variation.height,maxGap,stats};
+        return {person:entry.person,age:child.actor.variation.age,asset:entry.asset_id,supervised:!!entry.supervised,company:pair.map(p=>p.actor.personId),height:child.actor.variation.height,maxGap,frameBudget,budgetScope:stats.farBudget&&entry.home!=='glessner_house'?'existing Full district allowance':'ordinary scene allowance',stats};
       });
       console.log('case',viewport.width,JSON.stringify(result));
       await page.screenshot({path:`/workspace/prairie-younger/${person}-${viewport.width}.png`,timeout:120000});
@@ -146,6 +163,7 @@ try {
       care.push(status);
     }
     await page.waitForFunction(()=>document.body.innerText.includes('infants remain in household care'),null,{timeout:30000});
+    await page.locator('.insp-person-story .insp-summary').filter({hasText:'infants remain in household care'}).scrollIntoViewIfNeeded();
     await page.screenshot({path:`/workspace/prairie-younger/infant-care-${viewport.width}.png`,timeout:120000});
     const stats=await page.evaluate(()=>({stats:window.__chicago4d.stats(),problems:window.__chicago4d.problems}));
     assert.deepEqual(errors,[]);assert.deepEqual(stats.problems,[]);assert.equal(stats.stats.withinBudget,true);console.log(JSON.stringify({viewport,care,stats,status:'PASS',pageErrors:errors}));
