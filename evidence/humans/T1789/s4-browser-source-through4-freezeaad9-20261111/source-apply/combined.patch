@@ -1,0 +1,95 @@
+--- a/.github/workflows/chicago-4d-humans.yml
++++ b/.github/workflows/chicago-4d-humans.yml
+@@ -259,21 +259,25 @@
+           BLENDER_CACHE: /opt/blender-dl
+         run: ./tools/human_export.sh --verify
+ 
+-      # Installed GLOBALLY, as chicago-4d-smoke.yml does: the tools resolve it through
+-      # `npm root -g`.
+-      - name: Install Playwright
+-        run: |
+-          set -e
+-          npm install -g playwright@1.56.1
+-          node "$(npm root -g)/playwright/cli.js" install --with-deps chromium
+-
+-      - name: Open every human GLB in the browser, at both viewports
+-        working-directory: chicago/4d
+-        run: NODE_PATH="$(npm root -g)" node tools/human_fixture.mjs
+-
+-      - name: Drive the browser actor with the fixture, at both viewports
+-        working-directory: chicago/4d
+-        run: NODE_PATH="$(npm root -g)" node tools/human_actor.mjs
++      # Keep the canonical Python/Blender fixture producer on the host. The exact
++      # Playwright 1.56.1 browser image already contains Chromium and its OS deps.
++      - name: Open every human GLB and drive the actor, at both viewports
++        run: |
++          set -euo pipefail
++          docker run --rm --init --ipc=host \
++            --user pwuser \
++            --mount "type=bind,src=$GITHUB_WORKSPACE,dst=$GITHUB_WORKSPACE,readonly" \
++            --workdir "$GITHUB_WORKSPACE/chicago/4d" \
++            mcr.microsoft.com/playwright@sha256:42f02d323c310069b4d54c94bd91a608966a486c3492c48ae0b1cea747ec5ca2 \
++            bash -euo pipefail -c '
++              pw_private="$(mktemp -d /tmp/chicago-human-playwright.XXXXXX)"
++              pw_prefix="$pw_private/npm"
++              pw_cache="$pw_private/cache"
++              npm install --global --prefix "$pw_prefix" --cache "$pw_cache" playwright@1.56.1
++              export NODE_PATH="$(npm root --global --prefix "$pw_prefix")"
++              node tools/human_fixture.mjs
++              node tools/human_actor.mjs
++            '
+ 
+   # Render the immutable, already fixture-qualified producer's masters. The
+   # receipt distinguishes that source SHA from this renderer's own checkout.
+--- a/chicago/4d/docs/STATUS.md
++++ b/chicago/4d/docs/STATUS.md
+@@ -1,3 +1,23 @@
++### T1789 linen capture: browser dependency repair, 11 November 2026
++
++Source-only update; no replacement human assets or fit acceptance yet. Source
++0a579798 passed all sixteen local source sections (1,337 executions) and the
++eight-part GitHub code gate. Its capture 43053758545 failed before geometry:
++the humans prerequisite could not resolve Ubuntu's package host while installing
++Playwright dependencies. The ordinary PR job and its one fresh-runner retry
++failed at that same DNS step. Those failures remain failures; no producer parents
++were accepted.
++
++The proposed browser-only step uses the official Playwright 1.56.1 Noble image,
++pinned by its linux/amd64 digest, with the image's pwuser and a read-only source
++mount. Both complete browser fixture and actor commands retain both viewports.
++Canonical Python/Blender work stays on the host; source/definition binding, tool
++pins, all assertions and the original 45/30-minute job limits are preserved.
++Static syntax/contract checks do not prove container compatibility: actual CI
++browser execution, new canonical assets, matching native views, fresh DEV
++integration and final published checks remain pending. Broader clothing realism
++and T1789 stay open. Production is unchanged.
++
+ ## Linen capture codec-pin correction — 11 November 2026
+ 
+ The ordinary checks for draft PR #1933 pass on source c9990d8b. Its canonical
+--- a/chicago/4d/docs/ROADMAP.md
++++ b/chicago/4d/docs/ROADMAP.md
+@@ -1,3 +1,23 @@
++### T1789 linen capture: browser dependency repair, 11 November 2026
++
++Source-only update; no replacement human assets or fit acceptance yet. Source
++0a579798 passed all sixteen local source sections (1,337 executions) and the
++eight-part GitHub code gate. Its capture 43053758545 failed before geometry:
++the humans prerequisite could not resolve Ubuntu's package host while installing
++Playwright dependencies. The ordinary PR job and its one fresh-runner retry
++failed at that same DNS step. Those failures remain failures; no producer parents
++were accepted.
++
++The proposed browser-only step uses the official Playwright 1.56.1 Noble image,
++pinned by its linux/amd64 digest, with the image's pwuser and a read-only source
++mount. Both complete browser fixture and actor commands retain both viewports.
++Canonical Python/Blender work stays on the host; source/definition binding, tool
++pins, all assertions and the original 45/30-minute job limits are preserved.
++Static syntax/contract checks do not prove container compatibility: actual CI
++browser execution, new canonical assets, matching native views, fresh DEV
++integration and final published checks remain pending. Broader clothing realism
++and T1789 stay open. Production is unchanged.
++
+ ## Linen capture codec-pin correction — 11 November 2026
+ 
+ The ordinary checks for draft PR #1933 pass on source c9990d8b. Its canonical
