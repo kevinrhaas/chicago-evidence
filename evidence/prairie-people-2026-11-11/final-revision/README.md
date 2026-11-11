@@ -1,4 +1,4 @@
-# Final integrated revision validation
+# Adult checkpoint validation (c7de594a7)
 
 Code revision `c7de594a7ef7ec484d8759ff024bdcbec9fab249`, including dev `900d9166`.
 
@@ -16,3 +16,5 @@ Both checks assert the intended body and age, visible figure, compact accessible
 `final-smoke-runs.json` lists all 15 published renderer stages in both viewports dispatched against this same commit. Dispatch status is not a passing result; completed results are recorded on PR #1932 before merge. These finite functional checks do not assert photographic acceptance.
 
 The final c7 desktop 14–15 run 43017045621 completed with 164 passes and one failure in the Inspect-to-Go-to keyboard handoff; there were zero page errors. `desktop-14-15-first-failure.log` retains that failed run. An unchanged rerun, 43023016089, was dispatched to establish reproducibility; its result was still pending when this note was written. Required CI and all phone stages were green. This failed run must not be described as passing or omitted from the final account.
+
+The unchanged rerun 43023016089 passed all 165 checks, including the previously failing keyboard handoff, with zero failures. Its transcript is `desktop-14-15-unchanged-retry.log`. Both attempts are retained. This folder now records an earlier adult checkpoint: PR #1932 subsequently expanded to include the owner-approved younger residents and dev 62da0f4. Fresh combined validation is required before merge.
