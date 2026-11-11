@@ -1,0 +1,18 @@
+from pathlib import Path
+import fcntl,hashlib,json,re,subprocess,sys
+PHASE=Path(__file__).resolve().parent;P=PHASE.parent;label=PHASE.name.lower();assert label in ['lod0','lod123']
+assert len(sys.argv)==3 and sys.argv[1]=='--seal-sha256' and re.fullmatch('[0-9a-f]{64}',sys.argv[2]),'ROOT-reviewed actual seal SHA required'
+seal_sha=sys.argv[2];assert hashlib.sha256((P/'SEALED-INPUTS.json').read_bytes()).hexdigest()==seal_sha
+pins=json.loads((P/'SOURCE-PINS.json').read_bytes())
+for n,h in pins.items():assert hashlib.sha256((P/n).read_bytes()).hexdigest()==h,n
+assert not any((PHASE/n).exists() for n in ['before.json','observe.log','observe.result.json','OBSERVATION-RECEIPT.json','CLOSED.json']), 'one attempt only; preserve first failure'
+lock=Path('/workspace/.cloud-setup/transport-8cec-generated-lap-20261030/ROOT-SOLE-CANONICAL-OWNER.lock').open('a+');fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
+G='/workspace/.cloud-setup/transport-current-20261103/resource_guard.py'
+def call(a):return subprocess.run(a,check=False).returncode
+assert call(['python3',G,'capture',str(PHASE/'before.json')])==0
+rc=call(['python3','/workspace/.cloud-setup/transport-supervise.py','--prefix',str(PHASE/'observe'),'--cwd','/workspace','--timeout','600','--','/tmp/ROOT-GATE-BIND-PREP-V2-20261110/with-cache.sh','--','python3',str(P/'observe.py'),label,seal_sha])
+post=call(['python3',G,'capture',str(PHASE/'after.json')]);pair=call(['python3',G,'pair',str(PHASE/'before.json'),str(PHASE/'after.json'),str(PHASE/'resources.json')])
+r=json.loads((PHASE/'observe.result.json').read_bytes());c=json.loads((PHASE/'observe.cleanup.json').read_bytes());g=json.loads((PHASE/'resources.json').read_bytes());receipt=PHASE/'OBSERVATION-RECEIPT.json'
+accepted=rc==post==pair==0 and r['returncode']==0 and not r['timed_out'] and r['requested_timeout_seconds']==r['effective_timeout_seconds']==600 and r['timeout_override_reason'] is None and c['cleanup_complete'] and not c['remaining_owned_children'] and g['accepted'] and receipt.is_file()
+record=dict(accepted=accepted,mode=label,reviewed_seal_sha256=seal_sha,result=r,cleanup=c,resources=g,receipt_sha256=hashlib.sha256(receipt.read_bytes()).hexdigest() if receipt.exists() else None,helper_sha256=pins['observe.py'],native_fit_accepted=False,automatic_retry=False)
+(PHASE/'CLOSED.json').write_text(json.dumps(record,indent=2)+'\n');print(json.dumps(record));raise SystemExit(0 if accepted else 1)

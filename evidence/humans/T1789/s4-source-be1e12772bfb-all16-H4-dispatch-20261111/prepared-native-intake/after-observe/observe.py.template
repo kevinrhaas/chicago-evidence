@@ -1,0 +1,132 @@
+"""Finite AFTER observation guards. Definitions only until an explicitly admitted phase."""
+from pathlib import Path
+import hashlib,json,math,os,re,runpy,stat,subprocess,sys,traceback
+P=Path(__file__).resolve().parent
+PREP=Path('/tmp/ROOT-T1789-SETTLER-S4-AFTER-PROJECTION-PREP-20261111')
+OUT=Path('/tmp/T1789-SETTLER-S4-AFTER-OBSERVATION-PREP-20261111')
+APP=Path('/dev/shm/chicago-t1789-charles-gate-20261110/chicago/4d')
+Q=Path('/tmp/T1789-SETTLER-SEAT-METADATA-COMPACT-SOURCE-CANDIDATE-20261111')
+INTAKE=Path('/tmp/T1789-SETTLER-S4-CAPTURE-INTAKE-20261111/attempt1')
+IP=Path('/tmp/T1789-SETTLER-S4-CAPTURE-INTAKE-PREP-20261111')
+S='__ROOT_ACTUAL_S4__';RUN_ID=int('__ROOT_ACTUAL_RUN_ID__');OLD_S='3d2d9b356db02deed9d406422f754af4de7aa5f0'
+H='__ROOT_ACTUAL_H4__'
+LINEN='494362d1bee5cd0088be4239d3e2bac0d0f95b1686a9dd1d0f45f244ce0ecaa2'
+OVERLAY='d9b77de6c203bfbb94a2b513edc051909482a561af856065c95a96bf71341fd1'
+MODES={'lod0':([0],Q/'observation-lod0/seat-review.json','0c63bd1fc745611b1b018e243b4019f06ad206bc9c5c9ad0986507461083947a'),'lod123':([1,2,3],Path('/tmp/ROOT-T1789-SETTLER-BEFORE-LOD123-OBSERVE-PREP-20261111/observation-lod123/seat-review.json'),'1646a59976631858362fcf0ac0e354d2b0b719b015eeb46a297da854c0033365')}
+sha=lambda b:hashlib.sha256(b).hexdigest()
+def load(p,cap=8*1024**2):
+ assert p.is_file() and not p.is_symlink() and p.stat().st_size<=cap,str(p)
+ return json.loads(p.read_bytes())
+def fixed(p,h):assert sha(p.read_bytes())==h,str(p)
+def facts(p):
+ info=p.lstat();assert stat.S_ISREG(info.st_mode) and not p.is_symlink(),str(p)
+ h=hashlib.sha256()
+ with p.open('rb') as f:
+  while raw:=f.read(1024*1024):h.update(raw)
+ return dict(bytes=info.st_size,sha256=h.hexdigest())
+def same(p,r):assert facts(p)=={k:r[k] for k in ('bytes','sha256')},str(p)
+def closure(path,seconds):
+ c=load(path);r,k,g=c['result'],c['cleanup'],c['resources']
+ assert c['accepted'] and r['returncode']==0 and not r['timed_out'] and r['requested_timeout_seconds']==r['effective_timeout_seconds']==seconds and r['timeout_override_reason'] is None
+ assert k['cleanup_complete'] and not k['remaining_owned_children'] and g['accepted']
+ return c
+
+def metadata_projection():
+ """Metadata only: may be used for sealing; no APP/Git/raw geometry access."""
+ fixed(PREP/'prepare.py','__ROOT_PROJECTION_PREPARE_SHA256__')
+ fixed(PREP/'run.py','__ROOT_PROJECTION_RUN_SHA256__')
+ fixed(PREP/'SOURCE-PINS.json','__ROOT_PROJECTION_PINS_SHA256__')
+ copied=closure(PREP/'CLOSED.json',120);fixed(OUT/'MANIFEST.json',copied['manifest_sha256']);m=load(OUT/'MANIFEST.json')
+ assert m['status']=='ACTUAL_AFTER_BINDINGS_PREPARED_NATIVE_OBSERVATIONS_UNRUN' and m['source_commit']==m['definition_commit']==m['actual_observer_execution_source']==S and m['historical_before_source_commit']==m['observer_overlay_origin_base']==OLD_S
+ assert m['capture_run_id']==RUN_ID and m['capture_request_H']==H and m['observer_overlay_patch_sha256']==OVERLAY and m['garment_source_patch_sha256']==LINEN
+ assert m['release'] is False and m['install'] is False and m['native_fit_accepted'] is False and m['browser_run'] is False and m['glb_decode'] is False and m['runtime_projection_bytes']<=32*1024**2
+ fixed(INTAKE/'INTAKE.json',m['intake_sha256']);fixed(IP/'validate.CLOSED.json',m['intake_validate_closed_sha256']);closure(IP/'validate.CLOSED.json',120)
+ intake=load(INTAKE/'INTAKE.json');assert intake['status']=='CANONICAL_PARENTS_RECEIVED_VERIFIED_UNINSTALLED' and intake['source']==S and intake['request_SHA256']==H and intake['run_id']==RUN_ID
+ fixed(OUT/'CAPTURE.json',m['capture_sha256']);capture=load(OUT/'CAPTURE.json',4*1024**2)
+ assert capture['status']=='CANONICAL_PARENT_CAPTURE_ONLY' and capture['phase']=='CLOSED' and capture['source_sha']==capture['driver_sha']==capture['definition_sha']==S and capture['manifest_sha256']==H
+ assert all(capture[k] is False for k in ['release','install','material_applied','production_eligible','native_fit_accepted','photo_accepted'])
+ fixed(OUT/'runtime-inventory.json',m['runtime_inventory_sha256']);inventory=load(OUT/'runtime-inventory.json');assert inventory['runtime_base_commit']==S and len(inventory['files'])==20
+ entries={x['command']:x for x in m['commands']};assert len(m['commands'])==len(entries)==2 and set(entries)=={'OBSERVE-LOD0-COMMAND.json','OBSERVE-LOD123-COMMAND.json'}
+ bindings={}
+ for label,(lods,before,before_sha) in MODES.items():
+  name='OBSERVE-'+label.upper()+'-COMMAND.json';e=entries[name];fixed(OUT/name,e['command_sha256']);fixed(OUT/e['request'],e['request_sha256']);fixed(before,before_sha)
+  request=load(OUT/e['request']);cmd=load(OUT/name);b=load(before)
+  assert e['before_sha256']==before_sha and request['role']=='after' and request['source_commit']==request['definition_commit']==request['observer_base_commit']==request['runtime_base_commit']==S
+  assert request['source_patch_sha256']==LINEN and request['receipt_kind']=='canonical_capture' and request['receipt_sha256']==m['capture_sha256'] and request['runtime_inventory_sha256']==m['runtime_inventory_sha256'] and request['before_observation_sha256']==before_sha and request['parents']==m['captured_parents']
+  assert request['observer_overlay']['base_commit']==OLD_S and request['observer_overlay']['patch_sha256']==OVERLAY and request['observer_files']==b['request']['observer_files']
+  assert b['request']['role']=='before' and b['request']['source_commit']==OLD_S and b['status']=='NATIVE_SAMPLED_OBSERVATION_COMPLETE' and b['selected_lods']==lods
+  expected=['node',str(APP/'tools/human_teamster.mjs'),'--published',str(OUT/'runtime'),'--asset-ids','settler_1812','--lods',','.join(map(str,lods)),'--seat-review-request',str(OUT/e['request']),'--seat-review-request-sha256',e['request_sha256'],'--seat-review-receipt',str(OUT/'CAPTURE.json'),'--seat-review-runtime-inventory',str(OUT/'runtime-inventory.json'),'--seat-review-before-observation',str(before),'--output',str(OUT/('observation-'+label))]
+  assert cmd['argv']==expected and cmd['selected_lods']==lods and cmd['original_supervisor_timeout_seconds']==600 and cmd['maximum_pictures']==26*len(lods) and cmd['maximum_output_bytes']==8*1024**2*len(lods)
+  bindings[label]=dict(command=name,command_sha256=e['command_sha256'],request=e['request'],request_sha256=e['request_sha256'],before_observation_sha256=before_sha,argv=expected)
+ return dict(source_commit=S,historical_before_source_commit=OLD_S,manifest_sha256=sha((OUT/'MANIFEST.json').read_bytes()),projection_closed_sha256=sha((PREP/'CLOSED.json').read_bytes()),capture_sha256=m['capture_sha256'],runtime_inventory_sha256=m['runtime_inventory_sha256'],bindings=bindings)
+
+def verify(sealed):
+ assert metadata_projection()==sealed,'actual projection/bindings changed after reviewed seal'
+ # Reviewed imported file defines helpers only. Its main/copy function is never called.
+ c=runpy.run_path(str(PREP/'prepare.py'),run_name='readonly_after_source_guard')
+ state=c['source_current']()
+ m=load(OUT/'MANIFEST.json');inv=load(OUT/'runtime-inventory.json');capture=load(OUT/'CAPTURE.json',4*1024**2)
+ assert c['facts'](INTAKE/'validated8/CAPTURE.json')['sha256']==m['capture_sha256']
+ for r in capture['parent_hashes']:assert c['facts'](INTAKE/'validated8'/r['file'])=={k:r[k] for k in ('bytes','sha256','git_blob')}
+ actual={f.relative_to(OUT/'runtime').as_posix() for f in (OUT/'runtime').rglob('*') if f.is_file()};assert actual=={r['file'] for r in inv['files']} and len(actual)==20
+ for r in inv['files']:
+  same(OUT/'runtime'/r['file'],r);assert (OUT/'runtime'/r['file']).stat().st_mode&0o777==0o444
+  if r['file'].startswith('walk/'):same(APP/r['file'].replace('walk/','renderers/web/',1),r)
+ parents={r['file']:r for r in m['captured_parents']};assert len(parents)==8
+ for r in m['captured_parents']:
+  if '/web/' in r['file']:same(OUT/'runtime'/r['file'].replace('assets/humans/','data/humans/',1),r)
+ for binding in sealed['bindings'].values():
+  request=load(OUT/binding['request']);assert len(request['observer_files'])==7
+  for r in request['observer_files']:same(APP/r['file'],r);same(Q/'observer/chicago/4d'/r['file'],r)
+ return dict(current_source=state,projection_manifest_sha256=sealed['manifest_sha256'],capture_sha256=sealed['capture_sha256'],actual_captured8=True,actual_runtime20=True,actual_source_and_private_observer7=True)
+
+def observe(label,seal_sha):
+ assert label in MODES and re.fullmatch('[0-9a-f]{64}',seal_sha)
+ fixed(P/'SEALED-INPUTS.json',seal_sha);sealed=load(P/'SEALED-INPUTS.json');lods,before_path,before_sha=MODES[label]
+ phase=P/label.upper();out=OUT/('observation-'+label);assert not out.exists() and not (phase/'OBSERVATION-RECEIPT.json').exists(),'fresh output and one attempt only'
+ assert sealed==metadata_projection();argv=sealed['bindings'][label]['argv']
+ guard=load(phase/'before.json');selected=sum(r['bytes'] for r in load(OUT/'runtime-inventory.json')['files'] if any(r['file'].endswith(f'.lod{lod}.glb') for lod in lods))
+ max_bytes=8*1024**2*len(lods);max_pictures=26*len(lods);reserve=max_bytes+selected+16*1024**2
+ assert guard['available_memory_bytes']-reserve>=4*1024**3 and guard['tmp_free_bytes']-max_bytes-1024**2>=1024**3 and guard['workspace_free_bytes']>=512*1024**2,'original floors plus finite file/output reserves'
+ receipt=dict(status='INCOMPLETE',role='after',source_commit=S,historical_before_source_commit=OLD_S,selected_lods=lods,reviewed_seal_sha256=seal_sha,request_sha256=sealed['bindings'][label]['request_sha256'],projection_manifest_sha256=sealed['manifest_sha256'],capture_sha256=sealed['capture_sha256'],matched_before_observation_sha256=before_sha,argv=argv,maximum_pictures=max_pictures,maximum_output_bytes=max_bytes,release=False,native_fit_accepted=False,photographic_accepted=False,browser_returncode=None,before=None,after=None,errors=[])
+ try:
+  receipt['before']=verify(sealed);r=subprocess.run(argv,cwd=APP,check=False);receipt['browser_returncode']=r.returncode
+ except BaseException as e:receipt['errors'].append(type(e).__name__+': '+str(e)+'\n'+traceback.format_exc())
+ finally:
+  try:receipt['after']=verify(sealed);assert receipt['before']==receipt['after']
+  except BaseException as e:receipt['errors'].append('Closing proof: '+str(e)+'\n'+traceback.format_exc())
+  try:
+   files=[]
+   if out.exists():
+    for f in sorted(out.rglob('*')):
+     assert not f.is_symlink()
+     if f.is_file():files.append(dict(file=f.relative_to(out).as_posix(),**facts(f)))
+   pictures={r['file']:r for r in files if r['file'].endswith('.png')};assert len(pictures)<=max_pictures and sum(r['bytes'] for r in files)<=max_bytes
+   receipt['output_inventory']=files;receipt['actual_pictures']=len(pictures);receipt['actual_output_bytes']=sum(r['bytes'] for r in files)
+   if (out/'seat-review.json').is_file() and (out/'inspection.json').is_file():
+    seat=load(out/'seat-review.json',max_bytes);inspection=load(out/'inspection.json',max_bytes);before=load(before_path)
+    runs=seat['runs'];expected={(f'assets/humans/web/settler_1812.lod{lod}.glb',v) for lod in lods for v in ['desktop','mobile']};poses={('idle',0)}|{('walk',i/8) for i in range(8)}
+    matrix=seat['selected_lods']==lods and len(runs)==2*len(lods) and {(r['file'],r['viewport_name']) for r in runs}==expected and all(r['complete'] and len(r['poses'])==9 and {(p['pose']['clip'],p['pose']['phase']) for p in r['poses']}==poses and len(r['screenshots'])==13 for r in runs)
+    camera_images=[];camera_deltas=[]
+    for run in runs:
+     old=next(r for r in before['runs'] if r['file']==run['file'] and r['viewport_name']==run['viewport_name']);assert run['viewport']==old['viewport']
+     for image in run['screenshots']:
+      match=[r for r in old['screenshots'] if (r['angle'],r['close'],r['actual_pose']['clip'],r['actual_pose']['phase'])==(image['angle'],image['close'],image['actual_pose']['clip'],image['actual_pose']['phase'])];assert len(match)==1
+      prior=match[0];values=[]
+      for name in ['camera_world','camera_projection']:
+       assert len(image[name])==len(prior[name])==16 and all(type(v) in [int,float] and math.isfinite(v) for v in image[name]+prior[name]);values.extend(abs(a-b) for a,b in zip(image[name],prior[name]))
+      delta=max(values);assert image['same_camera_as_before'] is True and delta<=1e-12 and image['before_camera_maximum_matrix_delta']<=1e-12
+      assert image['file'] in pictures and all(image[k]==pictures[image['file']][k] for k in ['bytes','sha256'])
+      camera_images.append(image['file']);camera_deltas.append(delta)
+    assert len(camera_images)==len(set(camera_images))==len(pictures)==max_pictures
+    camera=dict(matching_before_sha256=before_sha,actual_matched_images=len(camera_images),maximum_camera_matrix_delta=max(camera_deltas),camera_matrix_tolerance=1e-12,all_actual_pose_camera_pairs_matched=True)
+    receipt['camera_binding_proof']=camera
+    receipt['seat_footer']=dict(status=seat['status'],selected_lods=seat['selected_lods'],runs=len(runs),poses=sum(len(r['poses']) for r in runs),complete_matrix=matrix,native_fit_accepted=seat['native_fit_accepted'],failures=seat['failures'])
+    receipt['inspection_footer']=dict(mechanical_passed=inspection['mechanical_passed'],runs=len(inspection['runs']),failures=inspection['failures'])
+    diagnostics=dict(scope='Actual sampled contact findings only; separate ROOT image review and asset qualification remain required',native_fit_accepted=False,source=str(out/'seat-review.json'),diagnostic_findings=seat['diagnostic_findings'])
+    (phase/'DIAGNOSTICS.json').write_text(json.dumps(diagnostics,indent=2)+'\n');receipt['diagnostics_sha256']=sha((phase/'DIAGNOSTICS.json').read_bytes())
+    if matrix and seat['status']=='NATIVE_SAMPLED_OBSERVATION_COMPLETE' and inspection['mechanical_passed'] is True and seat['native_fit_accepted'] is False and receipt['browser_returncode']==0 and not receipt['errors']:receipt['status']='ACTUAL_AFTER_MATCHED_SAMPLED_OBSERVATION_COMPLETE_NOT_FIT_ACCEPTANCE'
+  except BaseException as e:receipt['errors'].append('Output/camera proof: '+str(e)+'\n'+traceback.format_exc())
+  (phase/'OBSERVATION-RECEIPT.json').write_text(json.dumps(receipt,indent=2)+'\n');print(json.dumps({k:receipt.get(k) for k in ['status','browser_returncode','actual_pictures','actual_output_bytes','seat_footer','inspection_footer','camera_binding_proof','errors']}))
+ return 0 if receipt['status']=='ACTUAL_AFTER_MATCHED_SAMPLED_OBSERVATION_COMPLETE_NOT_FIT_ACCEPTANCE' else 1
+if __name__=='__main__':raise SystemExit(observe(sys.argv[1],sys.argv[2]))

@@ -1,0 +1,12 @@
+"""Future metadata-only seal; ROOT reviews actual returned SHA before any observer."""
+from pathlib import Path
+import hashlib,json,runpy
+P=Path(__file__).resolve().parent
+for n,h in json.loads((P/'SOURCE-PINS.json').read_bytes()).items():assert hashlib.sha256((P/n).read_bytes()).hexdigest()==h,n
+assert not (P/'SEALED-INPUTS.json').exists(),'fresh actual seal only; no overwrite'
+# The pinned module defines functions only; no APP/Git/browser function is called here.
+f=runpy.run_path(str(P/'observe.py'),run_name='metadata_seal_library')
+binding=f['metadata_projection']()
+raw=(json.dumps(binding,indent=2)+'\n').encode()
+(P/'SEALED-INPUTS.json').write_bytes(raw)
+print(json.dumps(dict(status='ACTUAL_BINDINGS_SEALED_REQUIRES_ROOT_REVIEW',seal_sha256=hashlib.sha256(raw).hexdigest(),manifest_sha256=binding['manifest_sha256'],source_commit=binding['source_commit'],browser_run=False,APP_operations=False)))
