@@ -1,0 +1,15 @@
+S2 AFTER preparation — SOURCE ONLY, UNEXECUTED
+
+This is a new helper; the historical S3d2-pinned AFTER helper remains unchanged and unexecuted. No APP/source/Git/API, intake, copy, decoder or browser command ran while preparing this source. Future captured hashes/sizes remain unknown until the actual S2 intake succeeds.
+
+Current source/capture/definition/runtime/observer base is actual S2c9990d8b32517612a94e339a98bd5700436b5689, H2a0ec4b8f47218a9b3e72f1939a84c78960637e70c8f3fb9c2a90148f97bef761, run43018920928. Current root must remain clean with ordered parents[S3d2,DEV900d], tree1dced, protected primary9453 and all301 actual frozen97a2 bytes/modes/deletion. Four actual S2 postgate accepted closures and actual accepted authoring/H2 are pinned and checked before/after copying.
+
+Historical BEFORE source remains OLD_S3d2, not S2. The original3f101 input manifest, fixture22a4, private/native8 and actual BEFORE0c63/1646 camera JSONs remain exact. Their seven observer resources are byte-identical to the private compact Q observer and the actual now-committed S2 APP files. Overlay origin OLD_S+d9b remains historical provenance; actual AFTER commands execute the committed APP CLI at S2. Garment patch494 is a separate binding. No BEFORE rerender or combined camera aggregate is invented.
+
+Only after ROOT admits this original120 copy cell, accepted S2 intake validate.CLOSED and attempt1/INTAKE are required. Storage EXPECTED90a44671 pins sourceS2/H2/run/ownerd70/template83/workflow5efe and exact8 `settler_1812` paths. Actual CAPTURE must be successful/closed/noninstalling with source=driver=definitionS2, H2 and canonical owner/lineage/snapshot proofs. All eight physical selected parents must match both actual CAPTURE and INTAKE SHA256/bytes/GitOID before writes.
+
+The helper copies only the four new raw WEBs plus the same16 runtime JS modules into a fresh private projection at most32MiB. Every retained JS module is compared with both historical runtime and actual S2 source before being copied from S2. Original RAM4GiB/workspace512MiB/tmp1GiB floors plus copy reserve are mandatory; all old root assets remain unchanged. No install, asset adoption or protected951MB site mutation occurs.
+
+Two actual AFTER requests and exact command JSONs are emitted from actual captured facts. They bind current S2 observer/runtime bases while retaining actual historical BEFORE0c63 or1646 respectively and the unchanged compact seven resources. Original600 commands use fresh outputs and matching --seat-review-before-observation arguments. LOD0 retains26images/18poses/8MiB; LOD123 retains78images/54poses/24MiB, derived from unchanged per-LOD constants. Commands are not executed; ROOT reviews actual generated pins and admits each original600 observer phase separately. No geometry/fit/photo/DEV acceptance is claimed.
+
+run.py is one-shot original120 supervisor/V2/sole lock/fresh original guards/resource pair and normal owned cleanup. It refuses first-failure overwrite or automatic retry. The source-CI run remains first-failure STOP; no unchanged dispatch/producer retry is authorized by these files.

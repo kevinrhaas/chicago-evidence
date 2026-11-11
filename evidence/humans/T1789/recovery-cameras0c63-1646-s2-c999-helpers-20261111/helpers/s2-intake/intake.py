@@ -1,0 +1,198 @@
+"""Canonical S2 run43018920928 only. PREPARED: no action until explicit ROOT admission."""
+from pathlib import Path, PurePosixPath
+import argparse, hashlib, json, math, os, re, stat, struct, urllib.request, urllib.parse, zipfile
+
+P=Path(__file__).resolve().parent
+CAP=512*1024*1024
+META_RESERVE=8*1024*1024
+ZIP_CAP=CAP-META_RESERVE
+JSON_CAP=4*1024*1024
+BASE=Path('/tmp/T1789-SETTLER-S2-CAPTURE-INTAKE-20261111')
+HEX64=re.compile('[0-9a-f]{64}\\Z')
+HEX40=re.compile('[0-9a-f]{40}\\Z')
+def require(value,message):
+    if not value: raise ValueError(message)
+def sha(path):
+    with path.open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+def unique(pairs):
+    out={}
+    for k,v in pairs:require(k not in out,'duplicate JSON key');out[k]=v
+    return out
+def decode(raw):
+    return json.loads(raw,object_pairs_hook=unique,parse_constant=lambda _:(_ for _ in ()).throw(ValueError('nonfinite JSON')))
+def load(path):
+    require(path.is_file() and not path.is_symlink() and path.stat().st_size<=JSON_CAP,'bounded regular metadata')
+    return decode(path.read_bytes())
+def save(path,data):
+    require(not path.exists(),'fresh receipt only')
+    raw=(json.dumps(data,indent=2)+'\n').encode();require(len(raw)<=JSON_CAP,'bounded receipt')
+    with path.open('xb') as f:f.write(raw);f.flush();os.fsync(f.fileno())
+def number(value):return type(value) is int and value>=0
+def pathname(name):
+    require(isinstance(name,str) and 0<len(name)<=512 and re.fullmatch('[A-Za-z0-9._/-]+',name),'archive path alphabet')
+    q=PurePosixPath(name.rstrip('/'))
+    require(not q.is_absolute() and '..' not in q.parts and '.' not in q.parts and q.as_posix()==name.rstrip('/') and all(q.parts),'canonical archive path')
+    require(name=='CAPTURE.json' or name.startswith('settler_1812/'),'capture root only')
+    return q.as_posix()
+def admission(path):
+    a=load(path);e=load(P/'EXPECTED.json')
+    require(a['source']==e['source'] and a['run_id']==e['run_id'] and a['artifact_name']==e['artifact_name'],'pinned admission')
+    require(number(a['artifact_id']) and number(a['zip_bytes']) and 0<a['zip_bytes']<=ZIP_CAP and HEX64.fullmatch(a['zip_SHA256']),'bounded pinned artifact')
+    return a,e
+def budget(before,additional):
+    d=load(before)
+    require(d['available_memory_bytes']-additional>=4*1024**3,'original RAM4GiB floor reserve')
+    require(d['tmp_free_bytes']-additional>=1024**3,'original tmp1GiB floor reserve')
+    require(d['workspace_free_bytes']>=512*1024**2,'original workspace512MiB floor')
+def own_attempt(path,new=False):
+    require(path.parent==BASE and re.fullmatch('attempt[1-9][0-9]*',path.name),'fixed own /tmp attempt only')
+    require(not BASE.is_symlink(),'no intake root symlink')
+    if new:BASE.mkdir(mode=0o700,exist_ok=True);path.mkdir(mode=0o700)
+    require(path.is_dir() and not path.is_symlink() and path.stat().st_uid==os.getuid(),'own attempt')
+    require(path.resolve().parent==BASE.resolve() and BASE.resolve().is_relative_to(Path('/tmp').resolve()),'tmp containment')
+
+def metadata(args):
+    e=load(P/'EXPECTED.json');run=load(args.run_json);jobs=load(args.jobs_json);artifact_doc=load(args.artifact_json)
+    require(run['id']==e['run_id'] and run['head_sha']==e['source'] and run['run_attempt']==e['run_attempt'],'actual run binding')
+    require(run['event']=='workflow_dispatch' and run['path']=='.github/workflows/chicago-4d-humans.yml' and run['head_branch']==e['branch'],'workflow dispatch identity')
+    require(run['status']=='completed' and run['conclusion']=='success','first actual producer failure/incomplete: STOP; no retry')
+    require(jobs['total_count']==len(jobs['jobs']),'complete finite job page')
+    selected={}
+    for name in ['humans','clothing-capture-v2']:
+        matches=[j for j in jobs['jobs'] if j['name']==name];require(len(matches)==1,'one exact prerequisite/capture job')
+        j=matches[0];require(j['run_id']==e['run_id'] and j['run_attempt']==e['run_attempt'] and j['head_sha']==e['source'],'job/run/source binding')
+        require(j['status']=='completed' and j['conclusion']=='success','actual producer/prerequisite failure: STOP')
+        selected[name]=j['id']
+    artifacts=artifact_doc.get('artifacts',[artifact_doc])
+    if 'total_count' in artifact_doc:require(artifact_doc['total_count']==len(artifacts),'complete artifact page')
+    matches=[x for x in artifacts if x['name']==e['artifact_name']];require(len(matches)==1,'one exact named artifact')
+    artifact=matches[0];require(artifact['expired'] is False,'unexpired artifact')
+    lineage=artifact['workflow_run'];require(lineage['id']==e['run_id'] and lineage['head_sha']==e['source'],'artifact actual run/source')
+    require(lineage['head_branch']==e['branch'],'artifact branch')
+    size=artifact['size_in_bytes'];digest=artifact.get('digest','')
+    require(number(size) and 0<size<=ZIP_CAP and isinstance(digest,str) and digest.startswith('sha256:') and HEX64.fullmatch(digest[7:]),'actual compressed size/digest cap')
+    out={'status':'SUCCESS_METADATA_BOUND_REQUIRES_ROOT_INTAKE_ADMISSION','source':e['source'],'run_id':e['run_id'],
+         'run_attempt':e['run_attempt'],'jobs':selected,'artifact_id':artifact['id'],'artifact_name':e['artifact_name'],
+         'zip_bytes':size,'zip_SHA256':digest[7:],'combined_extra_cap':CAP,'selected_expanded_sizes':'UNKNOWN_UNTIL_ZIP_CENTRAL_DIRECTORY',
+         'metadata_input_SHA256':{str(p):sha(p) for p in [args.run_json,args.jobs_json,args.artifact_json]},
+         'no_download_or_extraction':True,'native_fit_accepted':False,'install':False}
+    save(args.output,out);print(json.dumps(out))
+
+class HTTPSOnly(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self,req,fp,code,msg,headers,newurl):
+        require(urllib.parse.urlparse(newurl).scheme=='https','HTTPS-only artifact redirect')
+        return super().redirect_request(req,fp,code,msg,headers,newurl)
+
+def download(args):
+    a,e=admission(args.admission);budget(args.guard_before,CAP);own_attempt(args.attempt,new=True)
+    require(sha(Path(e['before_manifest']))==e['before_manifest_SHA256'],'sealed BEFORE manifest unchanged')
+    save(args.attempt/'DOWNLOAD-INTENT.json',{'admission_SHA256':sha(args.admission),'artifact_id':a['artifact_id'],'zip_bytes':a['zip_bytes'],'zip_SHA256':a['zip_SHA256'],'no_retry':True})
+    request=urllib.request.Request('https://api.github.com/repos/kevinrhaas/chicago/actions/artifacts/'+str(a['artifact_id'])+'/zip',headers={'Accept':'application/vnd.github+json','User-Agent':'Codex-T1789-canonical-intake'})
+    opener=urllib.request.build_opener(HTTPSOnly())
+    count=0;h=hashlib.sha256();part=args.attempt/'archive.part'
+    with opener.open(request,timeout=30) as response:
+        require(response.status==200,'complete ZIP response only')
+        length=response.headers.get('Content-Length')
+        if length is not None:require(int(length)==a['zip_bytes'],'actual transport length')
+        fd=os.open(part,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+        with os.fdopen(fd,'wb') as output:
+            while chunk:=response.read(1024*1024):
+                count+=len(chunk);require(count<=a['zip_bytes'] and count<=ZIP_CAP,'hard compressed cap')
+                h.update(chunk);output.write(chunk)
+            output.flush();os.fsync(output.fileno())
+    require(count==a['zip_bytes'] and h.hexdigest()==a['zip_SHA256'],'exact compressed bytes/SHA256')
+    os.rename(part,args.attempt/'archive.zip')
+    save(args.attempt/'DOWNLOAD.json',{'complete':True,'bytes':count,'sha256':h.hexdigest(),'artifact_id':a['artifact_id'],'native_install':False})
+    print(json.dumps({'downloaded_bytes':count,'archive_SHA256':h.hexdigest(),'next':'central directory/CAPTURE validation before any extraction'}))
+
+def inspect(z,e,a):
+    infos=z.infolist();require(0<len(infos)<=512,'finite ZIP member count')
+    entries={};seen=set();files={}
+    for info in infos:
+        name=pathname(info.filename);fold=name.casefold();require(fold not in seen,'duplicate/case-colliding ZIP path');seen.add(fold)
+        kind=stat.S_IFMT(info.external_attr>>16)
+        require(not info.flag_bits&1 and info.compress_type in [zipfile.ZIP_STORED,zipfile.ZIP_DEFLATED],'unencrypted supported ZIP only')
+        require(kind in ([0,stat.S_IFDIR] if info.is_dir() else [0,stat.S_IFREG]),'symlink/special ZIP entry refused')
+        require(number(info.file_size) and number(info.compress_size),'ZIP member sizes')
+        entries[name]=info
+        if not info.is_dir():files[name]=info
+    for name in files:
+        require(not any('/'.join(PurePosixPath(name).parts[:i]) in files for i in range(1,len(PurePosixPath(name).parts))),'file/parent collision')
+    require('CAPTURE.json' in files and files['CAPTURE.json'].file_size<=JSON_CAP,'bounded root CAPTURE.json')
+    require(sum(i.file_size for i in files.values())<=CAP,'bounded expanded CRC/SHA scan')
+    capture_raw=z.read(files['CAPTURE.json']);c=decode(capture_raw)
+    require(c['schema']=='t1789_canonical_parent_capture_v2' and c['status']=='CANONICAL_PARENT_CAPTURE_ONLY' and c['phase']=='CLOSED','successful closed canonical capture only')
+    require('error' not in c and 'closing_error' not in c,'producer failure is not intake success')
+    for key in ['source_sha','driver_sha','definition_sha']:require(c[key]==e['source'],'S/source/driver/definition equality')
+    require(c['definition_ref']==e['definition_ref'] and c['manifest_sha256']==e['request_SHA256'],'reviewed external H/definition')
+    require(c['request_template_sha256']==e['template_SHA256'] and c['capture_owner_sha256']==e['owner_SHA256'],'exact immutable owners')
+    for key in ['release','install','material_applied','production_eligible','native_fit_accepted','photo_accepted']:require(c[key] is False,'noninstalling unqualified capture flags')
+    require(c['canonical_owner_blobs']==e['canonical_owner_blobs'],'selected canonical Git identities')
+    require(c['source_before'] is not None and c['source_before']==c['source_after'] and c['driver_before'] is not None and c['driver_before']==c['driver_after'],'before/after actual tracked source snapshots')
+    lineage=c['workflow_run']
+    for key,value in e['workflow_lineage'].items():require(lineage[key]==value,'actual run/attempt/job/workflow binding: '+key)
+    inventory={}
+    for row in c['files']:
+        name=pathname(row['file']);require(name not in inventory and name!='CAPTURE.json','unique declared inventory')
+        require(number(row['bytes']) and HEX64.fullmatch(row['sha256']) and HEX40.fullmatch(row['git_blob']),'declared actual file facts')
+        inventory[name]=row
+    require(set(inventory)==set(files)-{'CAPTURE.json'} and c['inventory_omits']==['CAPTURE.json'],'complete exact archive inventory')
+    for name,row in inventory.items():require(files[name].file_size==row['bytes'],'declared/header member size')
+    parent_rows={row['file']:row for row in c['parent_hashes']}
+    require(len(c['parent_hashes'])==len(parent_rows)==8 and set(parent_rows)==set(e['parent_paths']),'exact eight MASTER/WEB paths')
+    require({n for n in inventory if '/parents/' in '/'+n}==set(parent_rows),'no extra parent member')
+    for name,row in parent_rows.items():
+        require(all(row[k]==inventory[name][k] for k in ['bytes','sha256','git_blob']),'parent/inventory size/SHA agreement')
+        require(isinstance(row.get('metadata'),dict),'canonical owner parent metadata retained')
+    return capture_raw,c,files,inventory,parent_rows
+
+def validate(args):
+    a,e=admission(args.admission);own_attempt(args.attempt)
+    archive=args.attempt/'archive.zip';info=archive.lstat()
+    require(stat.S_ISREG(info.st_mode) and info.st_uid==os.getuid() and info.st_nlink==1 and not archive.is_symlink(),'own regular single-link ZIP')
+    require(info.st_size==a['zip_bytes'] and sha(archive)==a['zip_SHA256'],'transport ZIP unchanged')
+    require(sha(Path(e['before_manifest']))==e['before_manifest_SHA256'],'BEFORE parcel remains sealed')
+    with zipfile.ZipFile(archive) as z:
+        raw,c,files,inventory,parents=inspect(z,e,a)
+        block=max(4096,os.statvfs(args.attempt).f_frsize)
+        selected_alloc=sum(math.ceil(r['bytes']/block)*block for r in parents.values())
+        additional=selected_alloc+math.ceil(len(raw)/block)*block+META_RESERVE
+        combined=info.st_blocks*512+additional
+        require(combined<=CAP,'compressed ZIP + selected8 + metadata must fit512MiB combined')
+        budget(args.guard_before,additional)
+        for name,row in inventory.items():
+            h=hashlib.sha256();b=hashlib.sha1(b'blob '+str(row['bytes']).encode()+b'\0');count=0
+            with z.open(files[name]) as stream:
+                while chunk:=stream.read(1024*1024):
+                    count+=len(chunk);require(count<=row['bytes'],'expanded member overflow');h.update(chunk);b.update(chunk)
+            require(count==row['bytes'] and h.hexdigest()==row['sha256'] and b.hexdigest()==row['git_blob'],'actual member CRC/size/SHA/GitOID')
+        save(args.attempt/'INTAKE-INTENT.json',{'status':'INCOMPLETE_UNINSTALLED','artifact_id':a['artifact_id'],'combined_reserved_bytes':combined,'selected_parents':8})
+        require(not (args.attempt/'validated8').exists(),'fresh final selected directory')
+        out=args.attempt/'parents.pending';out.mkdir(mode=0o700)
+        for name,row in parents.items():
+            target=out/name;target.parent.mkdir(parents=True,exist_ok=True)
+            require(target.resolve().is_relative_to(out.resolve()),'owned selected8 containment')
+            fd=os.open(target,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+            with os.fdopen(fd,'wb') as output,z.open(files[name]) as stream:
+                count=0
+                while chunk:=stream.read(1024*1024):count+=len(chunk);require(count<=row['bytes'],'selected overflow');output.write(chunk)
+                output.flush();os.fsync(output.fileno())
+            require(count==row['bytes'] and sha(target)==row['sha256'] and target.stat().st_nlink==1,'selected actual output facts')
+        (out/'CAPTURE.json').write_bytes(raw)
+        os.rename(out,args.attempt/'validated8')
+    save(args.attempt/'INTAKE.json',{'status':'CANONICAL_PARENTS_RECEIVED_VERIFIED_UNINSTALLED','source':e['source'],'request_SHA256':e['request_SHA256'],
+        'run_id':e['run_id'],'capture_job_id':a['jobs']['clothing-capture-v2'],'artifact_id':a['artifact_id'],'zip_SHA256':a['zip_SHA256'],
+        'CAPTURE_SHA256':hashlib.sha256(raw).hexdigest(),'all_inventory_members_CRC_SHA256_GitOID_verified':True,
+        'selected8':[{k:r[k] for k in ['file','bytes','sha256','git_blob']} for r in parents.values()],
+        'compressed_selected8_metadata_reserved_bytes':combined,'cap_bytes':CAP,'APP_changes':False,'native_install':False,
+        'native_geometry_decode':False,'fixture_production':False,'pose_photo_fit_accepted':False,'automatic_retry':False})
+    print(json.dumps({'status':'CANONICAL_PARENTS_RECEIVED_VERIFIED_UNINSTALLED','parents':8,'combined_reserved_bytes':combined,'source':e['source']}))
+
+if __name__=='__main__':
+    parser=argparse.ArgumentParser(description=__doc__);sub=parser.add_subparsers(dest='mode',required=True)
+    meta=sub.add_parser('metadata')
+    for arg in ['run-json','jobs-json','artifact-json','output']:meta.add_argument('--'+arg,type=Path,required=True)
+    for mode in ['download','validate']:
+        p=sub.add_parser(mode);p.add_argument('--admission',type=Path,required=True);p.add_argument('--attempt',type=Path,required=True);p.add_argument('--guard-before',type=Path,required=True)
+    args=parser.parse_args()
+    {'metadata':metadata,'download':download,'validate':validate}[args.mode](args)
