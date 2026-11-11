@@ -1,3 +1,5 @@
+> Superseded by pushed integration `b5cc48c0894be2ab334afe7ebdf9f69465739511`. See [current combined validation](../integrated-revision/README.md). The text and patches below describe the earlier recovery point.
+
 # Recoverable integration checkpoint — 11 November 2026
 
 The owner approved all five child/teen prototypes: **“Approve these five prototypes.”** Recovery commit `f6c990d80` is pushed on the combined PR #1932 branch `steward/t3546-t3547-t3548-prairie-portraits`. All four local gate parts passed before that asset commit. The current combined source merges dev `62da0f4` and activates 35 children/teens plus five infant care records; that integration is not committed yet.

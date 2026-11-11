@@ -8,4 +8,8 @@ Phone frames pass the ordinary Light budget. The Walker desktop neighborhood fra
 
 The actual route defect and before/fixed regression are retained in `../younger-integration-checkpoint/`. All 362 adult routine and appearance records remain unchanged, and all 35 juvenile ages/statures and disabled adult build/aging targets pass their checks.
 
-The manifest binds the tested published tree and source inputs. It currently records an uncommitted integrated tree based on f6c990d80 with dev62da0f4 merged. The final commit binding, full four-part local gate, required CI and final mapped renderer suite remain pending. The interrupted first local gate has no verdict and is retained as such; its replacement passed parts 1/4, 2/4 and 3/4 (326 steps each, none red), and part 4 is continuing. PR #1932 remains draft until final validation completes.
+The manifest binds the tested published files and six source inputs to committed revision `b5cc48c0894be2ab334afe7ebdf9f69465739511`. All six match the commit byte-for-byte; the original dirty-build stamp is retained as capture history. This revision includes dev `62da0f4` and is pushed on PR #1932.
+
+All four local gate parts pass: **326, 326, 326 and 327 steps, none red**. The interrupted earlier part has no verdict and is retained separately. Changelog, ticket-ID and closure checks pass. The exact commands/results are summarized in `validation-summary.json`; complete local logs are alongside it.
+
+Fresh required CI and all 15 renderer stages on both viewports are running on this commit. `integrated-smoke-runs.json` binds all ten dispatched stage groups to their run IDs and exact head. This packet does not yet claim those remote runs passed; PR #1932 remains draft pending their completion.
