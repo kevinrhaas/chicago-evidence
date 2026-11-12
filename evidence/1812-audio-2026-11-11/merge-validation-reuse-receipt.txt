@@ -1,0 +1,74 @@
+1812 merge validation reuse assessment — 2026-11-12
+
+Compared validated c5de44a61e8cd0c254e4d213f5ecd1046cbe4000 with incoming DEV 01ab120cbb3950fee688c059a94f438bcc25afc2 through common baseline 8a643db9e089a007668b33edcb3852cb2f85e7a9.
+Read-only assessment; no gates or browsers run by this audit. The merge was still being finalized when the standing-record hash was inspected.
+
+Decision: rerun all 15 renderer parts on both viewports, using the existing 18-run grouping (13;8;14;15;1-2;3-4;5;6-7;9-12). None of the old 18 run verdicts is a pass on the merged head. Preserve all old URLs and tested SHAs as pre-merge evidence.
+
+Incoming runtime delta: eight settler_1812 source/web LOD GLBs, settler recipe/fixture measurements, device-profile.js and changelog.js. Other paths are authoring/study tools, tests, docs/measurement records, workflow changes and smoke history. The active hammer worker is engage_1812, which this delta does not change; existing direct work-geometry proof remains useful for that unchanged asset/action. It does not establish overall merge-head renderer behavior.
+
+Device profile now records navigator.webdriver and classifies nonautomated software-renderer visitors as weak/Balanced/low-memory. Automated browsers intentionally retain standard classification. That narrows expected behavior change but is not whole-tree equivalence. Every staged renderer run shares the boot/profile path; part1 also directly measures the profile. The approved coverage tool has no exact device-profile.js entry and therefore selects all parts. Do not change coverage mappings or assertions to avoid this work.
+
+AGENTS.md requires both viewports, zero page errors and the published compressed mirror before merging; no weakened assertions. PIPELINE.md and dev-smoke-state.mjs permit exact hash reuse only when the corresponding smoke inputs match. Changelog is separate and currently belongs to PART13 (older prose saying PART8 is historical). Incoming runtime/assets break the main hash; new notes additionally require PART13.
+
+Commands inspected: node tools/smoke_budget.mjs --for renderers/web/js/device-profile.js assets/humans/web/settler_1812.lod0.glb data/humans/recipes/settler_1812.json renderers/web/js/changelog.js; node tools/dev-smoke-state.mjs ask --viewport desktop --stage 13. Budget result: parts1-15 both viewports. Its zero-second estimate has no reading and is NOT measured feasibility: use the proven split CI grouping, not the suggested monolithic local command. Interim standing record hash sha256:a76b5b02cfe7d874 was dirty and must not be filed as the final merge hash.
+
+Old receipt release-smoke-coverage.json: 16 runs actually tested 3df73785f, with source-region equivalence to c5de44a61; two PART13 runs tested c5de44a61 itself. smoke-scope-reuse.json proves only that earlier smoke-assertion correction, not this new merge.
+
+Necessary release sequence: settle/push exact merge SHA; confirm remote branch matches; dispatch each published smoke range with that branch and verify each returned run head SHA; record fresh results separately in ci-smoke-merged.json; run/collect required merge-head gates separately. Inspect actual failures; retain machine/network evidence and do not replace failed runs with inherited greens. After actual runs, file their logs with dev-smoke-state promptly against the tested tree; do not record old logs while claiming a new current hash. No unrelated 1904 work is needed for this release.
+
+Old successes (historical, not merged-head coverage):
+mobile stage 8: 3df73785f8ba https://github.com/kevinrhaas/chicago/actions/runs/43107208671
+desktop stage 8: 3df73785f8ba https://github.com/kevinrhaas/chicago/actions/runs/43107224798
+mobile stage 14: 3df73785f8ba https://github.com/kevinrhaas/chicago/actions/runs/43107247127
+desktop stage 14: 3df73785f8ba https://github.com/kevinrhaas/chicago/actions/runs/43107264229
+mobile stage 15: 3df73785f8ba https://github.com/kevinrhaas/chicago/actions/runs/43107282153
+desktop stage 15: 3df73785f8ba https://github.com/kevinrhaas/chicago/actions/runs/43107299590
+mobile stage 1-2: 3df73785f8ba https://github.com/kevinrhaas/chicago/actions/runs/43107316260
+desktop stage 1-2: 3df73785f8ba https://github.com/kevinrhaas/chicago/actions/runs/43107332646
+mobile stage 3-4: 3df73785f8ba https://github.com/kevinrhaas/chicago/actions/runs/43107347971
+desktop stage 3-4: 3df73785f8ba https://github.com/kevinrhaas/chicago/actions/runs/43107364282
+mobile stage 5: 3df73785f8ba https://github.com/kevinrhaas/chicago/actions/runs/43107378020
+desktop stage 5: 3df73785f8ba https://github.com/kevinrhaas/chicago/actions/runs/43107393090
+mobile stage 6-7: 3df73785f8ba https://github.com/kevinrhaas/chicago/actions/runs/43107410257
+desktop stage 6-7: 3df73785f8ba https://github.com/kevinrhaas/chicago/actions/runs/43107425909
+mobile stage 9-12: 3df73785f8ba https://github.com/kevinrhaas/chicago/actions/runs/43107442372
+desktop stage 9-12: 3df73785f8ba https://github.com/kevinrhaas/chicago/actions/runs/43107457244
+mobile stage 13: c5de44a61e8c https://github.com/kevinrhaas/chicago/actions/runs/43111230458
+desktop stage 13: c5de44a61e8c https://github.com/kevinrhaas/chicago/actions/runs/43111248377
+
+Exact incoming changed paths:
+.github/workflows/chicago-4d-frame-time.yml
+.github/workflows/chicago-4d-humans.yml
+chicago/4d/assets/humans/settler_1812.lod0.glb
+chicago/4d/assets/humans/settler_1812.lod1.glb
+chicago/4d/assets/humans/settler_1812.lod2.glb
+chicago/4d/assets/humans/settler_1812.lod3.glb
+chicago/4d/assets/humans/web/settler_1812.lod0.glb
+chicago/4d/assets/humans/web/settler_1812.lod1.glb
+chicago/4d/assets/humans/web/settler_1812.lod2.glb
+chicago/4d/assets/humans/web/settler_1812.lod3.glb
+chicago/4d/data/humans/fixture.measure.json
+chicago/4d/data/humans/recipes/settler_1812.json
+chicago/4d/data/humans/studies/clothing-capture-v2.json
+chicago/4d/docs/ROADMAP.md
+chicago/4d/docs/STATUS.md
+chicago/4d/docs/measurements/T-3552-memory-shared.json
+chicago/4d/renderers/web/js/changelog.js
+chicago/4d/renderers/web/js/device-profile.js
+chicago/4d/tools/check_device_profile.mjs
+chicago/4d/tools/dev-smoke-state.json
+chicago/4d/tools/human_clothing_capture_v2.py
+chicago/4d/tools/human_fixture.mjs
+chicago/4d/tools/human_fixture_scope.mjs
+chicago/4d/tools/human_linen_seat.py
+chicago/4d/tools/human_settler_1812.py
+chicago/4d/tools/human_settler_seat_review.mjs
+chicago/4d/tools/human_teamster.html
+chicago/4d/tools/human_teamster.mjs
+chicago/4d/tools/memory_ceilings.json
+chicago/4d/tools/test_human_clothing_capture_v2.py
+chicago/4d/tools/test_human_fixture_scope.mjs
+chicago/4d/tools/test_human_linen_seat.py
+chicago/4d/tools/test_human_settler_1812.py
+chicago/4d/tools/test_human_settler_seat_review.mjs
