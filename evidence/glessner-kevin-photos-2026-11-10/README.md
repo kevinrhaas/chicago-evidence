@@ -24,3 +24,5 @@ part of the 1904 scene and are excluded from the model.
 | 13-17 | Alley (west) hay dormer: hipped hood, coved sides, shingled cheeks, green loft door | 6 |
 | 18, 19 | Court's south wall from the Keith lot: wooden gate leaves, iron grille above, granite pier | 7 |
 | 20 | Court's south wall and the west wing's south brick gable from the alley | 7 |
+| 21 | (sent 2026-11-12) West wing's south brick gable from the alley: one light high under the apex | T-3564 follow-up |
+| 22 | (sent 2026-11-12) West wing's south wall over the court gate: four upper windows, and the stone header of the first-floor window showing over the wall | T-3564 follow-up |
