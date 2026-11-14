@@ -1,6 +1,6 @@
 # T-3553: the face library and jaunt hosts who talk (2026-11-14)
 
-Pictures for the pull request that adds the 25-face library and makes a jaunt's host move
+Pictures for the pull request that adds the 22-face library and makes a jaunt's host move
 their mouth with the voice that reads their stop.
 
 - `face-library-before-after.jpg`: fifteen people (five 1904 men, five 1904 maids, five 1812
