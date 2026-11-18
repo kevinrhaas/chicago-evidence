@@ -1,0 +1,7 @@
+# Finalized historical CI for 3f81 against its old base
+
+Workflow metadata names head 3f81ece88f0d57d26063d786e6bccd9658ab89c3. Completed logs directly identify the actual checkout as dca6e7c7eb67813b4f4fa5ed6a058bd26ffeb6ad, merging 3f81 into old base 169af6421e2b9af10b98970cced2988fe2383b25. That tree excludes the later 75bf/169404 upstream integration and c0 repairs. The checkout audit was written before supporting logs arrived; those later completed logs now independently confirm the same checkout.
+
+Source run 44394942951 passed parts 1/8 (175 steps),2/8 (176),3/8 (176) and6/8 (175). Part7/8 failed one of 174 checks: the missing1871 packed-boot descriptor. Parts4,5 and8 were cancelled. After all parts finalized, the obsolete aggregate was administratively force-cancelled with HTTP 202; before-state and response are preserved. Overall cancellation does not erase the real part 7 failure or the four historical passes.
+
+Humans run 44394942915 and supporting run 44394943152 completed successfully. The latter includes upload-release 32 checks and moving-frame ceilings. Their final metadata and all completed logs are retained. These are dated old-base results, not full source, fresh legacy or current-c0 acceptance. The immutable final source summary correctly remains complete:false. Initial pending3f81 metadata remains separately preserved under `../current-3f81/` as earlier history.

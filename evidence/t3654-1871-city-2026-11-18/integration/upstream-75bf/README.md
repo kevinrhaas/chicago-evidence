@@ -1,0 +1,5 @@
+# Upstream integration history
+
+The original integration receipt describes the reviewed sparse-worktree merge of 3f81 and 75bf (merge commit 6bdf831c), including 43 exactly preserved upstream paths, two byte-identical GLB regenerations and six door cache/model hashes. Its pending/full-checkout warnings are historical. Root subsequently integrated that merge and the next dev changelog fold, reaching 7e99 and then the combined repair checkpoint c0c235a918b5f328d2e59f6820b5fe8f17ebcf12 on base 169404c9f99d2defeca2b05f2364c868a4f4e745.
+
+The accompanying root logs preserve the follow-up checks: freshness has 0 errors/338 warnings, door owner checks pass, derived ownership passes, source-use passes at its then-current 295048-byte index, and shipped changelog preservation passes. That source-use reading predates the later context citation correction; the later root-checks folder records 295055 bytes. These are focused integration checks, not a complete combined-tree gate. The original receipt is kept byte-for-byte instead of rewriting its pending state after the fact. No upstream binary assets or full checkout is included here.
