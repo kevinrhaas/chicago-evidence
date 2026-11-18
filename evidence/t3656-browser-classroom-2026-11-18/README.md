@@ -27,10 +27,11 @@ not traverse. The real tickets clone was moved to the normal app location and
 the outside alias points back to it. The targeted roof-pin check and then the
 entire partition passed without changing application code or gate assertions.
 
-`renderer/mobile-1.log` through `mobile-12.log` are completed, unmodified official
+`renderer/mobile-1.log` through `mobile-12.log`, plus `mobile-14.log`, are completed, unmodified official
 `tools/smoke_renderer.mjs --published` runs at 390×780, one stage per command.
-All twelve end with SMOKE PASS (585 total assertions including repeated scaffolding;
-429 staged assertions and 156 always-on assertions). They cover the frozen
+All thirteen end with SMOKE PASS (730 total assertions including repeated scaffolding;
+561 staged assertions and 169 always-on assertions). Stage 14 passed 145 assertions
+in 5m11. These completed runs cover the frozen
 published mirror identified by `renderer/runtime-manifest.json` at the final
 implementation runtime. The mirror was produced by `tools/publish.sh` and then
 copied for testing so concurrent source gates could not replace its files.
@@ -44,11 +45,23 @@ The quiet retry in `mobile-6.log` passed all 24 assertions, including the second
 context's checks, in 5m32. No assertion or timeout was weakened. The failed run
 is historical evidence, not an additional green result.
 
-At this checkpoint, source partitions 5–8, mobile stages 13–15, and the complete
-desktop formal smoke were still pending or running. GitHub full-smoke runs
-[44372747109 (desktop)](https://github.com/kevinrhaas/chicago/actions/runs/44372747109)
-and [44373274865 (mobile)](https://github.com/kevinrhaas/chicago/actions/runs/44373274865)
-target implementation commit 6c83e8cf9. The required source CI for the earlier
+`renderer/mobile-13-incomplete-cap.log` is **not green**. The local stage hit the
+595-second command cap (supervisor exit 124) and reported 149 passes plus one
+suite-completion failure. No application assertion failed before the cap, but
+the What's New reload tail was not verified. The passing assertions in this
+incomplete run are not included in the completed-stage total above. No timeout
+or assertion was changed to complete it. The unchanged official stage 13 is
+queued separately in GitHub run
+[44385930725](https://github.com/kevinrhaas/chicago/actions/runs/44385930725),
+job `135090381320`, on metadata head `7969031f0` with unchanged runtime.
+
+At this checkpoint, source partitions 1–4 were green and 5–8 paused; mobile
+stage 15 was running, stage 13 incomplete locally with remote completion queued,
+and the complete desktop formal smoke still active in
+[44372747109](https://github.com/kevinrhaas/chicago/actions/runs/44372747109),
+targeting implementation commit 6c83e8cf9. The duplicate full mobile run
+[44373274865](https://github.com/kevinrhaas/chicago/actions/runs/44373274865)
+was deliberately cancelled; it is not a passing result. The required source CI for the earlier
 metadata head cbf3408e is [44375593498](https://github.com/kevinrhaas/chicago/actions/runs/44375593498).
 Read the PR's exact-head checks for the latest checkpoint. Their final results
 must be read separately; this archive does not assume them.
