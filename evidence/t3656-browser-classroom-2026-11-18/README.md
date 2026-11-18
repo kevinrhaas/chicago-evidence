@@ -175,7 +175,8 @@ in that preflight. The precise logs/manifest are in the follow-up evidence folde
 
 Neither PR is merged at this checkpoint. Required gates remain running. Primary
 desktop stages 3, 6, 10 and 11 plus mobile stage 1 completed as recorded below.
-The corrected desktop stage 13 is active; no result is archived for that rerun.
+The corrected desktop stage 13 hit its 2,100-second cap; the subsequent retry
+has no archived verdict. Corrected mobile stage 13 passed as recorded below.
 `ci-completion/checkpoint.json` supplies the recovery pointers.
 
 ## Initial fresh desktop stages 3 and 6
@@ -240,11 +241,60 @@ unchanged.
 
 The corrected smoke hash is `eeebfe0a…`. These byte checks preserve the precise
 scope of unaffected completed stages; they do not supply a fresh stage 13 result.
-Both corrected desktop and mobile stage 13 remain required. Desktop 13 is active
-under **2,100 seconds plus a 5-second kill grace**; other renderer stages use
-1,200+5, and source preflight remains 595 seconds. The active corrected log is
-not copied into this checkpoint. Neither PR is merged and no latest aggregate
+The first corrected desktop attempt ran under **2,100 seconds plus a 5-second
+kill grace** and subsequently timed out; the later result and passing corrected
+mobile run are recorded below. Other renderer stages use 1,200+5 and source
+preflight remains 595 seconds. Neither PR is merged and no latest aggregate
 release pass is claimed.
+
+## Completed remote desktop batch and corrected stage 13 outcomes
+
+The five remote primary runs on 7019f986b have complete SMOKE PASS summaries:
+
+| Desktop stage | Run | Passed / failed | Time |
+| --- | --- | --- | --- |
+| 1 | 44405488812 | 95 / 0 | 7m22s |
+| 2 | 44405493821 | 115 / 0 | 14m57s |
+| 4 | 44405500148 | 42 / 0 | 10m48s |
+| 7 | 44405506091 | 39 / 0 | 20m33s |
+| 8 | 44405511403 | 22 / 0 | 10m16s |
+
+Their raw logs are `renderer/remote-7019-desktop-*.log`: 313 passing assertions,
+including 65 repeated scaffolding checks and 248 staged assertions. These use
+the earlier smoke harness; the exact stage-13-only repair proof above preserves
+the scope of their unchanged assertions. They do not certify stage 13 or the
+whole renderer release gate.
+
+`renderer/corrected-desktop13-2100s-incomplete.log` records **153 printed passes
+and one suite-completion failure** when the corrected run reached its 2,100s cap
+during the final What's New revisit. Both repaired ordinary-budget assertions
+passed. The partial zero-page-errors line does not supply the missing vendor
+checks, completed suite, or final SMOKE PASS. This run remains **incomplete**.
+The next desktop retry uses 2,700 seconds plus five seconds kill grace and
+`SMOKE_TIMING=1`, with unchanged application/harness assertions; no result from
+that retry is included here and its active log is not copied.
+
+Corrected **mobile stage 13 completed 157 passed, zero failed in 12m24s** while
+this checkpoint was being prepared. `renderer/corrected-mobile13-pass.log`
+includes the final returning-visitor check, suite completion, zero page errors,
+both vendor checks and SMOKE PASS. Its hash matches the completed record in
+`renderer/local-cohorts-after-desktop13-cap.json` (23:21:38 UTC), and that record
+confirms the process ended. It uses corrected harness `eeebfe0a…` on primary
+5034a724d. This is distinct from the desktop timeout and the older 6c83 mobile run.
+
+Current completed receipts cover desktop **1/2/3/4/6/7/8/10/11** and mobile
+**1/13**, totaling **744 passing assertions**: 601 staged assertions and 143
+repeated scaffolding checks. The manifest preserves the earlier local cohort,
+the corrected cohort, and incomplete attempts separately. Historical full-mobile
+6c83 evidence and failed/capped attempts are excluded from this total. Missing
+stages remain required; this is not a complete renderer verdict.
+
+Primary mobile stages 2–12 and 14–15 are queued in run **44418522036** on 5034.
+Current source **44412406486** and moving/upload **44412406478** remain required.
+Old source 7019 and obsolete mobile 13 runs were cancelled, not passed. The
+follow-up QA backup `qa/t3657-t3658-parent-pin` is pushed at **b501bfcbc**, with
+conditional desktop 5/13 runs **44415899803 / 44415925432** queued. Its provenance
+is preserved in the follow-up evidence folder; neither real PR head changed.
 
 ## Focused checks and their limits
 

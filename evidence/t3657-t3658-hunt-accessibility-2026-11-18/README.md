@@ -40,11 +40,35 @@ smoke pin correction has no application change and is not yet incorporated here.
 Full required gates are still running, and the primary local
 desktop stage 5 budget retry was incomplete at 595 seconds, with no complete
 stand/tier sweep or final PASS. The classroom evidence records that log separately.
-Primary source 44412406486 is pending and moving/upload 44412406478 queued.
-Its newly completed local stages and failed historical desktop 13 run are saved
-in the classroom folder; the corrected desktop 13 rerun is still active.
+Primary source 44412406486 and moving/upload 44412406478 remain required.
+Its newly completed remote desktop stages, corrected mobile 13 pass, and corrected
+desktop 13 timeout are recorded in the classroom folder. The next desktop retry
+has no archived result.
 Consult both PRs for current checks before merging; keep the existing rebase
 boundary and discard duplicate first-PR repairs only after they are upstream.
+
+## Pushed parent-pin QA backup
+
+`parent-pin-validation/provenance.json` preserves the clean local validation
+combination at **b501bfcbc9a9ecb38c7bed76efe35a48165b061b**: follow-up 6ee1a6890
+plus the primary 5034 stage-13 pin repair. Its root/app tree hashes, unchanged
+renderer/assets/data/generator subtrees, and byte-identical repair patch were
+independently verified. The original record correctly says no push, browser,
+publisher, full source gate or CI had run when that local validation was made;
+that historical record is unchanged.
+
+The later backup branch **qa/t3657-t3658-parent-pin** is now pushed and its remote
+head was independently checked. `parent-pin-validation/recovery.json` records
+that later state and the queued conditional desktop 5/13 runs **44415899803** and
+**44415925432**. This backup is not the eventual rebased/folded dev tree and does
+not change PR 2199's real head 6ee1a6890. Its nine focused policy tests and syntax
+checks do not establish a complete release pass.
+
+On real follow-up 6ee, source partitions 6 and 7 passed, while the wholly queued
+moving/upload run was paused until rebase. Primary remains 5034; its source and
+moving checks remain required. Primary remaining mobile stages 2–12,14–15 are
+queued in 44418522036. Neither PR is merged. Preserve the existing rebase boundary
+and use the actual dev head after PR 2197 merges.
 
 ## Navigator rail keyboard repair
 
