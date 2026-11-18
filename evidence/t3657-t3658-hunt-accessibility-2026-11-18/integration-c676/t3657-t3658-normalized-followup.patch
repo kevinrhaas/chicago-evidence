@@ -1,0 +1,1914 @@
+diff --git a/chicago/4d/changelog.d/T-3657.json b/chicago/4d/changelog.d/T-3657.json
+new file mode 100644
+index 000000000..d00d19205
+--- /dev/null
++++ b/chicago/4d/changelog.d/T-3657.json
+@@ -0,0 +1,8 @@
++{
++  "title": "Find historical photo spots and read more easily",
++  "kind": "feature",
++  "items": [
++    "Home's Where and when? offers five historical photographs to locate in 1904, with daily challenge links, source dates and progress saved in this browser.",
++    "Magnify Navigator reading with browser zoom. Picture viewers keep keyboard focus inside, close with Escape and return you to the control that opened them. The app rail remains reachable with Tab while Move or Jump is open."
++  ]
++}
+diff --git a/chicago/4d/docs/CLASSROOM-FEATURES.md b/chicago/4d/docs/CLASSROOM-FEATURES.md
+index d918d9d07..6ce21265f 100644
+--- a/chicago/4d/docs/CLASSROOM-FEATURES.md
++++ b/chicago/4d/docs/CLASSROOM-FEATURES.md
+@@ -21,6 +21,16 @@ tab or window. A hidden or paused tab still holds GPU resources; it is not a
+ released session. Same-ground transfer also requires destination bounds and
+ ground validation. Do not preload multiple years to implement it.
+ 
++## Next browser-only delivery
++
++T-3657 and T-3658 prepare **7** and a bounded first slice of **10** after the first
++classroom PR: a five-photo hunt in 1904, native browser magnification/panning in the
++Navigator, keyboard-safe picture dialogs, and a visible rail Tab stop while Move or
++Jump is open. Pure, browser-fixture and native-town integration checks pass;
++complete release validation remains before this follow-up merges.
++The hunt reuses five photographs of four places, with a daily order and shared date,
++and reveals their recorded dates rather than treating them as photographs taken in 1904.
++
+ ## Disposition of all twenty items
+ 
+ | # | Feature | Delivery / next step |
+@@ -31,10 +41,10 @@ ground validation. Do not preload multiple years to implement it.
+ | 4 | Understanding checks | First delivery: three optional cited reflection prompts, grade-aware wording and evidence self-review. No scoring or automatic assertion that a student's answer is correct. Authored guide-voice quizzes remain a content refinement. |
+ | 5 | Lesson guides | First delivery: current catalog groups, document tasks, discussion and suggested standards connections; preserve source type and provenance. |
+ | 6 | Class codes and teacher view | Defer shared class storage, authentication and cross-device submissions. Local exports are useful now but are not a dashboard. |
+-| 7 | Where and when? | Later browser-only work: local photo hunt and shareable challenge definitions, with licensed evidence images and no leaderboard service. |
++| 7 | Where and when? | T-3657 follow-up implemented: five licensed 1904-scene photographs, deterministic daily/shareable order, ground-distance scores, source/date reveals and bounded local progress. One image at a time; no leaderboard service. Native-town integration passes; complete release gates pending. |
+ | 8 | Mysteries with sources | Later content work using evidence/confidence and existing jaunt branching. Needs authored, reviewed investigations. |
+ | 9 | Play a part | Existing engine already supports choices and alternate endings. Later authored historical-role stories, with reconstruction labelled. |
+-| 10 | Accessibility | Apply semantic controls, labels, focus, readable status and print output to the new tools. Existing text-size and motion controls help; full WCAG 2.1 AA conformance is not established by this work. The existing viewport still restricts mobile zoom, a concrete item for that audit. |
++| 10 | Accessibility | T-3658 follow-up implemented: native Navigator zoom/pan with stable canvas sizing and usable movement controls; keyboard-contained picture dialogs with Escape, background isolation and focus return; a visible rail Tab stop while Move or Jump is open. Browser fixtures and native-town integration pass; complete release gates pending. Broader menu/card and assistive-technology audit remains; no full WCAG 2.1 AA claim. |
+ | 11 | Assign/build a jaunt | Later browser-only subset: assignment links and portable route/question files. Shared authoring libraries and submission tracking need storage. |
+ | 12 | Classroom/Clever/Canvas | Ordinary links/files can be assigned manually now. Defer provider setup, SSO, add-ons and grade sync. |
+ | 13 | Follow the teacher | Defer live cross-device coordination. Projection works now. |
+diff --git a/chicago/4d/docs/ROADMAP.md b/chicago/4d/docs/ROADMAP.md
+index 3e1fa463e..fb5b5357a 100644
+--- a/chicago/4d/docs/ROADMAP.md
++++ b/chicago/4d/docs/ROADMAP.md
+@@ -1,3 +1,14 @@
++## T-3657, T-3658 — Next browser-only delivery (18 November 2026)
++
++Prepared after the classroom tools: a five-photo 1904 hunt with daily/shareable ordering,
++source/date reveals, ground-distance scores and bounded browser-local progress, plus
++native Navigator zoom/pan and keyboard-safe picture dialogs. Each feature has focused
++logic and browser-fixture coverage; combined release gates and native-town verification
++remain before DEV merge. This is a bounded first hunt and accessibility repair, not an
++all-year game, shared leaderboard, complete WCAG audit or physical-device certification.
++Broader menu/card accessibility and the remaining server-free content items retain their
++scope in [CLASSROOM-FEATURES.md](CLASSROOM-FEATURES.md). Same-spot Jump remains lower priority.
++
+ ## T-3656 — Browser-only classroom tools (18 November 2026)
+ 
+ Owner prioritizes photo/share, field notebook, ungraded understanding checks and group
+diff --git a/chicago/4d/docs/STATUS.md b/chicago/4d/docs/STATUS.md
+index 8db34af27..0510acca6 100644
+--- a/chicago/4d/docs/STATUS.md
++++ b/chicago/4d/docs/STATUS.md
+@@ -1,3 +1,65 @@
++## T-3657, T-3658 — Photo hunt and targeted accessibility (18 November 2026)
++
++Prepared as the next server-free delivery after T-3656, on an isolated branch based on
++classroom checkpoint `03ecd9678`. The first classroom PR must merge before this follow-up.
++
++Integration includes T-3656's later `45b35a2c7` resource/style/person fixes and the mounted
++Guide tour-order regression test. First-delivery history below remains its earlier
++checkpoint until the branch is rebased onto the merged DEV; the first PR records that
++delivery's current verdict. Rebase only commits after `03ecd9678` to avoid duplicating it.
++
++Home's **Where and when?** uses five licensed historical photographs of four places in
++the 1904 scene. It derives the picture, canonical building, credit, recorded date/range
++and solved camera position from the existing catalogue. The same five photographs have
++a deterministic UTC daily order; a versioned link preserves that challenge after midnight
++without sending guesses or account state. Location scoring measures ground distance, not
++camera height, direction or an invented exact year. Guess or skip before source/date
++reveals and optional travel; visits check bounds, water, router blockers and house barriers.
++Only the current thumbnail has an image source, released when hidden. One bounded local
++progress record reports unreadable or refused storage and supports an explicit restart.
++The actual rail regression covers quiet Home selection while docked: the thumbnail
++remains unloaded until reopened. Hunt styles load once per owning document on mount;
++closed panels and merely importing the module do not request them. Browser fixtures
++verify applied styles, remount deduplication and iframe isolation at both widths.
++
++Navigator reading now permits native browser magnification and panning. Viewport sizing
++keeps the drawing buffer stable during pinch zoom while still responding to keyboard,
++URL-bar and orientation changes. World movement and looking retain separate thumb roles
++when the page is magnified off-centre. Picture dialogs cycle keyboard focus, isolate the
++background, close on Escape, restore the opener and release pending image loads.
++The rail also keeps one visible Tab stop when Move or Jump is open. It retains the
++previous visible icon, then Home as fallback, without falsely selecting that icon.
++Context changes, unregistering and delayed selection cannot leave the rail unreachable.
++
++Final published-town integration on feature commit `5674d33d` passed at both widths:
++all five actual photograph responses and destination guards, a real Glessner arrival,
++distance score, share/reload, picture dialog and photo/notebook capture/edit flows.
++The phone run also exercised native pinch and horizontal pan with a stable drawing
++buffer. Both report zero page/HTTP errors or overflow; request cancellations are
++recorded separately. The later rail repair passes 36 native keyboard checks at both
++widths with normal and reduced motion: actual Tab/Shift+Tab, arrows, Home/End, Enter,
++Escape, off-rail screens, dock/reopen, context disappearance and unregistering. That
++fixture loads the real Navigator/rail modules with small app bodies, no world or canvas;
++its source hashes match the committed modules. Updated Navigator tests, official
++single-tool isolation measurement and isolation audit pass, with no new in-tree writes.
++
++Focused logic/catalogue and browser fixtures pass on the combined branch at 390×780
++and 1280×800.
++Hunt coverage includes all five rounds, real source dates, distance scoring, saved order
++and scores after reload, keyboard activation, image failure/retry, clipboard fallback,
++corrupt/refused storage, cleanup and zero page errors or horizontal overflow. It uses real
++Home/modules/catalogue with tiny fixture image bytes, not a complete 3D world. Accessibility
++fixtures use the real Navigator CSS, modal and touch controls with a small WebGL canvas
++running the production resize body; native pinch/pan, two-thumb input, orientation and
++modal lifecycle pass. Pure checks cover keyboard/URL-bar viewport dimensions as well.
++These are browser measurements, not physical phone/Chromebook tests or whole-app WCAG
++conformance. The combined regression also passes the four classroom logic suites, existing
++Navigator/link/photo checks, strings and changelog validation. The two newly gated pure
++tests were instrumented separately; both wrote nothing in-tree. The isolation audit and
++its self-test pass, preserving all four T-3656 measurements. Complete source and
++published-renderer release gates remain pending; no DEV merge or production promotion
++is claimed here.
++
+ ## T-3656 — Browser-only classroom tools (18 November 2026)
+ 
+ Implementation on `steward/t3656-browser-classroom`, based on development commit
+diff --git a/chicago/4d/renderers/web/css/card.css b/chicago/4d/renderers/web/css/card.css
+index 2dd5dcbc4..8d226398f 100644
+--- a/chicago/4d/renderers/web/css/card.css
++++ b/chicago/4d/renderers/web/css/card.css
+@@ -402,6 +402,12 @@ body.is-touch .pop-firm { min-height: 44px; }
+ .pic-viewer {
+   position: fixed;
+   inset: 0;
++  margin: 0;
++  border: 0;
++  width: 100%;
++  height: 100%;
++  max-width: none;
++  max-height: none;
+   z-index: 1000;
+   display: grid;
+   grid-template-rows: auto minmax(0, 1fr) auto;
+@@ -410,6 +416,7 @@ body.is-touch .pop-firm { min-height: 44px; }
+   color: #f4f1ea;
+ }
+ .pic-viewer[hidden] { display: none; }
++.pic-viewer::backdrop { background: rgb(8 9 11 / 97%); }
+ .pic-viewer-bar { display: flex; align-items: center; gap: 14px; min-height: 44px; }
+ .pic-viewer-count { font-size: 11px; letter-spacing: .14em; color: #b9b3a6; font-variant-numeric: tabular-nums; }
+ .pic-viewer-full { margin-left: auto; font-size: 11px; letter-spacing: .12em; color: #d8a24a; text-decoration: none; }
+diff --git a/chicago/4d/renderers/web/css/navigator.css b/chicago/4d/renderers/web/css/navigator.css
+index f49f47bdc..304089568 100644
+--- a/chicago/4d/renderers/web/css/navigator.css
++++ b/chicago/4d/renderers/web/css/navigator.css
+@@ -267,7 +267,9 @@ a.nav-jump:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px
+   gap: 12px;
+   padding: 14px 16px 22px;
+   overflow-y: auto;
+-  overscroll-behavior: contain;
++  /* At browser zoom, an edge of this scroll area must still allow the visual
++     viewport to pan. The page itself suppresses overscroll outside the town. */
++  overscroll-behavior: auto;
+ }
+ .nav-block {
+   display: flex;
+@@ -388,7 +390,8 @@ button.nav-tile:focus-visible { outline: 2px solid var(--accent); outline-offset
+     height: 64px;
+     border-radius: 20px;
+     transition: height .28s var(--ease-detent, ease), left .28s var(--ease-detent, ease), right .28s var(--ease-detent, ease);
+-    touch-action: none;
++    /* Reading can scroll and magnify. Only the sheet's drag handles reserve gestures. */
++    touch-action: pan-x pan-y pinch-zoom;
+     --dock-w: 136px;
+   }
+   /* T-2619 (DOCK · 64 px): closed, the device is a pill at the bottom centre — lamp and
+@@ -409,7 +412,7 @@ button.nav-tile:focus-visible { outline: 2px solid var(--accent); outline-offset
+   .navigator[data-detent="half"] { height: calc(var(--vh, 100vh) * .48); }
+   .navigator[data-detent="full"] { height: calc(var(--vh, 100vh) * .82); }
+   .navigator.is-dragging { transition: none; }
+-  .navigator .nav-screen { touch-action: pan-y; }
++  .navigator .nav-screen { touch-action: pan-x pan-y pinch-zoom; }
+   .nav-grip {
+     display: block;
+     flex: none;
+@@ -540,6 +543,7 @@ button.nav-person:focus-visible { outline: 2px solid var(--accent); outline-offs
+   transition: none;
+ }
+ .navigator .hud-panel[hidden] { display: none; }
++.navigator .panel-scroll { overscroll-behavior: auto; }
+ .navigator .panel-tabs {
+   flex-direction: row;
+   align-items: stretch;
+diff --git a/chicago/4d/renderers/web/css/photo-hunt.css b/chicago/4d/renderers/web/css/photo-hunt.css
+new file mode 100644
+index 000000000..53691289e
+--- /dev/null
++++ b/chicago/4d/renderers/web/css/photo-hunt.css
+@@ -0,0 +1,16 @@
++#nav-photo-hunt { margin-block: 1rem; }
++#nav-photo-hunt > summary { cursor: pointer; padding: .75rem; font-weight: 600; }
++.photo-hunt { padding: .75rem; overflow-wrap: anywhere; }
++.photo-hunt h3 { margin-top: 0; }
++.photo-hunt figure { margin: .75rem 0; }
++.photo-hunt-image { display: block; width: 100%; max-height: 340px; object-fit: contain; }
++.photo-hunt figcaption { margin-top: .5rem; font-size: .875em; }
++.photo-hunt-actions { display: flex; flex-wrap: wrap; gap: .5rem; margin-block: .75rem; }
++.photo-hunt button, .photo-hunt input { font: inherit; color: var(--ink); background: var(--panel-raised); border: 1px solid var(--edge); border-radius: 4px; min-height: 44px; padding: .5rem .75rem; }
++.photo-hunt button { cursor: pointer; }
++.photo-hunt button:disabled { opacity: .6; cursor: default; }
++.photo-hunt-actions a { display: inline-flex; align-items: center; min-height: 44px; }
++.photo-hunt input, .photo-hunt label { width: 100%; max-width: 100%; box-sizing: border-box; }
++.photo-hunt input { display: block; }
++.photo-hunt [hidden] { display: none; }
++#nav-photo-hunt summary:focus-visible, .photo-hunt :focus-visible { outline: 3px solid currentColor; outline-offset: 3px; }
+diff --git a/chicago/4d/renderers/web/index.html b/chicago/4d/renderers/web/index.html
+index 2ef9a3e7d..c7d50435e 100644
+--- a/chicago/4d/renderers/web/index.html
++++ b/chicago/4d/renderers/web/index.html
+@@ -2,7 +2,7 @@
+ <html lang="en" data-theme="dark">
+ <head>
+ <meta charset="utf-8">
+-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
++<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+ <title>4D Chicago</title>
+ <meta name="description" content="A walkable reconstruction of downtown Chicago in the summer of 1835, rendered from a research dataset with per-attribute source provenance.">
+ <meta name="color-scheme" content="dark light">
+diff --git a/chicago/4d/renderers/web/js/apps/home.js b/chicago/4d/renderers/web/js/apps/home.js
+index e1f9ec37e..c26e65127 100644
+--- a/chicago/4d/renderers/web/js/apps/home.js
++++ b/chicago/4d/renderers/web/js/apps/home.js
+@@ -7,7 +7,12 @@
+  */
+ import { t } from '../strings/index.js';
+ import '../strings/moment.js';
++import '../strings/photo-hunt.js';
+ const momentPanels = new WeakMap();
++const navigatorVisible = ctx => {
++  const level = ctx?.navigator?.level;
++  return Number.isFinite(level) ? level > 0 : true;
++};
+ 
+ export default {
+   id: 'home',
+@@ -33,10 +38,45 @@ export default {
+         message.textContent = t('moment.failed'); details.append(message);
+       } finally { state.loading = false; }
+     });
++    const hunt = doc.createElement('details'); hunt.id = 'nav-photo-hunt';
++    const huntSummary = doc.createElement('summary'); huntSummary.textContent = t('hunt.title');
++    hunt.append(huntSummary); el.append(hunt);
++    state.ctx = ctx; state.on = navigatorVisible(ctx); state.hunt = null; state.huntLoading = false;
++    hunt.addEventListener('toggle', async () => {
++      state.hunt?.setVisible(hunt.open && state.on);
++      if (!hunt.open || state.hunt || state.huntLoading) return;
++      state.huntLoading = true;
++      try {
++        const { mountPhotoHunt } = await import('../photo-hunt-view.js');
++        if (state.live) {
++          state.hunt = mountPhotoHunt(hunt, { context: () => state.ctx });
++          state.hunt.setVisible(hunt.open && state.on);
++        }
++      } catch {
++        const message = doc.createElement('p'); message.setAttribute('role', 'status');
++        message.textContent = t('hunt.unavailable'); hunt.append(message);
++      } finally { state.huntLoading = false; }
++    });
++    // A challenge link uses the ordinary Home deep link and its existing arrival flow.
++    if (new URLSearchParams(doc.defaultView?.location?.search).has('hunt')) hunt.open = true;
++  },
++  shown(el, ctx) {
++    const state = momentPanels.get(el);
++    if (state) {
++      state.ctx = ctx;
++      // A quiet rail selection also calls shown while the Navigator remains docked.
++      state.on = navigatorVisible(ctx);
++      state.hunt?.setVisible(state.on && !!el.querySelector('#nav-photo-hunt')?.open);
++    }
++  },
++  hidden(el) {
++    const state = momentPanels.get(el);
++    if (state) { state.on = false; state.hunt?.setVisible(false); }
+   },
+   unmount(el) {
+     const state = momentPanels.get(el);
+-    if (state) { state.live = false; state.view?.destroy(); }
++    if (state) { state.live = false; state.view?.destroy(); state.hunt?.destroy(); }
++    el.querySelector('#nav-photo-hunt')?.remove();
+     el.querySelector('#nav-moment')?.remove(); momentPanels.delete(el);
+   },
+ };
+diff --git a/chicago/4d/renderers/web/js/controls/touch.js b/chicago/4d/renderers/web/js/controls/touch.js
+index 0ca2d5130..5a5a5ec6d 100644
+--- a/chicago/4d/renderers/web/js/controls/touch.js
++++ b/chicago/4d/renderers/web/js/controls/touch.js
+@@ -10,8 +10,8 @@
+  *  - **`visualViewport`.** On iOS the URL bar slides away and `innerHeight`
+  *    lies about it. Sizing the canvas from `window.innerHeight` gives you a
+  *    scene that is a bar-height too tall, permanently, with the horizon parked
+- *    off-screen. The viewport callback here reports the *visual* viewport, and
+- *    main.js resizes the renderer from that.
++ *    off-screen. The viewport callback reports the available layout pixels,
++ *    accounting for the visual viewport's browser magnification separately.
+  *
+  *  - **Pointer capture and multi-touch.** Walking and looking happen at the same
+  *    time, one finger each, and either can be lifted first. Every pointer is
+@@ -27,6 +27,7 @@ const TAP_SLOP = 12;               // ...and moved less than this = a tap
+ // the view in whole steps — SNAP_DEG for every SNAP_PX of sideways drag — rather than
+ // smoothly. Pitch stays smooth: it is the sweep sideways that unsettles.
+ import { lookScale } from './intent.js';
++import { viewportSize } from '../viewport.js';
+ 
+ export const SNAP_DEG = 30;
+ export const SNAP_PX = 48;
+@@ -133,7 +134,15 @@ export function createTouchBackend({ intent, domElement, ui = {}, onViewport, sn
+     const rect = domElement.getBoundingClientRect();
+     const x = e.clientX - rect.left;
+     const y = e.clientY - rect.top;
+-    const leftHalf = x < rect.width * 0.5;
++    // A magnified browser shows only part of the canvas. Divide the part the
++    // thumbs can actually reach, not the full layout width hidden off-screen.
++    // Pointer client coordinates and visualViewport offsets are layout pixels.
++    const vv = window.visualViewport;
++    const viewportLeft = vv?.offsetLeft ?? 0;
++    const visibleLeft = Math.max(rect.left, viewportLeft);
++    const visibleRight = Math.min(rect.left + rect.width, viewportLeft + (vv?.width ?? window.innerWidth));
++    const middle = visibleRight > visibleLeft ? (visibleLeft + visibleRight) / 2 : rect.left + rect.width / 2;
++    const leftHalf = e.clientX < middle;
+ 
+     // One thumb per role. A second finger in an occupied half is ignored rather
+     // than stealing the role out from under the first.
+@@ -227,14 +236,13 @@ export function createTouchBackend({ intent, domElement, ui = {}, onViewport, sn
+ 
+   /**
+    * The iOS URL bar problem. `visualViewport` is the only honest answer for how
+-   * much of the page the user can actually see; `innerHeight` is not.
++   * much of the page is available. Browser magnification must not shrink the
++   * layout or GPU canvas as well as enlarging it.
+    */
+   function reportViewport() {
+-    const vv = window.visualViewport;
+-    const width = Math.round(vv?.width ?? window.innerWidth);
+-    const height = Math.round(vv?.height ?? window.innerHeight);
++    const { width, height, scale } = viewportSize();
+     document.documentElement.style.setProperty('--vh', `${height}px`);
+-    onViewport?.({ width, height, scale: vv?.scale ?? 1 });
++    onViewport?.({ width, height, scale });
+   }
+ 
+   return {
+diff --git a/chicago/4d/renderers/web/js/main.js b/chicago/4d/renderers/web/js/main.js
+index 4ea78d63a..c3a40e2ec 100644
+--- a/chicago/4d/renderers/web/js/main.js
++++ b/chicago/4d/renderers/web/js/main.js
+@@ -32,6 +32,7 @@ import { createArrival } from './arrival.js';
+ import { createJourney } from './journey.js';
+ import { fieldLog, count as countField } from './field-log.js'; // T-2660
+ import { normalMoment, parseMoment, momentLink, momentFits, stampMoment } from './moment.js';
++import { huntSpotSafe } from './photo-hunt.js';
+ import './strings/moment.js';
+ import { wireFieldLogView } from './field-log-view.js';
+ import { recall as recallHome } from './recall.js';
+@@ -53,6 +54,7 @@ import { createConfidenceLegend } from './confidence-legend.js';
+ import { createIntent, createBackendSwitch } from './controls/intent.js';
+ import { createPointerLockBackend, isTyping } from './controls/pointerlock.js';
+ import { createTouchBackend, prefersTouch } from './controls/touch.js';
++import { viewportSize } from './viewport.js';
+ import { isStandaloneHeadset, vrScale } from './controls/xr-detect.js'; // T-3627: the session half loads where a headset is offered
+ import { createWindowMode, windowAt } from './controls/window.js';
+ import { createWalker, footprintsFrom, decksFrom, WALK, HEADROOM_MARGIN_M } from './walker.js';
+@@ -5189,7 +5191,7 @@ async function boot() {
+   // touchscreen must not end up driving both.
+   // The arrival and welcome are menus, so neither movement backend is live.
+   window.addEventListener('pointerdown', (e) => {
+-    if (gateOpen || xrMode?.presenting || windowMode?.on || e.target.closest?.('#jaunt-panel')) return;
++    if (gateOpen || xrMode?.presenting || windowMode?.on || e.target.closest?.('#jaunt-panel, .pic-viewer')) return;
+     if (e.pointerType === 'touch') backends.activate(touch);
+     else if (e.pointerType === 'mouse') backends.activate(pointerlock);
+   }, { capture: true });
+@@ -5198,7 +5200,7 @@ async function boot() {
+     // to keyboard-and-mouse, and the first keystroke into the Go-to search box
+     // was doing exactly that — taking a visitor who had been tapping their way
+     // around a phone and handing them a control scheme with no on-screen stick.
+-    if (gateOpen || xrMode?.presenting || windowMode?.on || isTyping(e.target) || e.target.closest?.('#jaunt-panel')) return;
++    if (gateOpen || xrMode?.presenting || windowMode?.on || isTyping(e.target) || e.target.closest?.('#jaunt-panel, .pic-viewer')) return;
+     if (!e.metaKey && !e.ctrlKey) {
+       backends.activate(pointerlock);
+       // Not while a card holds the keyboard (T-2954): the arrows scroll the card.
+@@ -7025,6 +7027,25 @@ async function boot() {
+         // and the card itself, on a tab, as the full record until the Inspect tabs (T-2639).
+         inspectSummaries: () => Promise.all([ensureInspect(), ensureReaderText().catch(() => null)]).then(([doc]) => doc),
+         pictures: () => ensurePictures(),
++        // The hunt reads the same catalogue and canonical photo ownership as Go to.
++        // Its optional visit validates the actual stand before starting ordinary travel.
++        photoHunt: {
++          load: async () => {
++            if (String(YEAR) !== '1904') return null;
++            const doc = await ensurePictures();
++            if (doc) destinations.addPhotos(doc);
++            else picturesPromise = null; // The hunt's retry may read a restored connection.
++            return { doc, destinations };
++          },
++          position: () => api.welcome?.state === 'world' ? { e: walker.state.e, n: walker.state.n } : null,
++          visit: (id) => {
++            const row = destinations.byId('photo', id);
++            if (!huntSpotSafe(row, { inBounds: (e, n) => terrain.inBounds(e, n),
++              isWater: (e, n) => terrain.isWater(e, n), blockedAt: (e, n) => router.blockedAt(e, n),
++              barrierAt: (e, n) => houseBarriers?.near(e, n, BODY_R_M) })) return false;
++            return goToTarget({ kind: 'photo', id });
++          },
++        },
+         // T-2825: the record as the card says it — its notes without a ticket, a record id or
+         // a file path, once the scene's reader overlay is in (inspectSummaries waits for it).
+         record: (id) => {
+@@ -7264,10 +7285,12 @@ async function boot() {
+   // ---- resize ----------------------------------------------------------- //
+ 
+   function resize() {
+-    const vv = window.visualViewport;
+-    const w = Math.max(1, Math.round(vv?.width ?? window.innerWidth));
+-    const h = Math.max(1, Math.round(vv?.height ?? window.innerHeight));
+-    renderer.setSize(w, h, true);
++    const { width: w, height: h } = viewportSize();
++    // Pinch/pan emits visual-viewport events without changing the layout. Keep
++    // the existing drawing buffer instead of clearing/reallocating it each time.
++    if (renderer.domElement.style.width !== `${w}px` || renderer.domElement.style.height !== `${h}px`) {
++      renderer.setSize(w, h, true);
++    }
+     camera.aspect = w / h;
+     // Hor+ : hold the horizontal field of view and let the vertical follow, so a
+     // portrait phone does not end up looking down a drinking straw.
+diff --git a/chicago/4d/renderers/web/js/nav-rail.js b/chicago/4d/renderers/web/js/nav-rail.js
+index f9758417e..b7f1b2315 100644
+--- a/chicago/4d/renderers/web/js/nav-rail.js
++++ b/chicago/4d/renderers/web/js/nav-rail.js
+@@ -112,6 +112,18 @@ export function createRail({
+   let current = null;
+   let switching = 0;
+   let dockedSelection = -1;
++  let tabStop = null;
++
++  // Jump and Move have screens but no rail icon. Keep the rail reachable by Tab
++  // while either is open, without calling its visible fallback the selected app.
++  // A contextual icon that leaves, or an app that unregisters, must not strand it.
++  function syncTabStop() {
++    const eligible = (s) => s?.shown && s.app.inRail !== false && !s.button.hidden;
++    const next = [apps.get(current), apps.get(tabStop), apps.get('home'),
++      ...railOrder([...apps.values()].map((s) => s.app)).map((a) => apps.get(a.id))].find(eligible);
++    tabStop = next?.app.id ?? null;
++    for (const s of apps.values()) s.button.tabIndex = s === next ? 0 : -1;
++  }
+ 
+   function makeButton(app) {
+     const b = doc.createElement('button');
+@@ -122,7 +134,7 @@ export function createRail({
+     b.setAttribute('role', 'tab');
+     b.setAttribute('aria-label', app.label);
+     b.setAttribute('aria-selected', 'false');
+-    // Roving focus: Tab reaches the rail once, at the open app; the arrows move along it.
++    // Tab reaches one visible rail icon; the arrows move along it without opening an app.
+     b.tabIndex = -1;
+     b.title = app.label;
+     if (app.pin === 'bottom') b.classList.add('nav-app-foot');
+@@ -168,6 +180,7 @@ export function createRail({
+     const s = { app, button: makeButton(app), shown: !app.when, leaveAt: null, panel: null, mounted: false, module: null, loading: null };
+     apps.set(app.id, s);
+     place();
++    syncTabStop();
+     return () => unregister(app.id);
+   }
+ 
+@@ -179,6 +192,7 @@ export function createRail({
+     if (s.panel && !s.app.panel) s.panel.remove?.();
+     apps.delete(id);
+     if (current === id) current = null;
++    syncTabStop();
+     return true;
+   }
+ 
+@@ -230,6 +244,7 @@ export function createRail({
+     }
+     // An open app whose `when` let go closes back to Home.
+     if (current && !apps.get(current)?.shown && apps.has('home')) void select('home', { by: 'quiet' });
++    syncTabStop();
+     return [...show];
+   }
+ 
+@@ -307,9 +322,9 @@ export function createRail({
+       const on = other.app.id === id;
+       other.button.classList.toggle('is-on', on);
+       other.button.setAttribute('aria-selected', String(on));
+-      other.button.tabIndex = on ? 0 : -1;
+       if (other.panel) other.panel.hidden = !on;
+     }
++    syncTabStop();
+     if (codeEl && s.app.code) codeEl.textContent = s.app.code;
+     if (was !== id && was !== null) warm(panel);
+     // Docking while this selection loads keeps its eventual screen pocketed.
+diff --git a/chicago/4d/renderers/web/js/photo-hunt-view.js b/chicago/4d/renderers/web/js/photo-hunt-view.js
+new file mode 100644
+index 000000000..570088691
+--- /dev/null
++++ b/chicago/4d/renderers/web/js/photo-hunt-view.js
+@@ -0,0 +1,152 @@
++import { t } from './strings/index.js';
++import './strings/photo-hunt.js';
++import { HUNT_YEAR, huntDay, huntLink, parseHuntLink, huntRounds, createHuntSession } from './photo-hunt.js';
++
++/** Lazy Navigator content; only the current photograph has a src, released when hidden. */
++export function mountPhotoHunt(host, { context = () => ({}), win = host?.ownerDocument?.defaultView,
++  now = () => new Date(), storage = () => win.localStorage } = {}) {
++  const doc = host?.ownerDocument;
++  if (!doc) return null;
++  if (doc.head && !doc.getElementById?.('photo-hunt-style')) {
++    const css = doc.createElement('link'); css.id = 'photo-hunt-style'; css.rel = 'stylesheet';
++    css.href = new URL('../css/photo-hunt.css', import.meta.url).href;
++    doc.head.append(css);
++  }
++  const make = (tag, key, vars) => { const el = doc.createElement(tag); if (key) el.textContent = t(`hunt.${key}`, vars); return el; };
++  const root = make('section'); root.className = 'photo-hunt'; root.setAttribute('aria-label', t('hunt.title'));
++  const heading = make('h3', 'title'); heading.tabIndex = -1;
++  const content = make('div'); content.className = 'photo-hunt-content';
++  const status = make('p'); status.setAttribute('role', 'status'); status.setAttribute('aria-live', 'polite');
++  const saved = make('p'); saved.className = 'photo-hunt-storage'; saved.setAttribute('role', 'status');
++  const foot = make('div'); foot.className = 'photo-hunt-actions';
++  const shared = parseHuntLink(win?.location?.search);
++  let day = shared?.day ?? huntDay(now()), rounds = [], session = null, visible = true, live = true, loading = false;
++  let image = null, imageSource = null, imageReady = false, revision = 0;
++  let guessButton = null, retryImage = null;
++  const button = (parent, key, action) => {
++    const el = make('button', key); el.type = 'button'; el.addEventListener('click', action); parent.append(el); return el;
++  };
++  const link = (parent, key, href) => {
++    if (!href) return;
++    const a = make('a', key); a.href = href; a.target = '_blank'; a.rel = 'noopener noreferrer'; parent.append(a);
++  };
++  const releaseImage = () => { if (image) { image.onload = null; image.onerror = null; image.removeAttribute('src'); } image = null; imageSource = null; imageReady = false; };
++  const storageStatus = () => {
++    const state = session?.state;
++    saved.textContent = state?.issue ? t(`hunt.storage.${state.issue}`) : state?.persisted ? t('hunt.saved') : '';
++  };
++  function loadImage() {
++    if (!image || !imageSource || !visible) return;
++    const current = image;
++    imageReady = false; if (guessButton) guessButton.disabled = true;
++    current.onload = () => {
++      if (!live || image !== current) return;
++      imageReady = true; if (guessButton) guessButton.disabled = false;
++      if (retryImage) retryImage.hidden = true;
++      // A reveal reloads this image too. Announce completion without replacing a
++      // later copy/visit message or inviting another guess on an answered round.
++      if (status.textContent === t('hunt.imageLoading')) status.textContent = t(
++        session?.state.answers[session.state.cursor] ? 'hunt.imageLoaded' : 'hunt.ready');
++    };
++    current.onerror = () => {
++      if (!live || image !== current) return;
++      imageReady = false; if (guessButton) guessButton.disabled = true;
++      if (retryImage) retryImage.hidden = false;
++      status.textContent = t('hunt.imageFailed');
++    };
++    status.textContent = t('hunt.imageLoading'); current.src = imageSource;
++  }
++  function intro() {
++    releaseImage(); content.replaceChildren(); foot.replaceChildren();
++    heading.textContent = t('hunt.title'); saved.textContent = '';
++    content.append(make('p', 'intro'), make('p', 'daily'), make('p', 'local'), make('p', 'date', { day }));
++    if (String(context().scene?.id) !== HUNT_YEAR) { content.append(make('p', 'unavailableYear')); return; }
++    if (win.location.search.includes('hunt=') && !shared) content.append(make('p', 'invalidLink'));
++    button(content, 'open', start);
++  }
++  function shareControls() {
++    const label = make('label', 'link'); label.hidden = true;
++    const field = make('input'); field.type = 'text'; field.readOnly = true; field.setAttribute('aria-label', t('hunt.link')); label.append(field);
++    button(foot, 'copy', async () => {
++      const url = huntLink(day, win.location.href); if (!url) return;
++      field.value = url; label.hidden = false;
++      try { await win.navigator.clipboard.writeText(url); if (live) status.textContent = t('hunt.copied'); }
++      catch { field.focus(); field.select(); status.textContent = t('hunt.copyFallback'); }
++    });
++    button(foot, 'restart', () => { session.reset(); render(true); });
++    if (day !== huntDay(now())) button(foot, 'today', () => {
++      day = huntDay(now()); session = null; intro(); void start();
++    });
++    foot.append(label);
++  }
++  function render(focus = false) {
++    revision++; releaseImage(); content.replaceChildren(); foot.replaceChildren(); guessButton = null; retryImage = null;
++    const state = session.state;
++    heading.textContent = t(state.complete ? 'hunt.complete' : 'hunt.round', { n: state.cursor + 1 });
++    content.append(make('p', 'date', { day }), make('p', 'total', { score: state.score }));
++    status.textContent = ''; storageStatus();
++    if (state.complete) {
++      const list = make('ol');
++      rounds.forEach((round, i) => {
++        const li = make('li'); const result = state.results[i];
++        li.textContent = `${round.name} · ${round.years} · ${t(state.answers[i].skipped ? 'hunt.skipped' : 'hunt.result',
++          { distance: Math.round(result.distance), score: result.score })}`;
++        list.append(li);
++      });
++      content.append(list); shareControls(); if (focus) heading.focus(); return;
++    }
++    const round = rounds[state.cursor], answer = state.answers[state.cursor];
++    const figure = make('figure'); image = make('img'); image.className = 'photo-hunt-image';
++    image.alt = t('hunt.imageAlt', { n: state.cursor + 1 }); image.decoding = 'async';
++    imageSource = round.image;
++    const credit = make('figcaption'); credit.textContent = [round.credit, round.holder !== round.credit ? round.holder : '', round.rights].filter(Boolean).join(' · ');
++    figure.append(image, credit); content.append(figure);
++    const actions = make('div'); actions.className = 'photo-hunt-actions';
++    retryImage = button(actions, 'retryImage', loadImage); retryImage.hidden = true;
++    if (!answer) {
++      content.append(make('p', 'instructions'), make('p', 'rules'), make('p', 'distanceNote'));
++      button(actions, 'move', () => context().actions?.freeRoam?.());
++      guessButton = button(actions, 'guess', () => {
++        if (!imageReady) return;
++        if (!session.guess(context().actions?.photoHunt?.position?.())) { status.textContent = t('hunt.positionMissing'); return; }
++        render(true);
++      }); guessButton.disabled = true;
++      button(actions, 'skip', () => { session.skip(); render(true); });
++    } else {
++      const result = state.results[state.cursor];
++      content.append(make('p', answer.skipped ? 'skipped' : 'result', { distance: Math.round(result.distance), score: result.score }));
++      const title = make('h4'); title.textContent = round.title; content.append(title);
++      content.append(make('p', 'recordedYears', { years: round.years }));
++      if (round.date) content.append(make('p', 'recordedDate', { date: round.date }));
++      const sources = make('div'); sources.className = 'photo-hunt-actions';
++      link(sources, 'source', round.source); link(sources, 'full', round.full); content.append(sources);
++      button(actions, 'visit', () => {
++        const ok = context().actions?.photoHunt?.visit?.(round.id);
++        status.textContent = t(ok ? 'hunt.visiting' : 'hunt.noVisit');
++      });
++      button(actions, state.cursor === 4 ? 'finish' : 'next', () => { session.next(); render(true); });
++    }
++    content.append(actions); shareControls(); loadImage(); if (focus) heading.focus();
++  }
++  async function start() {
++    if (loading || !live) return;
++    loading = true; const token = ++revision; status.textContent = t('hunt.loading');
++    try {
++      const loaded = await context().actions?.photoHunt?.load?.();
++      if (!live || token !== revision) return;
++      rounds = huntRounds(loaded?.doc, loaded?.destinations, day);
++      if (rounds.length !== 5) throw new Error('No eligible round set');
++      session = createHuntSession({ day, rounds, storage }); render(true);
++    } catch { if (live && token === revision) status.textContent = t('hunt.unavailable'); }
++    finally { loading = false; }
++  }
++  root.append(heading, content, status, saved, foot); host.append(root); intro();
++  return {
++    setVisible(on) {
++      visible = !!on;
++      if (!visible && image) { image.onload = null; image.onerror = null; image.removeAttribute('src'); imageReady = false; }
++      else if (visible && image && !image.hasAttribute('src')) loadImage();
++    },
++    destroy() { live = false; revision++; releaseImage(); root.remove(); },
++  };
++}
+diff --git a/chicago/4d/renderers/web/js/photo-hunt.js b/chicago/4d/renderers/web/js/photo-hunt.js
+new file mode 100644
+index 000000000..8a9f94617
+--- /dev/null
++++ b/chicago/4d/renderers/web/js/photo-hunt.js
+@@ -0,0 +1,152 @@
++/** A small, curated hunt from the existing picture catalogue. No image or world is loaded here. */
++import { creditOf, yearLabel } from './photos-tab.js';
++
++export const HUNT_VERSION = 1;
++export const HUNT_YEAR = '1904';
++export const HUNT_STORAGE_KEY = 'chicago4d.photoHunt.v1';
++// Identity only: dates, credit, images and solved positions always come from the catalogue.
++export const HUNT_PHOTOS = Object.freeze({
++  'a18-rba-taylor-2135-glessner-ne': 'glessner_house',
++  'a18-gh-cornell-glessner-rear-c1887': 'glessner_house',
++  'a18-rba-taylor-1801-kimball-c1895': 'kimball_house_1801_prairie',
++  'a18-rba-levy-1812-wheeler': 'wheeler_house_1812_prairie',
++  'a16-pullman-det-4a08065': 'pullman_house_1729_prairie',
++});
++
++export function validHuntDay(value) {
++  if (typeof value !== 'string' || !/^20\d{2}-\d{2}-\d{2}$/.test(value)) return false;
++  const date = new Date(`${value}T00:00:00Z`);
++  return Number.isFinite(date.valueOf()) && date.toISOString().slice(0, 10) === value;
++}
++export const huntDay = (now = new Date()) => now.toISOString().slice(0, 10);
++
++/** An invalid challenge cannot name a file, change the year or carry arbitrary pictures. */
++export function parseHuntLink(search = '') {
++  const q = new URLSearchParams(search);
++  const day = q.get('huntDay');
++  return q.getAll('hunt').length === 1 && q.get('hunt') === String(HUNT_VERSION)
++    && q.getAll('huntDay').length === 1 && validHuntDay(day)
++    && q.getAll('year').length === 1 && q.get('year') === HUNT_YEAR ? { day, version: HUNT_VERSION } : null;
++}
++
++export function huntLink(day, href = globalThis.location?.href) {
++  if (!validHuntDay(day)) return null;
++  try {
++    const url = new URL(href);
++    if (!/^https?:$/.test(url.protocol)) return null;
++    // Retain this site's source/dev/production path; never copy account or debug state.
++    url.search = ''; url.hash = ''; url.username = ''; url.password = '';
++    url.searchParams.set('year', HUNT_YEAR); url.searchParams.set('nav', 'home');
++    url.searchParams.set('hunt', String(HUNT_VERSION)); url.searchParams.set('huntDay', day);
++    return url.href;
++  } catch { return null; }
++}
++
++/** Stable FNV-1a seed and Fisher–Yates permutation. Same five photos; a different daily order. */
++export function huntOrder(day) {
++  if (!validHuntDay(day)) return [];
++  let state = 2166136261;
++  for (const c of `photo-hunt:${HUNT_VERSION}:${day}`) state = Math.imul(state ^ c.charCodeAt(0), 16777619) >>> 0;
++  const ids = Object.keys(HUNT_PHOTOS);
++  for (let i = ids.length - 1; i > 0; i--) {
++    state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
++    const j = state % (i + 1); [ids[i], ids[j]] = [ids[j], ids[i]];
++  }
++  return ids;
++}
++
++export function safeHuntURL(value, base) {
++  try { const url = new URL(value, base); return /^https?:$/.test(url.protocol) ? url.href : null; }
++  catch { return null; }
++}
++const position = p => p && [p.e, p.n].every(v => Number.isFinite(v) && Math.abs(v) <= 100000);
++
++/** A solved camera is evidence of a position, not permission to enter a wall or water. */
++export function huntSpotSafe(row, { inBounds, isWater, blockedAt, barrierAt } = {}) {
++  return !!(position(row) && inBounds?.(row.e, row.n) && !isWater?.(row.e, row.n)
++    && !blockedAt?.(row.e, row.n) && !barrierAt?.(row.e, row.n));
++}
++
++/** `destinations` has already applied the catalogue's ownership rule to shared photographs. */
++export function huntRounds(doc, destinations, day) {
++  if (!doc?.by_structure || !destinations?.byId || !validHuntDay(day)) return [];
++  const base = safeHuntURL(doc.image_store?.base_url);
++  if (!base) return [];
++  const rounds = [];
++  for (const id of huntOrder(day)) {
++    const row = destinations.byId('photo', id), p = row?.picture;
++    const years = p?.years;
++    const thumbnail = p?.held?.t && safeHuntURL(p.held.t, base);
++    // A failed catalogue check disables the round set instead of silently replacing evidence.
++    if (!row || row.of !== HUNT_PHOTOS[id] || p?.id !== id || p.kind !== 'PHOTO'
++      || !creditOf(p) || !thumbnail || new URL(thumbnail).origin !== new URL(base).origin
++      || !/^(public domain|no known restrictions)/i.test(p.rights ?? '')
++      || !Array.isArray(years) || years.length !== 2
++      || !years.every(y => Number.isInteger(y) && y >= 1800 && y <= 1904) || years[0] > years[1]
++      || !position(row) || ![row.yaw_deg, row.pitch_deg].every(Number.isFinite)) return [];
++    rounds.push({ id, structure: row.of, title: p.title || row.label,
++      name: doc.names?.[row.of] || row.label, credit: creditOf(p), holder: p.holder || '',
++      rights: p.rights, date: p.date || '', years: yearLabel(p), image: thumbnail,
++      source: safeHuntURL(p.url), full: p.held.f ? safeHuntURL(p.held.f, base) : null,
++      target: { e: row.e, n: row.n, yaw: row.yaw_deg, pitch: row.pitch_deg } });
++  }
++  return rounds;
++}
++
++export function huntResult(round, guess) {
++  if (!position(round?.target) || !position(guess)) return null;
++  const distance = Math.hypot(round.target.e - guess.e, round.target.n - guess.n);
++  return { distance, score: Math.round(1000 * Math.exp(-Math.max(0, distance - 5) / 50)) };
++}
++
++/** One five-photo challenge, under 4 KiB. Answers remain usable in memory if storage refuses. */
++export function createHuntSession({ day, rounds, storage = () => globalThis.localStorage } = {}) {
++  if (!validHuntDay(day) || rounds?.length !== 5) throw new Error('Invalid photo hunt');
++  let cursor = 0, answers = [], issue = null, persisted = false;
++  const store = () => typeof storage === 'function' ? storage() : storage;
++  try {
++    const raw = store()?.getItem(HUNT_STORAGE_KEY);
++    if (raw) {
++      if (raw.length > 4096) throw new Error('Too large');
++      const saved = JSON.parse(raw);
++      if (saved?.version !== HUNT_VERSION || !validHuntDay(saved.day) || !Array.isArray(saved.answers)
++        || saved.answers.length > 5 || !Number.isInteger(saved.cursor) || saved.cursor < 0
++        || saved.cursor > 5 || saved.cursor > saved.answers.length || saved.answers.length > saved.cursor + 1)
++        throw new Error('Invalid progress');
++      const ids = huntOrder(saved.day);
++      if (!saved.answers.every((a, i) => a?.id === ids[i] && (a.skipped === true || (a.skipped === false && position(a)))))
++        throw new Error('Invalid answer');
++      if (saved.day === day) { cursor = saved.cursor; answers = saved.answers; persisted = true; }
++    }
++  } catch { issue = 'unreadable'; }
++  function save() {
++    persisted = false;
++    // A corrupt or inaccessible record is not overwritten until the visitor explicitly resets it.
++    if (issue === 'unreadable') return;
++    try {
++      if (!store()?.setItem) throw new Error('No storage');
++      store().setItem(HUNT_STORAGE_KEY, JSON.stringify({ version: HUNT_VERSION, day, cursor, answers }));
++      issue = null; persisted = true;
++    } catch { issue = 'unsaved'; }
++  }
++  return {
++    get state() {
++      const results = answers.map((answer, i) => answer.skipped ? { score: 0, distance: null } : huntResult(rounds[i], answer));
++      return { day, cursor, answers: answers.map(a => ({ ...a })), results,
++        score: results.reduce((total, result) => total + result.score, 0), issue, persisted, complete: cursor === 5 };
++    },
++    guess(at) {
++      if (cursor >= 5 || answers[cursor] || !position(at)) return false;
++      answers.push({ id: rounds[cursor].id, e: at.e, n: at.n, skipped: false }); save(); return true;
++    },
++    skip() {
++      if (cursor >= 5 || answers[cursor]) return false;
++      answers.push({ id: rounds[cursor].id, skipped: true }); save(); return true;
++    },
++    next() {
++      if (cursor >= 5 || !answers[cursor]) return false;
++      cursor++; save(); return true;
++    },
++    reset() { cursor = 0; answers = []; issue = null; save(); },
++  };
++}
+diff --git a/chicago/4d/renderers/web/js/pictures.js b/chicago/4d/renderers/web/js/pictures.js
+index d8cefc301..c415dc8d5 100644
+--- a/chicago/4d/renderers/web/js/pictures.js
++++ b/chicago/4d/renderers/web/js/pictures.js
+@@ -170,14 +170,17 @@ export function hydratePictures(root) {
+ let viewer = null;
+ function viewerEl() {
+   if (viewer) return viewer;
+-  viewer = document.createElement('div');
++  // A native modal isolates the rest of the page without rewriting its existing
++  // inert/aria-hidden state. Closing it restores that state automatically.
++  viewer = document.createElement('dialog');
+   viewer.className = 'pic-viewer';
+   viewer.setAttribute('role', 'dialog');
+   viewer.setAttribute('aria-modal', 'true');
+   viewer.setAttribute('aria-label', 'Picture');
++  viewer.tabIndex = -1;
+   viewer.hidden = true;
+   viewer.innerHTML = `<div class="pic-viewer-bar">
+-      <span class="pic-viewer-count" data-pv-count></span>
++      <span class="pic-viewer-count" data-pv-count aria-live="polite"></span>
+       <a class="pic-viewer-full" data-pv-full target="_blank" rel="noopener">FULL SIZE ↗</a>
+       <button type="button" class="pic-viewer-close" data-pv-close aria-label="Close">✕</button>
+     </div>
+@@ -193,25 +196,53 @@ function viewerEl() {
+     const step = e.target.closest('[data-pv-step]');
+     if (step) viewerShow(viewer._at + Number(step.dataset.pvStep));
+   });
+-  document.addEventListener('keydown', (e) => {
++  viewer.addEventListener('cancel', (e) => { e.preventDefault(); closePictureViewer(); });
++  viewer.addEventListener('close', () => { if (!viewer.open) releaseViewer(); });
++  viewer.addEventListener('keydown', (e) => {
+     if (viewer.hidden) return;
+-    if (e.key === 'Escape') { e.stopPropagation(); closePictureViewer(); }
+-    else if (e.key === 'ArrowRight') { e.stopPropagation(); viewerShow(viewer._at + 1); }
+-    else if (e.key === 'ArrowLeft') { e.stopPropagation(); viewerShow(viewer._at - 1); }
+-  }, true);
++    // Modal keys must not reach the Navigator or the world's movement shortcuts.
++    // Browser commands (including zoom) retain their ordinary default action.
++    e.stopPropagation();
++    if (e.metaKey || e.ctrlKey || e.altKey) return;
++    if (e.key === 'Escape') { e.preventDefault(); closePictureViewer(); }
++    else if (e.key === 'ArrowRight') { e.preventDefault(); viewerShow(viewer._at + 1); }
++    else if (e.key === 'ArrowLeft') { e.preventDefault(); viewerShow(viewer._at - 1); }
++    else if (e.key === 'Tab') {
++      const keys = [...viewer.querySelectorAll('a[href], button:not([disabled]), [tabindex="0"]')]
++        .filter((el) => !el.closest('[hidden], [inert]') && el.getClientRects().length
++          && getComputedStyle(el).visibility !== 'hidden');
++      const first = keys[0] ?? viewer, last = keys.at(-1) ?? viewer;
++      if (e.shiftKey && (document.activeElement === first || document.activeElement === viewer)) {
++        e.preventDefault(); last.focus();
++      } else if (!e.shiftKey && (document.activeElement === last || document.activeElement === viewer)) {
++        e.preventDefault(); first.focus();
++      }
++    }
++  });
++  // Let key releases reach the world so a key held before opening cannot stick.
+   return viewer;
+ }
+ 
++function releaseLoading(v) {
++  if (!v._loading) return;
++  v._loading.onload = v._loading.onerror = null;
++  v._loading.removeAttribute('src');
++  v._loading = null;
++}
++
+ function viewerShow(i) {
+   const v = viewer;
+   const list = v._list;
+   if (!list?.length) return;
+   const at = (i + list.length) % list.length;
+   const p = list[at];
++  const replacingFocus = v.querySelector('[data-pv-credit]').contains(document.activeElement);
+   v._at = at;
++  v.setAttribute('aria-label', `Picture: ${p.title ?? p.id}`);
+   const img = v.querySelector('[data-pv-img]');
+   const thumb = storeUrl(v._doc, p.held.t);
+   const full = storeUrl(v._doc, p.held.f) ?? thumb;
++  releaseLoading(v);
+   // The thumbnail first (already loaded by the grid), then the full copy over it once it
+   // has arrived, so a slow link shows the picture at once and sharpens. One full copy at
+   // a time: a step away abandons the one still loading.
+@@ -219,14 +250,20 @@ function viewerShow(i) {
+   img.alt = `${p.kind ?? 'Picture'}: ${p.title ?? p.id}`;
+   if (full !== thumb) {
+     const pre = new Image();
++    v._loading = pre;
+     pre.decoding = 'async';
+-    pre.onload = () => { if (!v.hidden && v._list?.[v._at] === p) img.src = full; };
++    pre.onload = () => {
++      if (v._loading === pre && !v.hidden && v._list?.[v._at] === p) img.src = full;
++      if (v._loading === pre) releaseLoading(v);
++    };
++    pre.onerror = () => { if (v._loading === pre) releaseLoading(v); };
+     pre.src = full;
+   }
+   v.querySelector('[data-pv-full]').href = full;
+   v.querySelector('[data-pv-count]').textContent = `${at + 1} / ${list.length}`;
+   v.querySelector('[data-pv-credit]').innerHTML = creditHtml(v._doc, p);
+   for (const b of v.querySelectorAll('[data-pv-step]')) b.hidden = list.length < 2;
++  if (replacingFocus) v.querySelector('[data-pv-close]').focus({ preventScroll: true });
+ }
+ 
+ /** Open the viewer on held picture `i` of a building. */
+@@ -234,19 +271,35 @@ export function openPictureViewer(doc, id, i) {
+   const list = heldOf(doc, id);
+   if (!list.length) return;
+   const v = viewerEl();
++  if (!v.open) v._returnFocus = document.activeElement;
+   v._doc = doc;
+   v._list = list;
+   v.hidden = false;
+   document.documentElement.classList.add('pic-viewer-open');
+   viewerShow(Number(i) || 0);
++  if (document.pointerLockElement) document.exitPointerLock?.();
++  if (!v.open) v.showModal();
+   v.querySelector('[data-pv-close]').focus({ preventScroll: true });
+ }
+ 
+-/** Close it and let the full-size copy go. */
+-export function closePictureViewer() {
++function releaseViewer() {
+   if (!viewer || viewer.hidden) return;
++  const returnFocus = viewer._returnFocus;
+   viewer.hidden = true;
+   viewer._list = null;
++  viewer._doc = null;
++  viewer._returnFocus = null;
++  releaseLoading(viewer);
+   viewer.querySelector('[data-pv-img]').removeAttribute('src');
++  viewer.querySelector('[data-pv-full]').removeAttribute('href');
++  viewer.querySelector('[data-pv-credit]').replaceChildren();
+   document.documentElement.classList.remove('pic-viewer-open');
++  if (returnFocus?.isConnected && !returnFocus.closest('[inert]')) returnFocus.focus?.({ preventScroll: true });
++}
++
++/** Close it and let the full-size copy and any pending decode go. */
++export function closePictureViewer() {
++  if (!viewer || viewer.hidden) return;
++  if (viewer.open) viewer.close();
++  releaseViewer();
+ }
+diff --git a/chicago/4d/renderers/web/js/strings/photo-hunt.js b/chicago/4d/renderers/web/js/strings/photo-hunt.js
+new file mode 100644
+index 000000000..2d35557d3
+--- /dev/null
++++ b/chicago/4d/renderers/web/js/strings/photo-hunt.js
+@@ -0,0 +1,49 @@
++import { register } from './index.js';
++export default register('hunt', {
++  title: 'Where and when?',
++  intro: 'Find the camera spots of five historical photographs in 1904.',
++  daily: 'The same five photographs have a daily order, using UTC. Their dates differ from the world’s year.',
++  local: 'Progress stays in this browser. Sharing sends the challenge, not your answers.',
++  open: 'Open five-photo hunt',
++  date: 'Challenge date: {day} (UTC)',
++  unavailableYear: 'This photo hunt is in 1904. Choose 1904 in Other years to play.',
++  invalidLink: 'This challenge link is not valid. You can open today’s hunt instead.',
++  unavailable: 'The photo hunt could not be loaded. Try again later.',
++  loading: 'Opening the photographs…',
++  round: 'Photograph {n} of 5',
++  instructions: 'Walk to where you think the camera stood, then return here to make your guess.',
++  rules: 'Each photo earns up to 1,000 points. Within five metres earns full points; time is not scored.',
++  distanceNote: 'Distance is measured on the ground; camera height and direction are not scored.',
++  move: 'Return to the town',
++  guess: 'Guess this spot',
++  skip: 'Skip and reveal',
++  retryImage: 'Try loading this photo again',
++  imageLoading: 'Loading this photograph…',
++  imageLoaded: 'Photograph loaded.',
++  imageFailed: 'This photograph could not be loaded. Try again, or skip it without a score.',
++  imageAlt: 'Historical photograph for round {n}. Study the buildings and surroundings to find the camera spot.',
++  ready: 'Study the photograph and find its camera spot.',
++  positionMissing: 'Enter the town before making a guess.',
++  result: '{distance} metres from the camera spot · {score} points',
++  skipped: 'Skipped · 0 points',
++  recordedYears: 'Recorded year range: {years}',
++  recordedDate: 'Source’s date description: {date}',
++  source: 'Read the source',
++  full: 'Open the full photograph',
++  visit: 'Visit the camera spot',
++  noVisit: 'The recorded camera spot cannot be safely visited right now.',
++  visiting: 'Travelling to the camera spot.',
++  next: 'Next photograph',
++  finish: 'Finish hunt',
++  complete: 'Five-photo hunt complete',
++  total: '{score} of 5,000 points',
++  copy: 'Copy challenge link',
++  link: 'Challenge link',
++  copied: 'Challenge link copied.',
++  copyFallback: 'Select and copy the challenge link below.',
++  restart: 'Start this hunt again',
++  today: 'Open today’s hunt',
++  saved: 'Progress saved in this browser.',
++  'storage.unreadable': 'Saved progress could not be read. Play here, or start again to replace the saved record.',
++  'storage.unsaved': 'Progress could not be saved. You can keep playing in this tab.',
++});
+diff --git a/chicago/4d/renderers/web/js/viewport.js b/chicago/4d/renderers/web/js/viewport.js
+new file mode 100644
+index 000000000..f22f1b270
+--- /dev/null
++++ b/chicago/4d/renderers/web/js/viewport.js
+@@ -0,0 +1,18 @@
++/**
++ * The viewport in layout pixels, before browser magnification (T-3658).
++ * URL-bar and keyboard changes still resize the available space. Pinching only
++ * magnifies that space: using the smaller visual viewport directly would shrink
++ * the canvas and Navigator a second time while the browser was enlarging them.
++ */
++export function viewportSize(win = window) {
++  const vv = win.visualViewport;
++  const scale = Number.isFinite(vv?.scale) && vv.scale > 0 ? vv.scale : 1;
++  const dimension = (visual, fallback) => Math.max(1, Math.round(
++    Number.isFinite(visual) && visual > 0 ? visual * scale : fallback || 1,
++  ));
++  return {
++    width: dimension(vv?.width, win.innerWidth),
++    height: dimension(vv?.height, win.innerHeight),
++    scale,
++  };
++}
+diff --git a/chicago/4d/tools/check.sh b/chicago/4d/tools/check.sh
+index 5f13a6841..1aab6ad75 100755
+--- a/chicago/4d/tools/check.sh
++++ b/chicago/4d/tools/check.sh
+@@ -398,6 +398,10 @@ step "Jaunt reflections use only cited visited claims across all reading bands (
+   node tools/test_jaunt_understanding.mjs
+ step "Group lesson guides use the selected outing's citations and preserve print cleanup (T-3656)" \
+   node tools/test_lesson_guides.mjs
++step "Photo hunts preserve canonical evidence, shared dates, distance scores and bounded local progress (T-3657)" \
++  node tools/test_photo_hunt.mjs
++step "Browser magnification preserves viewport size and independent movement and look controls (T-3658)" \
++  node tools/test_viewport_accessibility.mjs
+ step "The arrival clock forecasts downloads and never sits still on a slow link (T-2164)" \
+   node tools/test_boot_forecast.mjs
+ step "The welcome draws the town only when the town changed (T-2113)" \
+diff --git a/chicago/4d/tools/step_isolation.json b/chicago/4d/tools/step_isolation.json
+index 79e707726..7a55be8c6 100644
+--- a/chicago/4d/tools/step_isolation.json
++++ b/chicago/4d/tools/step_isolation.json
+@@ -6818,6 +6818,10 @@
+       "wrote": [],
+       "wrote_ignored": []
+     },
++    "tools/test_photo_hunt.mjs": {
++      "wrote": [],
++      "wrote_ignored": []
++    },
+     "tools/test_photo_match_enclosures.mjs": {
+       "wrote": [],
+       "wrote_ignored": []
+@@ -7206,6 +7210,10 @@
+       "wrote": [],
+       "wrote_ignored": []
+     },
++    "tools/test_viewport_accessibility.mjs": {
++      "wrote": [],
++      "wrote_ignored": []
++    },
+     "tools/test_visitor_person.mjs": {
+       "wrote": [],
+       "wrote_ignored": []
+diff --git a/chicago/4d/tools/test_accessibility_browser.mjs b/chicago/4d/tools/test_accessibility_browser.mjs
+new file mode 100644
+index 000000000..aefa3ce8c
+--- /dev/null
++++ b/chicago/4d/tools/test_accessibility_browser.mjs
+@@ -0,0 +1,258 @@
++// T-3658: real Navigator markup/CSS, native browser magnification and picture modal.
++// A tiny WebGL canvas runs main.js's exact resize body; this is not a full-town smoke.
++import assert from 'node:assert/strict';
++import fs from 'node:fs';
++import http from 'node:http';
++import path from 'node:path';
++import { createRequire } from 'node:module';
++const { chromium } = createRequire(import.meta.url)('playwright');
++const web = path.resolve(new URL('../renderers/web', import.meta.url).pathname);
++const index = fs.readFileSync(path.join(web, 'index.html'), 'utf8');
++const main = fs.readFileSync(path.join(web, 'js/main.js'), 'utf8');
++const meta = index.match(/<meta name="viewport"[^>]+>/)[0];
++const imports = index.match(/<script type="importmap">[\s\S]*?<\/script>/)[0];
++const resizeBody = main.match(/  function resize\(\) \{([\s\S]*?)\n  \}\n  window.addEventListener\('resize', resize\);/)[1];
++assert(!/maximum-scale=1|user-scalable=no/.test(meta));
++const out = process.env.C4D_TEST_OUT;
++if (out) fs.mkdirSync(out, { recursive: true });
++const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="320" height="240"><rect width="320" height="240" fill="#237279"/><circle cx="150" cy="110" r="70" fill="#ebc17c"/></svg>';
++const server = http.createServer((req, res) => {
++  const url = new URL(req.url, 'http://local');
++  if (url.pathname === '/') {
++    res.setHeader('Content-Type', 'text/html');
++    res.end(`<!doctype html><html lang="en"><head>${meta}${imports}
++      <link rel="stylesheet" href="/css/walk.css"><link rel="stylesheet" href="/css/drawer.css"><link rel="stylesheet" href="/css/navigator.css">
++      <link rel="stylesheet" href="/css/card.css"></head><body><canvas id="view"></canvas>
++      <button id="outside" style="position:fixed;top:0;right:0">Outside control</button>
++      <section id="already-inert" inert aria-hidden="true"><button>Unavailable control</button></section>
++      <section id="retained-aria" aria-hidden="false"></section></body></html>`); return;
++  }
++  if (url.pathname.endsWith('.svg')) {
++    res.writeHead(200, { 'Content-Type': 'image/svg+xml' }); res.end(svg); return;
++  }
++  const file = path.resolve(web, `.${url.pathname}`);
++  if (!file.startsWith(`${web}/`)) { res.writeHead(403); res.end(); return; }
++  fs.readFile(file, (err, bytes) => {
++    res.writeHead(err ? 404 : 200, { 'Content-Type': file.endsWith('.js') ? 'text/javascript'
++      : file.endsWith('.html') ? 'text/html' : 'text/css' }); res.end(err ? '' : bytes);
++  });
++});
++await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
++const origin = `http://127.0.0.1:${server.address().port}`;
++const browser = await chromium.launch({ executablePath: process.env.PW_EXECUTABLE,
++  args: ['--no-sandbox', '--enable-unsafe-swiftshader'] });
++const receipts = [];
++try {
++  for (const width of [390, 1280]) {
++    const phone = width === 390;
++    const context = await browser.newContext({ viewport: { width, height: phone ? 780 : 800 },
++      isMobile: phone, hasTouch: phone, deviceScaleFactor: 1, reducedMotion: 'reduce' });
++    const page = await context.newPage(), errors = [];
++    const pendingPictures = [];
++    await page.route('**/pending-*.svg', route => pendingPictures.push(route));
++    page.on('pageerror', error => errors.push(error.message));
++    await page.goto(origin);
++    await page.evaluate(async resizeBody => {
++      const THREE = await import('three');
++      const { viewportSize } = await import('/js/viewport.js');
++      const { createTouchBackend } = await import('/js/controls/touch.js');
++      const { createIntent } = await import('/js/controls/intent.js');
++      const { createNavigator } = await import('/js/navigator.js');
++      const picture = await import('/js/pictures.js');
++      window.fixturePicture = picture;
++      const source = new DOMParser().parseFromString(await (await fetch('/index.html')).text(), 'text/html');
++      const root = source.getElementById('navigator'); document.body.append(root);
++      window.fixtureNav = createNavigator({ root, scene: { id: '1835', target_date: '1835-07-01' } });
++      fixtureNav.open(2);
++      const screen = root.querySelector('.nav-screen');
++      const opener = document.createElement('button'); opener.id = 'open-picture'; opener.textContent = 'Open fixture pictures';
++      screen.prepend(opener);
++      for (let i = 0; i < 24; i++) {
++        const p = document.createElement('p'); p.textContent = `Reading paragraph ${i + 1}. Historical evidence remains readable when the browser magnifies it.`;
++        screen.append(p);
++      }
++      const bottom = document.createElement('button'); bottom.id = 'reading-end'; bottom.textContent = 'End of reading'; screen.append(bottom);
++      window.fixtureDoc = { image_store: { base_url: location.origin + '/' }, by_structure: { fixture: [
++        { id: 'one', title: 'Fixture picture one', kind: 'Photograph', holder: 'Test fixture', rights: 'Public domain',
++          held: { t: 'one.svg', f: 'pending-one.svg' }, url: 'https://example.org/one' },
++        { id: 'two', title: 'Fixture picture two', kind: 'Photograph', holder: 'Test fixture', rights: 'Public domain',
++          held: { t: 'two.svg', f: 'pending-two.svg' }, url: 'https://example.org/two' },
++      ] } };
++      opener.onclick = () => picture.openPictureViewer(fixtureDoc, 'fixture', 0);
++      const canvas = document.getElementById('view');
++      const renderer = new THREE.WebGLRenderer({ canvas, antialias: false });
++      renderer.setClearColor('#28626b'); renderer.setPixelRatio(1);
++      window.fixtureResizeCount = 0;
++      const setSize = renderer.setSize.bind(renderer);
++      renderer.setSize = (...args) => { fixtureResizeCount++; return setSize(...args); };
++      window.fixtureRenderer = renderer;
++      const camera = new THREE.PerspectiveCamera();
++      const resize = new Function('viewportSize', 'renderer', 'camera', 'H_FOV_DEG', 'DEG', 'THREE', 'gate',
++        `return function resize() {${resizeBody}\n};`)(viewportSize, renderer, camera, 76, Math.PI / 180, THREE, null);
++      window.fixtureResize = () => { resize(); renderer.clear(); };
++      window.addEventListener('resize', fixtureResize);
++      visualViewport?.addEventListener('resize', fixtureResize);
++      window.fixtureIntent = createIntent();
++      window.fixtureTouch = createTouchBackend({ intent: fixtureIntent, domElement: canvas, onViewport: fixtureResize });
++      if (matchMedia('(pointer: coarse)').matches) fixtureTouch.enable();
++      fixtureResize();
++    }, resizeBody);
++
++    const opener = page.locator('#open-picture');
++    await opener.focus(); await page.keyboard.press('Enter');
++    const dialog = page.locator('.pic-viewer');
++    assert.equal(await dialog.evaluate(el => el.matches(':modal')), true, 'native modal is in the top layer');
++    assert.equal(await page.evaluate(() => document.activeElement.hasAttribute('data-pv-close')), true);
++    if (out) await page.screenshot({ path: path.join(out, `${width}-picture-modal.png`) });
++    await page.evaluate(() => document.getElementById('outside').focus());
++    assert.equal(await page.evaluate(() => !!document.activeElement.closest('.pic-viewer')), true, 'background cannot receive focus');
++    await dialog.locator('[data-pv-full]').focus();
++    await page.keyboard.press('Shift+Tab');
++    assert.equal(await page.evaluate(() => document.activeElement.href), 'https://example.org/one');
++    await page.keyboard.press('Tab');
++    assert.equal(await page.evaluate(() => document.activeElement.hasAttribute('data-pv-full')), true);
++    for (let i = 0; i < 12; i++) {
++      await page.keyboard.press('Tab');
++      assert.equal(await page.evaluate(() => !!document.activeElement.closest('.pic-viewer')), true);
++    }
++    const beforeLevel = await page.evaluate(() => fixtureNav.level);
++    await page.keyboard.press('n');
++    assert.equal(await page.evaluate(() => fixtureNav.level), beforeLevel, 'modal prevents Navigator hotkey');
++    await dialog.locator('[data-pv-credit] a').focus();
++    await page.keyboard.press('ArrowRight');
++    assert.equal(await dialog.locator('[data-pv-count]').textContent(), '2 / 2');
++    assert.equal(await page.evaluate(() => document.activeElement.hasAttribute('data-pv-close')), true, 'changing credit retains modal focus');
++    assert.equal(await dialog.evaluate(el => !!el._loading), true, 'full-size image is still pending when closed');
++    await page.keyboard.press('Escape');
++    assert.equal(await dialog.isVisible(), false);
++    assert.equal(await page.evaluate(() => document.activeElement.id), 'open-picture');
++    assert.equal(await page.evaluate(() => fixtureNav.level), beforeLevel, 'Escape closes only the modal');
++    assert.deepEqual(await dialog.evaluate(el => ({ open: el.open, image: el.querySelector('img').getAttribute('src'),
++      loading: el._loading, doc: el._doc })), { open: false, image: null, loading: null, doc: null });
++    await page.unroute('**/pending-*.svg');
++    for (const route of pendingPictures) {
++      await route.fulfill({ contentType: 'image/svg+xml', body: svg }).catch(() => {}); // A removed src may already have cancelled it.
++    }
++    await page.waitForTimeout(30);
++    assert.equal(await dialog.locator('img').getAttribute('src'), null, 'late image delivery cannot revive the closed image');
++    assert.deepEqual(await page.evaluate(() => ({ inert: document.getElementById('already-inert').inert,
++      hidden: document.getElementById('already-inert').getAttribute('aria-hidden'),
++      retained: document.getElementById('retained-aria').getAttribute('aria-hidden'),
++      outside: document.getElementById('outside').inert })), { inert: true, hidden: 'true', retained: 'false', outside: false });
++    await page.evaluate(() => {
++      fixturePicture.openPictureViewer(fixtureDoc, 'fixture', 0);
++      fixturePicture.closePictureViewer();
++      fixturePicture.openPictureViewer({ ...fixtureDoc, by_structure: { fixture: [fixtureDoc.by_structure.fixture[0]] } }, 'fixture', 0);
++    });
++    await page.waitForTimeout(30);
++    assert.equal(await dialog.evaluate(el => el.matches(':modal')), true, 'old close event does not close a reopened modal');
++    await dialog.locator('[data-pv-full]').focus(); await page.keyboard.press('Shift+Tab');
++    assert.equal(await page.evaluate(() => document.activeElement.href), 'https://example.org/one', 'hidden arrows are skipped');
++    await dialog.evaluate(el => el.close());
++    await page.waitForFunction(() => document.querySelector('.pic-viewer').hidden);
++
++    const before = await page.evaluate(() => ({ canvas: [view.width, view.height], resizes: fixtureResizeCount, vh: document.documentElement.style.getPropertyValue('--vh'),
++      sheet: document.getElementById('navigator').getBoundingClientRect().height, scale: visualViewport.scale,
++      touch: [getComputedStyle(document.getElementById('navigator')).touchAction,
++        getComputedStyle(document.getElementById('nav-home')).touchAction,
++        getComputedStyle(document.getElementById('nav-grip')).touchAction, getComputedStyle(view).touchAction] }));
++    if (phone) {
++      const permitsPinch = value => value.includes('pinch-zoom') || value === 'manipulation' || value === 'auto';
++      assert(before.touch.slice(0, 2).every(permitsPinch), JSON.stringify(before.touch));
++      assert.deepEqual(before.touch.slice(2), ['none', 'none'], 'only handles and world reserve gestures');
++      const client = await context.newCDPSession(page);
++      const box = await opener.boundingBox();
++      const pinchAt = { x: 130, y: Math.min(600, box.y + 200) };
++      await page.evaluate(() => {
++        window.pinchStarts = [];
++        document.addEventListener('pointerdown', e => {
++          const ancestors = []; for (let el = e.target; el; el = el.parentElement) ancestors.push([el.tagName, el.id, getComputedStyle(el).touchAction]);
++          pinchStarts.push({ x: e.clientX, y: e.clientY, ancestors });
++        }, { capture: true });
++      });
++      // Chromium's synthesized pinch emitted touches without zoom even on a
++      // plain control page in this environment. Dispatch actual multi-touch;
++      // CDP coordinates are visual-viewport CSS pixels, so keep each physical
++      // finger position stable as the browser's own scale changes underneath it.
++      await client.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [
++        { id: 10, x: pinchAt.x - 45, y: pinchAt.y }, { id: 11, x: pinchAt.x + 45, y: pinchAt.y },
++      ] });
++      for (let step = 1; step <= 35; step++) {
++        const scale = await page.evaluate(() => visualViewport.scale);
++        if (scale >= 1.95) break;
++        await client.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [
++          { id: 10, x: (pinchAt.x - 45 - step * 3) / scale, y: pinchAt.y / scale },
++          { id: 11, x: (pinchAt.x + 45 + step * 3) / scale, y: pinchAt.y / scale },
++        ] });
++        await page.waitForTimeout(20);
++      }
++      await client.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
++      await page.waitForFunction(() => visualViewport.scale > 1.8, null, { timeout: 3000 });
++      const zoom = await page.evaluate(() => ({ canvas: [view.width, view.height], resizes: fixtureResizeCount, vh: document.documentElement.style.getPropertyValue('--vh'),
++        sheet: document.getElementById('navigator').getBoundingClientRect().height, scale: visualViewport.scale, starts: pinchStarts }));
++      assert.deepEqual(zoom.canvas, before.canvas, 'native pinch does not shrink the GPU drawing buffer');
++      assert.equal(zoom.resizes, before.resizes, 'native pinch does not repeatedly reallocate the same drawing buffer');
++      assert.equal(zoom.vh, before.vh);
++      assert(Math.abs(zoom.sheet - before.sheet) < 1);
++      await page.locator('#reading-end').focus();
++      assert(await page.locator('#nav-home').evaluate(el => el.scrollTop > 0), 'magnified reading still scrolls to its final control');
++      if (out) await page.screenshot({ path: path.join(out, '390-native-pinch.png') });
++      await page.evaluate(() => {
++        fixtureNav.dock(); fixtureIntent.clearLook();
++        window.fixtureTouchTrace = [];
++        view.addEventListener('pointerdown', e => fixtureTouchTrace.push({ x: e.clientX, y: e.clientY,
++          offset: visualViewport.offsetLeft, visibleWidth: visualViewport.width, scale: visualViewport.scale }));
++      });
++      const scale = await page.evaluate(() => visualViewport.scale);
++      await client.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [
++        { id: 1, x: 80 / scale, y: 300 / scale }, { id: 2, x: 250 / scale, y: 300 / scale },
++      ] });
++      await client.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [
++        { id: 1, x: 80 / scale, y: 230 / scale }, { id: 2, x: 280 / scale, y: 280 / scale },
++      ] });
++      const thumbs = await page.evaluate(() => ({ forward: fixtureIntent.forward, yaw: fixtureIntent.yawDelta,
++        pitch: fixtureIntent.pitchDelta, trace: fixtureTouchTrace }));
++      await client.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
++      assert(thumbs.forward > 0 && thumbs.yaw < 0 && thumbs.pitch > 0,
++        `off-center magnification keeps independent movement and look thumbs: ${JSON.stringify(thumbs)}`);
++      await page.evaluate(() => fixtureNav.open(2));
++      const panBefore = await page.evaluate(() => visualViewport.offsetLeft);
++      await client.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ id: 20, x: 140 / scale, y: 350 / scale }] });
++      for (let step = 1; step <= 8; step++) {
++        await client.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ id: 20, x: (140 - step * 10) / scale, y: 350 / scale }] });
++        await page.waitForTimeout(20);
++      }
++      await client.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
++      const panAfter = await page.evaluate(() => visualViewport.offsetLeft);
++      assert(Math.abs(panAfter - panBefore) > 10, `magnified reading permits horizontal browser pan: ${JSON.stringify({ panBefore, panAfter, trace: await page.evaluate(() => pinchStarts.at(-1)) })}`);
++      // Settings and other hosted drawer sections have their own scroll area.
++      // Exercise that real CSS nesting too; an inner contain would trap zoom pan.
++      await page.evaluate(() => {
++        const screen = document.getElementById('nav-home');
++        const panel = document.createElement('section'); panel.className = 'hud-panel';
++        const scroll = document.createElement('div'); scroll.className = 'panel-scroll';
++        scroll.append(...screen.childNodes); panel.append(scroll); screen.append(panel);
++        scroll.scrollTop = scroll.scrollHeight;
++      });
++      await client.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ id: 21, x: 140 / scale, y: 350 / scale }] });
++      for (let step = 1; step <= 8; step++) {
++        await client.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ id: 21, x: (140 - step * 10) / scale, y: 350 / scale }] });
++        await page.waitForTimeout(20);
++      }
++      await client.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
++      const nestedPan = await page.evaluate(() => visualViewport.offsetLeft);
++      assert(Math.abs(nestedPan - panAfter) > 10, 'hosted Navigator panel also permits horizontal browser pan');
++      await client.send('Emulation.setPageScaleFactor', { pageScaleFactor: 1 });
++      await page.setViewportSize({ width: 780, height: 390 });
++      await page.waitForFunction(() => view.width === 780 && view.height === 390);
++      await page.setViewportSize({ width: 390, height: 780 });
++      await page.waitForFunction(() => view.width === 390 && view.height === 780);
++      receipts.push({ width, nativePinch: zoom, magnifiedThumbs: thumbs, nativePan: { before: panBefore, after: panAfter, afterHostedPanel: nestedPan },
++        orientation: 'passed', modal: 'passed', errors });
++    } else receipts.push({ width, modal: 'passed', errors });
++    assert.deepEqual(errors, []);
++    await context.close();
++  }
++  if (out) fs.writeFileSync(path.join(out, 'report.json'), JSON.stringify(receipts, null, 2));
++  console.log('ACCESSIBILITY BROWSER PASS — both widths: modal keyboard cycle, isolation, focus return, image cleanup; native phone pinch and orientation preserve canvas and reading');
++} finally { await browser.close(); server.close(); }
+diff --git a/chicago/4d/tools/test_navigator.mjs b/chicago/4d/tools/test_navigator.mjs
+index c4323163b..2ac323765 100644
+--- a/chicago/4d/tools/test_navigator.mjs
++++ b/chicago/4d/tools/test_navigator.mjs
+@@ -412,6 +412,109 @@ const fakeStorage = () => { const m = new Map(); return { getItem: (k) => m.get(
+   assert.equal(button(dom, 'jump'), undefined, 'unregister takes the icon out');
+ }
+ 
++// T-3658: an off-rail screen still leaves a visible way back into the tablist.
++// Exercise the actual Jump/Move registration flags, including the interval while a
++// contextual tab is animating out: its DOM button is not hidden until the slide ends.
++for (const reduced of [false, true]) {
++  const dom = miniDom(), later = [];
++  let target = true;
++  const rail = createRail({ rail: dom.rail, screens: dom.root.querySelector('.nav-body'), doc: dom.doc,
++    storage: fakeStorage(), reduced: () => reduced, wait: fn => later.push(fn),
++    context: () => ({ target }) });
++  const add = (id, extra = {}) => rail.register({ id, label: id, mount() {}, ...extra });
++  add('home', { order: 0 }); add('map', { order: 20 });
++  add('inspect', { order: 10, when: ctx => ctx.target });
++  for (const id of ['jump', 'move']) {
++    const app = APPS.find(app => app.id === id);
++    assert.equal(app.inRail, false, `${id} uses the real off-rail registration`);
++    add(id, { inRail: app.inRail });
++  }
++  const stops = () => tabsOf(dom).filter(b => b.tabIndex === 0).map(b => b.dataset.app);
++  const expectStop = id => {
++    assert.deepEqual(stops(), id ? [id] : [], 'exactly one eligible rail Tab stop');
++    if (id) assert.equal(button(dom, id).hidden, false, 'the Tab stop is actually visible');
++    assert.deepEqual(tabsOf(dom).filter(b => b.getAttribute('aria-selected') === 'true')
++      .map(b => b.dataset.app), rail.current ? [rail.current] : [], 'selection names only the displayed app');
++  };
++  rail.evaluate(); expectStop('home');
++  await rail.select('map'); expectStop('map');
++  for (const id of ['jump', 'move']) {
++    await rail.select(id); expectStop('map');
++    assert.equal(button(dom, id).hidden, true);
++    assert.equal(button(dom, 'map').getAttribute('aria-selected'), 'false', 'a fallback is not a selected app');
++  }
++  const list = dom.rail.querySelector('.nav-tabs');
++  list.dispatch('keydown', { target: button(dom, 'map'), key: 'Home' });
++  assert.equal(button(dom, 'home').focused, 1, 'Home moves focus to the first visible tab');
++  list.dispatch('keydown', { target: button(dom, 'home'), key: 'ArrowRight' });
++  assert.equal(button(dom, 'inspect').focused, 1, 'arrows retain the visible rail order');
++  assert.equal(rail.current, 'move', 'arrow navigation does not activate an app');
++  button(dom, 'home').dispatch('click');
++  assert.equal(rail.current, 'home', 'the button still activates through its ordinary click');
++  expectStop('home');
++
++  await rail.select('inspect'); expectStop('inspect');
++  await rail.select('jump'); expectStop('inspect');
++  target = false; rail.evaluate(); expectStop('home');
++  assert.equal(rail.current, 'jump', 'a disappearing fallback does not replace the off-rail screen');
++  if (!reduced) assert.equal(button(dom, 'inspect').hidden, false, 'the departing icon is still animating');
++  for (const fn of later.splice(0)) fn();
++  assert.equal(button(dom, 'inspect').hidden, true); expectStop('home');
++  target = true; rail.evaluate();
++  await rail.select('inspect'); expectStop('inspect');
++  target = false; rail.evaluate();
++  assert.equal(rail.current, 'home', 'the original context-loss selection still returns to Home');
++  expectStop('home');
++  await rail.select('inspect'); expectStop('home');
++  assert.equal(rail.current, 'inspect', 'a direct selection of a hidden app keeps selection truthful');
++  rail.evaluate();
++  assert.equal(rail.current, 'home'); expectStop('home');
++
++  target = true; rail.evaluate();
++  await rail.select('map'); await rail.select('move');
++  rail.unregister('map'); expectStop('home');
++  assert.equal(rail.current, 'move', 'removing the fallback leaves the displayed screen selected');
++  await rail.select('home'); rail.unregister('home'); expectStop('inspect');
++  rail.unregister('inspect'); expectStop(null);
++  add('map'); expectStop('map');
++}
++{
++  const dom = miniDom();
++  const deferred = () => { let resolve; const promise = new Promise(r => { resolve = r; }); return { promise, resolve }; };
++  const rail = createRail({ rail: dom.rail, screens: dom.root.querySelector('.nav-body'), doc: dom.doc,
++    storage: fakeStorage(), reduced: () => true, wait: () => {} });
++  rail.register({ id: 'home', label: 'Home', mount() {} });
++  rail.register({ id: 'map', label: 'Map', mount() {} });
++  const stops = () => tabsOf(dom).filter(b => b.tabIndex === 0).map(b => b.dataset.app);
++  const code = deferred();
++  rail.register({ id: 'late', label: 'Late screen', inRail: false, load: () => code.promise });
++  await rail.select('map');
++  const opening = rail.select('late');
++  assert.deepEqual(stops(), ['map'], 'a pending import keeps the current visible Tab stop');
++  await rail.select('home');
++  code.resolve({ mount() {} });
++  assert.equal(await opening, false, 'the original selection race still rejects the old request');
++  assert.equal(rail.current, 'home'); assert.deepEqual(stops(), ['home']);
++  await rail.select('map'); await rail.select('late');
++  assert.equal(rail.current, 'late'); assert.deepEqual(stops(), ['map'], 'the resolved off-rail screen retains a visible fallback');
++
++  const mounting = deferred();
++  rail.register({ id: 'mounting', label: 'Mounting screen', inRail: false, mount: () => mounting.promise });
++  const pending = rail.select('mounting');
++  rail.unregister('map');
++  assert.deepEqual(stops(), ['home'], 'unregister repairs the fallback even while another screen mounts');
++  mounting.resolve(); assert.equal(await pending, true);
++  assert.equal(rail.current, 'mounting'); assert.deepEqual(stops(), ['home']);
++
++  const removedCode = deferred();
++  rail.register({ id: 'removed', label: 'Removed screen', inRail: false, load: () => removedCode.promise });
++  const removed = rail.select('removed');
++  rail.unregister('removed'); removedCode.resolve({ mount() { assert.fail('an unregistered app must not mount'); } });
++  assert.equal(await removed, false);
++  assert.equal(rail.current, 'mounting'); assert.deepEqual(stops(), ['home']);
++}
++console.log('NAVIGATOR VISIBLE TAB STOP PASS — off-rail screens, context loss, removal and asynchronous selection retain keyboard entry');
++
+ // ---- the device, its Home and its apps -------------------------------------------------
+ for (const phone of [true, false]) {
+   const dom = miniDom();
+diff --git a/chicago/4d/tools/test_photo_hunt.mjs b/chicago/4d/tools/test_photo_hunt.mjs
+new file mode 100644
+index 000000000..21eff3e23
+--- /dev/null
++++ b/chicago/4d/tools/test_photo_hunt.mjs
+@@ -0,0 +1,98 @@
++import assert from 'node:assert/strict';
++import fs from 'node:fs';
++import path from 'node:path';
++import { execFileSync } from 'node:child_process';
++import { HUNT_PHOTOS, HUNT_STORAGE_KEY, validHuntDay, huntDay, huntOrder, huntLink, parseHuntLink,
++  huntRounds, huntResult, huntSpotSafe, createHuntSession } from '../renderers/web/js/photo-hunt.js';
++import { createDestinations } from '../renderers/web/js/destinations.js';
++import { spotTarget } from '../renderers/web/js/photos-tab.js';
++
++const root = path.resolve(new URL('..', import.meta.url).pathname);
++const doc = JSON.parse(execFileSync('python3', ['-c',
++  'import sys,json;sys.path.insert(0,"tools");import compile_pictures as p;print(json.dumps(p.add_place_names(p.derive(*p.read_tree()),p.load_json(p.PLACE_NAMES))["1904"]))'], { cwd: root, maxBuffer: 4 * 1024 * 1024 }));
++const registry = new Map();
++for (const id of Object.keys(doc.by_structure)) {
++  const file = path.join(root, 'data/sidecars/1904', `${id}.json`);
++  if (fs.existsSync(file)) registry.set(id, { sidecar: JSON.parse(fs.readFileSync(file)) });
++}
++const destinations = createDestinations({ scene: {}, registry }); destinations.addPhotos(doc);
++const day = '2026-11-18';
++const rounds = huntRounds(doc, destinations, day);
++assert.equal(rounds.length, 5, 'all five real photographs meet the evidence requirements');
++assert.equal(new Set(rounds.map(r => r.structure)).size, 4, 'five photographs represent four places');
++for (const round of rounds) {
++  assert.equal(round.structure, HUNT_PHOTOS[round.id], 'duplicate catalogue attachments use the canonical owner');
++  const p = doc.by_structure[round.structure].find(p => p.id === round.id);
++  const expected = spotTarget(p, registry.get(round.structure).sidecar.placement);
++  assert.deepEqual(round.target, expected, 'the existing rotated camera spot is preserved');
++  assert.equal(round.date, p.date, 'preserve the source date qualifier separately from its range');
++  assert.match(round.image, /-thumb\.jpg$/);
++  assert(round.target.e > 1100 && round.target.e < 1800 && round.target.n > -3800 && round.target.n < -2900);
++}
++const ne = rounds.find(r => r.id === 'a18-rba-taylor-2135-glessner-ne');
++assert(Math.abs(ne.target.e - 1425.61595) < .001 && Math.abs(ne.target.n + 3199.31225) < .001,
++  'shared Glessner photograph uses the Glessner camera, not the neighboring Keith camera');
++for (const [day, valid] of [['2026-11-18', true], ['2024-02-29', true], ['2026-02-29', false],
++  ['2026-13-01', false], ['2026-11-18Z', false], ['2026-1-18', false], ['../1904', false], ['1904-01-01', false]])
++  assert.equal(validHuntDay(day), valid);
++assert.equal(huntDay(new Date('2026-11-19T00:30:00Z')), '2026-11-19');
++assert.deepEqual(huntOrder(day), huntOrder(day));
++assert.notDeepEqual(huntOrder(day), huntOrder('2026-11-19'));
++for (let i = 1; i <= 30; i++) assert.deepEqual([...huntOrder(`2026-11-${String(i).padStart(2, '0')}`)].sort(), Object.keys(HUNT_PHOTOS).sort());
++const url = new URL(huntLink(day, 'https://example.test/4d/dev/1904/?token=private&data=remote&moment=1#private'));
++assert.equal(url.pathname, '/4d/dev/1904/'); assert.equal(url.hash, '');
++assert.deepEqual([...url.searchParams.keys()], ['year', 'nav', 'hunt', 'huntDay']);
++assert.deepEqual(parseHuntLink(url.search), { day, version: 1 });
++for (const q of ['?hunt=2&huntDay=2026-11-18&year=1904', '?hunt=1&huntDay=2026-02-29&year=1904',
++  '?hunt=1&huntDay=2026-11-18&year=1835', '?hunt=1&hunt=1&huntDay=2026-11-18&year=1904']) assert.equal(parseHuntLink(q), null);
++assert.equal(huntLink(day, 'javascript:alert(1)'), null);
++assert.equal(huntLink('bad', url.href), null);
++const row = destinations.byId('photo', ne.id);
++const safe = { inBounds: () => true, isWater: () => false, blockedAt: () => false, barrierAt: () => false };
++assert(huntSpotSafe(row, safe));
++for (const key of ['isWater', 'blockedAt', 'barrierAt']) assert(!huntSpotSafe(row, { ...safe, [key]: () => true }));
++assert(!huntSpotSafe(row, { ...safe, inBounds: () => false })); assert(!huntSpotSafe(null, safe));
++const badRow = { ...row, picture: { ...row.picture, rights: 'check_required' } };
++assert.deepEqual(huntRounds(doc, { byId: (_, id) => id === ne.id ? badRow : destinations.byId('photo', id) }, day), []);
++badRow.picture = { ...row.picture, kind: 'ENGRAVING' };
++assert.deepEqual(huntRounds(doc, { byId: (_, id) => id === ne.id ? badRow : destinations.byId('photo', id) }, day), []);
++badRow.picture = { ...row.picture, years: [1900, 1905] };
++assert.deepEqual(huntRounds(doc, { byId: (_, id) => id === ne.id ? badRow : destinations.byId('photo', id) }, day), []);
++assert.equal(huntResult(ne, { e: ne.target.e + 3, n: ne.target.n + 4 }).score, 1000);
++assert(huntResult(ne, { e: ne.target.e + 100, n: ne.target.n }).score < 200);
++assert.equal(huntResult(ne, { e: Infinity, n: 0 }), null);
++
++let raw = null;
++const storage = { getItem: () => raw, setItem: (key, value) => { assert.equal(key, HUNT_STORAGE_KEY); raw = value; } };
++let session = createHuntSession({ day, rounds, storage });
++assert.equal(session.state.persisted, false, 'an empty first visit must not claim a successful save');
++assert.equal(session.next(), false); assert.equal(session.guess(null), false);
++assert(session.guess(rounds[0].target)); assert.equal(session.guess(rounds[0].target), false, 'one guess per photo');
++session = createHuntSession({ day, rounds, storage });
++assert.equal(session.state.cursor, 0); assert.equal(session.state.score, 1000, 'reloading preserves the reveal and score');
++assert.equal(session.state.persisted, true);
++assert(session.next()); assert(session.skip()); assert(session.next());
++for (let i = 2; i < 5; i++) { assert(session.guess(rounds[i].target)); assert(session.next()); }
++assert(session.state.complete); assert.equal(session.state.score, 4000); assert.equal(session.guess(rounds[0].target), false);
++assert(raw.length < 4096); session.reset(); assert.equal(session.state.answers.length, 0);
++const blocked = createHuntSession({ day, rounds, storage: { getItem: () => null, setItem: () => { throw new Error('quota'); } } });
++assert(blocked.guess(rounds[0].target)); assert.equal(blocked.state.issue, 'unsaved'); assert.equal(blocked.state.score, 1000);
++raw = '{broken'; session = createHuntSession({ day, rounds, storage });
++assert.equal(session.state.issue, 'unreadable'); session.guess(rounds[0].target);
++assert.equal(raw, '{broken', 'corrupt saved data is not silently overwritten');
++session.reset(); assert.equal(session.state.issue, null); assert.equal(JSON.parse(raw).answers.length, 0);
++const yesterday = '2026-11-17', oldRounds = huntRounds(doc, destinations, yesterday);
++const oldSession = createHuntSession({ day: yesterday, rounds: oldRounds, storage });
++oldSession.guess(oldRounds[0].target);
++const oldRaw = raw;
++session = createHuntSession({ day, rounds, storage });
++assert.equal(session.state.answers.length, 0, 'a new day does not reuse another challenge’s guesses');
++assert.equal(raw, oldRaw, 'opening a different challenge does not erase saved progress');
++const oldLink = huntLink(yesterday, url.href);
++assert.equal(parseHuntLink(new URL(oldLink).search).day, yesterday, 'a shared day remains fixed after midnight');
++assert.deepEqual(huntOrder(parseHuntLink(new URL(oldLink).search).day), oldRounds.map(r => r.id));
++raw = JSON.stringify({ version: 1, day, cursor: 4, answers: [] });
++assert.equal(createHuntSession({ day, rounds, storage }).state.issue, 'unreadable');
++raw = 'x'.repeat(4097);
++assert.equal(createHuntSession({ day, rounds, storage }).state.issue, 'unreadable');
++console.log('PHOTO HUNT PASS — canonical licensed photos and camera positions, dates, daily links, visit guards, distance scores, bounded progress and storage failures');
+diff --git a/chicago/4d/tools/test_photo_hunt_view.mjs b/chicago/4d/tools/test_photo_hunt_view.mjs
+new file mode 100644
+index 000000000..7f79f3814
+--- /dev/null
++++ b/chicago/4d/tools/test_photo_hunt_view.mjs
+@@ -0,0 +1,254 @@
++/** Real Home and hunt modules, real compiled catalogue, small image fixtures; no 3D world. */
++import assert from 'node:assert/strict';
++import fs from 'node:fs';
++import path from 'node:path';
++import http from 'node:http';
++import { execFileSync } from 'node:child_process';
++import { createRequire } from 'node:module';
++import { huntOrder, HUNT_STORAGE_KEY } from '../renderers/web/js/photo-hunt.js';
++
++const { chromium } = createRequire(import.meta.url)('playwright');
++const root = path.resolve(new URL('..', import.meta.url).pathname);
++const web = path.join(root, 'renderers/web');
++assert(!/<link[^>]+href=["'][^"']*\/photo-hunt\.css["']/.test(fs.readFileSync(path.join(web, 'index.html'), 'utf8')),
++  'photo-hunt.css must not load globally before its panel is mounted');
++const doc = JSON.parse(execFileSync('python3', ['-c',
++  'import sys,json;sys.path.insert(0,"tools");import compile_pictures as p;print(json.dumps(p.add_place_names(p.derive(*p.read_tree()),p.load_json(p.PLACE_NAMES))["1904"]))'], { cwd: root, maxBuffer: 4 * 1024 * 1024 }));
++const registry = [];
++for (const id of Object.keys(doc.by_structure)) {
++  const file = path.join(root, 'data/sidecars/1904', `${id}.json`);
++  if (fs.existsSync(file)) registry.push([id, { sidecar: JSON.parse(fs.readFileSync(file)) }]);
++}
++const fixture = JSON.stringify({ doc, registry });
++const pageHTML = `<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1">
++<style>
++:root { --ink: #ecf0f3; --panel-raised: #252e38; --edge: #8994a1; color:var(--ink); background:#18212a; font:16px system-ui; }
++body { margin:0; } #nav-home { max-width:400px; box-sizing:border-box; padding:8px; } a { color:#97d6ff; }</style></head>
++<body><nav id="fixture-rail" aria-label="Navigator apps"></nav><div id="fixture-screens"><div id="nav-home"></div></div><script type="module">
++import home from '/js/apps/home.js';
++import { createDestinations } from '/js/destinations.js';
++import { createRail } from '/js/nav-rail.js';
++window.fixture = { loads:0, visits:[], blocked:false, pose:null, home, level:1 };
++const context = { scene:{id:'1904'}, api:{}, navigator:{get level(){return fixture.level;}}, actions:{
++ freeRoam:()=>{fixture.level=0; fixture.rail.setVisible(false); fixture.roamed=true;},
++ photoHunt:{
++  async load(){ fixture.loads++; const data=await fetch('/fixture.json').then(r=>r.json());
++   const destinations=createDestinations({scene:{},registry:new Map(data.registry)}); destinations.addPhotos(data.doc);
++   fixture.destinations=destinations; return {doc:data.doc,destinations}; },
++  position:()=>fixture.pose,
++  visit:(id)=>{if(fixture.blocked)return false; fixture.visits.push(id); return true;}
++ } } };
++fixture.context=context;
++fixture.rail=createRail({rail:document.getElementById('fixture-rail'),screens:document.getElementById('fixture-screens'),
++ context:()=>context, reduced:()=>true, onOpen:(_id,by)=>{
++  if(by!=='quiet'&&fixture.level===0){fixture.level=1;fixture.rail.setVisible(true);}
++ }});
++fixture.rail.register(home);
++fixture.rail.register({id:'other',label:'Other app',mount(el){el.textContent='Another Navigator app';}});
++fixture.rail.evaluate(); await fixture.rail.select('home');
++Object.defineProperty(navigator,'clipboard',{value:{writeText:()=>Promise.reject(new Error('denied'))},configurable:true});
++</script></body></html>`;
++const server = http.createServer((req, res) => {
++  const pathname = new URL(req.url, 'http://localhost').pathname;
++  if (pathname === '/' || pathname === '/1904/') { res.setHeader('Content-Type', 'text/html'); res.end(pageHTML); return; }
++  if (pathname === '/fixture.json') { res.setHeader('Content-Type', 'application/json'); res.end(fixture); return; }
++  const file = path.resolve(web, `.${pathname}`);
++  if (!file.startsWith(`${web}/`)) { res.writeHead(403); res.end(); return; }
++  fs.readFile(file, (error, bytes) => { res.writeHead(error ? 404 : 200, { 'Content-Type': file.endsWith('.js') ? 'text/javascript'
++    : file.endsWith('.css') ? 'text/css' : 'application/octet-stream' }); res.end(error ? '' : bytes); });
++});
++await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
++const origin = `http://127.0.0.1:${server.address().port}`;
++const browser = await chromium.launch({ executablePath: process.env.PW_EXECUTABLE || '/usr/bin/chromium', args: ['--no-sandbox'] });
++const report = { kind: 'DOM fixture; actual catalogue, fixture image bytes, no full town', runs: [] };
++const out = process.env.HUNT_TEST_OUT;
++if (out) fs.mkdirSync(out, { recursive: true });
++const imageBytes = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aR90AAAAASUVORK5CYII=', 'base64');
++async function loadedReveal(page) {
++  await page.locator('.photo-hunt-image').evaluate(image => image.decode());
++  const status = page.getByText('Photograph loaded.', { exact: true }); await status.waitFor();
++  assert.equal(await status.getAttribute('role'), 'status'); assert.equal(await status.getAttribute('aria-live'), 'polite');
++  assert.equal(await page.getByText('Loading this photograph…', { exact: true }).count(), 0);
++  assert.equal(await page.getByRole('button', { name: 'Guess this spot', exact: true }).count(), 0, 'loaded reveal never invites another guess');
++}
++try {
++  for (const width of [390, 1280]) {
++    const context = await browser.newContext({ viewport: { width, height: width === 390 ? 780 : 800 } });
++    const page = await context.newPage(); const errors = []; const requests = []; const styles = []; let failImage = false;
++    const run = { width, checks: [], errors }; report.runs.push(run);
++    page.on('pageerror', error => errors.push(error.message));
++    page.on('request', request => { if (new URL(request.url()).pathname === '/css/photo-hunt.css') styles.push(request.url()); });
++    await page.route('https://kevinrhaas.github.io/chicago-images/**', route => {
++      requests.push(route.request().url());
++      return route.fulfill({ status: failImage ? 503 : 200, contentType: failImage ? 'text/plain' : 'image/png',
++        body: failImage ? Buffer.from('Photograph unavailable') : imageBytes });
++    });
++    const day = '2026-11-18', order = huntOrder(day);
++    await page.goto(`${origin}/1904/?year=1904&nav=home`);
++    await page.locator('#nav-photo-hunt > summary').waitFor();
++    assert.equal(await page.locator('link#photo-hunt-style').count(), 0);
++    assert.deepEqual(styles, [], 'closed Home hunt requests no stylesheet');
++    assert.equal(await page.evaluate(async () => {
++      window.fixture.mountHunt = (await import('/js/photo-hunt-view.js')).mountPhotoHunt;
++      return document.querySelectorAll('link#photo-hunt-style').length;
++    }), 0, 'prefetching the module does not load CSS');
++    assert.deepEqual(styles, []);
++    await page.locator('#nav-photo-hunt > summary').click();
++    await page.getByRole('button', { name: 'Open five-photo hunt', exact: true }).waitFor();
++    await page.waitForFunction(() => getComputedStyle(document.querySelector('.photo-hunt-actions')).display === 'flex');
++    assert.equal(await page.locator('link#photo-hunt-style').count(), 1);
++    assert.equal(await page.getByRole('button', { name: 'Open five-photo hunt', exact: true }).evaluate(el => getComputedStyle(el).minHeight), '44px');
++    assert.equal(styles.length, 1, 'first mount loads one stylesheet');
++    assert.equal(await page.evaluate(() => {
++      const host = document.createElement('div'); document.body.append(host);
++      let mounted = fixture.mountHunt(host, { context: () => fixture.context });
++      mounted.destroy(); mounted = fixture.mountHunt(host, { context: () => fixture.context }); mounted.destroy(); host.remove();
++      return document.querySelectorAll('link#photo-hunt-style').length;
++    }), 1, 'remounts reuse the document stylesheet');
++    assert.equal(styles.length, 1);
++    assert.deepEqual(await page.evaluate(async () => {
++      const frame = document.createElement('iframe'); frame.id = 'hunt-style-frame';
++      const loaded = new Promise(resolve => frame.addEventListener('load', resolve, { once: true }));
++      frame.srcdoc = '<!doctype html><html><head></head><body><div id="hunt"></div></body></html>';
++      document.body.append(frame); await loaded;
++      const doc = frame.contentDocument, host = doc.getElementById('hunt');
++      const before = doc.querySelectorAll('link[rel="stylesheet"]').length;
++      let mounted = fixture.mountHunt(host, { context: () => fixture.context });
++      mounted.destroy(); mounted = fixture.mountHunt(host, { context: () => fixture.context });
++      return { before, count: doc.querySelectorAll('link#photo-hunt-style').length,
++        owner: doc.getElementById('photo-hunt-style')?.ownerDocument === doc,
++        path: new URL(doc.getElementById('photo-hunt-style').href).pathname };
++    }), { before: 0, count: 1, owner: true, path: '/css/photo-hunt.css' });
++    await page.waitForFunction(() => {
++      const doc = document.getElementById('hunt-style-frame').contentDocument;
++      return doc.defaultView.getComputedStyle(doc.querySelector('.photo-hunt-actions')).display === 'flex';
++    });
++    assert.equal(requests.length, 0, 'mounting styles alone loads no photograph');
++    run.checks.push('CSS waits for mount, applies with text/css, deduplicates remounts, and belongs to each owner document');
++    await page.goto(`${origin}/1904/?year=1904&nav=home&hunt=1&huntDay=${day}`);
++    await page.getByRole('button', { name: 'Open five-photo hunt', exact: true }).waitFor();
++    assert.equal(await page.evaluate(() => fixture.loads), 0); assert.equal(requests.length, 0);
++    await page.getByRole('button', { name: 'Open five-photo hunt', exact: true }).focus();
++    await page.keyboard.press('Enter');
++    await page.getByRole('button', { name: 'Guess this spot', exact: true }).waitFor();
++    await page.waitForFunction(() => !document.querySelector('.photo-hunt button')?.disabled && document.querySelector('.photo-hunt-image')?.complete);
++    assert.equal(requests.length, 1, 'only one photo is requested');
++    assert(requests[0].endsWith(`${order[0]}-thumb.jpg`));
++    assert.equal(await page.locator('.photo-hunt-image[src]').count(), 1);
++    await page.evaluate(async () => {
++      await fixture.rail.select('other'); fixture.level = 0; fixture.rail.setVisible(false);
++    });
++    assert.equal(await page.locator('.photo-hunt-image[src]').count(), 0);
++    const beforeQuiet = requests.length;
++    await page.evaluate(async () => {
++      await fixture.rail.select('home', { by: 'quiet' });
++      fixture.rail.setVisible(false); // Already docked: the registry deliberately does not call hidden again.
++    });
++    assert.equal(await page.evaluate(() => fixture.rail.current), 'home');
++    assert.equal(await page.locator('.photo-hunt-image[src]').count(), 0, 'quiet Home selection while docked must not restore the image');
++    assert.equal(requests.length, beforeQuiet, 'quiet docked Home requests no photograph');
++    await page.evaluate(() => { fixture.level = 1; fixture.rail.setVisible(true); });
++    await page.waitForFunction(() => document.querySelector('.photo-hunt-image[src]')?.complete);
++    assert.equal(await page.locator('.photo-hunt-image[src]').count(), 1, 'opening the Navigator restores its one current image');
++    await page.evaluate(() => fixture.home.shown(document.getElementById('nav-home'), { ...fixture.context, navigator: undefined }));
++    assert.equal(await page.locator('.photo-hunt-image[src]').count(), 1, 'standalone Home contexts without a Navigator remain visible');
++    run.checks.push('actual nav-rail other app → dock → quiet Home keeps image released until reopening; standalone context remains supported');
++    assert.equal(await page.getByRole('button', { name: 'Visit the camera spot', exact: true }).count(), 0);
++    assert.equal(await page.getByRole('link', { name: 'Read the source', exact: true }).count(), 0);
++    await page.getByRole('button', { name: 'Guess this spot', exact: true }).focus();
++    await page.keyboard.press('Space');
++    await page.getByText('Enter the town before making a guess.', { exact: true }).waitFor();
++    await page.evaluate(id => { const row = fixture.destinations.byId('photo', id); fixture.pose = { e: row.e + 100, n: row.n }; }, order[0]);
++    await page.getByRole('button', { name: 'Guess this spot', exact: true }).click();
++    await page.getByText('100 metres from the camera spot · 150 points', { exact: true }).waitFor();
++    await loadedReveal(page);
++    assert.equal(await page.evaluate(() => document.activeElement.textContent), 'Photograph 1 of 5', 'reveal focus remains in the hunt');
++    assert.equal(await page.getByRole('button', { name: 'Guess this spot', exact: true }).count(), 0);
++    assert.equal(await page.getByRole('link', { name: 'Read the source', exact: true }).count(), 1);
++    assert.match(await page.locator('.photo-hunt-content').innerText(), /Recorded year range:.*Source’s date description:/s);
++    await page.evaluate(() => { fixture.blocked = true; });
++    await page.getByRole('button', { name: 'Visit the camera spot', exact: true }).click();
++    await page.getByText('The recorded camera spot cannot be safely visited right now.', { exact: true }).waitFor();
++    await page.evaluate(() => { fixture.blocked = false; });
++    await page.getByRole('button', { name: 'Visit the camera spot', exact: true }).click();
++    assert.deepEqual(await page.evaluate(() => fixture.visits), [order[0]]);
++    run.checks.push('lazy single image, no pre-guess reveal/travel, live position, distance score, guarded visit, real source dates');
++    console.log(`${width}: initial photo, score and source reveal pass`);
++    await page.reload(); await page.getByRole('button', { name: 'Open five-photo hunt', exact: true }).click();
++    await page.getByRole('heading', { name: 'Photograph 1 of 5', exact: true }).waitFor();
++    await loadedReveal(page);
++    await page.getByText('100 metres from the camera spot · 150 points', { exact: true }).waitFor();
++    failImage = true;
++    await page.getByRole('button', { name: 'Next photograph', exact: true }).click();
++    await page.getByRole('button', { name: 'Try loading this photo again', exact: true }).waitFor({ state: 'visible' });
++    await page.getByRole('button', { name: 'Skip and reveal', exact: true }).click();
++    await page.getByRole('button', { name: 'Try loading this photo again', exact: true }).waitFor({ state: 'visible' });
++    assert.equal(await page.getByRole('button', { name: 'Guess this spot', exact: true }).count(), 0);
++    failImage = false;
++    await page.getByRole('button', { name: 'Try loading this photo again', exact: true }).click();
++    await loadedReveal(page);
++    await page.reload(); await page.getByRole('button', { name: 'Open five-photo hunt', exact: true }).click();
++    await page.getByRole('heading', { name: 'Photograph 2 of 5', exact: true }).waitFor();
++    await loadedReveal(page);
++    await page.getByText('Skipped · 0 points', { exact: true }).waitFor();
++    run.checks.push('guessed, skipped, retried and reloaded answered images announce loaded with polite status and no second guess');
++    await page.getByRole('button', { name: 'Next photograph', exact: true }).click();
++    await page.reload();
++    await page.getByRole('button', { name: 'Open five-photo hunt', exact: true }).click();
++    await page.getByRole('heading', { name: 'Photograph 3 of 5', exact: true }).waitFor();
++    assert.equal(await page.locator('.photo-hunt-image').getAttribute('src'), `https://kevinrhaas.github.io/chicago-images/prairie-1904/files/${order[2]}-thumb.jpg`);
++    await page.getByRole('button', { name: 'Return to the town', exact: true }).click();
++    assert.equal(await page.locator('.photo-hunt-image[src]').count(), 0, 'hidden Home releases the image');
++    await page.evaluate(() => { fixture.level = 1; fixture.rail.setVisible(true); });
++    await page.waitForFunction(() => [...document.querySelectorAll('.photo-hunt button')].some(b => b.textContent === 'Guess this spot' && !b.disabled));
++    await page.evaluate(id => { const row = fixture.destinations.byId('photo', id); fixture.pose = { e: row.e, n: row.n }; }, order[2]);
++    await page.getByRole('button', { name: 'Guess this spot', exact: true }).click();
++    // Fail a photograph this document has not decoded, rather than an image Chromium
++    // can legitimately restore from its decoded cache after Home hides and shows it.
++    failImage = true;
++    await page.getByRole('button', { name: 'Next photograph', exact: true }).click();
++    await page.getByRole('button', { name: 'Try loading this photo again', exact: true }).waitFor({ state: 'visible' });
++    assert(await page.getByRole('button', { name: 'Guess this spot', exact: true }).isDisabled());
++    failImage = false;
++    await page.getByRole('button', { name: 'Try loading this photo again', exact: true }).click();
++    await page.waitForFunction(() => [...document.querySelectorAll('.photo-hunt button')].some(b => b.textContent === 'Guess this spot' && !b.disabled));
++    for (let i = 3; i < 5; i++) {
++      await page.waitForFunction(() => [...document.querySelectorAll('.photo-hunt button')].some(b => b.textContent === 'Guess this spot' && !b.disabled));
++      await page.evaluate(id => { const row = fixture.destinations.byId('photo', id); fixture.pose = { e: row.e, n: row.n }; }, order[i]);
++      await page.getByRole('button', { name: 'Guess this spot', exact: true }).click();
++      await page.getByRole('button', { name: i === 4 ? 'Finish hunt' : 'Next photograph', exact: true }).click();
++    }
++    await page.getByRole('heading', { name: 'Five-photo hunt complete', exact: true }).waitFor();
++    assert.equal(await page.locator('.photo-hunt-image[src]').count(), 0);
++    await page.getByText('3150 of 5,000 points', { exact: true }).waitFor();
++    await page.getByRole('button', { name: 'Copy challenge link', exact: true }).click();
++    const shared = new URL(await page.getByRole('textbox', { name: 'Challenge link', exact: true }).inputValue());
++    assert.equal(shared.searchParams.get('huntDay'), day);
++    assert.deepEqual([...shared.searchParams.keys()], ['year', 'nav', 'hunt', 'huntDay']);
++    assert.equal(await page.evaluate(() => document.activeElement.getAttribute('aria-label')), 'Challenge link');
++    assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
++    run.checks.push('reload preserves round order and score, hidden image cleanup, image failure/retry, five-photo completion, clipboard fallback, no overflow');
++    console.log(`${width}: persistence, image failure/retry and completion pass`);
++    if (out) await page.screenshot({ path: path.join(out, `${width}-complete.png`) });
++    await page.evaluate(key => localStorage.setItem(key, '{broken'), HUNT_STORAGE_KEY);
++    await page.reload(); await page.getByRole('button', { name: 'Open five-photo hunt', exact: true }).click();
++    await page.getByText('Saved progress could not be read. Play here, or start again to replace the saved record.', { exact: true }).waitFor();
++    assert.equal(await page.evaluate(key => localStorage.getItem(key), HUNT_STORAGE_KEY), '{broken');
++    await page.getByRole('button', { name: 'Start this hunt again', exact: true }).click();
++    await page.getByText('Progress saved in this browser.', { exact: true }).waitFor();
++    await page.evaluate(() => { Storage.prototype.setItem = () => { throw new Error('blocked'); }; });
++    await page.getByRole('button', { name: 'Skip and reveal', exact: true }).click();
++    await page.getByText('Progress could not be saved. You can keep playing in this tab.', { exact: true }).waitFor();
++    assert.equal(await page.getByRole('button', { name: 'Next photograph', exact: true }).count(), 1);
++    run.checks.push('visible corrupt/blocked storage handling; in-memory play remains possible');
++    console.log(`${width}: corrupt/blocked storage and cleanup pass`);
++    await page.evaluate(() => { fixture.home.unmount(document.getElementById('nav-home')); });
++    assert.equal(await page.locator('#nav-photo-hunt').count(), 0);
++    assert.deepEqual(errors, []);
++    await context.close();
++  }
++  console.log('PHOTO HUNT VIEW PASS — complete mobile/desktop keyboard-labelled Home flow, deterministic saved links, one image, reveal/travel, failures and storage errors');
++} finally {
++  if (out) fs.writeFileSync(path.join(out, 'report.json'), JSON.stringify(report, null, 2));
++  await browser.close(); server.close();
++}
+diff --git a/chicago/4d/tools/test_viewport_accessibility.mjs b/chicago/4d/tools/test_viewport_accessibility.mjs
+new file mode 100644
+index 000000000..ca60fdcd5
+--- /dev/null
++++ b/chicago/4d/tools/test_viewport_accessibility.mjs
+@@ -0,0 +1,77 @@
++import assert from 'node:assert/strict';
++import { viewportSize } from '../renderers/web/js/viewport.js';
++import { createTouchBackend } from '../renderers/web/js/controls/touch.js';
++import { createIntent } from '../renderers/web/js/controls/intent.js';
++
++const windowFor = (width, height, scale = 1) => ({
++  innerWidth: 390, innerHeight: 780, visualViewport: { width, height, scale },
++});
++for (const [label, win, expected] of [
++  ['unmagnified phone', windowFor(390, 780), [390, 780, 1]],
++  ['native 2x pinch', windowFor(195, 390, 2), [390, 780, 2]],
++  ['native 3x pinch', windowFor(130, 260, 3), [390, 780, 3]],
++  ['URL bar exposed', windowFor(390, 710), [390, 710, 1]],
++  ['keyboard exposed', windowFor(390, 440), [390, 440, 1]],
++  ['keyboard and 2x pinch', windowFor(195, 220, 2), [390, 440, 2]],
++  ['landscape at 2x', { innerWidth: 780, innerHeight: 390,
++    visualViewport: { width: 390, height: 195, scale: 2 } }, [780, 390, 2]],
++  ['desktop browser zoom changes layout', { innerWidth: 640, innerHeight: 400,
++    visualViewport: { width: 640, height: 400, scale: 1 } }, [640, 400, 1]],
++  ['no visual viewport', { innerWidth: 1280, innerHeight: 800 }, [1280, 800, 1]],
++  ['temporarily unavailable visual dimensions', windowFor(0, NaN, 2), [390, 780, 2]],
++  ['invalid scale', windowFor(390, 780, 0), [390, 780, 1]],
++]) {
++  const result = viewportSize(win);
++  assert.deepEqual([result.width, result.height, result.scale], expected, label);
++}
++
++const listeners = new Map();
++const canvas = {
++  addEventListener(type, fn) { listeners.set(type, fn); },
++  removeEventListener(type) { listeners.delete(type); },
++  getBoundingClientRect: () => ({ left: 0, top: 0, width: 390, height: 780 }),
++};
++let cssHeight;
++globalThis.window = windowFor(195, 390, 2);
++globalThis.document = {
++  body: { classList: { add() {}, remove() {} } },
++  documentElement: { style: { setProperty(key, value) { if (key === '--vh') cssHeight = value; } } },
++};
++window.visualViewport.addEventListener = window.visualViewport.removeEventListener = () => {};
++const intent = createIntent();
++const reports = [];
++const touch = createTouchBackend({ intent, domElement: canvas, onViewport: size => reports.push(size) });
++touch.enable();
++assert.deepEqual(reports.at(-1), { width: 390, height: 780, scale: 2 });
++assert.equal(cssHeight, '780px', 'reading sheet keeps its layout height during magnification');
++const fire = (type, id, x, y) => listeners.get(type)?.({
++  pointerType: 'touch', pointerId: id, clientX: x, clientY: y, preventDefault() {},
++});
++fire('pointerdown', 1, 70, 500);
++fire('pointerdown', 2, 300, 500);
++fire('pointermove', 1, 70, 450);
++fire('pointermove', 2, 320, 490);
++assert(intent.forward > .9 && intent.yawDelta < 0 && intent.pitchDelta > 0,
++  'independent thumbs still move and look together');
++fire('pointercancel', 1, 70, 450);
++assert.equal(intent.forward, 0, 'cancel releases movement');
++const priorYaw = intent.yawDelta;
++fire('pointermove', 2, 340, 490);
++assert(intent.yawDelta < priorYaw, 'releasing the movement thumb preserves the look thumb');
++fire('pointerup', 2, 340, 490);
++// Measured after an off-centre native pinch: both client coordinates are left
++// of the full 390px canvas midpoint, but they straddle the visible midpoint.
++window.visualViewport.offsetLeft = 65;
++window.visualViewport.width = 198;
++intent.clearLook();
++fire('pointerdown', 3, 105, 500);
++fire('pointerdown', 4, 192, 500);
++fire('pointermove', 3, 105, 450);
++fire('pointermove', 4, 212, 490);
++assert(intent.forward > .9 && intent.yawDelta < 0 && intent.pitchDelta > 0,
++  'off-center browser magnification retains independent visible left/right roles');
++fire('pointerup', 3, 105, 450);
++fire('pointerup', 4, 212, 490);
++touch.disable();
++assert.equal(listeners.size, 0);
++console.log('VIEWPORT ACCESSIBILITY PASS — zoom, keyboard, URL bar, orientation, fallback and independent two-thumb input');

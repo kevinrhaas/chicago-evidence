@@ -5,8 +5,8 @@ branch `steward/t3656-browser-classroom`. This checkpoint preserves completed wo
 **it is not a declaration that the full release gate passed or the PR merged.**
 
 - Original implementation runtime: `6c83e8cf9558c0d6f9ffb422f299764837fc4ed2`.
-- Latest code checkpoint: `5034a724d993abe0876a4db7bbfff02d2bb4da0a` (stage 13 expected-budget pin repair).
-- Current application runtime remains `ae4e0bdd7368b989dd7569509a6e1d94bf9f6cbc`; the later commits change workflow, tests and documentation files.
+- Latest remote primary checkpoint: `b1f507400cb743a3985cb1d50de1ebd085bd4f63` (current dev integrated into the feature branch).
+- The active local retry remains frozen at code `5034a724d993abe0876a4db7bbfff02d2bb4da0a` and published application build `ae4e0bdd7`. It does not test the new remote b1 revision.
 - Latest completed focused photo/notebook runtime: `45b35a2c7d910ec1e73f5a60489b1b22c4aff278`.
   This revision adds bounded caption fitting, notebook draft pruning, a
   person-row alias repair, and on-mount classroom styles. Fresh actual-town
@@ -17,6 +17,59 @@ branch `steward/t3656-browser-classroom`. This checkpoint preserves completed wo
 - Base dev: `169af6421e2b9af10b98970cced2988fe2383b25`.
 - Ticket: `T-3656`, in `kevinrhaas/chicago-tickets`, state `review` with PR 2197.
 - Current progress and remaining actions are tracked on that PR and ticket.
+
+## Latest dev integration and newly completed receipts
+
+Remote primary **b1f507400cb743a3985cb1d50de1ebd085bd4f63** has parents 5034a724d
+and current dev **c676aa2f4ad6ee8cff0521da6ba8add70d55949c**, with tree
+**858aa04a6f34329f71efbbe0c472ad5902fea23b**. This integrates dev into the feature
+branch; PR 2197 has **not** merged into dev. All 46 changed upstream blobs were
+independently checked as exact in this actual tree and the predicted normalized
+follow-up tree. See the follow-up folder's `integration-c676/` provenance.
+
+The latest application still requires source **44422645793**, moving/upload
+**44422645797**, affected desktop stages 13–15 **44422884843**, and mobile stages
+2–15 **44422910837**. Historical stage results keep their original runtime and
+checkout identities; applicability to changed inputs is documented separately.
+The final dependency review supports retaining prior desktop 1–12 and mobile 1
+behavior, with explicit stage-3 hidden-prose and stage-12 handout-projection limits.
+It does not validate the changed paragraph, source-detail edges, full revised
+route, or new changelog/model behavior. The final mapping is in
+`../t3657-t3658-hunt-accessibility-2026-11-18/integration-c676/t3657-t3658-rebase-c676-plan.md`.
+There is no latest-head full-source/renderer or merge verdict here. The local
+2,700-second desktop 13 retry remains on frozen 5034/ae4; its actively written
+log is not copied. Ticket checkpoint 85ea6b1 predates this dev integration.
+
+The newly completed historical receipts are:
+
+| Scope | Run | Result | Time |
+| --- | --- | --- | --- |
+| Primary 7019 desktop 9 | 44405517767 | 27 passed / 0 failed | 13m24s |
+| Primary 7019 desktop 12 | 44405524076 | 29 passed / 0 failed | 12m17s |
+| Primary 7019 desktop 14 | 44405530319 | 145 passed / 0 failed | 15m53s |
+| QA b501 desktop 5 | 44415899803 | 30 passed / 0 failed | 13m32s |
+
+All four have complete suite, zero-page-error, vendor and SMOKE PASS summaries.
+The primary logs are under `renderer/`; the QA log is in the follow-up folder's
+`parent-pin-validation/`. QA stage 5 exercised all three detail tiers and their
+worst stands: Full 3,544,203/3,630,000 triangles, Balanced 2,694,447/2,750,000,
+Light 1,279,387/1,305,000. This remains a b501 result; its applicability to the
+unchanged 1835 geometry is separate from latest-dev changelog/source behavior.
+
+Both jobs in run **44412406478** now completed successfully: moving frames and
+upload-release (32 checks). The workflow head was 5034, but both logs explicitly
+checked out **400ac5f8e803958e4ec577ea3317d9003b6f7efa**, the PR merge with old
+dev 169404. `ci/5034-pr-merge-400ac/` preserves the completed logs and final live
+GitHub job receipt. These are exact old-merge results, not latest b1 coverage.
+
+`ci/latest-dev-checkpoint/` preserves the saved monitor, root recovery, concurrency
+snapshot and cancellation receipts. The concurrency snapshot is explicitly
+**23:37:16 UTC**, not a live view. Old 5034 mobile range 44418522036 and old
+400ac candidates 44422222083 / 44422343106 were cancelled while wholly queued;
+they supply no executed coverage. The latest root recovery supersedes those
+queue plans without rewriting their historical receipts.
+
+The older sections below retain their original cohorts and checkpoint context.
 
 ## Completed formal checks in this checkpoint
 
@@ -282,15 +335,17 @@ both vendor checks and SMOKE PASS. Its hash matches the completed record in
 confirms the process ended. It uses corrected harness `eeebfe0a…` on primary
 5034a724d. This is distinct from the desktop timeout and the older 6c83 mobile run.
 
-Current completed receipts cover desktop **1/2/3/4/6/7/8/10/11** and mobile
+Before the latest dev integration, completed receipts covered desktop **1/2/3/4/6/7/8/10/11** and mobile
 **1/13**, totaling **744 passing assertions**: 601 staged assertions and 143
 repeated scaffolding checks. The manifest preserves the earlier local cohort,
 the corrected cohort, and incomplete attempts separately. Historical full-mobile
 6c83 evidence and failed/capped attempts are excluded from this total. Missing
 stages remain required; this is not a complete renderer verdict.
 
-Primary mobile stages 2–12 and 14–15 are queued in run **44418522036** on 5034.
-Current source **44412406486** and moving/upload **44412406478** remain required.
+At that earlier checkpoint, primary mobile stages 2–12 and 14–15 were queued
+in run **44418522036** on 5034; the wholly queued run was subsequently cancelled.
+Those historical source/moving runs are distinct from the current b1 checks
+listed above.
 Old source 7019 and obsolete mobile 13 runs were cancelled, not passed. The
 follow-up QA backup `qa/t3657-t3658-parent-pin` is pushed at **b501bfcbc**, with
 conditional desktop 5/13 runs **44415899803 / 44415925432** queued. Its provenance

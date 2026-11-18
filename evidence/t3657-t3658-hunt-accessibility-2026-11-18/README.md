@@ -9,14 +9,14 @@ No production promotion, new server, account service, or paid API is involved.
 
 - Latest combined checkpoint: `6ee1a689077839dd9923edbc80269dd2cbaccfb6`.
 - Latest completed focused native runtime: `5674d33df9f39048e5c3ced87c33e3855afdf3ee`.
-- Current dev: `169404c9f99d2defeca2b05f2364c868a4f4e745` (T-3562 roof/asset merge and changelog fold).
+- Current dev: `c676aa2f4ad6ee8cff0521da6ba8add70d55949c`; old-dev evidence retains its 169404 provenance.
 - Original combined fixture commit: `f1f2229f0879c4f1771b07fd9409f994cfc6a986`.
 - Branch: `steward/t3657-t3658-hunt-accessibility`.
 - Base: `03ecd9678e15988abe44c50e27c2bd9fec569530` from the classroom branch.
-- Draft PR 2199 depends on PR 2197; neither is merged. After PR 2197 merges, rebase only
-  the commits after that base onto the actual dev head. Drop already-upstream
-  and duplicate first-PR repairs; preserve upstream changelog verbatim. Do not
-  replay the classroom implementation commits.
+- Draft PR 2199 depends on PR 2197; neither is merged. After PR 2197 merges, use
+  the final normalized 24-file delta plan below against the actual dev squash/fold.
+  The original base is an audit boundary, not permission to merge raw old history.
+  Preserve upstream changelog verbatim and omit duplicate parent repairs.
 - `combined/manifest.json` identifies the base, combined commit, scope, and exact
   file hashes. Every listed hash was independently checked against that immutable
   Git commit while creating this archive. `repair-checkpoint.json` identifies
@@ -24,6 +24,42 @@ No production promotion, new server, account service, or paid API is involved.
   `integration-checkpoint.json` records current branch/dev heads, verified base
   ancestry, and completed focused combined native-town work without extending
   earlier fixture results to another runtime.
+
+## Latest dev provenance and remaining validation
+
+Actual remote primary **b1f507400cb743a3985cb1d50de1ebd085bd4f63** combines 5034
+with current dev c676, with tree **858aa04a6f34329f71efbbe0c472ad5902fea23b**.
+The normalized follow-up prediction is tree
+**d8df5af979b82a6206f71d68bf52fa67f3dca99f**. `integration-c676/` preserves the
+Git-object proof and byte-identical normalized 24-file follow-up patch; the
+superseded old-dev plan/proof is under its `historical-old-dev/` subfolder.
+Every one of the 46 upstream changed blobs was independently checked as exact
+in actual primary and predicted follow-up. The configured direct changelog merge
+driver produces an unsafe tree that unstamps an already shipped entry; do not
+use that tree or replay raw old history. Verify the actual future dev squash/fold
+again and preserve upstream changelog bytes.
+
+`integration-c676/t3657-t3658-rebase-c676-plan.md` is the final readable plan and
+behavioral dependency review. It supports retained desktop 1–12 and mobile 1:
+none opens the 24 changed source-detail edge files; stage 3's changed hidden
+monument paragraph does not affect its asserted 1835 subsets/counts/layout; all
+96 rows have the identical complete projection consumed by stage 12's handout.
+Those tests do not validate the changed paragraph or revised 50-stop route. Fresh
+merged-input 13–15 and all eight source parts remain required. The listed run
+IDs record dispatch, not successful results.
+
+PR 2199's real head remains 6ee and still depends on PR 2197; neither is merged.
+The active local primary retry remains frozen on 5034/ae4, separate from b1's
+new source 44422645793, moving/upload 44422645797, desktop 13–15 run 44422884843,
+and mobile 2–15 run 44422910837. No latest aggregate gate pass is inferred from
+the historical receipts. Ticket checkpoint 85ea6b1 predates this integration.
+
+The b501 QA desktop 5 job now passed **30 checks in 13m32s**, including all three
+budget tiers, suite completion, zero errors and vendor checks. Its unmodified
+log is `parent-pin-validation/desktop5-pass.log`; the stage applies to its
+recorded 1835 geometry, while changelog/source-sensitive stage 13 requires the
+latest merged input checks. The old 400ac QA candidates were cancelled wholly
+queued and have no test coverage.
 
 ## Current preflight and recovery scope
 
@@ -35,7 +71,7 @@ This is only one partition; the other 15 remain required. The standard wrapper
 success banner is broader than the explicitly partitioned command. No browser
 or renderer check ran in this preflight.
 
-Primary head is 5034a724d; follow-up remains 6ee1a6890. The primary-only stage 13
+The earlier preflight checkpoint used primary 5034a724d; follow-up remains 6ee1a6890. The primary-only stage 13
 smoke pin correction has no application change and is not yet incorporated here.
 Full required gates are still running, and the primary local
 desktop stage 5 budget retry was incomplete at 595 seconds, with no complete
