@@ -5,17 +5,22 @@ Recovery evidence for browser-only follow-up work after classroom tools PR 2197.
 native-town, and published renderer release gates have not passed for this work.**
 No production promotion, new server, account service, or paid API is involved.
 
-- Latest combined checkpoint: `e579424f02287d38639f643b102688ef0846f000`.
+- Latest combined checkpoint: `e23ea1f45030aecf864d5ddf6c4b7a4f0e60bc70`.
+- Current dev: `169404c9f99d2defeca2b05f2364c868a4f4e745` (T-3562 roof/asset merge and changelog fold).
 - Original combined fixture commit: `f1f2229f0879c4f1771b07fd9409f994cfc6a986`.
 - Branch: `steward/t3657-t3658-hunt-accessibility`.
 - Base: `03ecd9678e15988abe44c50e27c2bd9fec569530` from the classroom branch.
 - No follow-up PR or merge at this checkpoint. After PR 2197 merges, rebase only
-  the commits after that base onto the actual dev head, retaining subsequent
-  classroom test repairs. Do not replay the classroom implementation commits.
+  the commits after that base onto the actual dev head. Drop already-upstream
+  and duplicate first-PR repairs; preserve upstream changelog verbatim. Do not
+  replay the classroom implementation commits.
 - `combined/manifest.json` identifies the base, combined commit, scope, and exact
   file hashes. Every listed hash was independently checked against that immutable
   Git commit while creating this archive. `repair-checkpoint.json` identifies
   the subsequent repair commits and exact changed-file hashes at e579424f0.
+  `integration-checkpoint.json` records current branch/dev heads, verified base
+  ancestry, and pending combined native-town work without extending those earlier
+  fixture results to the merged runtime.
 
 ## Combined checks
 
@@ -80,12 +85,15 @@ does not validate solved cameras against the native town.
 
 ## Resource regression evidence and repairs
 
-The latest combined checkpoint adds the docked-Home repair at `2f42e3c605c7e55f778c837bbcdcf9e9f03e19bb`
+The earlier repair checkpoint adds the docked-Home repair at `2f42e3c605c7e55f778c837bbcdcf9e9f03e19bb`
 and caption/draft repairs at `e579424f02287d38639f643b102688ef0846f000`.
-These are also being integrated into the primary classroom work where applicable;
-the primary person-alias and lazy-CSS repair was still in progress at this
-checkpoint. No completed base-runtime gate is automatically a result for the
-changed application files.
+Primary commit45b now includes caption/draft/person/lazy-CSS repairs, and both
+new focused actual-town photo/notebook/link runs pass at that exact primary
+revision (see the classroom evidence folder). Combined e23ea1f includes those
+repairs and the behavioral tour test, all hunt/accessibility fixes, and current
+dev. Its dedicated publisher/native-town runs are in progress with a separate
+quiet window. No earlier fixture or base-runtime gate is automatically a result
+for the changed combined application files.
 
 `repairs/caption-fit/` preserves the actual Canvas2D measurement harness, original
 `moment.js`, and before/after timing report. The input uses a real 9,307-character

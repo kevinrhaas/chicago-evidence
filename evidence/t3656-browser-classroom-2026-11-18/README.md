@@ -106,8 +106,9 @@ targeting implementation commit 6c83e8cf9. The duplicate full mobile run
 [44373274865](https://github.com/kevinrhaas/chicago/actions/runs/44373274865)
 was deliberately cancelled; it is not a passing result. The required source CI for the earlier
 metadata head cbf3408e is [44375593498](https://github.com/kevinrhaas/chicago/actions/runs/44375593498).
-Read the PR's exact-head checks for the latest checkpoint. Their final results
-must be read separately; this archive does not assume them.
+For primary45b, source run44397687385 and moving run44397687404 are pending at
+this checkpoint. Read the PR's exact-head checks for their final results; this
+archive does not assume them.
 
 The next browser-only work is checkpointed separately in
 [`../t3657-t3658-hunt-accessibility-2026-11-18/`](../t3657-t3658-hunt-accessibility-2026-11-18/).
