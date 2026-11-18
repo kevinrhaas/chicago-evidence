@@ -1,0 +1,80 @@
+--- photo-run/main.js (SHA256 bcff5a8b)
++++ 6c83e8cf9/main.js (SHA256 541993c2)
+@@ -62,7 +62,7 @@
+ import { createTrees } from './trees.js';
+ import { grownGroupName } from './tree-instances.js';
+ import { createPopup } from './popup.js';
+-import { loadReaderText } from './reader-text.js';
++import { loadReaderText, readerCopy } from './reader-text.js';
+ import { showHumanRoleCard } from './human-role-card.js';
+ import { createWelcome } from './welcome.js';
+ import { createYearPack } from './year-pack.js';
+@@ -4127,6 +4127,10 @@
+   // and the People section can filter a thousand of them without a fetch each.
+   // Absent (an older mirror, a failed fetch) degrades to "no people listed";
+   // it never takes the scene down.
++  let momentSelectedPerson = null;
++  function rememberMomentPerson(id, name = null) {
++    momentSelectedPerson = id ? { id, name } : null;
++  }
+   let people = null;
+   bootController.start('people');
+   // T-1739: only a scene that lists `residents` has a directory compiled for it.
+@@ -4867,6 +4871,7 @@
+     registry: loaded.registry,
+     dataBase: bases.dataBase,
+     sceneId: loaded.scene.id ?? YEAR,
++    onPersonSelected: rememberMomentPerson,
+     onGoTo: (target) => { hud.setPanel(false); goToTarget(target); },
+     // T-3404: a person placed in town now (Otis Bardwell on his wagon) is found there and
+     // can be followed. Read when the card paints; the round is known before the model.
+@@ -6454,13 +6459,12 @@
+   function personCardOpen() {
+     return [...document.querySelectorAll('.insp-person-card, .people-card-name')].some((n) => n.checkVisibility?.() ?? n.offsetParent !== null);
+   }
+-  let momentSelectedPerson = null;
+   async function openPersonCard(id) {
+     if (api.people && !document.querySelector('.panel-tab[data-tab="people"]')?.hidden) {
+       hud.setPanel(true); hud.selectTab('people'); api.people.open?.(id); return true;
+     }
+     const opened = await openSceneDirectoryPerson(id);
+-    if (opened) momentSelectedPerson = id;
++    if (opened && momentSelectedPerson?.id !== id) rememberMomentPerson(id);
+     return opened;
+   }
+   // ---- T-3404: the people placed in town, wherever they are now ------------------- //
+@@ -6997,7 +7001,7 @@
+             throw new Error('Unknown outing.');
+           const res = await fetch(new URL(`sidecars/${year}/jaunts/${id}.json`, resolveBases().dataBase), { cache: 'no-cache' });
+           if (!res.ok) throw new Error('The outing could not be read.');
+-          return res.json();
++          return readerCopy(await res.json(), await loadReaderText(resolveBases().dataBase, `jaunts_${year}`));
+         },
+         // T-2667: Guide › About this destination opens one of its cards in the section
+         // under the Guide's sheet (the old research hub, js/evidence.js).
+@@ -7031,6 +7035,7 @@
+         // (1835), else their own card in Inspect on the house they lived or worked in
+         // (T-3265), else the Navigator's People screen (1904, T-1740).
+         openPerson: (id) => openPersonCard(id),
++        onPersonSelected: rememberMomentPerson,
+         findPerson: !draws('residents')
+           ? (id) => findSceneDirectoryPerson(id) : null,
+         // T-3404: someone placed in town (a driver on their round) can be followed.
+@@ -7118,7 +7123,7 @@
+     // Keep an explicit selection when Home covers its card, but never read an arbitrary
+     // hidden card from another screen. Its caption must belong to the same person id.
+     const directoryPerson = api.people?.state?.open ?? null;
+-    const person = directoryPerson ?? visibleCard?.dataset.personId ?? momentSelectedPerson;
++    const person = momentSelectedPerson?.id ?? visibleCard?.dataset.personId ?? directoryPerson;
+     const personCard = personCards.find(card => card.dataset.personId === person);
+     const place = eraWhere.at(st.e, st.n, walker.bearingDeg)?.place
+       ?? loaded.scene.title ?? 'Chicago';
+@@ -7129,7 +7134,7 @@
+     const sources = (record?.citations ?? []).filter(c => c.source_id && c.citation)
+       .map(c => ({ id: c.source_id, title: c.citation, url: c.url || c.archived_url || '' }));
+     return { ...pose, pose, place, title: `${place}, ${YEAR}`, sources,
+-      personName: person ? ((person === directoryPerson
++      personName: person ? (momentSelectedPerson?.name ?? (person === directoryPerson
+         ? document.querySelector('.people-card-name')?.textContent?.trim() : null)
+         ?? personCard?.querySelector('h3, h4')?.textContent?.trim() ?? null) : null,
+       sourceSubject: record?.name ?? place, url: momentLink(pose) };
