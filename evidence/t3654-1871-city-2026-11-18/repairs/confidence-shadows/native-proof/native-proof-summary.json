@@ -1,0 +1,115 @@
+{
+  "status": "PASS",
+  "tested_source_commit": "3f81ece88f0d57d26063d786e6bccd9658ab89c3",
+  "candidate_origin_commit": "92ac20bce062b8804ac7128e5f013aa19ee7ea0f",
+  "candidate_construction": "Copy of published 92ac mirror, with only walk/js/city-context.js replaced by the approved patch; that runtime file and other listed runtime modules match 3f81 exactly.",
+  "runtime_commit_bindings": {
+    "walk/js/main.js": {
+      "source": "chicago/4d/renderers/web/js/main.js",
+      "sha256": "f8d273d27d9ec94828008513c3408d0a6cf3db6b3ce05ee150d00b3f113c88db"
+    },
+    "walk/js/city-context.js": {
+      "source": "chicago/4d/renderers/web/js/city-context.js",
+      "sha256": "84c81bb02f8dc611c192d534c97853930310206b07d717b5d5dcdc40ccaf21d8"
+    },
+    "walk/js/confidence.js": {
+      "source": "chicago/4d/renderers/web/js/confidence.js",
+      "sha256": "69ec0af83ae1bb50eeea150ec3b7b49c1c330e12129b1a3e37997ae2a9d894ce"
+    },
+    "walk/js/world.js": {
+      "source": "chicago/4d/renderers/web/js/world.js",
+      "sha256": "ce3631b29c5b5cd8e739d8cb782f0094b9130266e0b73bd0e6286deccf551d98"
+    },
+    "walk/js/walker.js": {
+      "source": "chicago/4d/renderers/web/js/walker.js",
+      "sha256": "bb7dfa81e2aa74c06101a433eba6097380a94e2e38c8a60f4decd8aefdd99028"
+    }
+  },
+  "patch_sha256": "b37fb0a9d097bf112bf4f18d7d73dbe32e9bb3fea7a579177a739eb1c2b5cbc7",
+  "report": "report.json",
+  "harness": "probe.mjs",
+  "log": "run.log",
+  "inputs": "inputs.json",
+  "actual_native_render_states": 18,
+  "candidate_screenshots": 9,
+  "potential_depth_owners": 3193,
+  "frame_scope": "One desktop 1280x800 Full-detail session, actual 1871 app, three poses and three confidence states, each with an old-depth fallback negative control.",
+  "shadow_readback": "512x512 texel-center native PCF depth-texture comparison samples at reference depth 0.99999. Counts/hashes measure occupied-shadow coverage, not recovered floating-point depth values. Off-state occupancy hashes are identical; dither has fewer occupied samples; hidden coverage is zero.",
+  "counts": [
+    {
+      "pose": "commercial",
+      "mode": "off",
+      "candidate_occupied": 104283,
+      "fallback_occupied": 104283,
+      "coverage_hash_equal": true
+    },
+    {
+      "pose": "commercial",
+      "mode": "dither",
+      "candidate_occupied": 32560,
+      "fallback_occupied": 104283,
+      "coverage_hash_equal": false
+    },
+    {
+      "pose": "commercial",
+      "mode": "hidden",
+      "candidate_occupied": 0,
+      "fallback_occupied": 104283,
+      "coverage_hash_equal": false
+    },
+    {
+      "pose": "bridge",
+      "mode": "off",
+      "candidate_occupied": 6664,
+      "fallback_occupied": 6664,
+      "coverage_hash_equal": true
+    },
+    {
+      "pose": "bridge",
+      "mode": "dither",
+      "candidate_occupied": 2123,
+      "fallback_occupied": 6664,
+      "coverage_hash_equal": false
+    },
+    {
+      "pose": "bridge",
+      "mode": "hidden",
+      "candidate_occupied": 0,
+      "fallback_occupied": 6664,
+      "coverage_hash_equal": false
+    },
+    {
+      "pose": "tree",
+      "mode": "off",
+      "candidate_occupied": 56883,
+      "fallback_occupied": 56883,
+      "coverage_hash_equal": true
+    },
+    {
+      "pose": "tree",
+      "mode": "dither",
+      "candidate_occupied": 17782,
+      "fallback_occupied": 56883,
+      "coverage_hash_equal": false
+    },
+    {
+      "pose": "tree",
+      "mode": "hidden",
+      "candidate_occupied": 0,
+      "fallback_occupied": 56883,
+      "coverage_hash_equal": false
+    }
+  ],
+  "shader_evidence": "depth-14 and depth-15 are actual patched bridge and instanced caster GPU shaders; depth-17 and depth-18 are the native unpatched negative controls. All compile and link; per-frame uniform readbacks are in report.json.",
+  "failures": [],
+  "page_errors": [],
+  "console_glsl_errors": [],
+  "network_errors": [],
+  "app_problems": [],
+  "limitations": [
+    "Focused software-rendered native shadow acceptance; no hardware FPS or GPU-memory measurement.",
+    "Does not replace complete city, other-year, source, or CI gates. Earlier complete city acceptance continues to cover unchanged geometry, terrain, floor support, lighting, and dates.",
+    "Generic context buildings, trees and bridge forms remain an explicitly approximate baseline; this is not photographic or individually identified historical reconstruction.",
+    "Adding test_city_context_depth.mjs changes check.sh step ordinals and partition assignment. Old source-gate receipts remain bound to their old source revisions; supplemental/new gates must be recorded separately."
+  ]
+}
