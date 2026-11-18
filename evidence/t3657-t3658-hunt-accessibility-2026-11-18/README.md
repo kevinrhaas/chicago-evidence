@@ -7,7 +7,7 @@ fixture, and photo-audit evidence. Full source and published renderer release
 gates remain separate and are not declared green here.**
 No production promotion, new server, account service, or paid API is involved.
 
-- Latest combined checkpoint: `4a2ee67dcbc3067fd8e18fb432098822361f2476`.
+- Latest combined checkpoint: `6ee1a689077839dd9923edbc80269dd2cbaccfb6`.
 - Latest completed focused native runtime: `5674d33df9f39048e5c3ced87c33e3855afdf3ee`.
 - Current dev: `169404c9f99d2defeca2b05f2364c868a4f4e745` (T-3562 roof/asset merge and changelog fold).
 - Original combined fixture commit: `f1f2229f0879c4f1771b07fd9409f994cfc6a986`.
@@ -40,6 +40,28 @@ desktop stage 5 budget retry was incomplete at 595 seconds, with no complete
 stand/tier sweep or final PASS. The classroom evidence records that log separately.
 Consult both PRs for current checks before merging; keep the existing rebase
 boundary and discard duplicate first-PR repairs only after they are upstream.
+
+## Navigator rail keyboard repair
+
+`rail-keyboard/` preserves the report, four screenshots, reproduction harness,
+fixture HTML/script, source verification, and review. All **36 checks passed**:
+390×780 and 1280×800, each with normal and reduced motion. The fixture uses the
+real Navigator/Rail code and Navigator markup/CSS, with small app bodies replacing
+world-dependent contents. Native Tab, Shift+Tab, arrows, Home/End, Enter, Escape
+and N exercise Home → Move and year chip → Jump, a surviving visible rail Tab
+stop, truthful selection state, manual activation, close/reopen, disappearing
+conditional tabs and unregistering an app. There are zero page/HTTP errors,
+forbidden requests or world canvases.
+
+The report's tested commit is **15ebfe4ce2ba26ec30ee4cef850ba655301675fe**.
+The repair is integrated into PR 2199 at **6ee1a689077839dd9923edbc80269dd2cbaccfb6**;
+all four recorded source hashes were independently matched to both immutable
+commits in `rail-keyboard/integration-provenance.json`. This establishes the
+fixture's exact tested code, not whole-branch identity or new native-town coverage.
+The earlier missing bundled-browser launch failed before a page opened; its
+separate failure JSON/log remain preserved. The passing run used installed
+Chromium. No physical-device, assistive-technology or whole-app accessibility
+certification is claimed.
 
 ## Combined checks
 

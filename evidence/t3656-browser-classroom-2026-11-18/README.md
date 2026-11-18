@@ -157,22 +157,48 @@ coverage, or authorize production promotion.
 
 `ci-completion/` records commit 7019f986b's bounded **900-second source CI limit**,
 with all eight native partitions, assertions and the aggregate gate still
-required. Timeouts remain failures; local foreground limits are unchanged. The
+required. Timeouts remain failures. That CI commit did not change foreground
+limits; the later owner-authorized local renderer allowance is documented below. The
 check-harness log passes **50 tests, zero failures**, including partition refusal
 controls, and the workflow-guard log ends `all good`. These are logic/harness
 checks, not successful completion of the live release gates.
 
 The follow-up is now [draft PR 2199](https://github.com/kevinrhaas/chicago/pull/2199),
-head `4a2ee67dcbc3067fd8e18fb432098822361f2476`, targeting dev and depending on
+head `6ee1a689077839dd9923edbc80269dd2cbaccfb6`, targeting dev and depending on
 PR 2197. Its bounded preflight passed source **partition 1 of 16 only** (89 checks,
 26 self-tests), plus changelog and ticket-ID metadata. The wrapper's standard
 “CI has nothing left to ask” banner is broader than that partitioned command;
 the remaining 15 partitions and release gates remain required. No browser ran
 in that preflight. The precise logs/manifest are in the follow-up evidence folder.
 
-Neither PR is merged at this checkpoint. Required gates and primary desktop
-stages 3/6/10/11 are running; no completed result from those active runs is
-included here. `ci-completion/checkpoint.json` supplies the recovery pointers.
+Neither PR is merged at this checkpoint. Required gates remain running. Primary
+desktop stages 3 and 6 completed as recorded below; stage 10 is active and stage
+11 pending, with no passing receipt archived for either.
+`ci-completion/checkpoint.json` supplies the recovery pointers.
+
+## Fresh completed desktop stages 3 and 6
+
+`renderer/current-desktop-3.log` ends SMOKE PASS with **107 passed, zero failed**
+in **6m23s** (94 staged assertions and 13 always-on checks).
+`renderer/current-desktop-6.log` ends SMOKE PASS with **20 passed, zero failed**
+in **6m03s** (7 staged assertions and 13 always-on checks). These sum to 127
+passing assertions, including 26 repeated scaffolding checks; they cover those
+two stages only. Both include completed suite, zero-page-error and vendor checks.
+
+`renderer/current-local-stage-manifest.json` preserves the operator's snapshot
+at 22:11:14 UTC. It identifies primary code head 7019f986b and the ae4e0bdd7
+published build, verifies the harness and both main.js hashes, and separately
+records the supplied runtime-tree declaration. Its helper does not independently
+recompute that entire runtime tree. The snapshot predates stage 10's launch, so
+its `not_run` entry is historical; stage 10 is active at this checkpoint and is
+not counted green. The failed/capped stage 5 remains separate.
+
+The coordinator now uses the owner's budget authorization for new local
+renderer stages: **1,200 seconds plus a 5-second kill grace**. Stage 3 completed
+under the earlier 595-second cap; stage 6 used 1,200 seconds. Unmodified smoke
+logs still print their existing 10-minute guidance footer; the recorded launch
+commands identify the actual supervisor cap. Source preflight remains capped at
+595 seconds. No timeout or incomplete stage is converted into a pass.
 
 ## Focused checks and their limits
 
