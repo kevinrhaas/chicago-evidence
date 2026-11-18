@@ -1,0 +1,69 @@
+{
+  "recorded_utc": "2026-11-18T20:03:12.879Z",
+  "scope": "1871 frame-pacing benchmark poses; no generated geometry or age-reading prose changes.",
+  "base_commit": "8d59e79cd657f58f483533246973e0e1c00ebf51",
+  "candidate_patch": "/tmp/t3654-pacing-1871.patch",
+  "source_sha256": {
+    "renderers/web/js/pacing-read.js": "c770bd5dba931a9de3e7242f37470815f8e40cf2695560826973cf6e27621fa0",
+    "tools/test_pacing_read.mjs": "2097755d1caaffe77a3d34b5b03e3972dcf8e89503f74097cad8e4da441d7352",
+    "data/context/1871.json": "02b9b76437c43da78c0d76579b9bb56e8cf8a8ebcc4a9488cee9f31bfd78d93f",
+    "data/scenes/1871.json": "9848915aee21d0daae95a6fc6066ef3e9076a932dfcc23b2d7872ec1acb1442d"
+  },
+  "poses": {
+    "walk": {
+      "from": [
+        900,
+        -534
+      ],
+      "legs": [
+        [
+          89.4026285464,
+          100
+        ]
+      ]
+    },
+    "turn": {
+      "at": [
+        900,
+        -534
+      ],
+      "yaw_deg": 0
+    },
+    "flight": {
+      "from": [
+        -400,
+        200
+      ],
+      "yaw_deg": 100,
+      "altitude_m": 350,
+      "pitch_deg": -22
+    }
+  },
+  "checks": [
+    {
+      "command": "node tools/test_pacing_read.mjs",
+      "verdict": "PASS",
+      "details": "All four scenes; every 1871 context building included; every half-metre of full 100 m path clears buildings by 1.5 m and stays on emitted Madison road with 0.34 m shoulder."
+    },
+    {
+      "command": "In-memory move the 1871 walk start to first actual context building centre; import the same test.",
+      "verdict": "Expected failure observed",
+      "details": "is inside context1871_00_06_1_01"
+    },
+    {
+      "command": "In-memory replace the 1871 walk leg with due east [90,100]; import the same test.",
+      "verdict": "Expected failure observed",
+      "details": "stays on mapped Madison Street"
+    },
+    {
+      "command": "Deep compare pre-change and candidate SCENE_POSES for1812,1835,1904.",
+      "verdict": "PASS",
+      "details": "All earlier scene pose values unchanged."
+    },
+    {
+      "command": "node --check on both changed JavaScript modules; git diff --check",
+      "verdict": "PASS"
+    }
+  ],
+  "browser_status": "Pending actual optional Read frame pacing action in the published candidate; software-renderer timings will not be hardware performance acceptance."
+}

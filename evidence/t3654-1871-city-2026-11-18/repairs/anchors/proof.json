@@ -1,0 +1,92 @@
+{
+  "recorded_utc": "2026-11-18T20:04:53.058038+00:00",
+  "source_base_commit": "8d59e79cd657f58f483533246973e0e1c00ebf51",
+  "scope": "Offline anchor-reader repair; no runtime, scene coordinate, terrain, geometry or camera changes. Source files are the uncommitted repair atop source_base_commit.",
+  "commands": [
+    "node tools/measure_anchors.mjs --self-test",
+    "node tools/measure_anchors.mjs --gate"
+  ],
+  "results": {
+    "self_test": "PASS",
+    "all_scene_gate": "PASS",
+    "anchor_counts": {
+      "1812": 29,
+      "1835": 19,
+      "1871": 7,
+      "1904": 18
+    }
+  },
+  "negative_controls": [
+    "Standing water stays illegal",
+    "Aerial outside modelled extent stays illegal",
+    "Missing/nonfinite/negative aerial altitude refused",
+    "Removing flight mode restores standing-water fault",
+    "Altitude/mode drift refused",
+    "Missing numeric ground reading refused instead of comparing NaN"
+  ],
+  "existing_reading_comparison": {
+    "anchor_ground_reading.json": {
+      "all_existing_values_unchanged": true,
+      "new_aerial_altitude_m": {
+        "from_above": 175
+      }
+    },
+    "anchor_ground_reading.1812.json": {
+      "all_existing_values_unchanged": true,
+      "new_aerial_altitude_m": {
+        "first_fort_from_above": 120,
+        "eighteenth_street_shore": 30,
+        "potawatomi_camp": 22,
+        "first_fort_covered_way": 13,
+        "battle_bank_eighteenth_street": 3.5,
+        "heald_small_elevation": 1.6
+      }
+    },
+    "anchor_ground_reading.1904.json": {
+      "all_existing_values_unchanged": true,
+      "new_aerial_altitude_m": {
+        "prairie_from_above": 85
+      }
+    }
+  },
+  "1871_date": "1871-10-08",
+  "1871_aerials": [
+    {
+      "id": "whole_city",
+      "local_e": 3000,
+      "local_n": -1400,
+      "aerial": true,
+      "altitude_m": 4200,
+      "inside": true,
+      "ground_m": -3,
+      "dry": false,
+      "stands_on": null,
+      "deck_m": null,
+      "margin_m": 10,
+      "inside_a_roof": null
+    },
+    {
+      "id": "river_from_above",
+      "local_e": -400,
+      "local_n": 200,
+      "aerial": true,
+      "altitude_m": 350,
+      "inside": true,
+      "ground_m": 3.2,
+      "dry": true,
+      "stands_on": null,
+      "deck_m": null,
+      "margin_m": 290,
+      "inside_a_roof": null
+    }
+  ],
+  "sha256": {
+    "tools/measure_anchors.mjs": "3b17498ad869a17ec655e71be802f163ac9b49cf3a267975c74ada01bed4239c",
+    "data/render/anchor_ground_reading.json": "6d667413248255823ef003d792c1a9281792323eb087af333dd9fb09b4c54318",
+    "data/render/anchor_ground_reading.1812.json": "df30f4f5c221f0f27fa711fbeb1e219dfbf1e480f0358f1fb1e4eec8eb041b12",
+    "data/render/anchor_ground_reading.1871.json": "66b1cf9c8f26a9bccf12dfc41eba87eb377d6fe59b9db3d5bd66a6b34a617510",
+    "data/render/anchor_ground_reading.1904.json": "f8e32af1b4a6097ff73432836025e07210275bb0c93997bdb4ee225621c6eb10"
+  },
+  "focused_log_sha256": "3185ade8e14f55b02162bd6a8a0723db676f4593ab04b1ba14174a1559b446f6",
+  "registry": "No existing measure_anchors or anchor_ground_reading entry in derived_manifest.json/writer_inventory.json; neither registry changed."
+}
