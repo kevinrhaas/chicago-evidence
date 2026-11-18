@@ -5,7 +5,8 @@ Recovery evidence for browser-only follow-up work after classroom tools PR 2197.
 native-town, and published renderer release gates have not passed for this work.**
 No production promotion, new server, account service, or paid API is involved.
 
-- Combined code commit: `f1f2229f0879c4f1771b07fd9409f994cfc6a986`.
+- Latest combined checkpoint: `e579424f02287d38639f643b102688ef0846f000`.
+- Original combined fixture commit: `f1f2229f0879c4f1771b07fd9409f994cfc6a986`.
 - Branch: `steward/t3657-t3658-hunt-accessibility`.
 - Base: `03ecd9678e15988abe44c50e27c2bd9fec569530` from the classroom branch.
 - No follow-up PR or merge at this checkpoint. After PR 2197 merges, rebase only
@@ -13,7 +14,8 @@ No production promotion, new server, account service, or paid API is involved.
   classroom test repairs. Do not replay the classroom implementation commits.
 - `combined/manifest.json` identifies the base, combined commit, scope, and exact
   file hashes. Every listed hash was independently checked against that immutable
-  Git commit while creating this archive.
+  Git commit while creating this archive. `repair-checkpoint.json` identifies
+  the subsequent repair commits and exact changed-file hashes at e579424f0.
 
 ## Combined checks
 
@@ -76,11 +78,48 @@ forms remain visible rather than silently choosing one. The photographs predate
 the 1904 world and do not prove unchanged appearance in 1904. Thumbnail review
 does not validate solved cameras against the native town.
 
+## Resource regression evidence and repairs
+
+The latest combined checkpoint adds the docked-Home repair at `2f42e3c605c7e55f778c837bbcdcf9e9f03e19bb`
+and caption/draft repairs at `e579424f02287d38639f643b102688ef0846f000`.
+These are also being integrated into the primary classroom work where applicable;
+the primary person-alias and lazy-CSS repair was still in progress at this
+checkpoint. No completed base-runtime gate is automatically a result for the
+changed application files.
+
+`repairs/caption-fit/` preserves the actual Canvas2D measurement harness, original
+`moment.js`, and before/after timing report. The input uses a real 9,307-character
+Glessner citation line and a 390×780 source canvas. Across three samples, the old
+implementation made **9,241 `measureText` calls** and spent **2.0–5.6 seconds**
+synchronously copying/fitting the caption; the repaired implementation made
+**17 calls** and spent **3.6–4.9 milliseconds**. Source metadata stayed intact,
+and every output PNG was 22,567 bytes. The archived original hash matches the
+report, and its repaired hash matches the immutable e579424f0 `moment.js`.
+This is headless Chromium's real Canvas2D, with no town or WebGL. The synchronous
+measurement excludes PNG encoding; concurrent source checks can affect wall
+times. It is not a phone, town, or sustained hardware-performance benchmark.
+
+`repairs/t3658-notebook-drafts-before.log` records the stale-draft regression:
+restoring a removed entry's ID revived its old unsaved draft instead of the
+fresh persisted text. The corresponding `after.log` passes the real People/
+notebook component test, including source/identity/save/deduplication/denied
+storage, preservation of live drafts on storage changes, and removed-ID pruning
+over 120 IDs. These are focused component assertions, not full-town testing.
+
+`repairs/t3657-docked-home-before.log` records the image-resource regression:
+quietly selecting Home while the Navigator was docked restored an image. The
+`after.log` and `repairs/docked-home-after/` report/screenshots/manifest show the
+real nav-rail, Home, hunt modules, and catalogue fixture passing at both widths:
+the image stays released while docked and exactly one is restored on reopening.
+The fixture uses tiny image bytes and no town. The manifest hashes were checked
+against its exact 2f42e3c60 commit, which precedes e579424f0.
+
 ## Integrity and remaining work
 
 `artifact-manifest.json` records original paths/timestamps, scope, file size, and
 SHA-256 for every copied artifact. This checkpoint adds no source changes and
 runs no new browser. Required remaining work includes rebasing after the classroom
-merge, current-head source checks, native/published integration verification, and
+merge, accounting for classroom repairs absorbed into that merge, current-head
+source checks, native/published integration verification, and
 the appropriate renderer release gate. Existing classroom mobile passes are
 for its unchanged runtime and do not automatically cover this follow-up runtime.

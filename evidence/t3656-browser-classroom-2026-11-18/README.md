@@ -7,17 +7,19 @@ branch `steward/t3656-browser-classroom`. This checkpoint preserves completed wo
 - Implementation: `6c83e8cf9558c0d6f9ffb422f299764837fc4ed2`.
 - Latest code-repository checkpoint: `bb59311bfba32067a6f4ca3c8175deea2f05af38`.
   Since implementation, checkpoints have changed STATUS, the smoke ledger,
-  measured test-isolation rows, and the tour test. Application/runtime source
-  remains identical to the implementation commit. `recovery-checkpoint.json`
-  records the exact changed paths and current validation status.
+  measured test-isolation rows, and the tour test. Its committed application
+  runtime remains identical to the implementation commit. New working-tree
+  resource, person-alias, and lazy-CSS repairs are being integrated separately;
+  they do not inherit these base-runtime test results. `recovery-checkpoint.json`
+  records the exact committed paths and current validation status.
 - Base dev: `169af6421e2b9af10b98970cced2988fe2383b25`.
 - Ticket: `T-3656`, in `kevinrhaas/chicago-tickets`, state `review` with PR 2197.
 - Current progress and remaining actions are tracked on that PR and ticket.
 
 ## Completed formal checks in this checkpoint
 
-`gate/part1of8.log` through `part6of8.log` end with CHECK PASS:
-175, 174, 174, 174, 175, and 174 steps respectively. The source gate is green only when **all
+`gate/part1of8.log` through `part7of8.log` end with CHECK PASS:
+175, 174, 174, 174, 175, 174, and 174 steps respectively. The source gate is green only when **all
 eight partitions** pass. `preflight-part1of8.log` also records the PR changelog
 and ticket-ID checks; it ran with `CHECK_PART=1/8`, so its PREFLIGHT PASS is not
 a claim that partitions 2–8 ran inside that command.
@@ -41,8 +43,15 @@ tour element leads the actual mounted Guide's controls and hosted sections.
 Focused tour/Guide checks passed, and `gate/tour-order-negative-checks.json`
 records both deliberately moved and omitted tour mutations being rejected.
 Application code and the intended ordering are unchanged. The complete
-partition 7 rerun is still pending in this checkpoint; the historical failure
-is never labeled green. Partition 8 remains pending.
+partition 7 rerun now passes all 174 steps in `gate/part7of8.log`; the historical
+failure is retained separately and is never relabeled green.
+
+`gate/part8-dataset-failure.log` and `gate/ci-bb59311bf-part8-dataset-failure.log`
+preserve local and CI partition 8 failures. The dataset validator reports two
+errors: a local person-row alias is interpreted as reading nonexistent
+`placement.id`, and four byte-identical year pages have crossed its 64 KB
+duplication threshold. Root is integrating the person-alias and lazy-CSS repairs;
+no passing replacement partition 8 or full source verdict is recorded here.
 
 `renderer/mobile-1.log` through `mobile-12.log`, plus `mobile-14.log` and `mobile-15.log`, are completed, unmodified official
 `tools/smoke_renderer.mjs --published` runs at 390×780, one stage per command.
@@ -83,8 +92,8 @@ job `135090381320`, on metadata head `7969031f0` with unchanged runtime.
 The local-only `progress-checkpoint.json` intentionally retains its original
 incomplete-at-cap record; the later CI success is a separate artifact.
 
-At this checkpoint, source partitions 1–6 were green, the repaired partition 7
-was being rerun, and partition 8 remained pending. Mobile coverage was complete,
+At this checkpoint, source partitions 1–7 were green and partition 8 red.
+Mobile coverage was complete for the committed base runtime,
 and the complete desktop formal smoke still active in
 [44372747109](https://github.com/kevinrhaas/chicago/actions/runs/44372747109),
 targeting implementation commit 6c83e8cf9. The duplicate full mobile run
@@ -97,6 +106,9 @@ must be read separately; this archive does not assume them.
 The next browser-only work is checkpointed separately in
 [`../t3657-t3658-hunt-accessibility-2026-11-18/`](../t3657-t3658-hunt-accessibility-2026-11-18/).
 Its fixtures and photo audit do not extend this PR's full-town release verdict.
+The follow-up evidence also preserves newly measured resource regressions and
+repairs backed up at `e579424f02287d38639f643b102688ef0846f000`. Primary integration
+and verification of those application changes remain separate work.
 
 ## Focused checks and their limits
 
