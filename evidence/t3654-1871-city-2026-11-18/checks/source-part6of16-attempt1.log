@@ -1,0 +1,1229 @@
+
+[1m== Picture comparisons bind the planting drawn, its grown-plant renderers and anchor placement (T-1881)[0m
+ok   picture planting review: named lots, reachable parkway trees and street furniture, renderer/anchor freshness, refusals
+
+[1m== The structures batch stores normals, uvs and tones compact and aligned, each within its format's bound (T-2568)[0m
+PASS constant batch scalars: exact bytes/source/geometry/version; varying, dynamic, malformed and ownership fallbacks
+PASS alignment: every compact stride is a multiple of four bytes, and a narrower one is refused
+PASS compact formats: 52 -> 32 bytes a vertex, every channel within its format's bound
+PASS one plan per batch: out-of-range, NaN and missing channels stay as they arrived
+PASS batch: BatchedMesh keeps the compact formats and the instance colour is exact
+PASS packed scalars: four channels in four bytes (24 a vertex here), exact where the data is, GLSL = readback
+PASS positions: Int16 x4 over +/-46.95 m, drawn within half a 1.43 mm step, one grid per structure
+PASS normals: under the uniform dequantize scale three lights the building's own normal
+PASS structure frame: the relief patches read metres in the structure's frame off the instance matrix
+PASS batch: BatchedMesh keeps Int16 x4 positions and a pick lands on the roof through the instance matrix
+PASS timber final scalars: exact U8 leaf/encoded FP16 grades, other lanes and sources retained, native clones and invalid-value fallbacks
+PASS timber final channels: Int8 normal, Uint16 uv, Uint16 x4 colour (alpha 1), out-of-range channels kept float
+
+[1m== A coursed wall's mortar floor is drawn behind the stone faces lying on it, so the two never fight for a pixel (T-3226)[0m
+PASS joint floor: mortar drawn behind its stones (factor 1, units 4) on 37 shipped houses
+
+[1m== The Confidence view's overlays — street names, building labels, people pins and the Jaunt route, each on its own switch, only what each destination has, and no frame loop while off (T-2650)[0m
+T-2650 — the Confidence view overlays
+  ok   building labels: a name of its own only — "A vacant dwelling" is a description, and a ticket in brackets never shows
+       named buildings: 1812 68 of 68, 1835 447 of 765, 1904 286 of 286
+  ok   each destination labels only buildings with a name of their own, and none of them reads as an id or a ticket
+       pins: 1835 74 addresses for 507 people, 1904 71 for 412, 1812 27 for 825
+  ok   people pins: one per address in the directory, absent people left off, a standing review carried, no address no pin
+  ok   each switch's line says what this destination has, or that it has none — never a fake layer
+  ok   the layer places a point exactly where three projects it, and nothing behind the camera
+  ok   labels: the nearest in sight, at most the phone's six, none at a hidden grade and none on top of a nearer one
+  ok   off costs nothing: no layer, no frame loop until a switch is on, and none again once all are off
+  ok   street names are T-2741's readout: the switch is the HUD's own setting, not a second layer
+  ok   labels on: the nearest named buildings in sight are drawn over the town, and a hidden grade drops its labels
+  ok   people pins: a pin lists who is there with the review line, and a name opens that person's card
+  ok   the Jaunt route: a dotted line through the stops in front of you, numbered, the next one ringed; none without a Jaunt
+  ok   the switches at the foot of the app: one per overlay, and a layer this destination lacks cannot be switched on
+
+all checks passed
+
+[1m== Full active Ghost views use their measured envelope; ordinary and lower-tier ceilings restore unchanged (T-2981)[0m
+PASS Full active Ghost uses independently measured draw and triangle pins
+PASS the resolver does not mutate or drop other base policy fields
+PASS Normal, Tint and inactive Ghost keep the original base object and limits
+PASS Balanced and Light preserve their exact ceilings with Ghost enabled
+PASS a higher inspection allowance is preserved in either dimension
+PASS actual confidence view enables the allowance only while Ghost is active
+PASS multiple Ghost grades restore only when the last visible Ghost ends
+PASS detail transitions return to the original lower-tier and ordinary policies
+PASS the actual smoke pin rejects stale, inflated and public/stat-divergent allowances
+render-budget: 9 policy/transition checks passed
+
+[1m== Recorded dirt and snow hoof proxies preserve mechanics and bounded decode/voice budgets (T-3551)[0m
+TAP version 13
+# Subtest: source bytes and actual clip remain bound to the measured excerpts and gait
+ok 1 - source bytes and actual clip remain bound to the measured excerpts and gait
+  ---
+  duration_ms: 6.271653
+  type: 'test'
+  ...
+# Subtest: only the actual two 1812 actors on their exact seasonal viewing dates qualify
+ok 2 - only the actual two 1812 actors on their exact seasonal viewing dates qualify
+  ---
+  duration_ms: 27.701845
+  type: 'test'
+  ...
+# Subtest: extraction retains only 55,296 bytes, preserves interior samples and fades both edges
+ok 3 - extraction retains only 55,296 bytes, preserves interior samples and fades both edges
+  ---
+  duration_ms: 1.330665
+  type: 'test'
+  ...
+# Subtest: six-voice 1812 budget keeps all four mechanicals and adds two rate-one finite contacts
+ok 4 - six-voice 1812 budget keeps all four mechanicals and adds two rate-one finite contacts
+  ---
+  duration_ms: 29.93165
+  type: 'test'
+  ...
+# Subtest: T-3587: every year's actual team is heard hoof by hoof, at each scene's seasonal dates
+ok 5 - T-3587: every year's actual team is heard hoof by hoof, at each scene's seasonal dates
+  ---
+  duration_ms: 7.251183
+  type: 'test'
+  ...
+# Subtest: a year with an approved hoof recording takes the six-voice budget; one without keeps four
+ok 6 - a year with an approved hoof recording takes the six-voice budget; one without keeps four
+  ---
+  duration_ms: 14.205625
+  type: 'test'
+  ...
+# Subtest: a year with no approved hoof recording keeps four voices / 8MiB and never fetches or samples hoofs
+ok 7 - a year with no approved hoof recording keeps four voices / 8MiB and never fetches or samples hoofs
+  ---
+  duration_ms: 10.506464
+  type: 'test'
+  ...
+# Subtest: renderer snow amount changes recorded gain and lowpass, not cadence, pitch or source identity
+ok 8 - renderer snow amount changes recorded gain and lowpass, not cadence, pitch or source identity
+  ---
+  duration_ms: 10.50699
+  type: 'test'
+  ...
+# Subtest: stops, hidden actors and changed epochs cancel shots and resume with baseline only
+ok 9 - stops, hidden actors and changed epochs cancel shots and resume with baseline only
+  ---
+  duration_ms: 16.291248
+  type: 'test'
+  ...
+# Subtest: paused/zero-time disabled frames skip environment, stop shots and never catch up
+ok 10 - paused/zero-time disabled frames skip environment, stop shots and never catch up
+  ---
+  duration_ms: 20.404242
+  type: 'test'
+  ...
+# Subtest: date change stops current contacts before settings sync and primes the new season silently
+ok 11 - date change stops current contacts before settings sync and primes the new season silently
+  ---
+  duration_ms: 13.241703
+  type: 'test'
+  ...
+# Subtest: late or failed hoof decode never removes the four existing mechanical voices
+ok 12 - late or failed hoof decode never removes the four existing mechanical voices
+  ---
+  duration_ms: 7.861142
+  type: 'test'
+  ...
+# Subtest: one source reservation survives reset; stale decoded data cannot resurrect contacts
+ok 13 - one source reservation survives reset; stale decoded data cannot resurrect contacts
+  ---
+  duration_ms: 7.696569
+  type: 'test'
+  ...
+# Subtest: wrong delivered bytes are rejected before decode
+ok 14 - wrong delivered bytes are rejected before decode
+  ---
+  duration_ms: 126.094692
+  type: 'test'
+  ...
+# Subtest: absent hoof catalog entry and mute never traverse per-frame horse snapshots
+ok 15 - absent hoof catalog entry and mute never traverse per-frame horse snapshots
+  ---
+  duration_ms: 9.342
+  type: 'test'
+  ...
+1..15
+# tests 15
+# suites 0
+# pass 15
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 322.298724
+
+[1m== Navigator Jump: three era cards with HERE, the in-world ring and transfer stamp, Escape aborts, RECALL the one signal-red key (T-2655)[0m
+NAV JUMP PASS — three era cards, HERE on yours; a pick runs the ring and the transfer stamp, then the page; Escape aborts; RECALL the one red key
+
+[1m== Inspect's Photos tab shows each picture's year, caption and credit by date, the 12 best first and All N, and From this spot only where a solved camera stood (T-2645)[0m
+  ok the year is the data's own: one year, a range, one end open, or Undated
+  ok the caption is templated from the view and kind, never the archival title
+  ok the credit is the creator, else the holder's first clause, else nothing
+  ok a spot is carried into the field as walker.js turns a footprint, and none without one
+  ok a picture with a spot ranks first, and a second viewpoint takes its turn before the eleventh front
+  ok within a view: in-period before later, nearer the scene year first, photographs before drawings
+  ok the tab shows the held, credited pictures by date, the best 12 by date, and lists the rest as links
+  ok the pane draws 12 tiles with year, caption and credit; All N shows every one; From this spot only on a spot
+  ok link-only cards keep sourced identity warnings and creator plus holder without changing captions
+  ok Glessner House: more than 12 pictures, 12 best by date, every one credited, a spot only where a solved camera names it
+  ok Inspect draws its Photos tab with renderPhotos, and the page offers From this spot through Show me
+test_nav_photos: OK (11 checks)
+
+[1m== Jaunts hold the everyday people out but for those each stop calls for, and give them back (T-3495)[0m
+PASS a stop calls for its own people and the people its cards link
+PASS a stop with no stage or hosts keeps the town about it
+PASS the controller holds the crowd from the first stop to End, menu or completion
+PASS the human layer holds the crowd out (not drawn, advanced, met or picked), keeps the called-for, the drivers and a stop's neighbourhood, and gives them back
+JAUNT CROWD PASS
+
+[1m== Glessner's coach-house doors swing, the man door lets people in, and a carriage drives in over its drive (T-3557)[0m
+  from east: 60.4 m, drift 8.1 deg, lock 14.49 deg; doorway 0.62 m (11.9 ft) / casing 0.48 / open leaves 0.37 m a side; kerb room to spare: wheels 0.44, hooves 0.14 m
+  from west: 87.1 m, drift 17.7 deg, lock 14.49 deg; doorway 0.62 m (11.9 ft) / casing 0.48 / open leaves 0.37 m a side; kerb room to spare: wheels 0.45, hooves 0.15 m
+PASS: 105 checks — Glessner's coach-house doors swing, the man door lets people in, and a carriage has a drivable way in (T-3557)
+
+[1m== A cleared woman's hairstyle (Mattie's bun) is pinned, CC0, fitted to her head and skinned; its red tie recoloured (T-3434)[0m
+../workspace/chicago/chicago/4d/tools/test_human_hair_proxy.py:59: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  red = lambda im: sum(1 for r, g, b in im.getdata() if r > 2*g and r > 80)
+.
+----------------------------------------------------------------------
+Ran 3 tests in 1.301s
+
+OK
+
+[1m== A 1904 cook's working dress (Kate Ryan) is sourced, layered and skinned on the shared rig, at the service stair (T-3479)[0m
+.........
+----------------------------------------------------------------------
+Ran 9 tests in 47.777s
+
+OK
+
+[1m== Canonical planted-standing horse preserves metre scale, allowed clip, clocks, modern credit and bounded drawn-yard support (T-2800/T-2803)[0m
+STANDING INTEGRATION UNIT PASS — modern-credit separation and bounded144B actual-yard fixture snapshot survives upload release; late/cap refusals and disposal. No actual town/render/photo proof.
+
+[1m== Human inspection preserves decoded morph defaults and compares actual CPU-skinned surfaces[0m
+PASS: actual vendored Three.js CPU skin/morph regression: defaults, sampled surface difference, terminal clamp/reset, empty surface, metric scale and duplicate clips; plus dormant named-morph delta detection at rest/walk midpoint and default restoration; no resident/WebGL acceptance
+
+[1m== Driven assembly retains named drivers, vehicle ownership and exact current horse travel (T-2804)[0m
+deferred live spawn: first approach/Light restoration, cached circuit, no GLB thrash/duplicate rows, fatal refusal cache and disposal PASS
+a team waits for a horse in its way, and drives on when it has gone PASS
+driven assembly: actual W01 source hierarchy/THREE transforms + lifecycle PASS
+driven factory: concurrent start/allSettled late ownership/sync throw/rejection/bindings/delayed adoption/Light cancellation/exactly-once release PASS
+1904 actual392-person catalog: lazy eligible namedHans identity, native scene-aware card/Find path, no human-layer population or anonymous fallback PASS
+native1904 card Find forwards exactHans identity; default card/Back remains unchanged PASS
+actual nativeFind keeps live Hans actor target and visible1835 legacy panel/tab/open sequence PASS
+original1835 Navigator immediate return preserved while household promise remains unresolved PASS
+eligibleJSprewarm: zeroGLBs/leases beforecomplete route, Light/remote/welcome/cancel/refusal/cache ownership PASS
+module-warm oldgeneration cancels beforemodels/newgeneration mounts once; wrongscene remains cold PASS
+eligible named-card warm: actual directory household/citation cache, no UI/model dependency, guarded optional failures PASS
+seated driver visual clock: stop, holds, range, Light restoration and no doubled vehicle time PASS
+elapsed actual assembly: synthetic admission/range/Light cannot prime visual reset; real stopped frame gets exactly one independent look update PASS
+cold named-driver Find: exact configured identities, stop-before-publication, real Travel cancellation, stale tokens, shared Continue, Light/generation/dispose and recoverable/fatal ownership PASS
+composed motionV2+cold Find: actual assembly publication/visual admission, fulfilled Stop, native Continue zero and configured next-frame pace PASS
+LIGHT SCENE CALLBACK + HANS PUBLIC CARD PASS — native scene adapter has zero errors and preserves the named card API
+DEFAULT LIGHT KEEPS ITS TEAMS PASS — Light acquires the team within its 45 m reach (T-3542)
+
+[1m== The 1812 garrison is at its duties: knots that talk, break up and come back together, sentries walking their posts, a rank before its sergeant, nobody standing loose on the parade, deterministic (T-3490)[0m
+human duties: 5 knots, 4 beats, a rank of 7; 34 men inside the pickets, 0 standing loose: PASS
+
+[1m== The 1812 town's people (Kinzie, Lalime, the officers, women, children, Potawatomi and Miami) are what place_town.py writes from their day readings, every indoor span at a building with a door (T-3463..T-3467)[0m
+  not drawn: simmons_susan: an infant in arms, not drawn
+  not drawn: cicely_son: an infant in arms, not drawn
+  not drawn: burns_infant: an infant in arms, not drawn
+  not drawn: lee_infant: an infant in arms, not drawn
+  not drawn: fettle_louis: no card (cards.py says why)
+119 people of the 1812 town placed at their days (5 not drawn)
+
+[1m== Sleeve hems and cuffs bend with the wrist as one band, no ragged edge; the soldiers' cuffs never through or parted; a gloved hand shows no skin in the sleeve's mouth, walking, bending, carrying, at every level (T-3553)[0m
+anonymous_working_driver_1904 L0: hems 2: edge 7.3→2.2 mm off line, hand weight round it 0.36→0.00
+bardwell_otis_1835 L0: hems 2: edge 7.4→2.2 mm off line, hand weight round it 0.36→0.00
+billings_august_1904_stable_helper L0: hems 2: edge 1.0→0.7 mm off line, hand weight round it 0.30→0.00
+child_boy_1812 L0: hems 2: edge 1.2→0.9 mm off line, hand weight round it 0.23→0.00
+child_boy_1904 L0: hems 2: edge 1.5→1.1 mm off line, hand weight round it 0.23→0.00
+child_girl_1904 L0: hems 2: edge 1.1→0.8 mm off line, hand weight round it 0.24→0.00
+child_toddler_1904 L0: hems 2: edge 0.9→0.7 mm off line, hand weight round it 0.18→0.00
+engage_1812 L0: hems 2: edge 1.0→0.7 mm off line, hand weight round it 0.28→0.00
+flynn_mary_1835_dress_study L0: hems 2: edge 0.8→0.5 mm off line, hand weight round it 0.29→0.00
+glessner_frances_m_1904 L0: hems 2: edge 1.3→1.1 mm off line, hand weight round it 0.17→0.00
+glessner_john_j_1904 L0: hems 4: edge 1.7→1.5 mm off line, hand weight round it 0.30→0.00
+lady_1812 L0: hems 2: edge 0.8→0.5 mm off line, hand weight round it 0.29→0.00
+mahoney_patrick_1835 L0: hems 2: edge 1.1→0.7 mm off line, hand weight round it 0.28→0.00
+nelson_charles_1904_coachman L0: hems 2: edge 1.7→1.4 mm off line, hand weight round it 0.15→0.00; skin seen past the glove 684→0 points over the poses
+nelson_christine_1904_errand L0: hems 4: edge 0.9→0.5 mm off line, hand weight round it 0.29→0.00
+officer_first_infantry_1812 L0: hems 2: edge 1.5→1.1 mm off line, hand weight round it 0.20→0.00; cuff facings on their sleeves: 6 checks, none through or parted
+officer_first_infantry_1812_lieutenant L0: hems 2: edge 1.5→1.1 mm off line, hand weight round it 0.20→0.00; cuff facings on their sleeves: 6 checks, none through or parted
+peck_philip_1835 L0: hems 4: edge 1.5→1.2 mm off line, hand weight round it 0.30→0.00
+potawatomi_boy_1812 L0: hems 2: edge 0.9→0.7 mm off line, hand weight round it 0.13→0.00
+potawatomi_man_1812 L0: hems 2: edge 1.0→0.7 mm off line, hand weight round it 0.28→0.00
+potawatomi_woman_1812 L0: hems 2: edge 1.0→0.5 mm off line, hand weight round it 0.29→0.00
+private_first_infantry_1812 L0: hems 2: edge 1.4→1.1 mm off line, hand weight round it 0.20→0.00; cuff facings on their sleeves: 6 checks, none through or parted
+reynolds_mary_1904_maid L0: hems 4: edge 1.0→0.6 mm off line, hand weight round it 0.29→0.00
+settler_1812 L0: hems 2: edge 1.0→0.7 mm off line, hand weight round it 0.28→0.00
+surgeons_mate_first_infantry_1812 L0: hems 2: edge 1.5→1.1 mm off line, hand weight round it 0.20→0.00; cuff facings on their sleeves: 6 checks, none through or parted
+teen_boy_1904 L0: hems 2: edge 1.8→1.3 mm off line, hand weight round it 0.29→0.00
+teen_girl_1904 L0: hems 2: edge 1.3→1.0 mm off line, hand weight round it 0.28→0.00
+trader_1812 L0: hems 4: edge 1.6→1.2 mm off line, hand weight round it 0.30→0.00
+williamson_mattie_1904_cook_study L0: hems 2: edge 1.0→0.6 mm off line, hand weight round it 0.29→0.00
+272 sleeve hems, 4 gloved sleeves, 96 soldiers' cuff checks over every body and level, six arm poses: nothing through, nothing parted: PASS
+
+[1m== A mouth that opens: the teeth a strip of their own behind the lips, the smile given to a visitor in front, the jaw moving with talk (T-3553)[0m
+human mouth OK: pictured teeth are a strip behind the lips and a face with a smile gives it; everyone else has drawn teeth behind their own lips and talks with their jaw
+
+[1m== The shared interaction key and touch control stop and resume the existing transport actor (T-2804)[0m
+transport interactions: keyboard/touch stop-resume, moving reach, clearance, hidden/disposed and input guards PASS
+cold driver Find/Go to: actual route+seat, no asset load, live current pose, saved journey, Light/unknown fallbacks and router guards PASS
+
+[1m== the merge drivers this clone needs are registered (T-1548)[0m
+merge drivers OK — all four registered in this clone
+
+[1m== the tickets are here (kevinrhaas/chicago-tickets, cloned at tickets/)[0m
+tickets: up to date at 74167996 (0 tickets)
+
+[1m== publish the mirror the gate measures (site/4d/ is generated, T-0938)[0m
+AUDIO HOST POLICY PASS
+Glessner v4 package verified; 0 missing GLB(s) materialized.
+shipped derivatives: 1126 pair(s) carry the master's triangles, node identity and contract attributes; worst bounding-box disagreement 2.68 of 4 rungs; 0 asset(s) lose their material identity to the publish path (banked, K36(b)); 5 master passthrough(s), all of them decided (K38); and every one of them records the master it was made from, which is still the master in the tree (K39)
+Prairie Avenue browser published: /workspace/chicago/site/4d/prairie-1904
+published 16 map images + viewer + media to site/pre-fire
+   prairie-1904/maps/  3.85 MB served from /prairie-1904/maps/
+   prairie-1904/research/public/  39.30 MB served from /prairie-1904/research/public/, 4 file(s) not at the root kept here
+   pre-fire/maps/images/  43.87 MB served from /pre-fire/maps/images/
+   pre-fire/media/  17.90 MB served from /pre-fire/media/
+   reference browsers: 104.92 MB not shipped twice (T-1828)
+audio: 61 verified remote deliveries; catalogue only in the site
+   changelog.js published to site/4d/js/changelog.js (T-0722)
+   changelog.js published to site/4d/walk/js/changelog.js (T-0722)
+   sheets (data/gltf): 56 shared by 74 GLB(s), 233.522 -> 94.957 MiB
+household notes deferred: 2003 household(s) on 425 record(s) → sidecars/<scene>/households/<id>.json
+boot sidecars packed: 1812 — 68 record(s) in 2 part(s), sharing 285 value(s) → sidecars/1812/boot/
+boot sidecars packed: 1835 — 765 record(s) in 16 part(s), sharing 1592 value(s) → sidecars/1835/boot/
+boot sidecars packed: 1904 — 286 record(s) in 6 part(s), sharing 319 value(s) → sidecars/1904/boot/
+letter-list cohort: 773 records packed from 9.31 MiB of per-record files to 4.61 MiB in 23 shard(s) and a 666-string roster (T-0438)
+   humans: officer_first_infantry_1812_lieutenant not drawn in town, not published
+   humans: surgeons_mate_first_infantry_1812 not drawn in town, not published
+   sheets (data/humans/web): 321 shared by 136 GLB(s), 239.212 -> 49.051 MiB
+strip_page_comments: walk/index.html 87,679 -> 65,544 bytes (100 developer comments out, 0 placeholder(s) kept)
+entry pages: index.html, 1812/index.html, 1835/index.html, 1871/index.html, 1880/index.html, 1904/index.html
+1835: ground built in 3251 ms — 232 tiles, 10036 pieces, 30895134 bytes, 69 inputs → /workspace/chicago/site/4d/data/prebuilt/1835
+1835: base built in 330 ms — 1 meshes, 7503 pieces, 3909436 bytes, 75 inputs → /workspace/chicago/site/4d/data/prebuilt/1835
+1835: streets built in 4290 ms — 6 meshes, 1189 pieces, 30385004 bytes, 69 inputs → /workspace/chicago/site/4d/data/prebuilt/1835
+1835: yards built in 4533 ms — 4 surfaces, 830 pieces, 31096884 bytes, 90 inputs → /workspace/chicago/site/4d/data/prebuilt/1835
+1835: frontage built in 2522 ms — 127 meshes, 63321600 bytes, 77 inputs → /workspace/chicago/site/4d/data/prebuilt/1835
+   build 8d59e79cd6  Nov 18, 2026, 1:45 PM CT
+   pack 1812: 3962 files, 287.9 MB
+   pack 1835: 6640 files, 374.1 MB
+   pack 1871: 3813 files, 299.6 MB
+   pack 1904: 4545 files, 402.1 MB
+published ../../site/4d  (145.61 MB)
+
+[1m== Glessner's west roof has one continuous envelope and a lower rear eave (T-1830)[0m
+PASS: all eight west lights remain complete below both gable slopes
+PASS: 1800 independent roof rays see one planar envelope; west silhouette, solid south gable, continuous joins, matching court roof and left-turn porch dimensions hold.
+PASS: 1200 courtyard roof rays have one surface, never recessed below the host; forward copper peak, level connector ridge and uncut masonry eave hold.
+PASS: tower principal openings share wing first-floor datums; short upper apertures and projecting roof/gutter meet the bay shoulder.
+PASS: tower band head aligns with north-wing upper windows; band height and ridge retained; copper cap rise reduced to 10.1 ft.
+
+[1m== Prairie 1904 K01 component contract holds, and the Glessner baseline is the package it measured (T-2265)[0m
+k01_contract: contract holds 4 families on 10 datums; Glessner baseline 1461257/1461257/198309 triangles full/web/light, hashes match the package; 2 assembly built to it (goodman_house_1612_prairie 35496 triangles, 0 coincident; keith_house_1808_prairie 85186 triangles, 0 coincident), every verdict ok
+
+[1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |    ok    every raster reader the gate's steps need is installed: PIL (Pillow), numpy (numpy), scipy (scipy)
+   self-test |    fires: a missing reader, with C4D_GATE_REQUIRE_READERS set
+   self-test |    FAIL  numpy (numpy) is not installed, so 11 step(s) below stand on a banked reading:
+   self-test |             · …every step PIL names above — each needs both
+   self-test |             · the 1904 heightfield re-derives from its zone table and scene line (T-1738)
+   self-test |             · the 1904 Illinois Central tracks still re-trace from sheets 20 and 28 (T-2478)
+   self-test |             · the 1904 street normals are OpenGL-handed, as the renderer binds them (T-2296)
+   self-test |             · the 1835 library's normal maps are handed as named, OpenGL and DirectX (T-2299)
+   self-test |             · The face library's cuts are the bytes its source record pins, each under CC0 evidence and in the licence register; its sheet, tones and gains rebuild as the record and the kit hold them, under the mask the app draws (T-3553)
+   self-test |             · …and the face library's check refuses a broken copy: one painting kept twice, a face repainted in part, the sheet's colour halved, a count or a licence note with nothing behind it (T-3553)
+   self-test |             · the traced forks still carry what their generator writes
+   self-test |             · the traced North Branch still carries what its generator writes
+   self-test |             · the traced South Branch still carries what its generator writes
+   self-test |             · the North Branch's repaired east bank has not leaked the west one
+   self-test |    FAIL  a GATE may not count a skip as a pass — pip install numpy
+   self-test |    passes: the same absence in a sandbox, as a warning
+   self-test |    WARN  numpy (numpy) is not installed, so 11 step(s) below stand on a banked reading:
+   self-test |             · …every step PIL names above — each needs both
+   self-test |             · the 1904 heightfield re-derives from its zone table and scene line (T-1738)
+   self-test |             · the 1904 Illinois Central tracks still re-trace from sheets 20 and 28 (T-2478)
+   self-test |             · the 1904 street normals are OpenGL-handed, as the renderer binds them (T-2296)
+   self-test |             · the 1835 library's normal maps are handed as named, OpenGL and DirectX (T-2299)
+   self-test |             · The face library's cuts are the bytes its source record pins, each under CC0 evidence and in the licence register; its sheet, tones and gains rebuild as the record and the kit hold them, under the mask the app draws (T-3553)
+   self-test |             · …and the face library's check refuses a broken copy: one painting kept twice, a face repainted in part, the sheet's colour halved, a count or a licence note with nothing behind it (T-3553)
+   self-test |             · the traced forks still carry what their generator writes
+   self-test |             · the traced North Branch still carries what its generator writes
+   self-test |             · the traced South Branch still carries what its generator writes
+   self-test |             · the North Branch's repaired east bank has not leaked the west one
+   self-test |    WARN  this is a sandbox, so the gate goes on. CI sets C4D_GATE_REQUIRE_READERS=1 and would be red here.
+   self-test |    ok: every step named above is a step check.sh actually runs
+   self-test |    self-test: the reader assertion fires when required and warns when not
+
+[1m== structure versions: no mesh, a stale mesh and a refused label are each red (T-1727)[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |    self-test | ok   label 'v1' is accepted
+   self-test |    self-test | ok   label 'v2' is accepted
+   self-test |    self-test | ok   label 'b' is accepted
+   self-test |    self-test | ok   label 'hall-plan' is accepted
+   self-test |    self-test | ok   label 'fixture' is accepted
+   self-test |    self-test | ok   label 'pre-v2' is accepted
+   self-test |    self-test | ok   label 'a1-b2' is accepted
+   self-test |    self-test | ok   label '' is refused (empty)
+   self-test |    self-test | ok   label 'V1' is refused (upper case)
+   self-test |    self-test | ok   label 'hall_plan' is refused (underscore)
+   self-test |    self-test | ok   label '-v1' is refused (leading hyphen)
+   self-test |    self-test | ok   label 'v1-' is refused (trailing hyphen)
+   self-test |    self-test | ok   label 'aaaaaaaaaaaaaaaaaaaaaaaaa' is refused (too long)
+   self-test |    self-test | ok   label 'default' is refused (reserved)
+   self-test |    self-test | ok   the vendor/model-name refusal is armed (18 digests)
+   self-test |    self-test | ok   a label with a refused name inside it is refused, wherever the name sits
+   self-test |    self-test | ok   a claimed version-only form attribute is admitted without changing the default
+   self-test |    self-test | ok   reverse coverage finds a phase belonging only to the version, not the first default
+   self-test |    self-test | ok   a phase absent from both default and version is still refused
+   self-test |    self-test | ok   an invented admission with no value in any record is still refused
+   self-test |    self-test | ok   a version-only invention without an admission is still refused
+   self-test |    self-test | ok   a version-only attested built value does not excuse an invented-value over-claim
+   self-test |    self-test | ok   a declared omission belonging only to a version honours its admission
+   self-test |    self-test | ok   a measured ground-contact gap belonging only to a version honours its admission
+   self-test |    self-test | ok   the default has no v4 detail or texture dependency
+   self-test |    self-test | ok   changing the v4 detail module stales v4
+   self-test |    self-test | ok   changing the v4 detail module leaves the default fresh
+   self-test |    self-test | ok   changing the v4 material module stales v4
+   self-test |    self-test | ok   changing the v4 material module leaves the default fresh
+   self-test |    self-test | ok   changing the v4 PNG map stales v4
+   self-test |    self-test | ok   changing the v4 PNG map leaves the default fresh
+   self-test |    self-test | ok   changing the v4 JPEG map stales v4
+   self-test |    self-test | ok   changing the v4 JPEG map leaves the default fresh
+   self-test |    self-test | ok   changing the v4 texture recipe stales v4
+   self-test |    self-test | ok   changing the v4 texture recipe leaves the default fresh
+   self-test |    self-test | ok   same-version light master/recipe/output chain is fresh
+   self-test |    self-test | ok   changing version master refuses the stale light derivative
+   self-test |    self-test | ok   changing light output refuses the stale light derivative
+   self-test |    self-test | ok   changing light producer recipe refuses the stale light derivative
+   self-test |    self-test | ok   changing light geometry recipe refuses the stale light derivative
+   self-test |    self-test | ok   changing light occlusion recipe refuses the stale light derivative
+   self-test |    self-test | ok   changing light source record refuses the stale light derivative
+   self-test |    self-test | ok   changing light detail geometry refuses the stale light derivative
+   self-test |    self-test | ok   a missing light recipe input is a diagnostic failure, not a traceback
+   self-test |    self-test | ok   a missing light record cannot be accepted
+   self-test |    self-test | ok   a missing light output cannot be accepted
+   self-test |    self-test | ok   v2/v3 and similarly named v40 have no implicit LOD
+   self-test |    self-test | ok   promoted v4 keeps its declared light asset
+   self-test |    self-test | ok   the committed versions validate clean (so every red below is its mutation's)
+   self-test |    self-test | ok   a version with NO MESH is red
+   self-test |    self-test | ok   a version whose record changed under its mesh is STALE and red
+   self-test |    self-test | ok   a version whose derivative is not of its master is red
+   self-test |    self-test | ok   a mesh with no version record behind it is red
+   self-test |    self-test | ok   a file that is not versions/<id>/<label>.json is red
+   self-test |    self-test | ok   a label outside the rule is red
+   self-test |    self-test | ok   a version of a structure that does not exist is red
+   self-test |    self-test | ok   a version carrying another structure's id is red
+   self-test |    self-test | ok   a version block naming another label is red
+   self-test |    self-test | ok   a version with an empty summary is red
+   self-test |    self-test | ok   a version citing a source that does not exist is red (the provenance pass reaches it)
+   self-test |    self-test | ok   a version no scene resolves is red
+   self-test |    self-test | 0 failure(s)
+
+[1m== the Harrison 1830 cross-check still measures what the 1812 shore quotes (T-1286)[0m
+OK data/terrain/1812_harrison_cross_check.json re-measures from the committed lines
+
+[1m== every 1904 house walk meets the public walk: the walk joins re-lay from the built walks (T-3274)[0m
+lay_prairie_1904_walk_joins: ok — 73 walk ends joined to the public walk (widest gap 1.6 m), 15 already meet it
+
+[1m== the background behind Prairie Avenue: what its walks see re-derives (T-3008)[0m
+chicago/4d/data/components/prairie_1904/background_census.json: current
+
+[1m== …and a blind before the glass, a missing jamb, a holed backing, a doubled pane or a leaded street sash still fails it[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | self-test | ok   a reveal deeper than its wall -> refused: k06.opening.sash_2over2_flat: depth: reveal 0.5 m is not inside (0, host wall 0.36 m]
+   self-test | self-test | ok   a blind in front of the glass -> refused: k06.opening.sash_2over2_flat: depth: the blind reaches z -0.1370, in front of the innermost glass (z -0.1990)
+   self-test | self-test | ok   a backing that stops short of the curtain -> refused: k06.opening.sash_2over2_flat: depth: backing (z -0.2490) is not behind curtain (z -0.2920)
+   self-test | self-test | ok   an ordinary sash too wide -> refused: k06.opening.sash_2over2_flat: sash: an ordinary sash 1.4 x 2.0 m is outside the reconstruction rules' range [0.75, 1.15] x [1.5, 2.4]
+   self-test | self-test | ok   a segmental arch risen past a semicircle -> refused: k06.opening.sash_1over1_segmental: sash: a segmental head of span 1.0 m rises 0.6 m, untrue to its kind
+   self-test | self-test | ok   a leaded light on a street front -> refused: k06.opening.leaded_stair: sash: a leaded light in a principal position of 1.05 m2 breaks the restriction (['attic', 'stair', 'transom'], max 1.2 m2)
+   self-test | self-test | ok   a pictured leaded light whose picture is no source -> refused: k06.opening.fixed_round_leaded_bordered: sash: k06.opening.fixed_round_leaded_bordered is pictured_by 'no_such_source', which is no source record
+   self-test | self-test | ok   an opening over budget -> refused: k06.opening.sash_2over2_flat: costs: k06.opening.sash_2over2_flat is 160 triangles, over its ordinary budget of 100
+   self-test | self-test | ok   a grouped window that does not say why -> refused: k06.opening.sash_paired_flat: sash: a variant that is not ordinary must say why (why_not_ordinary)
+   self-test | self-test | ok   a drip groove outside the sill -> refused: k06.opening.sash_2over2_flat: sash: the sill's drip ({'from_front_m': 0.2, 'width_m': 0.012, 'depth_m': 0.01}) is not under its 0.05 m nose
+   self-test | self-test | ok   a jamb missing from the reveal -> refused: recess: the hole's edge (0.5, 0.0)->(0.5, 1.7999999999999998) at depth 0.0 m has no reveal or sill face — an open slot, not a recess
+   self-test | self-test | ok   a backing cap with a hole in it -> refused: enclosed: a ray through the fanlight pane at (-0.101, 2.002) meets no backing — it reaches the sky
+   self-test | self-test | ok   a pane drawn twice -> refused: doubled: a glass_inner face and a glass_inner face are coplanar and overlap (plane (0.0, 0.0, 1.0, -0.199)) — z-fighting, a face drawn twice
+   self-test | self-test | ok   a transparent curtain -> refused: one layer: curtain (curtain) is transparent; only glass may be
+   self-test | self-test | ok   two panes on one line of sight -> refused: one layer: the fanlight and fanlight panes overlap in elevation — two transparencies on one line of sight
+   self-test | self-test | ok   muntins that divide a sash unevenly -> refused: sash: the upper sash's panes are uneven ([0.295, 0.369] m) — the muntins must divide it evenly
+   self-test | self-test | ok   a glazed window with no glass -> refused: depth: no glass — only an open opening (a loggia's) may have none
+   self-test | self-test | ok   an open opening that carries a frame -> refused: depth: an open opening carries a frame, which only a glazed one may
+   self-test | self-test | ok   a face mapped at twice its size -> refused: metric: a frame face maps 2.000 UV units per metre, not 1
+   self-test | self-test | ok   the committed kit passes (0 failures)
+   self-test | PASS — 20 of 20 self-test cases refused as they should be
+
+[1m== a K01 hooded dormer's hood may flare at its foot (T-1890)[0m
+ok   the hood's foot stands 0.2 m wider each side (0.50 -> 0.70 m)
+ok   and its top stays the taper's (0.20 m)
+ok   its foot's front 0.2 m out of the face (0.20 m)
+ok   its shelf wider and further out with it
+ok   the slating box spans the flared foot ((-0.53, 0.53, -1.95, 0.08) -> (-0.73, 0.73, -1.95, 0.28))
+ok   1801's three hoods flare 0.2 m
+ok   the south hood's top eased to taper 0.17 (HABS 1)
+ok   a 0.02 m flare: refused (mansard.dormers[0].hood.flare_m 0.02: a hood's foot flares 0.05-0.3 m ...)
+ok   a 0.5 m flare: refused (mansard.dormers[0].hood.flare_m 0.5: a hood's foot flares 0.05-0.3 m p...)
+test_k01_hood_flare: all passed
+
+[1m== a K01 rear wing takes a slated hip or gable, its junction with the host closed above the host's top (T-2841)[0m
+ok   1604 rear range (hip, ridge across): the roof is registered a hip in slate_pennsylvania (hip, slate_pennsylvania)
+ok   1604 rear range (hip, ridge across): the wing slate is K04's slate_pennsylvania
+ok   1604 rear range (hip, ridge across): the slate's ridge stands at 12.900 m (pitch over half-span: 12.900)
+ok   1604 rear range (hip, ridge across): its eave at 8.650 m, the overhang's run down the slope
+ok   1604 rear range (hip, ridge across): the ridge runs across the wing into the host wall at 12.900 m, its full height
+ok   1604 rear range (hip, ridge across): the junction over the host's top (12.10 m) is closed in brick: 0.640 of 0.640 m2
+ok   1604 rear range (hip, ridge across): ...and nothing of it is drawn below the host's top
+ok   1604 rear range: the main rear wall is drawn over it from its wall top
+ok   1604 west block (gable to the rear, on the range's rear): the roof is registered a gable in slate_pennsylvania (gable, slate_pennsylvania)
+ok   1604 west block (gable to the rear, on the range's rear): the wing slate is K04's slate_pennsylvania
+ok   1604 west block (gable to the rear, on the range's rear): the slate's ridge stands at 8.110 m (pitch over half-span: 8.110)
+ok   1604 west block (gable to the rear, on the range's rear): its eave at 6.350 m, the overhang's run down the slope
+ok   1604 west block (gable to the rear, on the range's rear): the ridge runs across the wing into the host wall at 8.110 m, its full height
+ok   1604 west block (gable to the rear, on the range's rear): the junction over the host's top (8.80 m) is closed in brick: 0.000 of 0.000 m2
+ok   1604 west block (gable to the rear, on the range's rear): ...and nothing of it is drawn below the host's top
+ok   1604 west block: its host's top is the range's wall top (8.8)
+ok   1604 west block: the gable's walling over the wall top (1.850 of 1.850 m2)
+ok   1604 rear range: a hip lays no gable on its rear wall (0.000 m2)
+ok   1604: no main rear light stands under the range's ridge behind it
+ok   1604 rear range (gable to the north, ridge along): the roof is registered a gable in slate_pennsylvania (gable, slate_pennsylvania)
+ok   1604 rear range (gable to the north, ridge along): the wing slate is K04's slate_pennsylvania
+ok   1604 rear range (gable to the north, ridge along): the slate's ridge stands at 13.764 m (pitch over half-span: 13.764)
+ok   1604 rear range (gable to the north, ridge along): its eave at 8.621 m, the overhang's run down the slope
+ok   1604 rear range (gable to the north, ridge along): the ridge runs along the wing; its front slope meets the host wall at 8.800 m, the wall top
+ok   1604 rear range (gable to the north, ridge along): the junction over the host's top (12.10 m) is closed in brick: 0.000 of 0.000 m2
+ok   1604 rear range (gable to the north, ridge along): ...and nothing of it is drawn below the host's top
+ok   1604 rear range: a gable on each flank (18.250, 18.250 of 18.250 m2)
+ok   1604 rear range: the main rear wall is drawn over it from its wall top
+ok   1811 rear range (stone, over the main eave, gable to the rear): the roof is registered a gable in slate_pennsylvania (gable, slate_pennsylvania)
+ok   1811 rear range (stone, over the main eave, gable to the rear): the wing slate is K04's slate_pennsylvania
+ok   1811 rear range (stone, over the main eave, gable to the rear): the slate's ridge stands at 18.000 m (pitch over half-span: 18.000)
+ok   1811 rear range (stone, over the main eave, gable to the rear): its eave at 13.650 m, the overhang's run down the slope
+ok   1811 rear range (stone, over the main eave, gable to the rear): the ridge runs across the wing into the host wall at 18.000 m, its full height
+ok   1811 rear range (stone, over the main eave, gable to the rear): the junction over the host's top (9.14 m) is closed in rough_stone_trim: 56.784 of 56.784 m2
+ok   1811 rear range (stone, over the main eave, gable to the rear): ...and nothing of it is drawn below the host's top
+ok   1811 rear range (stone, over the main eave, gable to the rear): the eaves' ends past its corners are closed in the eave's timber (8 faces)
+ok   1811: the range's wall top 13.8 m stands over the main eave 9.14 m
+ok   1811 rear range: its gable is stone (15.210 of 15.210 m2)
+ok   1811 rear range (stone, over the main eave, hip along a deep wing): the roof is registered a hip in slate_pennsylvania (hip, slate_pennsylvania)
+ok   1811 rear range (stone, over the main eave, hip along a deep wing): the wing slate is K04's slate_pennsylvania
+ok   1811 rear range (stone, over the main eave, hip along a deep wing): the slate's ridge stands at 18.000 m (pitch over half-span: 18.000)
+ok   1811 rear range (stone, over the main eave, hip along a deep wing): its eave at 13.650 m, the overhang's run down the slope
+ok   1811 rear range (stone, over the main eave, hip along a deep wing): the ridge runs across the wing into the host wall at 18.000 m, its full height
+ok   1811 rear range (stone, over the main eave, hip along a deep wing): the junction over the host's top (9.14 m) is closed in rough_stone_trim: 56.784 of 56.784 m2
+ok   1811 rear range (stone, over the main eave, hip along a deep wing): ...and nothing of it is drawn below the host's top
+ok   1811 rear range (stone, over the main eave, hip along a deep wing): the eaves' ends past its corners are closed in the eave's timber (5 faces)
+ok   a 40 deg slate on a slate cut for 45: refused (rear_wings: slate_pennsylvania is cut for a 0.0762 m headlap and rear_range's 40.0 deg roo...)
+ok   a 65 deg wing roof: refused (rear_wings: rear_range's hip is pitched 65.0 deg, outside 25-60 (K04 slates nothing under ...)
+ok   a hip in tin: refused (rear_wings: rear_range's hip is covered in 'painted_tin_sheet'; a pitched K01 wing is slat...)
+ok   a gable facing the host: refused (rear_wings: rear_range's gable faces 'east'; name the side it faces (rear, north, south)...)
+ok   a gable facing no side: refused (rear_wings: rear_range's gable faces None; name the side it faces (rear, north, south)...)
+ok   a hip with a gable: refused (rear_wings: rear_range is hipped and has no gable to face 'rear'...)
+ok   a mansard wing: refused (rear_wings: rear_range's roof is a mansard; a K01 wing is decked flat, hipped or gabled (f...)
+ok   two slates on one house: refused (rear_wings: the wings are slated in slate_pennsylvania, slate_vermont; a K01 house's wings...)
+ok   as-was: the 62 committed K01 wings are decked flat
+test_k01_wing_roof: all passed
+
+[1m== a K01 shaped gable takes a carved crest and a door's pilasters take pinnacles (T-3365)[0m
+  ok    the gable's finial is a crest ({'height_m': 0.32, 'radius_m': 0.3, 'form': 'crest', 'foot_m': 0.22})
+  ok    the door's pilasters carry their pinnacles ({'shaft_m': 0.12, 'shaft_to_m': 5.25, 'top_m': 5.6, 'crown': {'width_m': 0.23, 'stem_m': 0.08, 'top_m': 5.7}})
+  ok    the arched front's door group carries the same pinnacles
+  ok    one crest on the apex
+  ok    the door's pilasters drawn once
+  ok    refused: an unknown finial form
+  ok    refused: a crest standing under its own height
+  ok    refused: a crest narrower than 0.3 m
+  ok    refused: a foot_m on an urn
+  ok    refused: a pinnacle shaft as broad as its pilaster
+  ok    refused: pinnacle shafts ending at the keystone's top
+  ok    refused: a spire over a metre tall
+  ok    refused: a crown stem broader than its bud
+  ok    refused: a crown with no top
+  ok    refused: an unknown pinnacles key
+PASS  gable crest, door pinnacles
+
+[1m== …and flanks left in brick, a corner off the front's beds, a headless opening, a doubled face or a refused record built anyway still fails it[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |    self-test | ok   the flanks left in brick: 'round' fails (7 walls (3 wing walls, 0 timber) in limestone_bedford; not coursed: [')
+   self-test |    self-test | ok   the flanks left in brick: 'no brick' fails (brick vertices under the 9.2 m eave: {'brick': 229, 'brick_unit_hard_b)
+   self-test |    self-test | ok   a flank's courses off the front's beds: 'level' fails (20 front beds; course lines off them: [2.53, 3.04, 3.55, 4.0, 4.45, 4.)
+   self-test |    self-test | ok   the rear and wing openings left headless: 'dressed' fails (0 flat arches; openings with no stone head: ['k01.wall.wing.rear_range)
+   self-test |    self-test | ok   a stone's face laid twice: 'closed' fails (1 coincident triangle(s) of 34384)
+   self-test |    self-test | ok   a refused record built anyway: 'refused' fails (built)
+   self-test |    self-test | ok   the unbroken kit holds every rule
+   self-test | ok   K01 all-stone house self-test: 7/7
+
+[1m== …and a black facade, a moss layer, a plume into the wind, a widening trail or a 40-year repaint still fails it[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |    self-test | ok   a floor of 0.30: refused by 'floor'
+   self-test |    self-test | ok   a soot band that lightens the wall: refused by 'range'
+   self-test |    self-test | ok   full age at 400 years, so a 38-year wall reads new: refused by 'old work visible, not ruined'
+   self-test |    self-test | ok   soot at 0.30, a black facade the floor would only hide: refused by 'floor'
+   self-test |    self-test | ok   every layer at half strength, a black facade: refused by 'old work visible, not ruined'
+   self-test |    self-test | ok   a damp layer with no note: refused by 'provenance'
+   self-test |    self-test | ok   a moss layer: refused by 'never'
+   self-test |    self-test | ok   a 40-year repaint cycle: refused by 'paint'
+   self-test |    self-test | ok   damp 0.70 m, off the K03 wall: refused by 'K03'
+   self-test |    self-test | ok   no response for Bedford limestone: refused by 'fabrics'
+   self-test |    self-test | ok   a sill trail that widens to its foot: refused by 'trails'
+   self-test |    self-test | ok   a plume blown west, into the wind: refused by 'plume'
+   self-test |    self-test | ok   a damp band that shrinks with age: refused by 'age'
+   self-test |    self-test | ok   full age at 4 years, so new work arrives sooted: refused by 'new work clean'
+   self-test |    self-test | ok   the unbroken kit holds every rule
+   self-test | ok   K14 condition kit self-test: 15/15
+
+[1m== the traced North Branch still carries what its generator writes[0m
+OK   data/terrain/epochs/e1834_harbor_cut/branches.geojson matches tools/trace_north_branch.py literals (6 features, splice row 1252)
+
+[1m== …and that reading's assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | FAIL chips[2].against_the_facsimile_rgb: 149.9, re-derives to 137.9
+   self-test | FAIL separation_rgb[0][2]: 137.2, re-derives to 312.8
+   self-test | FAIL separation_rgb[1][2]: 141.5, re-derives to 313.1
+   self-test | FAIL separation_rgb[2][0]: 137.2, re-derives to 312.8
+   self-test | FAIL separation_rgb[2][1]: 141.5, re-derives to 313.1
+   self-test | FAIL separation_rgb[2][3]: 104.4, re-derives to 271.2
+   self-test | FAIL separation_rgb[2][4]: 146.9, re-derives to 283.9
+   self-test | FAIL separation_rgb[2][5]: 24.5, re-derives to 192.4
+   self-test | FAIL separation_rgb[2][6]: 30.1, re-derives to 213.9
+   self-test | FAIL separation_rgb[2][7]: 141.5, re-derives to 224.2
+   self-test | FAIL separation_rgb[2][8]: 112.4, re-derives to 247.7
+   self-test | FAIL separation_rgb[3][2]: 104.4, re-derives to 271.2
+   self-test | FAIL separation_rgb[4][2]: 146.9, re-derives to 283.9
+   self-test | FAIL separation_rgb[5][2]: 24.5, re-derives to 192.4
+   self-test | FAIL separation_rgb[6][2]: 30.1, re-derives to 213.9
+   self-test | FAIL separation_rgb[7][2]: 141.5, re-derives to 224.2
+   self-test | FAIL separation_rgb[8][2]: 112.4, re-derives to 247.7
+   self-test | FAIL legend_chips_on_the_master.classes: [[1, 2], [3, 6, 7], [4], [5], [8], [9]], re-derives to [[1, 2], [3], [4], [5], [6], [7], [8], [9]] at 35.0 RGB units
+   self-test | FAIL east 728-779: rays do not re-derive from median_rgb and local_paper_rgb
+   self-test | FAIL west 707-710: rays do not re-derive from median_rgb and local_paper_rgb
+   self-test | FAIL west 715-717: rays do not re-derive from median_rgb and local_paper_rgb
+   self-test | FAIL west 922-939: rays do not re-derive from median_rgb and local_paper_rgb
+   self-test | FAIL west 948-951: rays do not re-derive from median_rgb and local_paper_rgb
+   self-test | FAIL west 1247-1251: rays do not re-derive from median_rgb and local_paper_rgb
+   self-test | FAIL separation_rgb[0][1]: 0.0, re-derives to 19.8
+   self-test | FAIL legend_chips_on_the_master.classes: [[1]], re-derives to [[1, 2], [3, 6, 7], [4], [5], [8], [9]] at 35.0 RGB units
+   self-test | FAIL chips[0].facsimile_median_rgb: not the committed facsimile chip
+   self-test | FAIL chips[1].facsimile_median_rgb: not the committed facsimile chip
+   self-test | FAIL chips[2].facsimile_median_rgb: not the committed facsimile chip
+   self-test | FAIL chips[3].facsimile_median_rgb: not the committed facsimile chip
+   self-test | FAIL chips[4].facsimile_median_rgb: not the committed facsimile chip
+   self-test | FAIL chips[5].facsimile_median_rgb: not the committed facsimile chip
+   self-test | FAIL chips[6].facsimile_median_rgb: not the committed facsimile chip
+   self-test | FAIL chips[7].facsimile_median_rgb: not the committed facsimile chip
+   self-test | FAIL chips[8].facsimile_median_rgb: not the committed facsimile chip
+   self-test | FAIL worst_against_the_facsimile_rgb: does not re-derive from the chips
+   self-test | FAIL the two sheets' chips now agree to within 0.0 RGB units — the reason this file re-reads the legend no longer holds
+   self-test | FAIL stretches: [['east', [728, 779]], ['west', [707, 710]], ['west', [715, 717]], ['west', [922, 939]], ['west', [948, 951]]], but the committed baseline's are [['east', [728, 779]], ['west', [707, 710]], ['west', [715, 717]], ['west', [922, 939]], ['west', [948, 951]], ['west', [1247, 1251]]]
+   self-test | FAIL west 707-710: rays do not re-derive from median_rgb and local_paper_rgb
+   self-test | FAIL east 728-779: identified_as 'class 3+6+7', the rule gives None
+   self-test | FAIL east [728, 779]: identified as 'class 3+6+7' — T-1082's refusal has been overturned without the research note moving with it
+   self-test | FAIL east 728-779: nearest_facsimile_band {'distance_m': 5.0, 'class': [8]}, re-derives to {'distance_m': 481.3, 'class': [8]}
+   self-test | FAIL a facsimile band now stands 5.0 m from a stretch — position may be able to identify these washes after all, and this file says it cannot
+   self-test | FAIL ruling.trace_changed: true, but this reading moves no boundary
+   self-test | north branch bank wash: 9 master chips in 6 separable colours, worst 223.2 RGB from the facsimile's; 6 stretches, nearest facsimile band 234.7 m; the east stretch stays refused
+   self-test | self-test: the record passes its own gate, and nine breakages all fire
+
+[1m== inferred infill records match the 665-roof programme[0m
+verified 48 inferred anonymous South Division records (39 principal, 9 ancillary)
+
+[1m== …and its validator refuses stores on one spot or off the frontage[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |    self-test | PASS: refuses two stores under one id
+   self-test |    self-test | PASS: refuses a store moved into its street
+   self-test |    self-test | PASS: refuses two stores on one spot
+   self-test |    self-test | PASS: refuses a store across a house's dooryard
+   self-test | PASS: generate_core_row_fill_1835 self-test
+
+[1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | self-test: moving Clinton 40 m or Lake 30 m at the clip the crops are cut from breaks the crop check while moving Lake's carried west end does not, a read window slid out of its box measures the overhang that slide produces, and a tier band read backwards breaks the boustrophedon, as they must
+
+[1m== the Michigan St tract is still seated on the two committed lines it was hung from[0m
+michigan st tract: 4 line(s) and the seating re-derive from data/traces/michigan_st_tract_grid.json
+
+[1m== …and a duplicate, a two-card far end and a two-word entry still write no tie[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |   ok   a mother's row ties to the one card claiming the child
+   self-test |   ok   two cards claiming the far row write no tie, and say so
+   self-test |   ok   a far row nobody carries writes nothing
+   self-test |   ok   an entry printing both child words writes no tie
+   self-test |   ok   a child's row takes the entry's word and gives the parent's role back
+   self-test |   ok   a generated card whose own row households/ carries is a duplicate, and is not tied
+   self-test |   ok   a sponsor is not kin
+   self-test |   ok   a non-register row reads as no record id
+   self-test |   ok   kin is slotted immediately before persons
+   self-test | self-test | 0 failure(s)
+
+[1m== …and the gap on every interval, the datum test cutting both ways, the count no residual touches and both anchors' price still fire[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | SELF-TEST PASS — the derived lines, the two controls, the gap on every interval, the datum test discriminating both ways, the spread held inside the residual, the count that closes it anyway, the whole-division figure with and without the riverfront, both anchors priced and the seating counted
+
+[1m== the 1812 shore cottonwoods re-derive from the 1835 grove[0m
+generate_shore_grove_1812: 58 stems re-derive
+
+[1m== nothing placed in the town stands in a doorway (T-1984)[0m
+doorways: 736 doors against 3831 placed objects — 0 object(s) standing in a doorway
+
+[1m== the 1812 worn trails and yards re-derive from the terrain and the footprints[0m
+WORN GROUND 1812 PASS — 45 trails, 16021 m, and 18 worn yards
+
+[1m== the freight shed's cargo openings set out once and are read three times[0m
+F1's cargo openings
+
+  ok    a cargo door lets F1 reach the bottom of its own 10-13 ft eave band   — eave_floor 2.43 m vs the band's 3.048 m
+  ok    …which the wagon door it replaces did not   — wagon floor 3.08 m
+  ok    a cargo opening is wider than a stable door and narrower than a wagon's   — 2.2 m clear
+  ok    …and lower than both the wagon door and the wall it stands in   — 2.35 m clear
+  ok    the frames and the holes in the boarding are the same rectangles   — frames [(1.187, 3.3870000000000005), (4.734, 6.934)] vs holes [(1.187, 3.3870000000000005), (4.734, 6.934)]
+  ok    a two-bay shed has two openings and not one   — 2 span(s)
+  ok    the piers at the corners and between the bays are equal   — 1.0270 / 1.0270 / 1.0270 m
+  ok    no opening runs off the end of its elevation
+  ok    a single door still stands in the middle of its wall   — (3.6305, 4.4905)
+  ok    three cargo bays on F1's narrowest front are refused
+  ok    two wagon doors are refused on a front two cargo doors fit
+  ok    half a doorway is refused
+  ok    two cargo bays build on every F1 front from the band's median up   — median front 7.0104 m, top 8.5344 m
+
+F1's cargo openings OK — 2.2 x 2.35 m clear, eave floor 2.43 m
+
+[1m== the shop-bay counts read as the specification's own words[0m
+135 committed frame_storefront phase(s); 8 family bay range(s) in the crosswalk
+
+  ok    the crosswalk still names a bay count beside a centre door — witnesses ['D4', 'H1']
+  ok    D4's centre-door bay counts are odd, so the door is one of them — 3-5
+  ok    H1's centre-door bay counts are odd, so the door is one of them — 5-5
+  ok    the door-exclusive reading contradicts every witness it is tried on — 2 witness(es)
+  ok    every storefront out of its family's bay band has that family on the record — 45 in band
+  ok    carpenter_south_water_store: the floor is one the frontage forced, not the rule skipped — front 7.62 m, one window and the door is 42.7% of it
+  ok    frederick_thomas_shop: the floor is one the frontage forced, not the rule skipped — front 9.14 m, one window and the door is 35.6% of it
+  ok    goss_cobb_saddlery: the floor is one the frontage forced, not the rule skipped — front 9.14 m, one window and the door is 35.6% of it
+  ok    inf_grocery_west: the floor is one the frontage forced, not the rule skipped — front 6.10 m, one window and the door is 53.3% of it
+  ok    john_holbrook_store: the floor is one the frontage forced, not the rule skipped — front 9.14 m, one window and the door is 35.6% of it
+  ok    pruyne_kimball_drugstore: the floor is one the frontage forced, not the rule skipped — front 7.62 m, one window and the door is 42.7% of it
+  ok    recon_1835_blk_lake_clark_c1_01: the floor is one the frontage forced, not the rule skipped — front 5.34 m, one window and the door is 60.8% of it
+  ok    recon_1835_blk_lake_clark_c2_02: the floor is one the frontage forced, not the rule skipped — front 6.17 m, one window and the door is 52.7% of it
+  ok    recon_1835_blk_lake_clark_c3_03: the floor is one the frontage forced, not the rule skipped — front 6.53 m, one window and the door is 49.8% of it
+  ok    recon_1835_blk_lake_franklin_c2_01: the floor is one the frontage forced, not the rule skipped — front 6.14 m, one window and the door is 53.0% of it
+  ok    recon_1835_blk_lake_market_c2_01: the floor is one the frontage forced, not the rule skipped — front 6.08 m, one window and the door is 53.5% of it
+  ok    recon_1835_blk_randolph_clark_c2_01: the floor is one the frontage forced, not the rule skipped — front 6.50 m, one window and the door is 50.0% of it
+  ok    recon_1835_blk_south_water_clark_c2_06: the floor is one the frontage forced, not the rule skipped — front 5.75 m, one window and the door is 56.5% of it
+  ok    recon_1835_blk_south_water_dearborn_c1_08: the floor is one the frontage forced, not the rule skipped — front 5.30 m, one window and the door is 61.3% of it
+  ok    recon_1835_blk_south_water_dearborn_c2_07: the floor is one the frontage forced, not the rule skipped — front 6.38 m, one window and the door is 51.0% of it
+  ok    recon_1835_blk_south_water_dearborn_c3_01: the floor is one the frontage forced, not the rule skipped — front 6.24 m, one window and the door is 52.1% of it
+  ok    recon_1835_blk_south_water_dearborn_c3_02: the floor is one the frontage forced, not the rule skipped — front 5.74 m, one window and the door is 56.7% of it
+  ok    recon_1835_blk_south_water_franklin_c2_08: the floor is one the frontage forced, not the rule skipped — front 6.41 m, one window and the door is 50.7% of it
+  ok    recon_1835_blk_south_water_franklin_c2_09: the floor is one the frontage forced, not the rule skipped — front 6.04 m, one window and the door is 53.9% of it
+  ok    recon_1835_blk_south_water_franklin_c2_10: the floor is one the frontage forced, not the rule skipped — front 5.88 m, one window and the door is 55.3% of it
+  ok    recon_1835_blk_south_water_lasalle_c1_08: the floor is one the frontage forced, not the rule skipped — front 5.59 m, one window and the door is 58.1% of it
+  ok    recon_1835_blk_south_water_lasalle_c2_11: the floor is one the frontage forced, not the rule skipped — front 5.72 m, one window and the door is 56.8% of it
+  ok    recon_1835_blk_south_water_lasalle_c3_12: the floor is one the frontage forced, not the rule skipped — front 6.08 m, one window and the door is 53.5% of it
+  ok    recon_1835_blk_south_water_lasalle_c3_13: the floor is one the frontage forced, not the rule skipped — front 5.78 m, one window and the door is 56.3% of it
+  ok    recon_1835_blk_south_water_wells_c2_01: the floor is one the frontage forced, not the rule skipped — front 5.79 m, one window and the door is 56.1% of it
+  ok    recon_1835_blk_south_water_wells_c3_02: the floor is one the frontage forced, not the rule skipped — front 6.45 m, one window and the door is 50.4% of it
+  ok    recon_1835_canal_trade_c3_001: the floor is one the frontage forced, not the rule skipped — front 6.02 m, one window and the door is 54.0% of it
+  ok    recon_1835_core_c1_004: the floor is one the frontage forced, not the rule skipped — front 4.88 m, one window and the door is 66.6% of it
+  ok    recon_1835_core_c1_008: the floor is one the frontage forced, not the rule skipped — front 5.35 m, one window and the door is 60.7% of it
+  ok    recon_1835_core_c1_012: the floor is one the frontage forced, not the rule skipped — front 4.95 m, one window and the door is 65.7% of it
+  ok    recon_1835_core_c1_015: the floor is one the frontage forced, not the rule skipped — front 5.11 m, one window and the door is 63.6% of it
+  ok    recon_1835_core_c1_019: the floor is one the frontage forced, not the rule skipped — front 5.24 m, one window and the door is 62.0% of it
+  ok    recon_1835_core_c1_023: the floor is one the frontage forced, not the rule skipped — front 5.59 m, one window and the door is 58.2% of it
+  ok    recon_1835_core_c1_027: the floor is one the frontage forced, not the rule skipped — front 5.52 m, one window and the door is 58.9% of it
+  ok    recon_1835_core_c1_031: the floor is one the frontage forced, not the rule skipped — front 5.42 m, one window and the door is 60.0% of it
+  ok    recon_1835_core_c1_035: the floor is one the frontage forced, not the rule skipped — front 5.52 m, one window and the door is 58.9% of it
+  ok    recon_1835_core_c1_039: the floor is one the frontage forced, not the rule skipped — front 5.76 m, one window and the door is 56.4% of it
+  ok    recon_1835_core_c1_043: the floor is one the frontage forced, not the rule skipped — front 5.30 m, one window and the door is 61.4% of it
+  ok    recon_1835_core_c1_047: the floor is one the frontage forced, not the rule skipped — front 5.35 m, one window and the door is 60.8% of it
+  ok    recon_1835_core_c1_051: the floor is one the frontage forced, not the rule skipped — front 4.90 m, one window and the door is 66.4% of it
+  ok    recon_1835_core_c1_055: the floor is one the frontage forced, not the rule skipped — front 5.54 m, one window and the door is 58.7% of it
+  ok    recon_1835_core_c1_059: the floor is one the frontage forced, not the rule skipped — front 5.84 m, one window and the door is 55.7% of it
+  ok    recon_1835_core_c2_001: the floor is one the frontage forced, not the rule skipped — front 6.50 m, one window and the door is 50.0% of it
+  ok    recon_1835_core_c2_005: the floor is one the frontage forced, not the rule skipped — front 5.78 m, one window and the door is 56.3% of it
+  ok    recon_1835_core_c2_007: the floor is one the frontage forced, not the rule skipped — front 6.12 m, one window and the door is 53.1% of it
+  ok    recon_1835_core_c2_010: the floor is one the frontage forced, not the rule skipped — front 6.53 m, one window and the door is 49.8% of it
+  ok    recon_1835_core_c2_014: the floor is one the frontage forced, not the rule skipped — front 5.84 m, one window and the door is 55.6% of it
+  ok    recon_1835_core_c2_017: the floor is one the frontage forced, not the rule skipped — front 6.09 m, one window and the door is 53.4% of it
+  ok    recon_1835_core_c2_020: the floor is one the frontage forced, not the rule skipped — front 5.77 m, one window and the door is 56.4% of it
+  ok    recon_1835_core_c2_022: the floor is one the frontage forced, not the rule skipped — front 6.54 m, one window and the door is 49.8% of it
+  ok    recon_1835_core_c2_025: the floor is one the frontage forced, not the rule skipped — front 6.05 m, one window and the door is 53.8% of it
+  ok    recon_1835_core_c2_028: the floor is one the frontage forced, not the rule skipped — front 5.75 m, one window and the door is 56.6% of it
+  ok    recon_1835_core_c2_030: the floor is one the frontage forced, not the rule skipped — front 6.03 m, one window and the door is 53.9% of it
+  ok    recon_1835_core_c2_033: the floor is one the frontage forced, not the rule skipped — front 6.48 m, one window and the door is 50.1% of it
+  ok    recon_1835_core_c2_036: the floor is one the frontage forced, not the rule skipped — front 6.49 m, one window and the door is 50.1% of it
+  ok    recon_1835_core_c2_038: the floor is one the frontage forced, not the rule skipped — front 5.98 m, one window and the door is 54.4% of it
+  ok    recon_1835_core_c2_041: the floor is one the frontage forced, not the rule skipped — front 5.82 m, one window and the door is 55.9% of it
+  ok    recon_1835_core_c2_044: the floor is one the frontage forced, not the rule skipped — front 6.29 m, one window and the door is 51.7% of it
+  ok    recon_1835_core_c2_046: the floor is one the frontage forced, not the rule skipped — front 6.01 m, one window and the door is 54.1% of it
+  ok    recon_1835_core_c2_049: the floor is one the frontage forced, not the rule skipped — front 6.43 m, one window and the door is 50.6% of it
+  ok    recon_1835_core_c2_052: the floor is one the frontage forced, not the rule skipped — front 5.84 m, one window and the door is 55.7% of it
+  ok    recon_1835_core_c2_054: the floor is one the frontage forced, not the rule skipped — front 6.02 m, one window and the door is 54.0% of it
+  ok    recon_1835_core_c2_057: the floor is one the frontage forced, not the rule skipped — front 6.03 m, one window and the door is 53.9% of it
+  ok    recon_1835_core_c3_002: the floor is one the frontage forced, not the rule skipped — front 6.30 m, one window and the door is 51.6% of it
+  ok    recon_1835_core_c3_006: the floor is one the frontage forced, not the rule skipped — front 5.76 m, one window and the door is 56.4% of it
+  ok    recon_1835_core_c3_009: the floor is one the frontage forced, not the rule skipped — front 6.53 m, one window and the door is 49.8% of it
+  ok    recon_1835_core_c3_011: the floor is one the frontage forced, not the rule skipped — front 6.53 m, one window and the door is 49.8% of it
+  ok    recon_1835_core_c3_013: the floor is one the frontage forced, not the rule skipped — front 5.84 m, one window and the door is 55.6% of it
+  ok    recon_1835_core_c3_016: the floor is one the frontage forced, not the rule skipped — front 6.50 m, one window and the door is 50.0% of it
+  ok    recon_1835_core_c3_018: the floor is one the frontage forced, not the rule skipped — front 5.89 m, one window and the door is 55.2% of it
+  ok    recon_1835_core_c3_021: the floor is one the frontage forced, not the rule skipped — front 5.96 m, one window and the door is 54.5% of it
+  ok    recon_1835_core_c3_024: the floor is one the frontage forced, not the rule skipped — front 6.05 m, one window and the door is 53.7% of it
+  ok    recon_1835_core_c3_026: the floor is one the frontage forced, not the rule skipped — front 6.16 m, one window and the door is 52.8% of it
+  ok    recon_1835_core_c3_029: the floor is one the frontage forced, not the rule skipped — front 5.90 m, one window and the door is 55.1% of it
+  ok    recon_1835_core_c3_032: the floor is one the frontage forced, not the rule skipped — front 6.06 m, one window and the door is 53.7% of it
+  ok    recon_1835_core_c3_034: the floor is one the frontage forced, not the rule skipped — front 5.78 m, one window and the door is 56.3% of it
+  ok    recon_1835_core_c3_037: the floor is one the frontage forced, not the rule skipped — front 5.99 m, one window and the door is 54.3% of it
+  ok    recon_1835_core_c3_040: the floor is one the frontage forced, not the rule skipped — front 6.51 m, one window and the door is 50.0% of it
+  ok    recon_1835_core_c3_042: the floor is one the frontage forced, not the rule skipped — front 6.27 m, one window and the door is 51.8% of it
+  ok    recon_1835_core_c3_045: the floor is one the frontage forced, not the rule skipped — front 6.53 m, one window and the door is 49.8% of it
+  ok    recon_1835_core_c3_048: the floor is one the frontage forced, not the rule skipped — front 6.21 m, one window and the door is 52.3% of it
+  ok    recon_1835_core_c3_050: the floor is one the frontage forced, not the rule skipped — front 6.31 m, one window and the door is 51.5% of it
+  ok    recon_1835_core_c3_053: the floor is one the frontage forced, not the rule skipped — front 6.11 m, one window and the door is 53.2% of it
+  ok    recon_1835_core_c3_056: the floor is one the frontage forced, not the rule skipped — front 5.81 m, one window and the door is 55.9% of it
+  ok    recon_1835_core_c3_058: the floor is one the frontage forced, not the rule skipped — front 6.30 m, one window and the door is 51.6% of it
+  ok    recon_1835_gifford_c1_010: the floor is one the frontage forced, not the rule skipped — front 6.40 m, one window and the door is 50.8% of it
+  ok    recon_1835_gifford_c2_001: the floor is one the frontage forced, not the rule skipped — front 6.40 m, one window and the door is 50.8% of it
+  ok    recon_1835_gifford_c2_009: the floor is one the frontage forced, not the rule skipped — front 5.80 m, one window and the door is 56.1% of it
+  ok    recon_1835_gifford_c2_011: the floor is one the frontage forced, not the rule skipped — front 4.90 m, one window and the door is 66.4% of it
+  ok    recon_1835_gifford_c2_016: the floor is one the frontage forced, not the rule skipped — front 4.60 m, one window and the door is 70.7% of it
+  ok    recon_1835_gifford_c3_002: the floor is one the frontage forced, not the rule skipped — front 7.60 m, one window and the door is 42.8% of it
+  ok    recon_1835_gifford_c3_003: the floor is one the frontage forced, not the rule skipped — front 7.60 m, one window and the door is 42.8% of it
+  ok    recon_1835_gifford_c3_005: the floor is one the frontage forced, not the rule skipped — front 7.30 m, one window and the door is 44.5% of it
+  ok    recon_1835_gifford_c3_006: the floor is one the frontage forced, not the rule skipped — front 7.30 m, one window and the door is 44.5% of it
+  ok    recon_1835_gifford_c3_007: the floor is one the frontage forced, not the rule skipped — front 7.60 m, one window and the door is 42.8% of it
+  ok    recon_1835_gifford_c3_008: the floor is one the frontage forced, not the rule skipped — front 7.60 m, one window and the door is 42.8% of it
+  ok    recon_1835_gifford_c3_012: the floor is one the frontage forced, not the rule skipped — front 5.40 m, one window and the door is 60.2% of it
+  ok    recon_1835_gifford_c3_013: the floor is one the frontage forced, not the rule skipped — front 5.50 m, one window and the door is 59.1% of it
+  ok    recon_1835_gifford_c3_014: the floor is one the frontage forced, not the rule skipped — front 5.60 m, one window and the door is 58.1% of it
+  ok    recon_1835_gifford_c3_015: the floor is one the frontage forced, not the rule skipped — front 5.30 m, one window and the door is 61.3% of it
+  ok    recon_1835_gifford_c3_017: the floor is one the frontage forced, not the rule skipped — front 5.60 m, one window and the door is 58.1% of it
+  ok    recon_1835_north_c3_064: the floor is one the frontage forced, not the rule skipped — front 6.37 m, one window and the door is 51.0% of it
+  ok    recon_1835_north_c3_066: the floor is one the frontage forced, not the rule skipped — front 6.16 m, one window and the door is 52.8% of it
+  ok    recon_1835_south_c3_015: the floor is one the frontage forced, not the rule skipped — front 6.41 m, one window and the door is 50.7% of it
+  ok    recon_1835_south_c3_040: the floor is one the frontage forced, not the rule skipped — front 5.86 m, one window and the door is 55.5% of it
+  ok    recon_1835_west_007: the floor is one the frontage forced, not the rule skipped — front 4.88 m, one window and the door is 66.7% of it
+  ok    recon_1835_west_020: the floor is one the frontage forced, not the rule skipped — front 6.10 m, one window and the door is 53.3% of it
+  ok    recon_1835_blk_south_water_franklin_c4_01: the count it states is inside C4's authored band — 4 facade bays vs 4-6
+  ok    recon_1835_blk_south_water_franklin_c4_01: the frontage holds the count it states — 6.502 m of opening on a 9.319 m front leaves 1.408 m each end, minimum 0.60 m
+  ok    recon_1835_canal_trade_c4_002: the frontage holds the count it states — 6.502 m of opening on a 9.563 m front leaves 1.530 m each end, minimum 0.60 m
+  ok    recon_1835_north_c4_067: the count it states is inside C4's authored band — 4 facade bays vs 4-6
+  ok    recon_1835_north_c4_067: the frontage holds the count it states — 6.502 m of opening on a 9.622 m front leaves 1.560 m each end, minimum 0.60 m
+
+  3 front(s) state their own count, so the 45% default did not decide them:
+        recon_1835_blk_south_water_franklin_c4_01 C4: 4 facade bays, 69.8% of the front; the default would have said 2 (floor_within_fraction)
+        recon_1835_canal_trade_c4_002 : 4 facade bays, 68.0% of the front; the default would have said 2 (floor_within_fraction)
+        recon_1835_north_c4_067 C4: 4 facade bays, 67.6% of the front; the default would have said 2 (floor_within_fraction)
+
+  107 front(s) reach the floor, 96 of them OVER the 45% ceiling: 49.8% to 70.7% of the frontage in opening
+
+shop-bay reading OK — 45 storefront(s) inside their authored band, 3 of them on a count the record states, 107 on the floor (96 of them over the ceiling), 2 crosswalk witness(es) for the door-inclusive reading
+
+[1m== …and the derivation, both gates and the ruling's own record still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | 20 of 20 assertion(s) pass
+
+[1m== the corporate boundary of 7 November 1833 still re-derives, and decides nobody by extrapolation[0m
+OK: the corporate boundary of 7 November 1833 re-derives from the committed streets and the committed shoreline — 43 vertices, 218.2 ha, 712 structure(s) inside it and 345 outside, and no extrapolated leg decides one of them.
+
+[1m== no building has newly been drawn standing in a platted street[0m
+   6 cleared and 0 shallower than the baseline — re-run with --write-baseline to bank the repair
+
+[1m== the North Division tier is still the wedge the plat letters, and still refuses to publish a northing[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | measure_north_division_tier_depth.py --self-test
+   self-test | 
+   self-test |   ok    the northing fit lands on the easting fit's scale, within 0.1 % — two axes, seven controls, no shared arithmetic
+   self-test |   ok    every fit control corridor is reproduced within 2 m
+   self-test |   ok    each control's drawn corridor is an 80 ft street within 1.2 m
+   self-test |   ok    the lower lot row comes out the 180 ft the sheet letters in every block, within 5 ft — the check that the fit survives its extrapolation
+   self-test |   ok    ...and to 1 ft in the mean
+   self-test |   ok    the lower row is the CONSTANT one: it varies by under 8 ft across the tier
+   self-test |   ok    the upper row is the WEDGE: it grows by more than 50 ft, west to east, monotonically
+   self-test |   ok    so the tier IS a wedge — 117 m deep at Franklin, 131 m at Wolcott — and the swing T-1436 called an error is the plat's own
+   self-test |   ok    the alley between the rows is a real alley, 18-24 ft in every block
+   self-test |   ok    the south face is ONE straight line across those five blocks, to half a metre
+   self-test |   ok    the North Branch block does NOT sit on it, which is why it is held out
+   self-test |   ok    the held-out Kinzie line is MISSED, by more than 10 m at its worst — the shear that forbids publishing absolute northings up here
+   self-test |   ok    ...and the miss runs with easting, monotonically, which is what makes it a shear and not scatter
+   self-test |   ok    block 1's lettered 260 is the upper row PLUS the alley, within 3 ft
+   self-test |   ok    ...and 260 + 180 closes on the drawn total within 6 ft
+   self-test |   ok    the reading records that block 6's middle lines are NOT readable, and why
+   self-test |   ok    the reading states it publishes depths, not northings
+   self-test | 
+   self-test | self-test OK — every assertion holds
+
+[1m== the platted deal's roofs still name the keepers it seated there[0m
+OK: 218 roof(s) across south_water, randolph, lake, washington, west, indiana_north, school_section_tier name the keeper the platted deal seated there, 12 refused in writing and 0 owed to nobody
+
+[1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | SELF-TEST: the storey count is truncated again; the C2 checks must fire.
+   self-test |   ok   thirty-six committed C2 records state a story-and-a-half
+   self-test |   FAIL ...and every one of them RESOLVES at 1.5, not at 1 — recon_1835_blk_lake_clark_c2_02=1, recon_1835_blk_lake_franklin_c2_01=1, recon_1835_blk_lake_market_c2_01=1, recon_1835_blk_randolph_clark_c2_01=1, recon_1835_blk_south_water_clark_c2_06=1, recon_1835_blk_south_water_dearborn_c2_07=1, recon_1835_blk_south_water_franklin_c2_08=1, recon_1835_blk_south_water_franklin_c2_09=1, recon_1835_blk_south_water_franklin_c2_10=1, recon_1835_blk_south_water_lasalle_c2_11=1, recon_1835_blk_south_water_wells_c2_01=1, recon_1835_core_c2_001=1, recon_1835_core_c2_005=1, recon_1835_core_c2_007=1, recon_1835_core_c2_010=1, recon_1835_core_c2_014=1, recon_1835_core_c2_017=1, recon_1835_core_c2_020=1, recon_1835_core_c2_022=1, recon_1835_core_c2_025=1, recon_1835_core_c2_028=1, recon_1835_core_c2_030=1, recon_1835_core_c2_033=1, recon_1835_core_c2_036=1, recon_1835_core_c2_038=1, recon_1835_core_c2_041=1, recon_1835_core_c2_044=1, recon_1835_core_c2_046=1, recon_1835_core_c2_049=1, recon_1835_core_c2_052=1, recon_1835_core_c2_054=1, recon_1835_core_c2_057=1, recon_1835_gifford_c2_001=1, recon_1835_gifford_c2_009=1, recon_1835_gifford_c2_011=1, recon_1835_gifford_c2_016=1
+   self-test |   FAIL ...and none of them cuts its shopfront through the attic floor — [('recon_1835_blk_lake_clark_c2_02', 3.05, 3.0), ('recon_1835_blk_lake_franklin_c2_01', 2.998, 2.588), ('recon_1835_blk_lake_market_c2_01', 3.05, 2.774), ('recon_1835_blk_randolph_clark_c2_01', 3.05, 2.739), ('recon_1835_blk_south_water_clark_c2_06', 3.05, 2.731), ('recon_1835_blk_south_water_dearborn_c2_07', 3.05, 2.773), ('recon_1835_blk_south_water_franklin_c2_08', 3.05, 2.923), ('recon_1835_blk_south_water_franklin_c2_09', 3.031, 2.621), ('recon_1835_blk_south_water_franklin_c2_10', 3.05, 2.927), ('recon_1835_blk_south_water_lasalle_c2_11', 3.05, 2.679), ('recon_1835_blk_south_water_wells_c2_01', 3.05, 2.99), ('recon_1835_core_c2_001', 3.05, 2.648), ('recon_1835_core_c2_005', 3.05, 2.95), ('recon_1835_core_c2_007', 3.05, 2.831), ('recon_1835_core_c2_010', 2.904, 2.494), ('recon_1835_core_c2_014', 3.05, 2.644), ('recon_1835_core_c2_017', 2.986, 2.576), ('recon_1835_core_c2_020', 3.05, 2.834), ('recon_1835_core_c2_022', 3.036, 2.626), ('recon_1835_core_c2_025', 3.05, 2.733), ('recon_1835_core_c2_028', 3.05, 2.749), ('recon_1835_core_c2_030', 3.05, 2.733), ('recon_1835_core_c2_033', 3.05, 2.737), ('recon_1835_core_c2_036', 3.05, 3.006), ('recon_1835_core_c2_038', 2.914, 2.504), ('recon_1835_core_c2_041', 3.05, 2.752), ('recon_1835_core_c2_044', 3.05, 2.733), ('recon_1835_core_c2_046', 2.973, 2.563), ('recon_1835_core_c2_049', 3.05, 2.955), ('recon_1835_core_c2_052', 3.05, 2.915), ('recon_1835_core_c2_054', 2.909, 2.499), ('recon_1835_core_c2_057', 2.901, 2.491), ('recon_1835_gifford_c2_001', 2.947, 2.537), ('recon_1835_gifford_c2_009', 3.05, 2.717), ('recon_1835_gifford_c2_011', 3.05, 3.007), ('recon_1835_gifford_c2_016', 3.05, 2.684)]
+   self-test |   ok   the 1.5-storey eave floor still carries a shop opening
+   self-test |   ok   ...and one centimetre under it does not
+   self-test |   ok   a record with no shopfront is not held to the shopfront's floor
+   self-test |   ok   C1, C2 and C3 front their gables, as their entries say
+   self-test |   ok   C4 does NOT — its entry offers a side gable or a hip
+   self-test |   ok   the question is not asked of a family it is not about
+   self-test |   ok   the committed C4 record no longer fronts its gable
+   self-test |   ok   builds: a hip over a two-storey store (C4's own levels)
+   self-test |   ok   refused: a hip over one storey
+   self-test |   ok   refused: a hip over a store-residence
+   self-test |   ok   no STORE record carries a hoist door — C3's note forbids inferring one from height
+   self-test |   ok   builds: a hoist door on a two-storey gable with a goods door
+   self-test |   ok   refused: a hoist door over one storey
+   self-test |   ok   refused: a hoist door with no goods door
+   self-test |   ok   refused: a hoist door under a hip, which has no gable to hang it in
+   self-test |   ok   refused: a hoist door whose loading side is an eaves wall — the beam has no gable
+   self-test |   ok   builds: ...and the same record with the goods door moved to the gable it has
+   self-test |   ok   every committed F2 record could carry the hoist its entry offers
+   self-test |   ok   …and every one of them does carry it, which is what L280 records
+   self-test |   ok   knee_wall_m and hoist_door are declared consumed
+   self-test | 
+   self-test | 2 check(s) FAILED
+   self-test | self-test OK — the assertions fire when 1.5 storeys is read as 1.
+
+[1m== the fort's stockade is still pointed[0m
+  ok    the pickets are pointed — 0.312 m of head, 8.4 % of a 3.7 m picket
+  ok    759 posts carry one apex each (4554 verts, 6 per post)
+  ok    the point is CUT FROM the picket, not stacked on it — mesh 3.7 m against the record's 3.7 m (reconstructed)
+
+[1m== the NA Wright registration's adjudication still matches its own measurement[0m
+OK: data/traces/gcp/wright_1834_nara_hup_fit_adjudication.json matches its own measurement (4 models, 9 traces)
+
+[1m== Jaunt refusal and data-only expansion fixtures (T-1253)[0m
+................................
+----------------------------------------------------------------------
+Ran 32 tests in 7.876s
+
+OK
+
+[1m== Source-use fixtures preserve joins, counts and public boundaries (T-1248)[0m
+..............
+----------------------------------------------------------------------
+Ran 14 tests in 0.120s
+
+OK
+
+[1m== …and its own assertions still fire when the wall or a street moves[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |    ok   a rotated footprint reaches further west than half its width — E -108.62
+   self-test |    ok   …and the centre would have reported it 8.62 m further east
+   self-test |    ok   the derived wall lands on the lattice west of the clearance — E -705
+   self-test |    ok   …and clears the clearance rather than landing just inside it — 33.46 m >= 32.7 m
+   self-test |    ok   a clearance that lands exactly on a lattice column does not add a spare one — E -702.5
+   self-test |    ok   the round -700 does NOT clear the worst residual — short by 4.24 m
+   self-test |    ok   a placement moved 50 m west moves the derived wall west with it — E -755
+   self-test |    ok   …and the gate refuses the committed reading against it
+   self-test |    ok   a DRAWN street carried past the derived wall lands in the drawn population
+   self-test |    ok   …and not in the platted-only one
+   self-test |    ok   …and the gate refuses the committed reading against it
+   self-test |    ok   the committed reading re-derives
+   self-test | SELF-TEST PASS
+
+[1m== closing this branch's tickets strands nobody above them[0m
+  note: closing T-3654 strands nothing
+closing T-3654 strands no committed work pointer
+
+[1m== publication aliases retain exact bytes, logical LOD identities, year membership and strict source integrity (T-2795)[0m
+{"status":"PASS","checks":44,"realHTTP":true,"browserOffline":"separate required fixture","threeYears":["1812","1835","1904"],"requestCount":4}
+
+[1m== new --after places directly under the named ticket and moves nothing else[0m
+
+  the anchor is the middle line
+  ok    a ticket is created — T-0004 created → tickets/T-0004-a-finding-filed-beside-the-work.md (placed directly under T-0002, inside its band) [kind ops, read from the title: no performance word and no building in the title]
+  ok    the message says where it went, and that it was placed — T-0004 created → tickets/T-0004-a-finding-filed-beside-the-work.md (placed directly under T-0002, inside its band) [kind ops, read from the title: no performance word and no building in the title]
+  ok    the new line sits DIRECTLY UNDER the anchor, wherever the anchor is — anchor row 3, new row 4
+  ok    every pre-existing line is byte-identical and in its original order
+  ok    the anchor id did not leak into the title — A finding filed beside the work
+  ok    and `check` is green afterwards, with nothing repaired by hand — ticket queue OK — 4 tickets, 4 in the queue, 0 waiting on the owner
+
+  the same call with the lines reordered — the anchor is now the LAST line
+  ok    a ticket is created — T-0004 created → tickets/T-0004-a-finding-filed-beside-the-work.md (placed directly under T-0002, inside its band) [kind ops, read from the title: no performance word and no building in the title]
+  ok    the message says where it went, and that it was placed — T-0004 created → tickets/T-0004-a-finding-filed-beside-the-work.md (placed directly under T-0002, inside its band) [kind ops, read from the title: no performance word and no building in the title]
+  ok    the new line sits DIRECTLY UNDER the anchor, wherever the anchor is — anchor row 4, new row 5
+  ok    every pre-existing line is byte-identical and in its original order
+  ok    the anchor id did not leak into the title — A finding filed beside the work
+  ok    and `check` is green afterwards, with nothing repaired by hand — ticket queue OK — 4 tickets, 4 in the queue, 0 waiting on the owner
+
+  the anchor is not in the queue
+  ok    the line is appended at the bottom rather than dropped
+  ok    and the tool SAYS the anchor was not found — a fallback is never mistaken for a choice — T-0004 created → tickets/T-0004-a-finding-whose-anchor-has-closed.md (T-0099 is not in QUEUE (closed, blocked, or mistyped) — appended to the bottom instead; move it or pick a live anchor) [kind ops, read from the title: no performance word and no building in the title]
+
+  the anchor given as a bare number
+  ok    `--after 2` reads as T-0002 and places under it — T-0004 created → tickets/T-0004-a-finding-filed-by-number.md (placed directly under T-0002, inside its band) [kind ops, read from the title: no performance word and no building in the title]
+
+  no --after at all — the owner's own filing
+  ok    appends to the bottom as before
+  ok    and the message tells a run what it should have passed — T-0004 created → tickets/T-0004-an-owner-filing.md (appended to QUEUE bottom — the owner orders it; a run should pass --after T-NNNN)
+
+  a loop follow-up --after a 5C build ticket
+  ok    it lands at the FOOT of band 9, not under the build — T-0004 T-0006
+  ok    and not under the anchor
+  ok    the message says so, names the anchor it declined and the way past it — T-0006 created → tickets/T-0006-a-tooling-fault-found-mid-build.md (a follow-up that is not the owner's goes to the FOOT OF BAND 9 (owner, 2026-09-27) — --after T-0002 sits above band 9; if dev's gate is red on this, or the build in hand cannot finish without it, re-file with --blocks "<why>") [kind ops, read from the title: no performance word and no building in the title]
+  ok    every pre-existing line is byte-identical and in its original order
+  ok    and `check` is green afterwards — ticket queue OK — 6 tickets, 6 in the queue, 0 waiting on the owner
+
+  a steward filing with no --by and no --after
+  ok    the default filer is not the owner, so it goes to band 9 too — T-0004 T-0006
+  ok    every pre-existing line is byte-identical and in its original order
+  ok    and `check` is green afterwards — ticket queue OK — 6 tickets, 6 in the queue, 0 waiting on the owner
+
+  the same follow-up with --blocks and its reason
+  ok    --blocks honours the anchor: it sits directly under T-0002 — T-0006 created → tickets/T-0006-a-fault-the-build-cannot-finish-without.md (placed directly under T-0002, inside its band)
+  ok    the reason is written into the ticket
+  ok    and the reason did not leak into the title
+  ok    every pre-existing line is byte-identical and in its original order
+  ok    and `check` is green afterwards — ticket queue OK — 6 tickets, 6 in the queue, 0 waiting on the owner
+
+  an owner filing --after a 5C build ticket
+  ok    the owner's placement is never redirected
+  ok    every pre-existing line is byte-identical and in its original order
+  ok    and `check` is green afterwards — ticket queue OK — 6 tickets, 6 in the queue, 0 waiting on the owner
+
+  a loop follow-up --after a band-10 ticket
+  ok    an anchor BELOW band 9 is honoured as before
+  ok    every pre-existing line is byte-identical and in its original order
+  ok    and `check` is green afterwards — ticket queue OK — 6 tickets, 6 in the queue, 0 waiting on the owner
+
+  --blocks with no reason
+  ok    an empty --blocks is refused, and says what to write — `--blocks` was written with no reason after it.
+
+ticket --after self-test: all pass
+
+[1m== the tickets repo: claim is a pushed lock, done waits on the merge, ask stays in the queue[0m
+1. the claim is the lock
+  ok    run A claims T-1501
+  ok    …and the claim is on the remote at once
+  ok    run B, pulling after the push, is refused
+  ok    run A claims T-1502
+  ok    run B's stale tree still reads T-1502 open
+  ok    a stale claim of the same ticket cannot land — the push conflicts and is refused
+  ok    …and run A still holds it on the remote
+2. a dead claim is stolen
+  ok    list --workable prints a dead claim as TAKEABLE, with its age, in its queue place
+  ok    …and a fresh claim as claimed, with its age, and not takeable
+  ok    …and says a dead claim is workable and claim steals it
+  ok    the fresh claim is still protected: claim refuses it
+  ok    a dead claim whose work sits in an open PR titled with it is REFUSED, naming the PR (T-2138)
+  ok    …and the dead claim is left where it was, not stolen
+  ok    a claim from three weeks ago is stolen
+3. done is review until the PR merges
+  ok    done sets review with the PR
+  ok    …and keeps the queue line
+  ok    settle: a merged PR makes its ticket done, closed on the merge instant
+  ok    settle: …and takes its queue line
+  ok    settle: a PR closed unmerged reopens its ticket with a note
+3b. settle moves a chain on: a ticket blocked on the merged one takes its place
+  ok    settle: a ticket blocked on exactly the merged ticket reopens, with a note
+  ok    …in the merged ticket's queue line, above the line that was below it
+  ok    …while one whose block names more than the ticket stays blocked and listed
+3c. a chain whose merged ticket had lost its line opens below band 9, not at the foot
+  ok    settle: the successor of a merged ticket with no line opens at the head of the band below band 9
+4. new tickets: the folder of 250, and a collision renumbered
+  ok    new lands in the folder its number belongs to
+  ok    B minted on a stale read and was renumbered on push, not landed twice
+  ok    …and its queue line was renumbered with it
+  ok    …and front matter agrees with the file name
+5. ask keeps the ticket in the queue, and the loop steps over it
+  ok    ask: decision pending, question and options in the ticket
+  ok    ask: the ticket keeps its queue line, with its question directly under it
+  ok    list --workable leaves it out and names it as waiting on the owner
+  ok    claim refuses a ticket waiting on the owner
+  ok    once answered it is claimable, and the claim drops the question line
+  ok    tickets.json carries each ticket's path and PR url
+5b. sync: a hand edit pushes under its own message, and a dirty clone still pulls
+  ok    sync -m names the commit, and does not try to pull over the edit
+  ok    check counts an asked decision as waiting on the owner
+5c. a command commits only what it was asked to change (T-2280)
+  ok    done refuses over a local edit to a ticket it was not asked to change, naming each file
+  ok    …and pushes nothing: the remote is where it was, T-1502 still claimed
+  ok    …and discards nothing: both edits are still on disk
+  ok    an edit to the ticket the command names still rides it
+6. no tickets is a failure, not a pass
+  ok    check with no tickets/ at all fails and names the fix
+
+test_ticket_repo_mode: all hold
+
+[1m== …and its own assertions fire when a member loses its owner, its gate or its reason[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | THE CLOSING SET FAILED:
+   self-test |   - resident_index: no step in tools/derived_manifest.json runs tools/no_such_tool.py, so the lap never rebuilds a member of the closing set. Add the step, or declare a written exemption here.
+   self-test |   - resident_index: tools/check.sh never runs tools/no_such_tool.py with --check, so nothing asserts this member re-derives.
+   self-test | THE CLOSING SET FAILED:
+   self-test |   - resident_index: the manifest step resolves ['chicago/4d/data/residents/index.json'], and this set says ['chicago/4d/data/town_census.json']. One of them is out of date.
+   self-test | THE CLOSING SET FAILED:
+   self-test |   - published_residents: the exemption states no reason
+   self-test | THE CLOSING SET FAILED:
+   self-test |   - resident_index: tools/check.sh never runs tools/rebuild_resident_index.py with --check, so nothing asserts this member re-derives.
+   self-test | CLOSING SET SELF-TEST PASS — 0 failure(s), 17 case(s)
+
+[1m== ...and a guessed date, a borrowed name and a rising persistence curve are refused[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |   ok    a bare year is read at 1 January
+   self-test |   ok    a year and month are read at the 1st
+   self-test |   ok    a full date is read as itself
+   self-test |   ok    an unreadable date is refused rather than guessed
+   self-test |   ok    a row whose evidence brackets the scene date pins no day before it
+   self-test |   ok    a row whose evidence stops before the scene is priced off where it stops
+   self-test |   ok    a plain readable date still outranks the derived reach
+   self-test |   ok    the same household and lag redraw the same presence
+   self-test |   ok    two households of the same lag draw independently
+   self-test |   ok    persistence is 1 at the scene date and falls with the lag
+   self-test |   ok    the name key is surname and first initial
+   self-test |   ok    a name with no surname yields no key
+   self-test |   ok    a retired readmission's row is not minted again
+   self-test |   ok    a normalised reading is capitalised, not re-read
+   self-test |   ok    the model reads its three horizons off the committed crosswalks
+   self-test |   ok    the fitted rate is a decay and not a growth
+   self-test |   ok    the programme carries this stage and gives it to this ticket
+   self-test |   ok    the programme's readmission pass is the one these cards wear
+   self-test |   ok    every class is either spent here or owned by a named ticket
+   self-test |   ok    R4 and R6 are not this stage's to spend
+
+[1m== ...and the establishment, the enlistment window and all four refusals still fire[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |   OK: the establishment, the enlistment window, the seed rule and all three refusals still fire when broken (four of them)
+
+[1m== the residency-tested residents re-derive from the register[0m
+   OK: 5 resident(s) minted by the residency test, 156 candidate(s) refused
+
+[1m== …and every condition under that verdict fires when it is broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | RESEARCH SIGN-OFF SELF-TEST PASS — 0 failure(s), 11 case(s), live verdict GO
+
+[1m== …and its corpus, outcome and read-beside rules still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | DEPARTURE RULING SELF-TEST PASS — 0 failure(s), 6 unit(s), 2 outcome(s)
+
+[1m== …and that gate's own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | export_resident_research_package self-test ok — 24 assertions
+
+[1m== the 1 April 1834 return's 193 lines still reach what the concordance says they reach[0m
+ok  letter_list_1834_04_01_concordance.json: 193 lines, 218 letters, 30 dropped by the 1 April transcription, 2 of them by every claim the corpus holds
+
+[1m== …and pair-level coverage still refuses a ruling that names only one card[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |    pair-level coverage: 3 case(s) pass
+
+[1m== the research domains hold one shape[0m
+  12 domain(s); 10722 record(s), 8566 claim(s), 426 declared coverage item(s), 12 inventoried and not asserted read
+OK: the 12 domains hold their shape
+
+[1m== …and every garbled forename in them is repaired, cited, and none is left unnamed[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | norris 1844 --self-test: 11 forename repairs hold against the second hand and 4 against the page image (each read twice, on a reproducible crop), 0 left damaged on purpose
+   self-test | norris 1844 --self-test: 8 printed lines hold the three split rules, and no entry in 2073 begins an address at a capital or keeps an unspaced comma inside a forename
+   self-test | norris 1844 --self-test: the case rule re-read against the whole volume — 45 of 2073 entries move and every one of them had a case-blind address beginning at a one-letter initial
+   self-test | norris 1844 --self-test: the between rule re-read against the whole volume — 175 entries move, every one of them had an address beginning at a `b`, and 11 of them recover the residence the old cut had buried
+   self-test | norris 1844 --self-test: 503 entries carry a place of business read out of the trade line, none of them moves an address, and every one says on the claim that it is not a residence
+   self-test | norris 1844 --self-test: 53 surnames read off the page image on their own word box, 42 of them carrying the name separator away with them; 2 places the second hand is wrong and the committed reading stands
+   self-test | norris 1844 --self-test: the street rule re-read against the whole volume — 7 entries move and every one of them had a street inside its forename; 5 streets are refused an address and each says why on the claim
+   self-test | norris 1844 --self-test: 5 surnames lifted out of the margin's ink against the second hand and the volume's own alphabetical run, and 1 turned line(s) the scanner un-indented read with the entry above rather than as a man
+   self-test | norris 1844 --self-test: 69 names read past the end of the name — 44 capped at the prefix, 7 refused firm_branch, and 18 healed at the source
+
+[1m== …and a roll bounds a presence, a tax roll bounds property, and neither reaches the scene[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |   ok:   a day-precision list reaches its own day
+   self-test |   ok:   a bare year reaches 31 December
+   self-test |   ok:   a month reaches its last day
+   self-test |   ok:   an unreadable list date is refused rather than guessed
+   self-test |   ok:   a tax row bounds property and not presence
+   self-test |   ok:   a tax row puts no body in the town
+   self-test |   ok:   a poll row bounds a presence
+   self-test |   ok:   a year-precision poll bounds only the year's end
+   self-test |   ok:   no row reaches the scene date
+   self-test |   ok:   every derived bound is inferred and none is attested
+   self-test |   ok:   no derived bound covers the scene date
+   self-test |   ok:   every tax bound refuses to place a body
+   self-test |   ok:   every presence bound reaches before the scene date is over
+   self-test |   ok:   every bound names the archival source and only it
+   self-test |   ok:   every bound names a record the roll actually holds
+   self-test |   ok:   the applier changes exactly one key
+   self-test |   ok:   the applier is idempotent
+   self-test |   ok:   the block lands in its slot and not at the end of the record
+   self-test |   ok:   a rewrite carries the land register's group through untouched
+   self-test |   19 check(s), 0 failure(s)
+
+[1m== Fergus's death notices are on the cards the crosswalk names[0m
+old-settler deaths: 64 death notice(s) on 64 card(s), 45 roster merge(s) still cited, no strays
+
+[1m== the school-section sale still reads the way T-1017 ruled it[0m
+   ok    data/research/land_sales/school_section_sale_1833.json re-derives — 337 rows, 105 buyers, 46.7% upheld against 15.7% elsewhere, and 11 buyers the layer has no surname for
+
+[1m== …and its crosswalk to the four pools of 1835 names rebuilds too[0m
+fergus 1839 election crosswalk: matches the committed file
+
+[1m== every Newberry lead is ruled on, anchored, and re-derives from the cards[0m
+newberry lead rulings: 1033 leads on 1430 cards, 0 merges
+
+[1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | trade_census_1835 self-tests pass (24 guards)
+
+[1m== every in-window trade has a workplace or a stated reason it has none[0m
+31 raised houses and the ledger re-derive.
+
+[1m== the 1835 population profile re-derives from the resident layer, on every axis[0m
+2884 persons in 1459 households profiled on 11 axes; 2878 carry a sex, 63 a dated age, 329 a role; reconstructed 1446
+
+[1m== the 1835 staffing join re-derives, and holds from both ends[0m
+OK: the 1835 staffing join re-derives — 146 workplaces on 113 cards, joined both ways, 51 printed names left unmatched
+
+[1m== every empty trade roof is kept by a keeper of its trade, or says why none is left[0m
+trade roofs (T-1989): 0 seated, 6 with no keeper to offer, of 9; 26 keepers owed a house of their own
+  recon_1835_blk_west_randolph_des_plaines_w2_01  W2  nobody: 0 keepers of its trade in the west, 3 more held by their count
+  recon_1835_forks_freight_f2_001  F2  nobody: 0 keepers of its trade in the west, 1 more held by their count
+  recon_1835_north_w5_040  W5  nobody: 0 keepers of its trade in the north
+  recon_1835_north_w3_062  W3  nobody: 0 keepers of its trade in the north
+  recon_1835_north_w2_065  W2  nobody: 0 keepers of its trade in the north, 5 more held by their count
+  recon_1835_north_c3_066  C3  nobody: 0 keepers of its trade in the north, 6 more held by their count
+
+[1m== the letter lists' suspected misreadings stay a worklist and not evidence[0m
+   ok    data/research/residents/letter_list_reading_suspicions.json re-derives — 16 suspicion(s), none of them evidence
+
+[1m== every building summary record is graded, sourced, within its lengths and free of ids[0m
+OK: 13 summary record(s), 120 graded fact(s), 3 style module(s), 4 scene file(s) compiled in memory
+
+[1m== …and a planted path, snake_case id, 'tier', 'ticket', 'order book' and a stale allowlist entry are each refused[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |    ok   the committed visitor UI passes ([])
+   self-test |    ok   a file path in the string table is refused
+   self-test |    ok   a snake_case id in the string table is refused
+   self-test |    ok   the word tier in the string table is refused
+   self-test |    ok   the word ticket in the string table is refused
+   self-test |    ok   the words order book in the string table is refused
+   self-test |    ok   a ticket number in the string table is refused
+   self-test |    ok   the words order book under the researcher namespace are allowed (Researcher mode holds it)
+   self-test |    ok   and under a researcher segment inside an app's own section
+   self-test |    ok   a ticket number in a Researcher-mode string is still refused
+   self-test |    ok   a snake_case id in a Researcher-mode string is still refused
+   self-test |    ok   a file path in a Researcher-mode string is still refused
+   self-test |    ok   the word ticket in a Researcher-mode string is still refused
+   self-test |    ok   the word tier in a Researcher-mode string is still refused
+   self-test |    ok   a namespace merely starting with `researcher` is not Researcher mode's
+   self-test |    ok   a path in a page's <code> is refused, with its line
+   self-test |    ok   a title attribute is read
+   self-test |    ok   an alt attribute is read
+   self-test |    ok   a data-researcher subtree and its own attributes may name the order book
+   self-test |    ok   the exemption ends with the marked element
+   self-test |    ok   scripts, styles and comments are not visible text
+   self-test |    ok   a ticket number and a path in Researcher-mode text are refused
+   self-test |    ok   a ticket as a link behind plain words, in Researcher mode, is allowed
+   self-test |    ok   a ticket link with no label is refused
+   self-test |    ok   a ticket link outside Researcher mode is refused
+   self-test |    ok   a link to anything else is not a ticket link
+   self-test |    ok   a ticket link labelled with its number is refused
+   self-test |    ok   a Go to row's limit naming a structure id is refused (the T-2620 finding)
+   self-test |    ok   a firm not trading at the scene date is not read (its row says so instead)
+   self-test |    ok   a business named by its id is refused
+   self-test |    ok   a liberty's field naming a ticket is refused (492 of 623 did, T-2825)
+   self-test |    ok   a liberty's field naming a record id is refused
+   self-test |    ok   a liberty's title is read
+   self-test |    ok   a field the list never prints as a row (Recorded, Revised, Covers) is not read
+   self-test |    ok   a subject's compiled name that is still an id is refused
+   self-test |    ok   a ground claim's note naming a file is refused
+   self-test |    ok   an open question's research note is read by its label
+   self-test |    ok   a claim's id is the data's, not a sentence, and is not read
+   self-test |    ok   a household note naming a ticket, read with no overlay, is refused
+   self-test |    ok   …and read through its overlay it passes ('Seated by other work off the Bacon household; see the directories data.')
+   self-test |    ok   an overlay with no edit for the sentence leaves the leak in place, and it is refused
+   self-test |    ok   a bare id's name that is still an id is refused
+   self-test |    ok   a named building whose title says its production step is refused
+   self-test |    ok   …and its compiled plain name passes ('1600 Prairie Avenue — brick corner house')
+   self-test |    ok   an allowlist entry that matches nothing is refused as stale
+   self-test |    ok   without the allowlist the leaks it holds are reported
+   self-test |    ok   the allowlist is empty, or every entry is a surface T-2825 is still fixing
+   self-test |    ok   css/skins.css hides a [data-researcher] element while Researcher mode is off
+   self-test |    ok   a stylesheet without that rule is refused
+   self-test |    ok   every allowlist entry names its owning ticket and its reason
+   self-test |    every planted fault refused
+
+[1m== World smoke keeps exact structure batches and both source-owned Green Tree yard readings (T-1790)[0m
+world smoke contracts: exact batch key set and both yard readings pass/refute
+
+[32mCHECK PASS[0m — part 6/16: 89 steps, none red.
+  25 of them are self-tests that prove a gate by breaking it; their
+  assertions fire on purpose and every line of it is prefixed 'self-test |'.
+  This is part 6 of 16; the other 1289 steps are in the other parts. The gate is
+  green only when every part is: tools/check.sh --part 1/16 through --part 16/16.
