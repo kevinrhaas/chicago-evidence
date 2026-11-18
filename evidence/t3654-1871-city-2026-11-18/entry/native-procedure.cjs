@@ -1,0 +1,21 @@
+const fs=require('node:fs'),http=require('node:http'),path=require('node:path'),assert=require('node:assert/strict');
+const {chromium}=require('playwright');
+(async()=>{
+ const root='/workspace/1871-entry-fix/site/4d',out='/tmp/t3654-entry-native-browser';fs.mkdirSync(out,{recursive:true});
+ const types={'.html':'text/html','.js':'text/javascript','.json':'application/json','.css':'text/css','.wasm':'application/wasm','.glb':'model/gltf-binary','.png':'image/png','.webp':'image/webp','.jpg':'image/jpeg','.ktx2':'image/ktx2'};
+ const server=http.createServer((req,res)=>{const u=new URL(req.url,'http://fixture');let p=path.resolve(root,'.'+decodeURIComponent(u.pathname.replace(/^\/4d/,'')));try{if(!p.startsWith(root+path.sep))throw Error('path');if(fs.statSync(p).isDirectory())p=path.join(p,'index.html');res.writeHead(200,{'Content-Type':types[path.extname(p)]||'application/octet-stream'});fs.createReadStream(p).pipe(res)}catch{res.writeHead(404);res.end('missing')}});
+ await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const origin='http://127.0.0.1:'+server.address().port;
+ const browser=await chromium.launch({executablePath:'/usr/bin/chromium',headless:true,args:['--no-sandbox','--enable-unsafe-swiftshader']});const reports=[];
+ try{for(const year of ['1835','1871']){
+  const context=await browser.newContext({viewport:{width:1280,height:800},deviceScaleFactor:1});await context.addInitScript(()=>localStorage.setItem('chicago4d.settings',JSON.stringify({detail:'light',quality:1})));
+  const page=await context.newPage(),errors=[],missing=[],failed=[];page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.status()>=400)missing.push({status:r.status(),url:r.url()})});page.on('requestfailed',r=>{if(!r.failure()?.errorText.includes('ERR_ABORTED'))failed.push({url:r.url(),error:r.failure()?.errorText})});
+  const started=Date.now(),url=origin+'/4d/'+year+'/?entry-proof=1#entry-proof';await page.goto(url,{waitUntil:'domcontentloaded'});
+  await page.waitForFunction(()=>window.__chicago4d?.ready||window.__chicago4d?.error,null,{timeout:240000,polling:500});
+  const boot=await page.evaluate(()=>({ready:__chicago4d.ready,error:__chicago4d.error,year:__chicago4d.year}));assert.equal(boot.ready,true);assert.equal(boot.error,null);assert.equal(boot.year,year);
+  await page.waitForFunction(()=>__chicago4d.welcome.state==='welcome',null,{timeout:30000,polling:300});await page.evaluate(()=>__chicago4d.welcome.enter('spawn'));await page.waitForFunction(()=>__chicago4d.welcome.state==='world',null,{timeout:30000,polling:300});
+  const result=await page.evaluate(()=>{const a=__chicago4d;document.exitPointerLock?.();a.renderer.setAnimationLoop(null);a.world.follow(a.camera.position);a.world.aim(a.camera);a.renderer.render(a.scene3d,a.camera);const gl=a.renderer.getContext(),w=gl.drawingBufferWidth,h=gl.drawingBufferHeight,px=new Uint8Array(w*h*4);gl.readPixels(0,0,w,h,gl.RGBA,gl.UNSIGNED_BYTE,px);let sum=0,lit=0;for(let i=0;i<px.length;i+=4){const v=.2126*px[i]+.7152*px[i+1]+.0722*px[i+2];sum+=v;if(v>5)lit++}return{year:a.year,url:location.href,base:document.baseURI,bases:document.querySelectorAll('base').length,importMaps:document.querySelectorAll('script[type=importmap]').length,welcome:a.welcome.state,ready:a.ready,meanLuminance:sum/(w*h),nonblackFraction:lit/(w*h),draws:a.renderer.info.render.calls,build:document.getElementById('gate-build')?.textContent,problems:a.problems}});
+  assert.equal(result.url,url);assert.equal(result.base,origin+'/4d/walk/');assert.equal(result.bases,1);assert.equal(result.importMaps,1);assert.ok(result.meanLuminance>5);assert.ok(result.nonblackFraction>.5);assert.deepEqual(errors,[]);assert.deepEqual(missing,[]);assert.deepEqual(failed,[]);
+  await page.screenshot({path:out+'/'+year+'.png'});reports.push({pass:true,seconds:(Date.now()-started)/1000,errors,missing,failed,...result});console.log(JSON.stringify(reports.at(-1)));await context.close();
+ }}finally{await browser.close();await new Promise(resolve=>server.close(resolve));fs.writeFileSync(out+'/report.json',JSON.stringify({root,reports},null,2)+'\n')}
+ assert.equal(reports.length,2);
+})().catch(error=>{console.error(error);process.exit(1)});

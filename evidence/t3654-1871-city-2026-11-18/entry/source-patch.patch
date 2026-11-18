@@ -1,0 +1,318 @@
+diff --git a/chicago/4d/tools/check_published.mjs b/chicago/4d/tools/check_published.mjs
+index 91b1a9c75b..f75abd8496 100644
+--- a/chicago/4d/tools/check_published.mjs
++++ b/chicago/4d/tools/check_published.mjs
+@@ -155,10 +155,10 @@ const TRANSFORMED = [
+     verify: () => { try { checkAudio(SITE); } catch(e) { return e.message; } return null; } },
+   { re: /^(?:\d{4}\/)?index\.html$/,
+     what: 'the front doors — /4d/ and /4d/<year>/ on chicago.polecat.live. tools/write_entry_pages.mjs '
+-        + 'copies the temporal observatory to the root and writes year doors as the stamped renderer plus a base into walk/, so the address '
++        + 'copies the temporal observatory to the root and writes small stamped year doors that load one shared renderer, adding a base into walk/ before parsing, so the address '
+         + 'bar keeps the short path and every relative URL resolves from walk/',
+-    gate: 'write_entry_pages.mjs --self-test (check.sh) asserts the <base> is the first child of '
+-        + '<head>, exact root-template copying, working year doors and the honest 1812 status; the deploy URL smoke '
++    gate: 'write_entry_pages.mjs --self-test (check.sh) asserts the inserted <base>, exact root-template copying, small shared doors, build markers and the honest 1812 status; '
++        + 'strip_page_comments.mjs --check holds every door to its canonical loader; the deploy URL smoke '
+         + '(.github/chicago-4d-url-check.json) requests /4d/, /4d/1835/ and /4d/dev/1835/ live.' },
+   { re: /^(?:prairie-1904|pre-fire)\/viewer\/root-served\.js$/,
+     what: 'tools/serve_from_root.py (T-1828) names the asset directories it removed from the mirror because '
+diff --git a/chicago/4d/tools/dev-smoke-state.mjs b/chicago/4d/tools/dev-smoke-state.mjs
+index e07499c3f8..06d35df53e 100644
+--- a/chicago/4d/tools/dev-smoke-state.mjs
++++ b/chicago/4d/tools/dev-smoke-state.mjs
+@@ -99,6 +99,8 @@ const SMOKE_INPUTS = [
+   'chicago/4d/data',
+   'chicago/4d/assets',
+   'chicago/4d/tools/smoke_renderer.mjs',
++  // Year doors are generated, ignored pages; their loader is authored here.
++  'chicago/4d/tools/write_entry_pages.mjs',
+   'chicago/4d/tools/audio_hosting.mjs',
+   'chicago/4d/tools/audio_smoke_replay.mjs',
+   'chicago/4d/tools/audio-hosting.json',
+diff --git a/chicago/4d/tools/publish.sh b/chicago/4d/tools/publish.sh
+index 97b00fb14f..dbc404339c 100755
+--- a/chicago/4d/tools/publish.sh
++++ b/chicago/4d/tools/publish.sh
+@@ -927,22 +927,21 @@ p.write_text(s)
+ PYEOF
+   # THE DEVELOPER NOTES STAY IN THE SOURCE. renderers/web/index.html carries about
+   # 13 KB of HTML comments — why each line is the way it is, for the next editor —
+-  # and the doors below ship this page five times over. They are byte-identical on
+-  # purpose, so validate.py's site check (T-0722) refuses them once they reach its
+-  # 64 KB floor, which PR #1030's markup did. The shipped page drops its comments
+-  # instead: placeholders and conditional comments stay, and nothing inside
++  # which add no value to the shipped page. Comment stripping first reduced the
++  # old copied doors below validate.py's 64 KB duplicate floor (PR #1030); the
++  # doors now share one canonical page. Placeholders and conditional comments
++  # stay, and nothing inside
+   # <script>, <style>, <textarea> or <pre> is touched. It runs after the stamp and
+-  # before the doors, so every door is a copy of the stripped page.
++  # before the doors, so the shared page carries no developer notes.
+   # `strip_page_comments.mjs --check` (check.sh) holds the shipped form to the source.
+   node tools/strip_page_comments.mjs "$SITE/walk/index.html"
+ fi
+ # THE FRONT DOORS (chicago.polecat.live). The renderer lives at walk/, but nobody is
+-# sent there: /4d/ and /4d/<year>/ are copies of the STAMPED walk/index.html carrying a
+-# <base href> into walk/, so the address bar keeps the short path and every relative
+-# URL still resolves from walk/. This replaces the old opener page that bounced /4d/
+-# to walk/?year=1835. It runs after the stamp so every door shows the same build.
+-# Each door keeps walk/index.html's <head> and </body>, which is what
+-# .github/chicago-4d-dev-preview.mjs marks (robots meta, DEV PREVIEW banner).
++# sent there: /4d/ is the Observatory and /4d/<year>/ is a small stamped loader of
++# the one shared walk/index.html. It adds <base href> before parsing that page at
++# the same short URL, so path-based year selection and relative assets are kept.
++# Both the loader and shared page have ordinary head/body elements for preview
++# marking; the loaded page carries its own DEV stamp, noindex and banner.
+ rm -f "$SITE/index.html"
+ node tools/write_entry_pages.mjs "$SITE"
+ 
+diff --git a/chicago/4d/tools/strip_page_comments.mjs b/chicago/4d/tools/strip_page_comments.mjs
+index 343905b233..9c9d4a9c5f 100644
+--- a/chicago/4d/tools/strip_page_comments.mjs
++++ b/chicago/4d/tools/strip_page_comments.mjs
+@@ -7,13 +7,12 @@
+ //
+ // WHY. renderers/web/index.html carries about 13 KB of HTML comments: the reasons a
+ // line is the way it is, written for whoever edits it next. They are the source's
+-// documentation and they stay there. A visitor downloads none of them usefully, and
+-// publish.sh ships that page five times over — walk/ and the year doors, which are
+-// the stamped page plus one <base href> (write_entry_pages.mjs). Those doors are
+-// deliberately byte-identical, so tools/validate.py's site check (T-0722) refuses
+-// them once they reach SITE_DUPE_FLOOR (64 KB); on 2026-10-18 the door was 64,208
+-// bytes and PR #1030's markup put it over. Taking the notes out of the SHIPPED page
+-// is the honest fix: the floor stays where it is and the doors stay identical.
++// documentation and they stay there. A visitor downloads none of them usefully.
++// Originally publish.sh copied that page into every year door; on 2026-10-18 the
++// 64,208-byte door approached SITE_DUPE_FLOOR (64 KB), and PR #1030 put it over.
++// This tool removed the developer notes from the shipped page. T-3654 now shares
++// that canonical page through small year loaders, so adding years no longer
++// copies the renderer. The floor remains unchanged and comments remain stripped.
+ //
+ // THE RULES. Only real `<!-- … -->` comments in markup go, and the rest of the page is
+ // passed through byte for byte:
+@@ -32,9 +31,11 @@
+ // (the gate's build stamp and the c4d-releases meta are put back to their source form
+ // and the rest must match byte for byte), so every script, style and textarea body is
+ // the source's; every placeholder the source carries survives the strip; and every
+-// year door is walk/index.html plus its <base>, so the doors carry no notes either.
+-import { readFileSync, writeFileSync, existsSync, readdirSync } from 'node:fs';
++// year door is the small stamped loader of that shared page, so doors carry no
++// renderer copies or developer notes either.
++import { readFileSync, writeFileSync, existsSync, readdirSync, mkdtempSync, mkdirSync, rmSync } from 'node:fs';
+ import path from 'node:path';
++import os from 'node:os';
+ 
+ const HERE = path.dirname(new URL(import.meta.url).pathname);
+ const ROOT4D = path.resolve(HERE, '..');
+@@ -180,19 +181,20 @@ export async function problems(site, sourcePath = path.join(ROOT4D, 'renderers/w
+       }
+     });
+   }
+-  const { door } = await import('./write_entry_pages.mjs');
++  const { sharedDoor } = await import('./write_entry_pages.mjs');
+   for (const year of readdirSync(site).filter((d) => /^\d{4}$/.test(d)).sort()) {
+     const p = path.join(site, year, 'index.html');
+     if (!existsSync(p)) continue;
+     const html = readFileSync(p, 'utf8');
+-    if (!html.includes('<base href="../walk/">')) continue; // a planned year's pending page
+-    if (html !== door(published, '../walk/')) bad.push(`${year}/index.html is not walk/index.html plus its <base>`);
++    if (year === '1812' && !existsSync(path.join(ROOT4D, 'data/scenes/1812.json'))
++      && html === readFileSync(path.join(ROOT4D, 'renderers/web/portal/pending.html'), 'utf8')) continue;
++    if (html !== sharedDoor(published, '../walk/')) bad.push(`${year}/index.html is not the small loader of the shared walk page`);
+     if (stripComments(html).removed.length) bad.push(`${year}/index.html ships developer comments`);
+   }
+   return bad;
+ }
+ 
+-function selfTest() {
++async function selfTest() {
+   const fail = [];
+   const ok = (cond, what) => { if (!cond) fail.push(what); };
+   const page = [
+@@ -244,6 +246,27 @@ function selfTest() {
+   ok(rr.html.includes(GATE_PLACEHOLDER), 'the source page\'s gate placeholder survives the strip whole');
+   ok(rr.html.includes(RELEASES_PLACEHOLDER), 'the source page\'s release-number meta survives the strip');
+   ok(stripComments(rr.html).removed.length === 0, 'the stripped source page carries no comment');
++  // A malformed built-year door must not be mistaken for a pending year.
++  const fixture = mkdtempSync(path.join(os.tmpdir(), 'temporal-door-contract-'));
++  try {
++    const { sharedDoor } = await import('./write_entry_pages.mjs');
++    mkdirSync(path.join(fixture, 'walk'));
++    mkdirSync(path.join(fixture, '1871'));
++    writeFileSync(path.join(fixture, 'walk/index.html'), rr.html);
++    const entry = path.join(fixture, '1871/index.html');
++    const loader = sharedDoor(rr.html, '../walk/');
++    writeFileSync(entry, loader);
++    ok((await problems(fixture)).length === 0, 'an exact shared door passes the mirror contract');
++    for (const [label, html] of [
++      ['missing base', loader.replace('<base href="../walk/">', '')],
++      ['wrong base', loader.replace('<base href="../walk/">', '<base href="../wrong/">')],
++      ['pending template for a built year', readFileSync(path.join(ROOT4D, 'renderers/web/portal/pending.html'), 'utf8')],
++    ]) {
++      writeFileSync(entry, html);
++      ok((await problems(fixture)).some(b => b.includes('1871/index.html is not the small loader')),
++        `${label} fails the exact shared-door contract`);
++    }
++  } finally { rmSync(fixture, { recursive: true, force: true }); }
+   for (const f of fail) console.error(`FAIL  ${f}`);
+   if (!fail.length) console.log(`strip_page_comments self-test: ok (the source page sheds ${rr.removed.length} comments, ${real.length - rr.html.length} bytes)`);
+   return fail.length ? 1 : 0;
+@@ -252,7 +275,7 @@ function selfTest() {
+ if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(new URL(import.meta.url).pathname)) {
+   const arg = process.argv[2];
+   if (arg === '--self-test') {
+-    process.exitCode = selfTest();
++    process.exitCode = await selfTest();
+   } else if (arg === '--check') {
+     const site = path.resolve(process.argv[3] || path.join(ROOT4D, '../../site/4d'));
+     const bad = await problems(site);
+diff --git a/chicago/4d/tools/test_dev_smoke_state.mjs b/chicago/4d/tools/test_dev_smoke_state.mjs
+index 71803a2281..37f6e73a1c 100644
+--- a/chicago/4d/tools/test_dev_smoke_state.mjs
++++ b/chicago/4d/tools/test_dev_smoke_state.mjs
+@@ -41,6 +41,7 @@ try {
+     'chicago/4d/data/town.json': '{"town":1}\n',
+     'chicago/4d/assets/town.glb': 'fixture asset bytes',
+     'chicago/4d/tools/smoke_renderer.mjs': '// fixture probe\n',
++    'chicago/4d/tools/write_entry_pages.mjs': '// fixture shared year-door loader\n',
+     'chicago/4d/tools/audio_hosting.mjs': '// fixture publisher\n',
+     'chicago/4d/tools/audio_smoke_replay.mjs': '// fixture replay\n',
+     'chicago/4d/tools/audio-hosting.json': '{"public_base":"https://media.example/"}\n',
+diff --git a/chicago/4d/tools/write_entry_pages.mjs b/chicago/4d/tools/write_entry_pages.mjs
+index e33164730a..1e4f325a8f 100644
+--- a/chicago/4d/tools/write_entry_pages.mjs
++++ b/chicago/4d/tools/write_entry_pages.mjs
+@@ -10,10 +10,10 @@
+ //   /4d/<year>/     a named year — /4d/1835/, /4d/1812/, /4d/1880/
+ //   /4d/dev/…       the same doors on the dev preview (deploy copies the tree)
+ //
+-// Year doors are `walk/index.html` with one `<base href>` added, pointing into
+-// walk/. Every relative URL on the page (./css, ./js, the import map, the data
+-// layer via scene-loader.js's document base) therefore resolves exactly as it
+-// does from walk/ itself, and the address bar keeps the short path. main.js reads
++// Year doors load the one shared `walk/index.html`, adding a `<base href>` before
++// the browser parses it. The small door keeps the short URL; it does not redirect
++// or make five copies of the renderer. Every relative URL (./css, ./js, the import
++// map and scene-loader.js's data base) still resolves from walk/. main.js reads
+ // the year from the door's path; `?year=` and any further query parameters still
+ // override. The separate root menu forwards explicit query deep links to a year door.
+ //
+@@ -44,6 +44,53 @@ export function door(html, baseHref) {
+   return out;
+ }
+ 
++/** Runs in the small year page; the renderer is parsed once at the same URL. */
++async function openSharedDoor(baseHref, withBase) {
++  const shared = new URL('index.html', document.baseURI);
++  const fallback = new URL(shared);
++  fallback.search = location.search;
++  if (!fallback.searchParams.get('year')) {
++    const year = location.pathname.match(/\/(\d{4})(?:\/index\.html)?\/?$/)?.[1];
++    if (year) fallback.searchParams.set('year', year);
++  }
++  fallback.hash = location.hash;
++  document.getElementById('entry-fallback').href = fallback.href;
++  try {
++    const response = await fetch(shared, { cache: 'no-cache' });
++    if (!response.ok) throw new Error(`The city page returned ${response.status}`);
++    const html = withBase(await response.text(), baseHref);
++    document.open();
++    document.write(html);
++    document.close();
++  } catch {
++    document.getElementById('entry-status').textContent = 'The city could not open. Try the link below or reload this page.';
++    document.getElementById('entry-fallback').hidden = false;
++  }
++}
++
++/** A small, stamped loader. The full renderer lives only at walk/index.html. */
++export function sharedDoor(html, baseHref) {
++  door(html, baseHref); // Refuse malformed canonical markup during publication.
++  const stamp = html.match(/<p class="gate-build" id="gate-build"[^>]*>.*?<\/p>/s)?.[0] ?? '';
++  const icon = html.match(/<link rel="icon"[^>]*>/)?.[0] ?? '';
++  return `<!doctype html>
++<html lang="en"><head>
++<base href="${baseHref}">
++<meta charset="utf-8">
++<meta name="viewport" content="width=device-width, initial-scale=1">
++<title>4D Chicago</title>
++${icon}
++<style>body{background:#16150f;color:#eee;font:16px system-ui;margin:2rem}a{color:#e8b45a}</style>
++</head><body>
++<p id="entry-status" role="status">Opening the city…</p>
++<a id="entry-fallback" hidden>Open the city</a>
++${stamp}
++<noscript><p>JavaScript is needed to enter the city. <a href="../">Return to the Observatory</a>.</p></noscript>
++<script>(${openSharedDoor.toString()})(${JSON.stringify(baseHref)}, ${door.toString()});</script>
++</body></html>
++`;
++}
++
+ export function writeEntryPages(site) {
+   const walk = path.join(site, 'walk', 'index.html');
+   if (!existsSync(walk)) throw new Error(`${walk} does not exist — publish the renderer first`);
+@@ -54,7 +101,7 @@ export function writeEntryPages(site) {
+     mkdirSync(path.join(site, year), { recursive: true });
+     writeFileSync(path.join(site, year, 'index.html'), year === '1812' && !existsSync(path.join(ROOT4D, 'data/scenes/1812.json'))
+       ? readFileSync(path.join(ROOT4D, 'renderers/web/portal/pending.html'), 'utf8')
+-      : door(html, '../walk/'));
++      : sharedDoor(html, '../walk/'));
+     written.push(`${year}/index.html`);
+   }
+   return written;
+@@ -82,11 +129,53 @@ if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(new URL(im
+       if (menu !== readFileSync(path.join(ROOT4D, 'renderers/web/portal/index.html'), 'utf8')) fail('root menu differs from its authored template');
+       for (const year of ['1835', '1904', '1871']) {
+         if (!menu.includes(`href="${year}/"`)) fail(`${year} is missing its relative destination link`);
+-        if (readFileSync(path.join(fixture, year, 'index.html'), 'utf8') !== door(html, '../walk/')) fail(`${year} lost the renderer door`);
++        if (readFileSync(path.join(fixture, year, 'index.html'), 'utf8') !== sharedDoor(html, '../walk/')) fail(`${year} lost the shared renderer door`);
+       }
+-      if (existsSync(path.join(ROOT4D, 'data/scenes/1812.json')) && readFileSync(path.join(fixture, '1812/index.html'), 'utf8') !== door(html, '../walk/')) fail('1812 has its scene (T-2050) and did not get the renderer door');
++      if (existsSync(path.join(ROOT4D, 'data/scenes/1812.json')) && readFileSync(path.join(fixture, '1812/index.html'), 'utf8') !== sharedDoor(html, '../walk/')) fail('1812 has its scene (T-2050) and did not get the shared renderer door');
+       if (!existsSync(path.join(ROOT4D, 'data/scenes/1812.json')) && !/reconstruction pending/i.test(readFileSync(path.join(fixture, '1812/index.html'), 'utf8'))) fail('1812 must state its missing scene');
++      const large = html.replace('<body>', '<body>' + '<div>shared renderer</div>'.repeat(4000));
++      if (Buffer.byteLength(sharedDoor(large, '../walk/')) >= 4096) fail('a year door copied the renderer instead of sharing it');
++      const stamped = large.replace('</body>', '<p class="gate-build" id="gate-build">build abc1234 · fixture</p></body>');
++      if (!sharedDoor(stamped, '../walk/').includes('id="gate-build">build abc1234 · fixture</p>')) fail('the small door lost its raw build marker');
+     } finally { rmSync(fixture, { recursive: true, force: true }); }
++    // Exercise the actual loader: replacement is a new parse at the same URL,
++    // while recovery carries the path's year only when no query overrides it.
++    const saved = { document: globalThis.document, location: globalThis.location, fetch: globalThis.fetch };
++    try {
++      for (const href of ['https://fixture.test/4d/1835/?anchor=river#view',
++        'https://fixture.test/4d/1871/?year=&anchor=river#view',
++        'https://fixture.test/4d/dev/1871/index.html?year=1904&device=weak#view']) {
++        for (const outcome of ['ok', 'http', 'malformed']) {
++          const at = new URL(href), base = new URL('../walk/', at).href;
++          const elements = { 'entry-status': { textContent: 'Opening the city…' }, 'entry-fallback': { hidden: true } };
++          let written = null, opened = 0, closed = 0, requested = null;
++          globalThis.location = at;
++          globalThis.document = { baseURI: base, getElementById: id => elements[id],
++            open: () => opened++, write: value => { written = value; }, close: () => closed++ };
++          globalThis.fetch = async url => {
++            requested = String(url);
++            return { ok: outcome !== 'http', status: 503, text: async () => outcome === 'malformed' ? '<p>broken</p>' : html };
++          };
++          await openSharedDoor('../walk/', door);
++          if (requested !== new URL('index.html', base).href || at.href !== href) fail(`${outcome}: loader changed its URL or fetched another page`);
++          const recover = new URL(elements['entry-fallback'].href);
++          const expectedYear = at.searchParams.get('year') || at.pathname.match(/\/(\d{4})(?:\/index\.html)?\/?$/)?.[1];
++          if (recover.searchParams.get('year') !== expectedYear
++            || recover.searchParams.get('anchor') !== at.searchParams.get('anchor')
++            || recover.searchParams.get('device') !== at.searchParams.get('device')
++            || recover.hash !== at.hash) fail(`${outcome}: recovery lost the year override or deep link`);
++          if (outcome === 'ok') {
++            if (written !== door(html, '../walk/') || opened !== 1 || closed !== 1 || !elements['entry-fallback'].hidden)
++              fail('successful shared page was not parsed once with its base');
++          } else if (written !== null || opened || closed || elements['entry-fallback'].hidden
++            || !elements['entry-status'].textContent.includes('could not open')) fail(`${outcome}: failed page has no usable recovery`);
++        }
++      }
++    } finally {
++      for (const [key, value] of Object.entries(saved)) {
++        if (value === undefined) delete globalThis[key]; else globalThis[key] = value;
++      }
++    }
+     if (!process.exitCode) console.log(`write_entry_pages: self-test ok (doors: ${years.join(', ')})`);
+   } else {
+     const site = process.argv[2];

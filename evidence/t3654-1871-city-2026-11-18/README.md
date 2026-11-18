@@ -1,0 +1,46 @@
+# T-3654: 1871 city baseline evidence, 18 November 2026
+
+Durable evidence for [Chicago PR #2198](https://github.com/kevinrhaas/chicago/pull/2198) and ticket T-3654. The final city acceptance tests exercised source commit [`ae259f9a5ddd4e79e1c82cd40e5084d6dcf42290`](https://github.com/kevinrhaas/chicago/commit/ae259f9a5ddd4e79e1c82cd40e5084d6dcf42290), published into the immutable local snapshot `/tmp/t3654-published-ae259`. Input hashes, runtime bindings and before/after stability checks accompany both viewport reports. The portable source receipts were captured from subsequent research/measurement checkpoint [`8d59e79cd657f58f483533246973e0e1c00ebf51`](https://github.com/kevinrhaas/chicago/commit/8d59e79cd657f58f483533246973e0e1c00ebf51).
+
+This archive contains reports, screenshots, logs, narrow reproduction procedures and their provenance. It does not contain the full application snapshot or source tree. Local `/tmp` and `/workspace` paths inside original reports identify the executed environment; `ARCHIVE-INDEX.json` maps those original files to their durable locations here. `SHA256SUMS` covers every archived file except the checksum file itself.
+
+## Completed evidence
+
+| Location | Contents and scope |
+| --- | --- |
+| `city/mobile/`, `city/desktop/` | Final ae259 acceptance at 390×780 and 1280×800. All three detail levels passed. Whole-city, commercial, residential, industrial, source-card, bridge and quay screenshots; report.json and additional-verification.json bind the actual published inputs and runtime liberty metadata. |
+| `city/*.log`, `city/published-inputs.json` | Original execution logs and the final snapshot's selected input hashes. |
+| `entry/native/`, `entry/native.log` | Earlier shared-entry repair proof: actual 1835 and 1871 visitor entry reached the world, preserved clean URL/query/hash, loaded one base/import map, and recorded zero page/HTTP/request errors. These ran against a751f7f83727a19ac37216b0229ae13080cd605a plus the candidate patch, before the ae259 commit. |
+| `entry/fixture-report.json` | Nine Chromium cases covering production and DEV routes, relative CSS/classic/module/import-map loading, explicit and empty year overrides, failure recovery, preview markings, and offline service-worker loading of the shared canonical page. |
+| `entry/*procedure.cjs`, `entry/source-patch.patch`, `entry/*.log` | Executed entry procedures, exact candidate patch, fingerprint checks and publication log. Procedures retain their original local paths. The patch also includes a later checker-only hardening that did not change the native-tested page bytes. |
+| `sky/` | Standalone WebGL daylight-grade comparison, selected 6× implementation, time-of-day readbacks, earlier cause analysis and executed procedures. These probes used a pre-commit working tree without a recorded exact commit SHA. They are diagnostic evidence, not whole-city acceptance or a measurement of historical sky radiance. Final city QA independently exercises the selected implementation at ae259. |
+| `registration/` | Modern-grid alignment audit with source hashes and a read-only Node reproduction script. Nine modern intersections differ by 2.023 m RMS / 3.854 m maximum; fourteen inherited targets match exactly. This comparison verifies frame/navigation consistency. It does not replace the historical-map uncertainty: fitting RMS 18.6689 m, eight reserved checks RMS 15.6189 m and maximum 25.6497 m. |
+| `legacy1812/` | Final ae259 short readiness/walker/canvas probe and procedure, published-input manifest, report and mobile/desktop screenshots. Both widths passed, walked 4.47 m after entering the world, produced readable nonblack canvases and recorded zero page errors. This is not the complete legacy suite and makes no console/resource-completeness or performance claim. |
+| `checks/` | Partitioned preflight, publisher/validator checks, interim source-gate summary, and the legacy-browser coverage ledger with calibration transcripts. See the limitations below. |
+| `receipts/` | Portable source receipts for city, shared-entry and validation status, captured at source checkpoint 8d59e79. |
+
+City QA traversed all 22 bridges in both directions, checked 597 quay approaches, walking floors and collisions, source cards and confidence controls. Both viewports had zero 1871 application, page or resource errors. The scene's 33,580 context buildings are generated baseline instances, not a historical census or individually established building identities.
+
+Browser measurements used headless Chromium with SwiftShader. Draw and triangle figures are actual driver submissions; Chromium JavaScript heap is not GPU memory. Wall time is specific to the execution host and is not hardware frame-rate evidence. See each city's `environment-note.txt` and `report.json` method.
+
+## Validation still pending at this checkpoint
+
+**Full source and legacy-browser validation are incomplete.** The `PREFLIGHT PASS` text in `checks/preflight.log` came from `CHECK_PART=2/16 CHECK_JOBS=4`: 90 source steps plus changelog and ticket-ID checks. It is not a claim that every source partition ran. Local source partitions 1/16 (covered by 17/32 plus 1/32), 2/16 and 3/16 passed. Part 4/16 exposed two issues that now have focused repairs; parts 5–16 had not run locally. The integrated dataset validator subsequently passed with zero errors and 340 existing warnings, and the published mirror check passed.
+
+The complete eight-part source CI run on ae259 was queued when recorded; the subsequent source checkpoint supersedes that gate request, so the latest PR #2198 gate remains required. All twelve ae259 legacy-browser CI groups were queued in the archived coverage ledger. At final archive handoff, the coordinator reported that mobile stages 1–4 had begun running; its result was still pending. The quiet local legacy mobile stage 1 run passed 95 assertions, but it is calibration rather than complete commit-bound acceptance. The interrupted calibration transcript also remains archived with no coverage credit. No merge or production promotion is asserted by this evidence.
+
+The 1812 readiness/walking/canvas supplement completed before this evidence commit and is included under `legacy1812/`. The source validation receipt captured at 8d59e79 predates that completed probe, so its pending-1812 entry is historical; the supplement report records both passes. The full source and legacy-browser gates remain pending.
+
+## Reproduction and citation
+
+Verify archive integrity from this directory with `sha256sum --check SHA256SUMS`.
+
+Reproduce the modern-grid audit against the corresponding Chicago checkout with:
+
+```sh
+node registration/reproduce-modern-grid-audit.mjs /path/to/chicago/chicago/4d > reproduced-modern-grid-audit.json
+```
+
+Entry and sky procedures are retained as executed-procedure evidence; their original absolute paths must be supplied or adjusted in a matching environment. The sky procedures did not freeze their working-tree inputs. Browser reports and published input hashes are the authority for what was actually exercised.
+
+Ticket citation: `kevinrhaas/chicago-evidence:evidence/t3654-1871-city-2026-11-18/`.
