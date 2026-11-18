@@ -27,11 +27,13 @@ not traverse. The real tickets clone was moved to the normal app location and
 the outside alias points back to it. The targeted roof-pin check and then the
 entire partition passed without changing application code or gate assertions.
 
-`renderer/mobile-1.log` through `mobile-12.log`, plus `mobile-14.log`, are completed, unmodified official
+`renderer/mobile-1.log` through `mobile-12.log`, plus `mobile-14.log` and `mobile-15.log`, are completed, unmodified official
 `tools/smoke_renderer.mjs --published` runs at 390×780, one stage per command.
-All thirteen end with SMOKE PASS (730 total assertions including repeated scaffolding;
-561 staged assertions and 169 always-on assertions). Stage 14 passed 145 assertions
-in 5m11. These completed runs cover the frozen
+All fourteen end with SMOKE PASS (764 total assertions including repeated scaffolding;
+582 staged assertions and 182 always-on assertions). Stage 14 passed 145 assertions
+in 5m11; stage 15 passed 34 assertions in 9m28. `renderer/progress-checkpoint.json`
+preserves the stage-by-stage counts, times, hashes, and incomplete stage 13 status.
+These completed runs cover the frozen
 published mirror identified by `renderer/runtime-manifest.json` at the final
 implementation runtime. The mirror was produced by `tools/publish.sh` and then
 copied for testing so concurrent source gates could not replace its files.
@@ -51,12 +53,12 @@ suite-completion failure. No application assertion failed before the cap, but
 the What's New reload tail was not verified. The passing assertions in this
 incomplete run are not included in the completed-stage total above. No timeout
 or assertion was changed to complete it. The unchanged official stage 13 is
-queued separately in GitHub run
+running separately in GitHub run
 [44385930725](https://github.com/kevinrhaas/chicago/actions/runs/44385930725),
 job `135090381320`, on metadata head `7969031f0` with unchanged runtime.
 
-At this checkpoint, source partitions 1–4 were green and 5–8 paused; mobile
-stage 15 was running, stage 13 incomplete locally with remote completion queued,
+At this checkpoint, source partitions 1–4 were green and partition 5 running,
+with 6–8 still pending. Mobile stage 13 was incomplete locally with remote completion running,
 and the complete desktop formal smoke still active in
 [44372747109](https://github.com/kevinrhaas/chicago/actions/runs/44372747109),
 targeting implementation commit 6c83e8cf9. The duplicate full mobile run
@@ -136,34 +138,56 @@ report embeds an exact tested-tree hash. These reports support the individual
 flow claims in earlier STATUS prose, not complete release coverage or a
 final-runtime photo-to-notebook flow.
 
-### Prepared final photo-to-notebook integration
+### Completed final photo-to-notebook integration
 
-`harnesses/final-photo-notebook-smoke.mjs` is a new narrow harness prepared and
-syntax checked at this checkpoint, **not yet run in a browser**. It first verifies
-the frozen runtime file hashes. For each viewport it opens one real 1835 world,
-selects John S. C. Hogan through the People search/results UI, saves that record's
-canonical citations, captures a photo with the production shutter and one normal
-render tick, clicks **Save to notebook**, edits the photo's note, and navigates
-the same page to the copied moment URL. It then checks byte-for-byte notebook
-persistence, the retained photo/note/citations and selected person, bounded PNG
+`harnesses/final-photo-notebook-smoke.mjs` **passed all five integrated checks
+at 390×780 and 1280×800**, each in a separate command with exit 0. No harness,
+application, assertion, or timeout changes were needed during either run. Both
+reports verify the frozen final runtime hashes before launching the browser and
+record the exact file hashes they tested. The reports, logs, full PNG exports,
+and selected notebook screenshots are in `focused/final-photo-notebook-390/`
+and `focused/final-photo-notebook-1280/`.
+
+Each run opened a real 1835 world, selected John S. C. Hogan through the People
+search/results UI, saved that record's four canonical citations, captured a
+photo with the production shutter and one normal render tick, clicked **Save to
+notebook**, edited the photo's note, then navigated the same page to the copied
+moment URL. Both retained the photo's ten Sauganash place citations. The checks
+confirmed byte-for-byte notebook persistence, unchanged photo/note/citations,
+selected-person restoration, the saved jaunt retained but inactive, bounded PNG
 and local JPEG sizes, zero page errors/local missing resources, and no overflow.
-Photo source rows must match the actual captured metadata; an honest empty list
-is possible when no place is selected. The person entry must have its real
-canonical source IDs. There are no skipped flows hidden behind a passing label.
+The image check excludes the stamped footer when testing for nonblank rendered
+scene pixels. There are no skipped flows hidden behind a passing label.
 
-Run each viewport separately under the existing per-command cap after the
-official renderer's quiet CPU window finishes. Example for the phone:
+| Viewport | PNG dimensions | Notebook JPEG dimensions | Serialized notebook | Serialized photo |
+| --- | --- | --- | --- | --- |
+| 390×780 | 390×886 | 282×640 | 33,690 characters | 27,211 characters |
+| 1280×800 | 1174×840 | 640×458 | 53,734 characters | 47,255 characters |
+
+Each viewport used exactly two sequential boots, one page and world at a time,
+with back-forward caching disabled. The phone boots took 42.0 and 42.3 seconds;
+desktop took 51.4 and 65.3 seconds while source checks ran separately. Continuous
+rendering was paused between interactions and one normal tick produced each
+photo. These are functional integration results, not sustained performance or
+low-end hardware certification.
+
+For reproduction, run each viewport separately under the existing 595-second
+command cap after any official renderer quiet CPU window finishes. The phone
+command executed was:
 
 ```sh
-QA_WIDTHS=390 QA_OUT=/tmp/t3656-final-photo-notebook-390 \
+timeout --signal=TERM --kill-after=5s 595s env \
+  QA_WIDTHS=390 QA_OUT=/tmp/t3656-final-photo-notebook-390 \
   /tmp/chicago-check-runtime/node_modules/node/bin/node \
   /tmp/t3656-final-photo-notebook-smoke.mjs \
   > /tmp/t3656-final-photo-notebook-390.log 2>&1
 ```
 
-Use width `1280` and its own output directory/log for desktop. The unfiltered
-default runs both sequentially, but could exceed one command's budget. These
-commands are reproduction instructions, not records of a completed test.
+The desktop command used width `1280` and its own matching output directory/log.
+The unfiltered default runs both sequentially, but separate commands preserve
+the per-command budget. This completed final-runtime integration supersedes the
+older mixed-run evidence for this specific photo-to-notebook-to-share flow; it
+does not replace pending complete source/renderer release gates.
 
 ## Reproduction and integrity
 
