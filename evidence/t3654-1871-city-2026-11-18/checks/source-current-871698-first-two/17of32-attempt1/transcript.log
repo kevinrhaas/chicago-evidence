@@ -1,0 +1,694 @@
+
+[1m== the shader walk's constant check refuses a seed, salt or block shift one bit off[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | PASS — six placement shader zero buffers preserve count/values; actual shader position-read control refused
+   self-test |    self-test | refused, as it must be: a hash3 seed one bit off
+   self-test |    self-test | refused, as it must be: the slot stream's salt one bit off
+   self-test |    self-test | refused, as it must be: the block shift one bit wide
+   self-test |    self-test | refused, as it must be: STRAT_SALT changed
+   self-test | PASS — the text check refuses all 4 broken shaders
+
+[1m== A patched plain lit material cannot be handed another layer's shader program (T-0053)[0m
+T-0053 — confidence.patch() keys a program by the hooks that write it
+  ok   a plain patched material and a building material ask for different programs
+  ok   …and so does a patched material wrapped by a second hook after patching
+  ok   …and so does a material that carried a key of its own before patching
+  ok   two plain patched materials still share one program
+  ok   two building materials still share one program (not one per material)
+  ok   a patched depth material reports the confidence hook alone
+  ok   a key carried before patching is part of the key, not lost
+  ok   a key a layer assigns after patching still wins (enclosures.js and kin)
+  ok   patching twice changes nothing
+  ok   the patched hook still runs the hook beneath it
+  ok   self-test: the key assignment is where this test expects it
+  ok   self-test: without the key, the plain and building materials collide again
+  ok   three builds its program key from material.customProgramCacheKey()
+  ok   buildings.js installs its scalars hook beneath the confidence patch, reading the packed channel
+  ok   a packed confidence patch is never handed the float channel's program
+
+all checks passed
+
+[1m== Recorded transport follows moving dated actors with bounded spatial voices and mute cleanup (T-3544)[0m
+TRANSPORT AUDIO PASS: dated actual actors, movement/dwell/holds, distance/pan, effects-only, four voices, two buffers, stale decode, mute and disposal
+
+[1m== The welcome draws the town only when the town changed (T-2113)[0m
+gate frame: an untouched town held 50 of 50 ticks; 24 kinds of change each drawn once and then held
+
+[1m== everyone in town tells a story, their own first, and none twice until all are told (T-3553)[0m
+  1835: 3 stories wait for a teller: s35-pch-going, s35-pch-town-boy, s35-pch-mission
+test_tales: 28834 checks passed
+
+[1m== An 1812 Potawatomi man's everyday dress is sourced, layered, skinned and held for review on the shared rig[0m
+..........
+----------------------------------------------------------------------
+Ran 10 tests in 25.474s
+
+OK
+
+[1m== Selected empty covered wagons reproduce original reviewed sources[0m
+{"verified": true, "variants": 2, "products": 7, "mapped_RGBA8_mips_bytes_each": 8388608, "scope": "Original empty source reproduction, not placement or photographic acceptance"}
+
+[1m== The vessels' rows are what their layer writes: the 1835 schooners of the Marine Journal and the 1812 boats, berthed in their own water clear of piers and the draw, the harbour loop sailable (T-3612)[0m
+lay_vessels: 1835 15 vessels, 1812 2 vessels
+
+[1m== People on foot walk heel to toe at a real pace and stride, the stance foot planted, the pelvis turning and rising over it, deterministic across LOD swaps; a child at a child's pace and stride, never on its knees, even nudged aside (T-3472, T-3520, T-3529)[0m
+profiles: man 1.35 m/s 1.45 m 112/min, woman 1.25 1.26 119, in a skirt 1.15 1.20 115, at 70 1.22 1.36: PASS
+Frances Glessner (skirt, 56): 1.12 m/s, stride 1.16 m (116 steps/min), foot slide 0.3 mm flat / 0.5 on the ball, soles -4.6..0.0 mm, knee 22 deg loading / 57 in swing, bob 3.1 cm, stop 1.18 s: PASS
+John J. Glessner (61): 1.25 m/s, stride 1.39 m (108 steps/min), foot slide 0.4 mm flat / 0.6 on the ball, soles -3.6..0.0 mm, knee 22 deg loading / 56 in swing, bob 3.6 cm, stop 1.17 s: PASS
+Otis Bardwell: 1.36 m/s, stride 1.47 m (111 steps/min), foot slide 0.2 mm flat / 0.7 on the ball, soles -3.7..0.0 mm, knee 23 deg loading / 54 in swing, bob 4.2 cm, stop 1.03 s: PASS
+Mary Reynolds (maid): 1.16 m/s, stride 1.19 m (117 steps/min), foot slide 0.3 mm flat / 0.5 on the ball, soles -4.6..0.0 mm, knee 22 deg loading / 55 in swing, bob 3.3 cm, stop 1.17 s: PASS
+Otis, 1.08 tall, across a LOD swap: 1.36 m/s, stride 1.58 m (103 steps/min), foot slide 0.1 mm flat / 0.6 on the ball, soles -4.0..0.0 mm, knee 23 deg loading / 52 in swing, bob 4.6 cm, stop 1.17 s, through a LOD swap: PASS
+child_toddler_1812 (3): 0.82 m/s, stride 0.61 m (162 steps/min), foot slide 0.2 mm flat / 0.7 on the ball, soles -2.6..0.0 mm, knee 22 deg loading / 65 in swing, bob 1.0 cm, stop 0.63 s: PASS
+child_girl_1812 (8): 1.17 m/s, stride 0.99 m (141 steps/min), foot slide 0.3 mm flat / 0.6 on the ball, soles -4.2..0.0 mm, knee 27 deg loading / 55 in swing, bob 3.1 cm, stop 0.97 s: PASS
+child_boy_1812 (8): 1.25 m/s, stride 1.01 m (148 steps/min), foot slide 0.3 mm flat / 0.6 on the ball, soles -5.0..0.0 mm, knee 27 deg loading / 55 in swing, bob 3.2 cm, stop 1.08 s: PASS
+turning 30 deg/s: the flat foot slides 0.4 mm: PASS
+child_toddler_1812 nudged 0.6 m aside walking: pelvis at least 100 %, knee at most 65 deg: PASS
+child_toddler_1812 nudged 0.6 m aside stopping: pelvis at least 100 %, knee at most 62 deg: PASS
+bardwell_otis_1835 nudged 0.6 m aside walking: pelvis at least 99 %, knee at most 62 deg: PASS
+bardwell_otis_1835 nudged 0.6 m aside stopping: pelvis at least 99 %, knee at most 62 deg: PASS
+Otis Bardwell, jog: 2.6 m/s, stride 1.92 m = 1.10 of height (measured 1.058 at 2.5), 163 steps/min, each foot down 41 %, both in the air 18 %, slide 0.0 mm, knee 42 deg in stance / 102 in swing, thigh 37 deg forward, pelvis 5.7 cm
+Otis Bardwell, jog: PASS
+Otis Bardwell, run: 3.6 m/s, stride 2.48 m = 1.42 of height (measured 1.378 at 3.5), 174 steps/min, each foot down 36 %, both in the air 29 %, slide 0.0 mm, knee 43 deg in stance / 113 in swing, thigh 49 deg forward, pelvis 4.2 cm
+Otis Bardwell, run: PASS
+Otis Bardwell, flee: 4.5 m/s, stride 2.97 m = 1.70 of height (measured 1.686 at 4.5), 182 steps/min, each foot down 31 %, both in the air 39 %, slide 0.0 mm, knee 43 deg in stance / 119 in swing, thigh 61 deg forward, pelvis 6.5 cm
+Otis Bardwell, flee: PASS
+Otis Bardwell, sprint: 5.6 m/s, stride 3.56 m = 2.04 of height (measured 1.686 at 4.5), 189 steps/min, each foot down 29 %, both in the air 42 %, slide 0.0 mm, knee 44 deg in stance / 128 in swing, thigh 71 deg forward, pelvis 9.2 cm
+Otis Bardwell, sprint: PASS
+child_boy_1812 (8), run: 3 m/s, stride 1.56 m = 1.24 of height (measured 1.058 at 2.5), 231 steps/min, each foot down 36 %, both in the air 28 %, slide 0.0 mm, knee 42 deg in stance / 105 in swing, thigh 46 deg forward, pelvis 3.4 cm
+child_boy_1812 (8), run: PASS
+deterministic: PASS
+human gait: PASS
+
+[1m== People are judged beside period pictures: reference sets cite their sources, the rig is 3 m and 10 m, and no verdict outlives its figure (T-3417)[0m
+OK people match: 10 reference set(s), 8 subject(s), 8 match record(s); 24 refusals hold
+
+[1m== the merge drivers this clone needs are registered (T-1548)[0m
+merge drivers OK — all four registered in this clone
+
+[1m== the tickets are here (kevinrhaas/chicago-tickets, cloned at tickets/)[0m
+tickets: up to date at 17a24a4 (3519 tickets)
+
+[1m== publish the mirror the gate measures (site/4d/ is generated, T-0938)[0m
+AUDIO HOST POLICY PASS
+Glessner v4 package verified; 0 missing GLB(s) materialized.
+shipped derivatives: 1126 pair(s) carry the master's triangles, node identity and contract attributes; worst bounding-box disagreement 2.68 of 4 rungs; 0 asset(s) lose their material identity to the publish path (banked, K36(b)); 5 master passthrough(s), all of them decided (K38); and every one of them records the master it was made from, which is still the master in the tree (K39)
+Prairie Avenue browser published: /workspace/chicago/site/4d/prairie-1904
+published 16 map images + viewer + media to site/pre-fire
+   prairie-1904/maps/  3.85 MB served from /prairie-1904/maps/
+   prairie-1904/research/public/  39.30 MB served from /prairie-1904/research/public/, 4 file(s) not at the root kept here
+   pre-fire/maps/images/  43.87 MB served from /pre-fire/maps/images/
+   pre-fire/media/  17.90 MB served from /pre-fire/media/
+   reference browsers: 104.92 MB not shipped twice (T-1828)
+audio: 61 verified remote deliveries; catalogue only in the site
+   changelog.js published to site/4d/js/changelog.js (T-0722)
+   changelog.js published to site/4d/walk/js/changelog.js (T-0722)
+   sheets (data/gltf): 56 shared by 74 GLB(s), 233.521 -> 94.957 MiB
+household notes deferred: 2003 household(s) on 425 record(s) → sidecars/<scene>/households/<id>.json
+boot sidecars packed: 1812 — 68 record(s) in 2 part(s), sharing 285 value(s) → sidecars/1812/boot/
+boot sidecars packed: 1835 — 765 record(s) in 16 part(s), sharing 1592 value(s) → sidecars/1835/boot/
+boot sidecars packed: 1871 — 0 record(s) in 0 part(s), sharing 0 value(s) → sidecars/1871/boot/
+boot sidecars packed: 1904 — 286 record(s) in 6 part(s), sharing 319 value(s) → sidecars/1904/boot/
+letter-list cohort: 773 records packed from 9.31 MiB of per-record files to 4.61 MiB in 23 shard(s) and a 666-string roster (T-0438)
+   humans: officer_first_infantry_1812_lieutenant not drawn in town, not published
+   humans: surgeons_mate_first_infantry_1812 not drawn in town, not published
+   sheets (data/humans/web): 321 shared by 136 GLB(s), 239.212 -> 49.051 MiB
+strip_page_comments: walk/index.html 87,679 -> 65,544 bytes (100 developer comments out, 0 placeholder(s) kept)
+entry pages: index.html, 1812/index.html, 1835/index.html, 1871/index.html, 1880/index.html, 1904/index.html
+1835: ground built in 1432 ms — 232 tiles, 10036 pieces, 30895134 bytes, 69 inputs → /workspace/chicago/site/4d/data/prebuilt/1835
+1835: base built in 247 ms — 1 meshes, 7503 pieces, 3909436 bytes, 75 inputs → /workspace/chicago/site/4d/data/prebuilt/1835
+1835: streets built in 2813 ms — 6 meshes, 1189 pieces, 30385004 bytes, 69 inputs → /workspace/chicago/site/4d/data/prebuilt/1835
+1835: yards built in 3461 ms — 4 surfaces, 830 pieces, 31096884 bytes, 90 inputs → /workspace/chicago/site/4d/data/prebuilt/1835
+1835: frontage built in 1546 ms — 127 meshes, 63321600 bytes, 77 inputs → /workspace/chicago/site/4d/data/prebuilt/1835
+   build 871698ae94  Nov 18, 2026, 4:48 PM CT
+   pack 1812: 3962 files, 287.9 MB
+   pack 1835: 6651 files, 374.1 MB
+   pack 1871: 3815 files, 299.7 MB
+   pack 1904: 4545 files, 402.1 MB
+published ../../site/4d  (145.73 MB)
+
+[1m== Print export makes one closed, solid, standing piece from a leaky render soup (T-3395)[0m
+ok    the lawn is dropped by name (dropped ['lawn'])
+ok    the GLB reads back Z-up in metres
+ok    the room is filled though the door and the roof gap let the air in
+ok    …by the room fill, not by luck
+ok    the air outside the doorway stays air
+ok    the 4 cm flagpole is kept
+ok    …and thickened to the minimum feature (12 voxels across its section)
+ok    the kerb out in the street is ground clutter and goes
+ok    the floating pebble goes
+ok    the house stands on a base slab with a lip
+ok    one piece
+skip  meshing half: scikit-image and manifold3d are not installed
+ok    both sloped deck triangles take courses
+ok    18 courses up the slope, every one standing the same height proud
+ok    each course is thickest at its butt and thins up the slope, like laid tiles
+ok    a copper roof's broad sheet takes the courses, its narrow seams do not
+ok    its standing seams are dropped, and nothing else is: the finial and the gutter stay
+ok    a creeper's thin oak stems go with its leaves; an oak door beside it and a thin rail far off stay
+
+print export: all checks pass
+
+[1m== the scene-detail ceilings are a ladder, and each rung says what it protects (T-0135)[0m
+  ok    the declared ceilings descend — it is a ladder, not three numbers
+          full 3,605,000 > balanced 2,750,000 > light 1,305,000
+  ok    no rung is running clamped — the table and the scene agree
+          every rung carries the ceiling its table declares
+  ok    the seal is silent on a table that is already a ladder
+          no clamp reported at boot
+  ok    every rung says what it protects and what measurement set it
+          full 3,605,000 · balanced 2,750,000 · light 1,305,000
+  0 failure(s)
+
+[1m== …and a moved control, a misread bar or a mislaid house still fails it[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |    ok   moving the Prairie & 18th control 12 m raises the sheet 20 RMS over its ceiling
+   self-test |    ok   a Glessner wall read 150 px (7.6 m) off fails the independent check
+   self-test |    ok   a misread scale bar shows up in the street bands
+   self-test |    ok   a fit scale that is not the printed bar's fails
+   self-test |    ok   a control point that does not say which component it is control for fails
+   self-test |    ok   sheets 20 and 28 put the Prairie & 18th crossing they both draw in one place (T-2691)
+   self-test |    ok   sheet 27's Indiana Avenue misread 200 px (10 m) fails its tie to sheets 20 and 28 (T-3150)
+   self-test |    ok   the committed files are what the tool derives
+
+[1m== …and a bare surface, an invented source, a report made to attest or a range that misses still fails it[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |    ok   a carriageway the grid draws with no surface is refused
+   self-test |    ok   an alley named that the grid does not have is refused
+   self-test |    ok   a tier outside the three is refused
+   self-test |    ok   an invented source id is refused
+   self-test |    ok   an attested surface resting only on a bounding report is refused
+   self-test |    ok   a reconstructed surface with no liberty is refused
+   self-test |    ok   a liberty number that is not in LIBERTIES.md is refused
+   self-test |    ok   a range that ends before the scene date is refused
+   self-test |    ok   a range that starts after the scene date is refused
+   self-test |    ok   a range with no basis is refused
+   self-test |    ok   a band with no surface on any face is refused
+   self-test |    ok   a piece that cuts at a street the grid lacks is refused
+   self-test |    ok   a material with no texture directory is refused
+   self-test |    ok   a year alone reads least generously: 'from 1904' holds, 'to 1904' holds, 'from 1905' fails
+   self-test |    ok   the committed surfaces pass
+   self-test |    ok   an OpenGL-handed normal map passes the handedness rule
+   self-test |    ok   a DirectX map filed as normal_gl is refused (T-2296)
+   self-test |    ok   a map with red mirrored is refused
+   self-test |    ok   the committed normal maps are OpenGL-handed
+
+[1m== a mansard crown may stand over a stretch of the front and turn a canted corner (T-3283)[0m
+ok   1945's crown stands over the front from 6.95 m onto the canted corner
+ok   its curb 1.4 m over the house's (the 1928 photograph's corner block)
+ok   with the corner block's two dormers and the cant's on it
+ok   and none of them left on the house's mansard
+ok   1945 builds
+ok   the cut eats the crown's end side at inset 1.631 m, under its ridge
+ok   at that inset the end side's far corner stands on the cut's line
+ok   past it the end face closes to one point, on the far side and on the line
+ok   short of it the far corner stays where it was
+ok   on the house's own mansard the cut never reaches the far corner (its rings are cut as before)
+ok   every face of the crown's ring stack is planar (worst 1.6e-16 m off its plane)
+ok   the stack closes the end face at its far corner, at the end inset's height
+ok   refused: a stretch that stops on the canted corner
+ok   refused: a stretch under 3 m
+ok   refused: a key a front crown does not take
+ok   refused: a crown 2.5 m over the main curb
+ok   refused: a dormer across the crown's hip
+ok   refused: a dormer over the cut
+ok   refused: two crown dormers that meet
+ok   refused: a crown deeper than half the house
+ok   refused: a dormer on the house's mansard standing in the crown
+ok   refused: a stack standing in the crown
+
+all checks passed
+
+[1m== a K01 main body cuts a corner on a canted face, carried through the cornice and the mansard (T-3186)[0m
+ok    1901's record cuts K01's north corner 1.83 m each way, its face 2.588 m across
+ok    the face carries a window in each storey and a basement light, all at its middle
+ok    the build lays one k01.wall.cant in the front's stone
+ok    the walls' stone stands no more than a sill's or a head's reach past the face (0.235 m)
+ok    nothing stands past the face by more than the eave and its gutter (0.695 m < 0.75 m)
+ok    the curb's cresting runs along the canted face too
+ok    the moulded cornice still runs round the walls the record names
+ok    the cant dormer's face stands on the canted face's lower slope, its setback in from the fascia
+ok    without cant_corner the corner stands square
+ok    refused: a cut past 3.5 m (cant_corner.cut_m 3.6: 1.0-3.5 m and at most a quarter of the main body's width and depth)
+ok    refused: blank other than true (cant_corner takes corner (north or south) and cut_m, and blank: true for a face with no window column, not {'corner': 'north', 'cut_m': 1.83, 'blank': False})
+ok    refused: a stray key (cant_corner takes corner (north or south) and cut_m, and blank: true for a face with no window column, not {'corner': 'north', 'cut_m': 1.83, 'radius_m': 1.0})
+ok    refused: a flank window within the pier of the cut (cant_corner north: k01.opening.sash_flat at s 2.4 on k01.wall.side.north stands within 0.2 m of the cut)
+ok    refused: a brick house's flanks (cant_corner is laid round an all-stone house on the front's beds, round a brick one in its brick, or blank round a brick front over a stone basement (stone_front.brick_above_m) (construction: stone, brick or brick_with_stone_front))
+ok    refused: a cant dormer off the face's middle (mansard.dormers[4]: a cant dormer stands on a cant_corner, centred (along_m 0), under a gable or round head)
+ok    refused: a cant dormer too wide for the face's hips (mansard.dormers[4]: 2.0 m across leaves the canted face's hips no 0.15 m under the curb, where the face is 1.97 m)
+ok    1905's record cuts K01's north corner 2.15 m each way, the face blank ({'corner': 'north', 'cut_m': 2.15, 'base_top_m': 2.0, 'blank': True, 'face_m': 3.0406, 'strips': {'width_m': 0.3, 'proud_m': 0.03, 'from_m': 2.0, 'to_m': 9.6}})
+ok    1905's canted face carries no window column
+ok    the build lays 1905's k01.wall.cant in its brick, blank between the belts
+ok    the timber cornice's pairs turn onto the canted face ([0.2, 1.52, 2.841])
+ok    and stop on the front and the flank where the cut begins, in each wall's own s
+ok    1905's large dormer stands on the canted face
+ok    nothing over 3 m stands past the face by more than the eave's reach (0.745 m)
+ok    refused: a balcony run onto the cut (cant_corner north: street_front_iron.balconettes[2] runs onto the cut)
+ok    1905's two south-flank balconies stand on K01's north wall, clear of its cut ([(2.4, 3.8), (14.0, 15.4)])
+ok    refused: a flank balcony run onto the flank's cut (cant_corner north: street_front_iron.balconettes[3] runs onto the cut)
+ok    refused: a balcony on the rear wall (street_front_iron.balconettes[3] takes ['consoles', 'floor_m', 'from_s_m', 'height_m', 'proud_m', 'slab_m', 'to_s_m'] (and before_light: true, console_drop_m, wall: the street front or a side wall))
+ok    1905's canted face carries its two light stone strips (k01.wall.cant_strip)
+ok    refused: a strip wider than a third of the face (cant_corner.strips: each 0.15-0.60 m wide (a third of the 3.04 m face), 0.01-0.06 m proud, at least 2 m tall, under the wall head)
+ok    refused: a strip naming a field it does not take (cant_corner.strips takes width_m, proud_m, from_m and to_m)
+ok    refused: a timber cornice on named walls (cant_corner carries the moulded stone cornice round it (wall_head names k10.cornice.moulded_stone on the street front and k01.wall.side.north), or the bracketed timber one, which runs round every wall)
+
+OK — K01's canted corner holds on 1901 Prairie and 1905 Prairie
+
+[1m== …and a packer that writes them in canvas order still fails it[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | ok   orl in canvas order — packOrl: canvas row 0 (AO 10) is not in DataTexture row 7, where the flipY'd normal_gl puts that row — it holds 150
+   self-test | ok   board grain in canvas order — packGrain: canvas rows 0 and 1 do not land in DataTexture rows 9 and 8 — the grain is mirrored against its relief
+
+[1m== the owner's queue ranking has not gone backwards[0m
+queue order: 62 re-rank(s) recorded (no base to compare against — skipped, not failed)
+
+[1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | self-test: 11/11 assertions hold
+
+[1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |   ok   grades tally the persons, household by household and in total
+   self-test |   ok   a flag is written only when it is true
+   self-test |   ok   projected_resident comes off the person's resident_subtype
+   self-test |   ok   every derived count is the tally of the cards, not of the old file
+   self-test |   ok   a {value, confidence} block contributes its value, the home comes off the record's home row, and an unstated one reads as None
+   self-test |   ok   review_required is a bool on every row, stated or not
+   self-test |   ok   key order is canonical, whatever order the card carried
+   self-test |   ok   rows are ordered by id, not by the filesystem
+   self-test |   ok   a rebuild of a rebuild is a no-op
+   self-test |   ok   an authored count is carried through untouched, in its own place
+   self-test |   ok   a name off a letter list, placed nowhere, awaits a household
+   self-test |   ok   …and so does one carrying a trade word and nothing else — the ruling says a trade WITH A PREMISES
+   self-test |   ok   …and so does one whose only street is a later directory's
+   self-test |   ok   a stated dwelling makes it a house
+   self-test |   ok   a stated premises makes it a house
+   self-test |   ok   a singular lives_at/works_at with no row behind it is not read — the rows are the claim (T-2277)
+   self-test |   ok   two NAMED people make it a house
+   self-test |   ok   …but a drawn second person does not: a seated reconstruction is not a source giving the record a shape
+   self-test |   ok   a stated kinship makes it a house
+   self-test |   ok   a civil division makes it a house, and `unplaced` is not one
+   self-test |   ok   a household with no named person at all is one the programme built, and is a house by construction
+   self-test |   ok   an empty card is neither — it is not a house and there is nobody in it to await one
+   self-test |   ok   the clause is read in order, so the strongest reading is the one the row carries
+   self-test |   ok   the two units sum to the record count, and neither is the other
+   self-test |   ok   the row carries the clause, and a record awaiting a household carries no key at all
+   self-test |   ok   a manifest that matches its cards reports nothing
+   self-test |   ok   a row whose grade disagrees with its card is caught
+   self-test |   ok   a card with no manifest row is caught
+   self-test |   ok   a manifest row with no card is caught
+   self-test |   ok   a row key no derivation emits is named, not ignored
+   self-test |   ok   a flag written when it is false is caught
+   self-test |   ok   each of the 10 derived counts is caught when moved (households, persons, by_grade, letter_list_only, projected_residents, census_1840_linked, civic_mint, merged_away, houses, awaiting_a_household)
+   self-test |   ok   the drift report is capped, and says how many it did not print
+   self-test |   ok   a redirect row is the retired record's own merged_into block, and the retired name is read off the superseded card beneath it
+   self-test |   ok   redirect rows are ordered by the retired id, and tallied
+   self-test |   ok   a pass that retires no card keeps the committed redirect table instead of deriving an empty one out of its silence
+   self-test |   ok   a sound layer's redirects all arrive
+   self-test |   ok   a redirect to a household that is not a card is refused
+   self-test |   ok   a redirect that points at another retired card is refused
+   self-test |   ok   a redirect to a person who is in no household card is refused
+   self-test |   ok   a retired id that is also a live card is refused
+   self-test |   ok   a redirect that states no rule is refused
+   self-test |   ok   a retired record with no redirect row is caught, and the sentence says the id resolves to nothing (hh_vanderbogart_h, T-0842)
+   self-test |   ok   a redirect row whose rule disagrees with its record is caught (hh_blanchard_gantry, T-0993)
+   self-test |   ok   a redirect row with no record behind it is caught
+   self-test |   ok   a typo'd --write is REFUSED, not silently read as a check
+   self-test |   ok   ...and an unrecognised flag of any kind is refused too
+   self-test |   ok   --check still passes on the committed manifest
+   self-test | 
+   self-test | 0 failure(s)
+
+[1m== the lot-line yard fences re-derive from the rule that chose their lots and types[0m
+verified 257 fenced lot(s) of 267 improved (46 board, 70 picket, 141 split rail) in 718 run(s); 10 lot(s) refused for want of room
+
+[1m== …and two shops on one corner, a fence through a turned house, a woodpile in a room and a stale ruling are each refused[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |    self-test | ok   a bearing of 90 turns the footprint's +u axis to the SOUTH (clockwise), as angles.js does
+   self-test |    self-test | ok   the committed town is clean
+   self-test |    self-test | ok   …two shops placed on one corner are refused
+   self-test |    self-test | ok   …a fence laid through a house turned to 90 degrees is refused
+   self-test |    self-test | ok   …and the counter-clockwise footprint the fence tools read before does NOT contain the house's middle
+   self-test |    self-test | ok   …a woodpile standing in a room is refused
+   self-test |    self-test | ok   …a shop set down on a plank walk line is refused
+   self-test |    self-test | ok   …a shop set down in the middle of a platted alley is refused
+   self-test |    self-test | ok   …a ruling that no longer matches anything is refused
+   self-test | self-test: every case fired
+
+[1m== the warehouse's cargo doors and the freight doors over them set out once[0m
+F2 and F3's cargo-door rhythm
+
+  ok    F2's band authors two cargo bays   — band [20, 40, 26, 60] ft
+  ok    F3's band authors three   — band [30, 55, 40, 80] ft
+  ok    every other family in the crosswalk answers one   — none
+  ok    F2: 2 bays clear the frame's post spacing on its shortest plan   — pier 2.617 m vs 2.44 m
+  ok    F2: …and 3 do not   — pier 1.421 m
+  ok    F3: 3 bays clear the frame's post spacing on its shortest plan   — pier 2.563 m vs 2.44 m
+  ok    F3: …and 4 do not   — pier 1.617 m
+  ok    every single-door storefront keeps the exact double it always had   — 121 phase(s) driven, 0 moved
+  ok    a two-bay warehouse has two openings and not one   — 2 span(s)
+  ok    the piers at the corners and between the bays are equal   — 3.7360 / 3.7360 / 3.7360 m
+  ok    …and every opening is inside the wall   — 3.896..11.652 of 15.548 m
+  ok    the pier the set-out reports is the pier it leaves   — reported 3.736 m
+  ok    there is one upper freight door for each cargo opening   — 2 over 2
+  ok    …each centred on the opening it lifts to
+  ok    …and none of them wider than the door below it   — upper 1.22 m vs 1.85 m clear
+  ok    the gable is highest over the middle of the wall and lowest at its ends   — 10.930 m vs 6.919 m
+  ok    a shallow gable carries a beam on the middle bay and not on an outer one   — middle 7.200 m, outer 6.991 m, beam head 7.047 m
+  ok    a rhythm the loading side cannot carry at all is refused
+  ok    …and one that only fits by thinning the piers under the jamb stock
+  ok    half a cargo opening is refused
+  ok    a rhythm of nothing — bays without a door — is refused
+  ok    a hoist on a one-storey shop is refused
+  ok    a hoist under a hip, which has no gable to hang in, is refused
+  ok    a hoist over an EAVES loading side is refused
+  ok    both of the town's F2 warehouses stand at two bays with a hoist over them   — recon_1835_blk_south_water_clark_f2_01: 2 bays, hoist True; recon_1835_blk_south_water_lasalle_f2_10: 2 bays, hoist True
+
+the cargo-door rhythm OK — F2 2 bays, F3 3, 121 single-door storefront phase(s) unmoved
+
+[1m== the gate's town census re-derives from the roofs and the residents[0m
+verified the town census: 746 buildings standing of 746, 2863 people in the town of 2549 modelled (1091 of them established by a record that spans the day, 1772 ruled in by T-1386), 2863 of them housed, 0 waiting on a roof, 670 present beyond the index, and 307 visitor(s) counted apart
+
+[1m== a block face carries one street line, across every generator that builds on it[0m
+   108 frontage record(s) across 26 block face(s), and every face is one street line. Party walls close from both sides.
+
+[1m== the anonymous massings that claim a sampled band have one[0m
+   parcel                                       roofs  plans  twins  eaves out  claims sampling
+   canal_approach_trade_1835                        4      4      0          0  NO
+   core_row_fill_1835                              59     59      0          0  yes
+   gifford_street_faces_1835                       19     15      4          3  NO
+   north_freight_bank_1835                          1      1      0          0  NO
+   phase1_south_mixed_blocks                       48     48      0          0  yes
+   phase2_north_division_initial                   97     97      0          0  yes
+   phase2_west_wolf_point_approaches               55     38     17          0  NO
+   phase3_platted_block_indiana_north_cass          4      4      0          0  yes
+   phase3_platted_block_indiana_north_cass_boarding_house     3      3      0          0  yes
+   phase3_platted_block_indiana_north_cass_second_deal     4      4      0          0  yes
+   phase3_platted_block_indiana_north_wolcott       4      4      0          0  yes
+   phase3_platted_block_indiana_north_wolcott_second_deal     4      4      0          0  yes
+   phase3_platted_block_indiana_north_wolcott_yard_deal     1      1      0          0  yes
+   phase3_platted_block_lake_clark                  4      4      0          0  yes
+   phase3_platted_block_lake_clinton                3      3      0          0  yes
+   phase3_platted_block_lake_franklin               3      3      0          0  yes
+   phase3_platted_block_lake_market                 7      7      0          0  yes
+   phase3_platted_block_randolph_clark              8      8      0          0  yes
+   phase3_platted_block_randolph_clark_side_street_shops     2      2      0          0  yes
+   phase3_platted_block_randolph_clinton            7      7      0          0  yes
+   phase3_platted_block_randolph_clinton_second_deal     4      4      0          0  yes
+   phase3_platted_block_randolph_dearborn           9      9      0          0  yes
+   phase3_platted_block_randolph_dearborn_second_deal     4      4      0          0  yes
+   phase3_platted_block_randolph_dearborn_side_street_shop     1      1      0          0  yes
+   phase3_platted_block_randolph_dearborn_third_deal     4      4      0          0  yes
+   phase3_platted_block_randolph_franklin           8      8      0          0  yes
+   phase3_platted_block_randolph_market             8      8      0          0  yes
+   phase3_platted_block_randolph_market_second_deal     4      4      0          0  yes
+   phase3_platted_block_randolph_wells             10     10      0          0  yes
+   phase3_platted_block_school_section_tier_118     7      7      0          0  yes
+   phase3_platted_block_school_section_tier_119     7      7      0          0  yes
+   phase3_platted_block_school_section_tier_81      6      6      0          0  yes
+   phase3_platted_block_school_section_tier_81_lot_1     1      1      0          0  yes
+   phase3_platted_block_school_section_tier_82      4      4      0          0  yes
+   phase3_platted_block_school_section_tier_82_lots_6_7     2      2      0          0  yes
+   phase3_platted_block_school_section_tier_94      7      7      0          0  yes
+   phase3_platted_block_school_section_tier_95      6      6      0          0  yes
+   phase3_platted_block_school_section_tier_95_lot_1     1      1      0          0  yes
+   phase3_platted_block_south_water_clark           5      5      0          0  yes
+   phase3_platted_block_south_water_clark_second_deal     2      2      0          0  yes
+   phase3_platted_block_south_water_dearborn        6      6      0          0  yes
+   phase3_platted_block_south_water_dearborn_second_deal     3      3      0          0  yes
+   phase3_platted_block_south_water_dearborn_warehouse_deal     1      1      0          0  yes
+   phase3_platted_block_south_water_dearborn_yard_deal     1      1      0          0  yes
+   phase3_platted_block_south_water_franklin        7      7      0          0  yes
+   phase3_platted_block_south_water_franklin_second_deal     4      4      0          0  yes
+   phase3_platted_block_south_water_franklin_third_deal     2      2      0          0  yes
+   phase3_platted_block_south_water_lasalle         7      7      0          0  yes
+   phase3_platted_block_south_water_lasalle_second_deal     8      8      0          0  yes
+   phase3_platted_block_south_water_market_lot_7     1      1      0          0  yes
+   phase3_platted_block_south_water_market_lot_7_row     1      1      0          0  yes
+   phase3_platted_block_south_water_wells           8      8      0          0  yes
+   phase3_platted_block_south_water_wells_second_yard_deal     1      1      0          0  yes
+   phase3_platted_block_south_water_wells_yard_deal     1      1      0          0  yes
+   phase3_platted_block_washington_clark            4      4      0          0  yes
+   phase3_platted_block_washington_clark_fifth_deal     3      3      0          0  yes
+   phase3_platted_block_washington_clark_fourth_deal     3      3      0          0  yes
+   phase3_platted_block_washington_clark_second_deal     1      1      0          0  yes
+   phase3_platted_block_washington_clark_third_deal     5      5      0          0  yes
+   phase3_platted_block_washington_clinton         13     13      0          0  yes
+   phase3_platted_block_washington_clinton_yard_deal     4      4      0          0  yes
+   phase3_platted_block_washington_clinton_yard_deal_2     3      3      0          0  yes
+   phase3_platted_block_washington_dearborn_boarding_house     3      3      0          0  yes
+   phase3_platted_block_washington_dearborn_second_deal     6      6      0          0  yes
+   phase3_platted_block_washington_dearborn_side_street_shop     1      1      0          0  yes
+   phase3_platted_block_washington_franklin        13     13      0          0  yes
+   phase3_platted_block_washington_lasalle_first_deal    11     11      0          0  yes
+   phase3_platted_block_washington_market_boarding_houses     6      6      0          0  yes
+   phase3_platted_block_washington_market_second_deal    10     10      0          0  yes
+   phase3_platted_block_washington_wells           11     11      0          0  yes
+   phase3_platted_block_west_lake_canal             3      3      0          0  yes
+   phase3_platted_block_west_randolph_canal         4      4      0          0  yes
+   phase3_platted_block_west_randolph_des_plaines     4      4      0          0  yes
+   phase3_platted_block_west_washington_canal       6      6      0          0  yes
+   south_freight_bank_1835                          2      2      0          0  NO
+   south_lumber_shed_1835                           1      1      0          0  NO
+   west_freight_bank_1835                           1      1      0          0  NO
+   west_freight_forks_1835                          1      1      0          0  NO
+
+   gifford_street_faces_1835 — owed to ROADMAP T-V1(b) and K25, both of which need the bake:
+     recon_1835_gifford_h3_004 eave 9.000 m is outside the H3 band 5.49-6.71 m, and its note cites that band
+     recon_1835_gifford_h3_018 eave 9.000 m is outside the H3 band 5.49-6.71 m, and its note cites that band
+     recon_1835_gifford_h3_019 eave 9.000 m is outside the H3 band 5.49-6.71 m, and its note cites that band
+
+   607 anonymous roof(s). Every footprint that claims to be sampled inside its family band is, and is unique within its family and parcel. NOT ASSERTED and owed: 0 stamped massing(s) and 3 eave(s) outside the band their own note cites.
+
+[1m== Braunhold's Sauganash still says what the research note says it says[0m
+
+[1m== Glessner stable-roof reading re-derives from its cameras (T-2758)[0m
+gable_coping_apex_ft {"model": 38.6, "habs01_committed": 37.82, "habs01_doorway_fits": [38.07, 38.62], "habs01_aspect_valley_1.00_1.06": [38.62, 38.62], "habs01_doorway_ruler": 38.77, "cornell_committed": 42.28, "cornell_roof_fits": [38.25, 39.54]}
+cupola_apex_ft_at_model_centre {"model": 48.2, "habs01_committed": 45.07, "habs01_doorway_fits": [45.51, 46.29], "habs01_aspect_valley_1.00_1.06": [46.07, 46.29], "cornell_committed": 51.24, "cornell_roof_fits": [46.45, 47.84]}
+cupola_centre_S_on_ridge_plane {"model": 14.6, "habs01_committed": 11.0, "habs01_doorway_fits": [13.28, 14.39], "habs01_aspect_valley_1.00_1.06": [10.41, 14.39], "cornell_committed": 11.2, "cornell_roof_fits": [13.02, 13.18]}
+habs01.committed: rms 2.6 px (max 5.4) over 9; 14.64 px/ft at the doorway
+habs01.doorway: rms 3.92 px (max 10.2) over 17; 14.02 px/ft at the doorway
+habs01.doorway_eye_height: rms 3.09 px (max 6.1) over 17; 14.17 px/ft at the doorway
+habs01.doorway_lean: rms 3.13 px (max 6.2) over 17; 14.16 px/ft at the doorway
+habs01.doorway_aspect_1.02: rms 3.92 px (max 10.2) over 17; 14.02 px/ft at the doorway
+habs01.doorway_aspect_1.04: rms 3.92 px (max 10.2) over 17; 14.02 px/ft at the doorway
+habs01.doorway_aspect_1.06: rms 3.92 px (max 10.2) over 17; 14.02 px/ft at the doorway
+cornell.committed: rms 18.31 px (max 36.3) over 13; 22.17 px/ft at the doorway
+cornell.roof_pitched: rms 3.65 px (max 8.2) over 13; 23.2 px/ft at the doorway
+cornell.roof_level: rms 4.76 px (max 9.1) over 13; 23.24 px/ft at the doorway
+stable-roof reading re-derived: matches the committed report
+
+[1m== ticket queue (faults in the tickets repo are reported, not charged to this diff)[0m
+ticket queue OK — 3519 tickets, 45 in the queue, 1 waiting on the owner
+
+[1m== the bake builds the ref it was given, and the nightly still builds dev[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |   ok    a dispatch against a branch bakes THAT BRANCH
+   self-test |   ok    a push to a branch bakes that branch, not dev
+   self-test |   ok    the nightly bakes dev
+   self-test |   ok    a run whose ref is main bakes dev — nothing may PR into main
+   self-test |   ok    a push to dev bakes dev
+   self-test |   ok    with no dev ref, the nightly bakes what it was given
+   self-test |   ok    with no dev ref, a dispatch bakes its own branch
+   self-test |   ok    a bare branch name is a branch name
+   self-test |   ok    refs/heads/ is stripped
+   self-test |   ok    the tiers are read from .github/pipeline.json
+   self-test |   ok    a base whose PR has merged is dead
+   self-test |   ok    …and so is one whose only PR was closed unmerged
+   self-test |   ok    …and one with several, all finished
+   self-test |   ok    a base with an open PR is live
+   self-test |   ok    …even when an earlier PR from it was closed
+   self-test |   ok    a branch that has NOT opened its PR yet is live — the T-0454 dispatch
+   self-test |   ok    dev is live and has no PR of its own — the nightly must never be skipped
+   self-test |   ok    main is a tier too, so the rule never calls the production tier dead
+   self-test |   ok    the states are read case-insensitively, as the API spells them
+   self-test |   ok    a push to a branch whose PR has merged does not start a bake
+   self-test |   ok    …nor does a dispatch against one
+   self-test |   ok    …and the decline names the ref it declined and says it is not a failure
+   self-test |   ok    a branch with an open PR still bakes
+   self-test |   ok    a branch with no PR yet still bakes — the T-0454 dispatch
+   self-test |   ok    an unanswerable PR question bakes rather than declines
+   self-test |   ok    the nightly always starts, whatever a PR question would have said
+   self-test |   ok    …a push to dev always starts
+   self-test |   ok    …a dispatch on main bakes dev and starts
+   self-test |   ok    …and none of those three asked GitHub anything
+   self-test |   ok    the workflow no longer hard-checks-out dev
+   self-test |   ok    the workflow asks this script which ref to bake
+   self-test |   ok    the PR base follows the ref that was baked, not a literal dev
+   self-test |   ok    …and the base comes from the bake job's own output
+   self-test |   ok    the workflow asks whether the baked ref is still live
+   self-test |   ok    …and open-pr refuses to open a PR into a base that is not
+   self-test |   ok    …and it asks AGAIN at the moment the PR is opened, not only at job start
+   self-test |   ok    the warranted job asks whether the bake should start at all
+   self-test |   ok    …and a decline turns the job's bake output off
+   self-test |   ok    …and a crashed or garbled answer bakes rather than declines
+   self-test |   ok    …and the bake arms auto-merge on the PR it opens
+   self-test |   ok    a push bake is gated on the branch's own diff, not just the push's
+   self-test |   ok    …and it asks with the three-dot form, which is what the branch OWNS
+   self-test |   ok    …and it is a separate job, so the Blender runner is never claimed to skip
+   self-test |   ok    …and an unanswerable diff bakes rather than skips
+   self-test | SELF-TEST PASS — the bake builds the ref it was given, the nightly still builds dev, and the workflow still asks (44 cases)
+
+[1m== …and a duplicate id renumbers the branch's side, carrying only its own references[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | 
+   self-test |   --check reports without writing
+   self-test |   ok    exits non-zero while a collision stands — exit 1
+   self-test |   ok    names the side that stays and why — ticket ids: T-0001 is carried by 2 files — T-0001-base-ticket.md stays (T-0001-base-ticket.md is on base-ref), T-0001-branch-ticket.md would move
+   self-test | 
+   self-test | Run `node tools/resolve_id_collisions.mjs` to renumber the side this branch added and carry its references with it.
+   self-test |   ok    and wrote nothing
+   self-test | 
+   self-test |   the repair
+   self-test |   ok    the BRANCH ticket is the one renumbered, to a free id — ticket ids: T-0001 — T-0001-base-ticket.md stays (T-0001-base-ticket.md is on base-ref)
+   self-test |   T-0001-branch-ticket.md
+   self-test |     → T-0010, queue place kept
+   self-test |     2 reference line(s) carried with it: chicago/4d/tools/added.md (1), chicago/4d/tools/notes.md (1)
+   self-test |     1 line(s) left at T-0001 — they were written before this ticket existed, so they mean the one that stays
+   self-test |     T-0001-base-ticket.md's queue line was eaten by the merge — restored under T-0009, the ticket it followed on base-ref
+   self-test |   ok    the base ticket keeps its id and its file name
+   self-test |   ok    the branch ticket file is renamed to its new id
+   self-test |   ok    the reference the BRANCH wrote follows it — The base wrote this line about T-0001 and it must not move.
+   self-test | The branch wrote this line about T-0010 and it must follow.
+   self-test |   ok    …and the reference the BASE wrote is untouched — The base wrote this line about T-0001 and it must not move.
+   self-test | The branch wrote this line about T-0010 and it must follow.
+   self-test |   ok    a file the base does not have is treated as all the branch's
+   self-test |   ok    a SIBLING branch's reference stays at the old id — it predates the moving ticket — A sibling branch cites T-0001 meaning the base ticket, and it must NOT move.
+   self-test |   ok    …and the run SAYS it left it, so a declined rewrite is never silent — ticket ids: T-0001 — T-0001-base-ticket.md stays (T-0001-base-ticket.md is on base-ref)
+   self-test |   T-0001-branch-ticket.md
+   self-test |     → T-0010, queue place kept
+   self-test |     2 reference line(s) carried with it: chicago/4d/tools/added.md (1), chicago/4d/tools/notes.md (1)
+   self-test |     1 line(s) left at T-0001 — they were written before this ticket existed, so they mean the one that stays
+   self-test |     T-0001-base-ticket.md's queue line was eaten by the merge — restored under T-0009, the ticket it followed on base-ref
+   self-test |   ok    the branch's line is renumbered where it already stood — # QUEUE — top is next.
+   self-test | 
+   self-test | T-0009 — The anchor above it
+   self-test | T-0001 — The base ticket
+   self-test | T-0010 — The branch ticket
+   self-test | T-0008 — A ticket ranked below
+   self-test |   ok    the survivor's line, eaten by the merge, is restored UNDER ITS BASE ANCHOR and not appended to the bottom — # QUEUE — top is next.
+   self-test | 
+   self-test | T-0009 — The anchor above it
+   self-test | T-0001 — The base ticket
+   self-test | T-0010 — The branch ticket
+   self-test | T-0008 — A ticket ranked below
+   self-test |   ok    and the run says the merge ate it, rather than restoring it silently — ticket ids: T-0001 — T-0001-base-ticket.md stays (T-0001-base-ticket.md is on base-ref)
+   self-test |   T-0001-branch-ticket.md
+   self-test |     → T-0010, queue place kept
+   self-test |     2 reference line(s) carried with it: chicago/4d/tools/added.md (1), chicago/4d/tools/notes.md (1)
+   self-test |     1 line(s) left at T-0001 — they were written before this ticket existed, so they mean the one that stays
+   self-test |     T-0001-base-ticket.md's queue line was eaten by the merge — restored under T-0009, the ticket it followed on base-ref
+   self-test | 
+   self-test |   it is idempotent, and says so
+   self-test |   ok    a second run finds nothing to do — ticket ids: no collision — 4 tickets, every id unique
+   self-test | 
+   self-test |   the moving ticket was closed in the same branch that filed it
+   self-test |   ok    a ticket that is `done` gets NO queue line, whatever restamp did with one — T-0011 in queue: false
+   self-test |   ok    …and the open survivor keeps its line rather than losing it to the closed one — # QUEUE — top is next.
+   self-test | 
+   self-test | T-0009 — The anchor above it
+   self-test | T-0001 — The base ticket
+   self-test | T-0010 — The branch ticket
+   self-test | T-0008 — A ticket ranked below
+   self-test | T-0005 — The open one on the base
+   self-test |   ok    …and the run says the line was removed, rather than removing it silently — ticket ids: T-0005 — T-0005-base-open.md stays (T-0005-base-open.md is on base-ref)
+   self-test |   T-0005-branch-done.md
+   self-test |     → T-0011
+   self-test |     no queue line — it is done, not workable, so the line restamp gave it was removed
+   self-test |     0 reference line(s) carried with it
+   self-test |     T-0005-base-open.md's queue line was eaten by the merge — restored under T-0008, the ticket it followed on base-ref
+   self-test | 
+   self-test |   it refuses rather than guess
+   self-test |   ok    both sides already on the base is a REFUSAL, not a coin toss — ticket ids: T-0003 REFUSED — every file carrying T-0003 is already on base-ref — the base itself is broken, and repairing that quietly is not this tool's call
+   self-test |   ok    and it renumbered neither of them
+   self-test | 
+   self-test |   where the tickets live in their own repository
+   self-test |   ok    no tickets/ at all (the lap's checkout) exits 0 and says why (repair) — ticket ids: not applicable — this checkout has no tickets/ directory. Ids are allocated on the tickets repository's main by ticket.mjs, which renumbers a collision as it pushes; a code branch carries no ticket file, so there is nothing here to renumber.
+   self-test |   ok    no tickets/ at all (the lap's checkout) exits 0 and says why --check — ticket ids: not applicable — this checkout has no tickets/ directory. Ids are allocated on the tickets repository's main by ticket.mjs, which renumbers a collision as it pushes; a code branch carries no ticket file, so there is nothing here to renumber.
+   self-test |   ok    tickets/ as a repository of its own exits 0 and says so (repair) — ticket ids: not applicable — tickets/ is a repository of its own (kevinrhaas/chicago-tickets). Ids are allocated on the tickets repository's main by ticket.mjs, which renumbers a collision as it pushes; a code branch carries no ticket file, so there is nothing here to renumber.
+   self-test |   ok    tickets/ as a repository of its own exits 0 and says so --check — ticket ids: not applicable — tickets/ is a repository of its own (kevinrhaas/chicago-tickets). Ids are allocated on the tickets repository's main by ticket.mjs, which renumbers a collision as it pushes; a code branch carries no ticket file, so there is nothing here to renumber.
+   self-test | 
+   self-test | id-collision self-test: all pass
+
+[1m== ...and a written nation, an English initial and a shared syllable are refused[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |   ok    a one-word reading is refused
+   self-test |   ok    a two-word Native name is not
+   self-test |   ok    a name key is the crosswalks' discriminator
+   self-test |   ok    an Indigenous name in a parenthesis does not break the key
+   self-test |   ok    a card is capitalised without an English initial
+   self-test |   ok    the stage does not read its own output as the layer
+   self-test |   ok    two syllabic names that share a closing syllable are two men
+   self-test |   ok    the muster reader takes only the company the roll heads INDIAN
+   self-test |   ok    every card carries review_required and touches_removal
+   self-test |   ok    every person carries the stage that is allowed to write them
+   self-test |   ok    no card writes a nation
+   self-test |   ok    every withheld row names a reason this file states
+   self-test |   ok    the counted-but-unnamed remainder is refused and says what would retire it
+   self-test |   ok    no row whose term was written onto its own name is refused as prose
+   self-test |   ok    a row held out for this stage's scope came in on the name-borne rule
+   self-test |   ok    the register's two mothers reach this stage and are held out on SCOPE, with the sibling that reads their book named
+   self-test |   ok    no person drawn here is invented — every id is a read name
+   self-test |   ok    14 rule(s) hold
+
+[1m== research stays inside its historical ratchet and closed unit ledger[0m
+
+[1m== the thirteenth research cohort is fixed[0m
+resident research pass 13: 76 people, the frozen reservation is intact; 18 snapshot cell(s) have moved since the freeze, which is the research landing and not staleness
+
+[1m== …and none of them moves a grade to close the gap[0m
+   OK: 845 rung(s) spent onto cards the ladder agrees with, 82 conflict(s) left for the owner
+
+[1m== …and the tie discriminator's do too[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | tiebreak --self-test: 10 trade cases and 6 tie cases hold
+
+[1m== …and the land tract sales are on the 31 cards they name, once each[0m
+land tract sales: 542 entry/entries on 107 card(s), no strays, none written twice
+
+[1m== …and the seven repaired surnames in it still read off their witnesses[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | fergus 1839: 7 surnames repaired (4 the scan broke in two, 3 the comma was absent from; 5 documented off a committed witness, 2 inferred from the format and the alphabet), 4 standing outside the table
+
+[1m== the .docx extractor is deterministic and keeps its uncertainty brackets[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | docx_text self-test OK — deterministic, 154 chars, markers preserved
+
+[1m== the location spend re-derives: no placement past its evidence, four retentions still true[0m
+176 businesses adjudicated; {'structure_committed': 53, 'structure_pending': 11, 'street_only_adopted': 47, 'street_only_unseated': 5, 'unplaceable': 60}; 4 retentions hold
+
+[1m== the boarders re-derive, and no house sleeps more than the 1840 enumerator saw[0m
+  ok    28 lodging place(s); 189 bed(s) filled, 32 still empty and every one of them said; 26 child(ren) on 13 keeper's card(s)
+
+[1m== the agency relation still re-derives from the committed register[0m
+OK   data/reconstruction/1835_agencies.json re-derives exactly (1 agency, 2 holding(s), 1 refused, 3 reaching a card)
+
+[1m== every attribute's tier still re-derives from the card it sits on[0m
+ok  attribute tiers: 22010 block(s) on 1459 card(s), 136 authored reconstruction(s) and 10650 drawn across 13 model row(s)
+  tier  attested         701
+  tier  inferred         3684
+  tier  reconstructed    10786
+  tier  unknown          6839
+  per attribute (attested / inferred / reconstructed / unknown):
+    arrival                                             51  1353    55      0
+    arrival_year                                         0    19  1375      0
+    directories.people[].address_later                 165     0     0      0
+    directories.people[].back_projection                 0     0    23      0
+    directories.people[].occupation_later              129     0     0      0
+    directories.people[].residence_back_projection       0     0    12      0
+    division_reconstructed                               0     0  1335      0
+    kin[]                                              150    12     0      0
+    no_home                                              0     0     0   1425
+    no_workplace                                         0     0     0   1408
+    origin                                              11    41  1407      0
+    party_size_on_arrival                                3     9     0   1447
+    persons[].age_band                                   7    53  2817      7
+    persons[].age_on_scene_date                          7     2     0      0
+    persons[].biographical_evidence.age_on_1835_07_01     0     2     0      0
+    persons[].biographical_evidence.birth_year           2     0     0      0
+    persons[].birth_year                                 7    53     0      3
+    persons[].landholding                                0     2     0      0
+    persons[].name_basis                                 0     0  1443      0
+    persons[].occupation                               118    20   203   2543
+    persons[].profile_facts[]                            1    37     0      0
+    persons[].sex_basis                                  0   703   626      6
+    present_on_scene_date                               38  1365    56      0
+    reason_for_coming                                   12    13  1434      0
+  basis address_back_projection          23
+  basis arrival_bound_from_the_record    1
+  basis arrival_earliest_year_forced     54
+  basis inferred_household_hypothesis    45
+  basis origin_uncited_literature        1
+  basis residence_back_projection        12
+
+[32mCHECK PASS[0m — part 17/32: 46 steps, none red.
+  13 of them are self-tests that prove a gate by breaking it; their
+  assertions fire on purpose and every line of it is prefixed 'self-test |'.
+  This is part 17 of 32; the other 1333 steps are in the other parts. The gate is
+  green only when every part is: tools/check.sh --part 1/32 through --part 32/32.
