@@ -1,0 +1,16 @@
+#!/usr/bin/env python3
+"""Substitute only verified connector logs; metadata goes to the real CLI."""
+import hashlib, json, os, sys
+from pathlib import Path
+args=sys.argv[1:]
+if len(args)==4 and args[:2]==['run','view'] and args[2].isdigit() and args[3]=='--log':
+    mapping=os.environ.get('T3654_CI_LOG_MAP')
+    if mapping:
+        row=json.loads(Path(mapping).read_text()).get(args[2])
+        if row:
+            data=Path(row['path']).read_bytes()
+            if hashlib.sha256(data).hexdigest()!=row['sha256']:
+                sys.stderr.write('Verified connector log hash changed; refusing substitution.\n');sys.exit(2)
+            sys.stdout.buffer.write(data)
+            sys.exit(0)
+os.execv('/usr/bin/gh',['/usr/bin/gh',*args])
