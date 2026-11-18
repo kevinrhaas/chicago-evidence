@@ -1,0 +1,5 @@
+# Redundant c0 bake: decision and cancellation
+
+Run 44403504030 targeted c0c235. The hosted warranted check lacked NumPy, could not evaluate the asset hashes and failed open into a bake. The supported local `bake_warranted.py --decide --base origin/dev` used unchanged c0 generator/asset inputs with NumPy 2.3.5 and found all 1,126 committed assets fresh, zero stale, decision 0. Its actual output, environment versions and relevant-input clean status are in the decision receipt.
+
+Root authorized cancellation of this redundant bake only. Before-state metadata, HTTP 202 response and cancellation receipt are preserved. Final metadata records warranted and bake completed successfully, but all eight bake gates, 18 smoke legs and downstream publication/PR/fresh-consumer jobs cancelled. Both completed job logs are retained. No bake output was accepted into the frozen source tree, and these jobs supply no source or legacy acceptance. Source and supporting validation runs were not cancelled by this action.
