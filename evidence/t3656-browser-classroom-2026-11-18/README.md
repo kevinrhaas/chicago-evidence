@@ -5,7 +5,8 @@ branch `steward/t3656-browser-classroom`. This checkpoint preserves completed wo
 **it is not a declaration that the full release gate passed or the PR merged.**
 
 - Original implementation runtime: `6c83e8cf9558c0d6f9ffb422f299764837fc4ed2`.
-- Latest code checkpoint: `ae4e0bdd7368b989dd7569509a6e1d94bf9f6cbc` (authorized Full allowance change).
+- Latest code checkpoint: `7019f986b3773a27a3acc1b47135fa14f9086aa3` (bounded CI completion allowance).
+- Current application runtime remains `ae4e0bdd7368b989dd7569509a6e1d94bf9f6cbc`; the later commit changes workflow, test and documentation files.
 - Latest completed focused photo/notebook runtime: `45b35a2c7d910ec1e73f5a60489b1b22c4aff278`.
   This revision adds bounded caption fitting, notebook draft pruning, a
   person-row alias repair, and on-mount classroom styles. Fresh actual-town
@@ -112,9 +113,9 @@ metadata head cbf3408e is [44375593498](https://github.com/kevinrhaas/chicago/ac
 Primary 45b source run 44397687385 failed: partition 1 reached its 600-second
 cap and exited 124. Its aggregate failure and the earlier bb593 partition 1
 PASS (175 steps, 565.647s) are retained under `gate/`. Neither the timeout nor
-the earlier pass establishes latest-head success. For primary ae4e, source run
-44403176250 and moving run 44403176289 are pending at this checkpoint. Read
-the PR checks for their final results; this archive does not assume them.
+the earlier pass establishes latest-head success. Complete required checks are
+running for the latest primary head 7019f986b; consult PR 2197 for current run
+IDs and final results. This archive does not assume them.
 
 The next browser-only work is checkpointed separately in
 [`../t3657-t3658-hunt-accessibility-2026-11-18/`](../t3657-t3658-hunt-accessibility-2026-11-18/).
@@ -145,9 +146,33 @@ their existing policies. The committed rationale is preserved in
 `budget/authorized-full-policy.json` matches the immutable ae4e `main.js` hash
 and passes nine deliberately invalid policy mutations. This verifies declaration
 and selection policy; it is not a renderer or FPS measurement. A fresh stage 5
-run is active at this checkpoint and has no archived passing verdict yet. The
-budget authorization does not erase the original failure, supply missing tail
+retry reached its unchanged **595-second command cap**. Its raw log is retained
+as `renderer/desktop-5-budget-incomplete-595s.log`: it did not complete the
+stand/tier sweep or produce a final SMOKE PASS. Initial scene assertions and its
+isolated zero-page-errors line do not make it green. The budget authorization
+does not erase the original failure, supply missing tail
 coverage, or authorize production promotion.
+
+## CI completion and dependent follow-up checkpoint
+
+`ci-completion/` records commit 7019f986b's bounded **900-second source CI limit**,
+with all eight native partitions, assertions and the aggregate gate still
+required. Timeouts remain failures; local foreground limits are unchanged. The
+check-harness log passes **50 tests, zero failures**, including partition refusal
+controls, and the workflow-guard log ends `all good`. These are logic/harness
+checks, not successful completion of the live release gates.
+
+The follow-up is now [draft PR 2199](https://github.com/kevinrhaas/chicago/pull/2199),
+head `4a2ee67dcbc3067fd8e18fb432098822361f2476`, targeting dev and depending on
+PR 2197. Its bounded preflight passed source **partition 1 of 16 only** (89 checks,
+26 self-tests), plus changelog and ticket-ID metadata. The wrapper's standard
+“CI has nothing left to ask” banner is broader than that partitioned command;
+the remaining 15 partitions and release gates remain required. No browser ran
+in that preflight. The precise logs/manifest are in the follow-up evidence folder.
+
+Neither PR is merged at this checkpoint. Required gates and primary desktop
+stages 3/6/10/11 are running; no completed result from those active runs is
+included here. `ci-completion/checkpoint.json` supplies the recovery pointers.
 
 ## Focused checks and their limits
 

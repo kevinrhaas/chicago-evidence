@@ -1,17 +1,19 @@
 # T-3657 / T-3658 — photo hunt and accessibility checkpoint
 
-Recovery evidence for browser-only follow-up work after classroom tools PR 2197.
+Recovery evidence for [draft PR 2199](https://github.com/kevinrhaas/chicago/pull/2199),
+targeting dev and dependent on classroom tools PR 2197.
 **Focused native-town checks now pass at both sizes, alongside the earlier logic,
 fixture, and photo-audit evidence. Full source and published renderer release
 gates remain separate and are not declared green here.**
 No production promotion, new server, account service, or paid API is involved.
 
-- Latest tested combined checkpoint: `5674d33df9f39048e5c3ced87c33e3855afdf3ee`.
+- Latest combined checkpoint: `4a2ee67dcbc3067fd8e18fb432098822361f2476`.
+- Latest completed focused native runtime: `5674d33df9f39048e5c3ced87c33e3855afdf3ee`.
 - Current dev: `169404c9f99d2defeca2b05f2364c868a4f4e745` (T-3562 roof/asset merge and changelog fold).
 - Original combined fixture commit: `f1f2229f0879c4f1771b07fd9409f994cfc6a986`.
 - Branch: `steward/t3657-t3658-hunt-accessibility`.
 - Base: `03ecd9678e15988abe44c50e27c2bd9fec569530` from the classroom branch.
-- No follow-up PR or merge at this checkpoint. After PR 2197 merges, rebase only
+- Draft PR 2199 depends on PR 2197; neither is merged. After PR 2197 merges, rebase only
   the commits after that base onto the actual dev head. Drop already-upstream
   and duplicate first-PR repairs; preserve upstream changelog verbatim. Do not
   replay the classroom implementation commits.
@@ -22,6 +24,22 @@ No production promotion, new server, account service, or paid API is involved.
   `integration-checkpoint.json` records current branch/dev heads, verified base
   ancestry, and completed focused combined native-town work without extending
   earlier fixture results to another runtime.
+
+## Current preflight and recovery scope
+
+`preflight-part1of16/` preserves the completed bounded preflight at 4a2ee67d,
+exit 0: source **partition 1 of 16 passed 89 checks**, including 26 self-tests,
+plus changelog and ticket-ID metadata checks. Its manifest records clean source,
+dev/base head 169404c9f, exact command, and independently verified log hashes.
+This is only one partition; the other 15 remain required. The standard wrapper
+success banner is broader than the explicitly partitioned command. No browser
+or renderer check ran in this preflight.
+
+Primary head is 7019f986b. Full required gates are still running, and its local
+desktop stage 5 budget retry was incomplete at 595 seconds, with no complete
+stand/tier sweep or final PASS. The classroom evidence records that log separately.
+Consult both PRs for current checks before merging; keep the existing rebase
+boundary and discard duplicate first-PR repairs only after they are upstream.
 
 ## Combined checks
 
@@ -149,8 +167,9 @@ new focused actual-town photo/notebook/link runs pass at that exact primary
 revision (see the classroom evidence folder). Combined e23ea1f includes those
 repairs and the behavioral tour test, all hunt/accessibility fixes, and current
 dev. Revision 5674 adds the revealed-image loaded-status repair and completed
-new focused native checks. Primary ae4e's subsequent authorized Full policy
-change is not included in this native-tested combined revision. No earlier
+new focused native checks. The current combined head includes the authorized Full policy in 308e45207 and
+the CI completion allowance in 4a2ee67d. Those came after the native-tested 5674
+revision; its recorded evidence stays tied to that runtime. No earlier
 fixture or base-runtime gate is automatically a result for changed application files.
 
 `repairs/caption-fit/` preserves the actual Canvas2D measurement harness, original
