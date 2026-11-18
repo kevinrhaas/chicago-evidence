@@ -231,6 +231,31 @@ the per-command budget. This completed final-runtime integration supersedes the
 older mixed-run evidence for this specific photo-to-notebook-to-share flow; it
 does not replace pending complete source/renderer release gates.
 
+## Prepared verification of the new resource runtime
+
+After the preceding checkpoint, the primary branch pushed
+`45b35a2c7d910ec1e73f5a60489b1b22c4aff278`, integrating caption fitting, notebook
+draft pruning, the person-row alias repair, and on-mount photo/notebook styles.
+**No new-runtime browser or complete release verdict is recorded here yet.**
+The existing frozen build, manifest, and passing photo/notebook reports remain
+pre-repair evidence for 6c83e8cf9.
+
+`harnesses/resource-photo-notebook-smoke.mjs` is prepared and syntax checked,
+but unrun. It retains all five integrated assertions and accepts `QA_MANIFEST`.
+It adds checks that unopened classroom styles are not requested, that each
+view's real stylesheet loads with CSS rules when mounted, and that one link is
+kept per document. `harnesses/resource-manifest.py` is also prepared but unrun;
+it verifies the completed publisher's build stamp and every authored JS/CSS
+file against the immutable Git commit, accounting for the changelog's published
+fleet path, then records generated-page hashes separately.
+
+`prepared-resource-rerun.json` records the planned new frozen root, manifest,
+and per-viewport output locations. Wait for the complete source gate and the
+coordinator's explicit quiet-window grant before copying the official tree,
+building that manifest, or launching a browser. Do not snapshot a live publisher
+or replace the earlier evidence. New runs use the existing 595-second command
+cap and each viewport separately.
+
 ## Reproduction and integrity
 
 The local gate environment used Node 22.23.5 at
