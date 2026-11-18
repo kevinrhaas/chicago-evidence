@@ -14,8 +14,9 @@ This archive contains reports, screenshots, logs, narrow reproduction procedures
 | `entry/fixture-report.json` | Nine Chromium cases covering production and DEV routes, relative CSS/classic/module/import-map loading, explicit and empty year overrides, failure recovery, preview markings, and offline service-worker loading of the shared canonical page. |
 | `entry/*procedure.cjs`, `entry/source-patch.patch`, `entry/*.log` | Executed entry procedures, exact candidate patch, fingerprint checks and publication log. Procedures retain their original local paths. The patch also includes a later checker-only hardening that did not change the native-tested page bytes. |
 | `sky/` | Standalone WebGL daylight-grade comparison, selected 6× implementation, time-of-day readbacks, earlier cause analysis and executed procedures. These probes used a pre-commit working tree without a recorded exact commit SHA. They are diagnostic evidence, not whole-city acceptance or a measurement of historical sky radiance. Final city QA independently exercises the selected implementation at ae259. |
-| `registration/` | Modern-grid alignment audit with source hashes and a read-only Node reproduction script. Nine modern intersections differ by 2.023 m RMS / 3.854 m maximum; fourteen inherited targets match exactly. This comparison verifies frame/navigation consistency. It does not replace the historical-map uncertainty: fitting RMS 18.6689 m, eight reserved checks RMS 15.6189 m and maximum 25.6497 m. |
+| `registration/modern-grid-audit.json` and Node reproducer | Modern-grid alignment audit with source hashes and a read-only Node reproduction script. Nine modern intersections differ by 2.023 m RMS / 3.854 m maximum; fourteen inherited targets match exactly. This comparison verifies frame/navigation consistency. It does not replace the historical-map uncertainty: fitting RMS 18.6689 m, eight reserved checks RMS 15.6189 m and maximum 25.6497 m. |
 | `legacy1812/` | Final ae259 short readiness/walker/canvas probe and procedure, published-input manifest, report and mobile/desktop screenshots. Both widths passed, walked 4.47 m after entering the world, produced readable nonblack canvases and recorded zero page errors. This is not the complete legacy suite and makes no console/resource-completeness or performance claim. |
+| `registration/generated-grid-audit.json` and Python reproducer | Read-only follow-through at 8d59 from retained map traces into generated JSON and the decoded native street mesh. State/Madison is 22.570953 m from its modern target, matching the existing historical fit residual; its mesh crossing differs from the retained mapped crossing by only 0.0000166 m. All 194 mapped segments across 43 roads remain within 0.005518 m of retained polylines after rounding. This numerical preservation is not historical accuracy. No coordinates or assets were changed. |
 | `checks/` | Partitioned preflight, publisher/validator checks, interim source-gate summary, and the legacy-browser coverage ledger with calibration transcripts. See the limitations below. |
 | `receipts/` | Portable source receipts for city, shared-entry and validation status, captured at source checkpoint 8d59e79. |
 
@@ -25,7 +26,7 @@ Browser measurements used headless Chromium with SwiftShader. Draw and triangle 
 
 ## Validation still pending at this checkpoint
 
-**Full source and legacy-browser validation are incomplete.** The `PREFLIGHT PASS` text in `checks/preflight.log` came from `CHECK_PART=2/16 CHECK_JOBS=4`: 90 source steps plus changelog and ticket-ID checks. It is not a claim that every source partition ran. Local source partitions 1/16 (covered by 17/32 plus 1/32), 2/16 and 3/16 passed. Part 4/16 exposed two issues that now have focused repairs; parts 5–16 had not run locally. The integrated dataset validator subsequently passed with zero errors and 340 existing warnings, and the published mirror check passed.
+**Full source and legacy-browser validation are incomplete.** The `PREFLIGHT PASS` text in `checks/preflight.log` came from `CHECK_PART=2/16 CHECK_JOBS=4`: 90 source steps plus changelog and ticket-ID checks. It is not a claim that every source partition ran. Local source partitions 1/16 (covered by 17/32 plus 1/32), 2/16 and 3/16 passed. At the initial archive, part 4/16 had exposed two issues with focused repairs. The follow-up source check at 8d59 completed part 4/16 successfully: 89 steps, including 31 self-tests, in 471.3 seconds wall time. Its complete log, timings and receipt are archived as `checks/source-part4of16-*`. The 89 timing rows sum to 941.9 seconds because individual checks overlap in parallel; that sum is not wall time. Part 5/16 was running when this supplement was prepared, and no completed result for parts 5–16 is asserted here. The integrated dataset validator subsequently passed with zero errors and 340 existing warnings, and the published mirror check passed.
 
 The complete eight-part source CI run on ae259 was queued when recorded; the subsequent source checkpoint supersedes that gate request, so the latest PR #2198 gate remains required. All twelve ae259 legacy-browser CI groups were queued in the archived coverage ledger. At final archive handoff, the coordinator reported that mobile stages 1–4 had begun running; its result was still pending. The quiet local legacy mobile stage 1 run passed 95 assertions, but it is calibration rather than complete commit-bound acceptance. The interrupted calibration transcript also remains archived with no coverage credit. No merge or production promotion is asserted by this evidence.
 
@@ -35,10 +36,11 @@ The 1812 readiness/walking/canvas supplement completed before this evidence comm
 
 Verify archive integrity from this directory with `sha256sum --check SHA256SUMS`.
 
-Reproduce the modern-grid audit against the corresponding Chicago checkout with:
+Reproduce the coordinate audits against the corresponding Chicago checkout with:
 
 ```sh
 node registration/reproduce-modern-grid-audit.mjs /path/to/chicago/chicago/4d > reproduced-modern-grid-audit.json
+python3 registration/reproduce-generated-grid-audit.py /path/to/chicago/chicago/4d > reproduced-generated-grid-audit.json
 ```
 
 Entry and sky procedures are retained as executed-procedure evidence; their original absolute paths must be supplied or adjusted in a matching environment. The sky procedures did not freeze their working-tree inputs. Browser reports and published input hashes are the authority for what was actually exercised.
