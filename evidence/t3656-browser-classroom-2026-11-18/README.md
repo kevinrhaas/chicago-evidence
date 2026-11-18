@@ -5,7 +5,8 @@ branch `steward/t3656-browser-classroom`. This checkpoint preserves completed wo
 **it is not a declaration that the full release gate passed or the PR merged.**
 
 - Original implementation runtime: `6c83e8cf9558c0d6f9ffb422f299764837fc4ed2`.
-- Latest tested code/runtime checkpoint: `45b35a2c7d910ec1e73f5a60489b1b22c4aff278`.
+- Latest code checkpoint: `ae4e0bdd7368b989dd7569509a6e1d94bf9f6cbc` (authorized Full allowance change).
+- Latest completed focused photo/notebook runtime: `45b35a2c7d910ec1e73f5a60489b1b22c4aff278`.
   This revision adds bounded caption fitting, notebook draft pruning, a
   person-row alias repair, and on-mount classroom styles. Fresh actual-town
   photo/notebook/link flows passed at both sizes on these exact bytes. Earlier
@@ -100,15 +101,20 @@ incomplete-at-cap record; the later CI success is a separate artifact.
 
 All source partitions now have passing receipts, with partition 8 rerun on 45b.
 Formal mobile coverage is complete for the original 6c83 runtime. The complete
-desktop formal smoke was last observed active in
+desktop formal smoke failed and reached its cap in
 [44372747109](https://github.com/kevinrhaas/chicago/actions/runs/44372747109),
-targeting implementation commit 6c83e8cf9. The duplicate full mobile run
+targeting implementation commit 6c83e8cf9. It has 429 passing assertions, one
+Full-budget failure, incomplete stage 12, and unrun stages 13–15; there is no
+final zero-error or whole-smoke pass. The duplicate full mobile run
 [44373274865](https://github.com/kevinrhaas/chicago/actions/runs/44373274865)
 was deliberately cancelled; it is not a passing result. The required source CI for the earlier
 metadata head cbf3408e is [44375593498](https://github.com/kevinrhaas/chicago/actions/runs/44375593498).
-For primary45b, source run44397687385 and moving run44397687404 are pending at
-this checkpoint. Read the PR's exact-head checks for their final results; this
-archive does not assume them.
+Primary 45b source run 44397687385 failed: partition 1 reached its 600-second
+cap and exited 124. Its aggregate failure and the earlier bb593 partition 1
+PASS (175 steps, 565.647s) are retained under `gate/`. Neither the timeout nor
+the earlier pass establishes latest-head success. For primary ae4e, source run
+44403176250 and moving run 44403176289 are pending at this checkpoint. Read
+the PR checks for their final results; this archive does not assume them.
 
 The next browser-only work is checkpointed separately in
 [`../t3657-t3658-hunt-accessibility-2026-11-18/`](../t3657-t3658-hunt-accessibility-2026-11-18/).
@@ -117,6 +123,31 @@ The follow-up evidence also preserves newly measured resource regressions and
 repairs backed up at `e579424f02287d38639f643b102688ef0846f000`. Those caption/draft
 repairs are now integrated into primary 45b; the fresh focused verification
 below is separate from the follow-up fixtures.
+
+## Authorized Full-detail budget and incomplete desktop run
+
+`renderer/desktop-6c83-budget-failure-and-cap.log` preserves GitHub run
+44372747109 without changing its verdict. It records **429 passing assertions
+and one stage 5 failure**: Full detail drew **3,607,087 triangles** at the 1835
+West prairie stand, above its 3,605,000 allowance. The 6,813 draw calls remained
+within 7,800. The job later hit its 150-minute cap during stage 12; stages 13–15
+and the final zero-error verdict did not run. Passing individual assertions do
+not make this an aggregate green result.
+
+The owner then authorized “You can raise the budget as appropriate” and “So you
+can merge to dev.” Commit `ae4e0bdd7368b989dd7569509a6e1d94bf9f6cbc` changes only
+the Full triangle allowance from **3,605,000 to 3,630,000**, using the observed
+3,607,087 plus the standing 18,059 margin, rounded up to 5,000. Balanced, Light,
+draw-call ceilings, shadow rules, reach, inspection allowances and assets retain
+their existing policies. The committed rationale is preserved in
+`budget/t-3656-full-detail-budget.md`.
+
+`budget/authorized-full-policy.json` matches the immutable ae4e `main.js` hash
+and passes nine deliberately invalid policy mutations. This verifies declaration
+and selection policy; it is not a renderer or FPS measurement. A fresh stage 5
+run is active at this checkpoint and has no archived passing verdict yet. The
+budget authorization does not erase the original failure, supply missing tail
+coverage, or authorize production promotion.
 
 ## Focused checks and their limits
 

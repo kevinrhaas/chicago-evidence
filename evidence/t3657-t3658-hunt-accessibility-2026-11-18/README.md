@@ -1,11 +1,12 @@
 # T-3657 / T-3658 — photo hunt and accessibility checkpoint
 
 Recovery evidence for browser-only follow-up work after classroom tools PR 2197.
-**This is focused logic, browser-fixture, and photo-audit evidence. Full source,
-native-town, and published renderer release gates have not passed for this work.**
+**Focused native-town checks now pass at both sizes, alongside the earlier logic,
+fixture, and photo-audit evidence. Full source and published renderer release
+gates remain separate and are not declared green here.**
 No production promotion, new server, account service, or paid API is involved.
 
-- Latest combined checkpoint: `e23ea1f45030aecf864d5ddf6c4b7a4f0e60bc70`.
+- Latest tested combined checkpoint: `5674d33df9f39048e5c3ced87c33e3855afdf3ee`.
 - Current dev: `169404c9f99d2defeca2b05f2364c868a4f4e745` (T-3562 roof/asset merge and changelog fold).
 - Original combined fixture commit: `f1f2229f0879c4f1771b07fd9409f994cfc6a986`.
 - Branch: `steward/t3657-t3658-hunt-accessibility`.
@@ -19,8 +20,8 @@ No production promotion, new server, account service, or paid API is involved.
   Git commit while creating this archive. `repair-checkpoint.json` identifies
   the subsequent repair commits and exact changed-file hashes at e579424f0.
   `integration-checkpoint.json` records current branch/dev heads, verified base
-  ancestry, and pending combined native-town work without extending those earlier
-  fixture results to the merged runtime.
+  ancestry, and completed focused combined native-town work without extending
+  earlier fixture results to another runtime.
 
 ## Combined checks
 
@@ -37,9 +38,9 @@ focused regression/string/changelog checks. These are not a complete source gate
   failure/retry, clipboard fallback, and no horizontal overflow.
 - Visible corrupt/blocked-storage handling with in-memory play still possible.
 
-The hunt fixture substitutes tiny image bytes and does not load a town. It does
-not establish that the solved photo camera coordinates or visit locations work
-in the live 1904 world. The separate photo audit below reads the real images.
+The hunt fixture substitutes tiny image bytes and does not load a town. That fixture alone does
+not establish native-world camera safety or travel. The newer native checks below
+exercise the live world; the separate photo audit reads the real images.
 
 `combined/accessibility/report.json` and its browser log cover both widths:
 picture-modal keyboard cycling, background isolation, focus return, image cleanup,
@@ -49,6 +50,62 @@ recorded scale reaches approximately 1.968, with the canvas retained at 390×780
 It uses the actual Navigator markup/CSS and touch/modal modules and the production
 resize function body, with a small WebGL canvas. It is not full-town, physical
 device, or complete WCAG conformance validation.
+
+## Completed native-town checks on 5674d33
+
+`native-final/` contains the final publisher and runtime manifests, reproduction
+harness, visual review, complete reports/logs, captured metadata and screenshots.
+The official publisher exited 0 on the clean combined revision
+`5674d33df9f39048e5c3ced87c33e3855afdf3ee`. Its missing `bc` affected only the
+printed MB footer; actual output byte counts were measured separately.
+All **27 listed JS/CSS hashes** were independently matched against that immutable
+Git commit. The other four runtime hashes identify generated entry/data files;
+they are not claimed to be authored Git blobs.
+
+The final actual 1904-town runs passed **11 phone checks at 390×780 and 10 desktop
+checks at 1280×800**. They fetched the five real hosted photographs, compared
+image hashes with the photo audit, completed all guesses and source/date reveals,
+checked all five live camera safety decisions, made one permitted visit through
+the production `Instantly` travel mode, used the native Inspect photo modal,
+and preserved the challenge day, answer, score and order after shared-link reload.
+The phone also exercised native pinch and pan without reducing the drawing buffer.
+All five revealed photographs announced “Photograph loaded.” at both sizes.
+
+Both runs captured a real normal frame with the production shutter, retained
+all **27 canonical citations** in capture metadata, and saved the bounded local
+photo and note in the notebook. The notebook uses its existing bounded source-row
+format. Its photo strings were 32,451 and 56,027 characters. The 9,307-character
+source caption required 17 phone and 18 desktop text measurements, taking about
+7.3ms in the delegated `measureText` calls; the complete captures took 3.34s and
+7.62s including the actual frame and PNG encoding. These are functional receipts,
+not sustained-rendering or hardware performance benchmarks.
+
+Both reports record zero page errors, HTTP errors, non-cancelled request failures,
+and horizontal overflow. They separately retain 42 phone and 45 desktop
+`ERR_ABORTED` cancellations from the live app, navigation and teardown. This is
+not a claim that every request completed. The hunt owned at most one image at a
+time; an explicit visit also opens the existing Inspect gallery, which owns its
+own images. Each run used one page/world and two sequential boots, with continuous
+software-GPU drawing paused between interactions. This does not certify every
+walking route, physical-device performance, or whole-app accessibility compliance.
+
+### Preserved stale-status defect
+
+`native-before-status-fix/` preserves the e23ea1f manifests, original harness,
+reports/logs and representative round-4 screenshots. Its automated flow assertions
+passed, but they did not yet check completion status: the loaded and revealed
+photograph still displayed “Loading this photograph…”. The archived desktop
+screenshot visibly demonstrates that defect. Those original passing labels are
+not final visual acceptance. Commit 5674 repairs the status and the new native
+harness asserts it for every round and restored answer.
+
+`status-fixture/` retains the smaller actual Home/catalogue view fixture and
+immutable test source. At both sizes it covers guessed, skipped, retried and
+reloaded answered images, polite loaded status, and no second guess. It uses
+substituted fixture image bytes without a town. The native reruns above provide
+separate evidence with real images. The old preservation manifest lists the full
+local snapshot; only representative old images are copied here to avoid storing
+all superseded screenshots twice.
 
 ## Original isolated fixtures
 
@@ -91,9 +148,10 @@ Primary commit45b now includes caption/draft/person/lazy-CSS repairs, and both
 new focused actual-town photo/notebook/link runs pass at that exact primary
 revision (see the classroom evidence folder). Combined e23ea1f includes those
 repairs and the behavioral tour test, all hunt/accessibility fixes, and current
-dev. Its dedicated publisher/native-town runs are in progress with a separate
-quiet window. No earlier fixture or base-runtime gate is automatically a result
-for the changed combined application files.
+dev. Revision 5674 adds the revealed-image loaded-status repair and completed
+new focused native checks. Primary ae4e's subsequent authorized Full policy
+change is not included in this native-tested combined revision. No earlier
+fixture or base-runtime gate is automatically a result for changed application files.
 
 `repairs/caption-fit/` preserves the actual Canvas2D measurement harness, original
 `moment.js`, and before/after timing report. The input uses a real 9,307-character
