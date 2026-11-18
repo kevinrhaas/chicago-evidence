@@ -5,18 +5,19 @@ branch `steward/t3656-browser-classroom`. This checkpoint preserves completed wo
 **it is not a declaration that the full release gate passed or the PR merged.**
 
 - Implementation: `6c83e8cf9558c0d6f9ffb422f299764837fc4ed2`.
-- Latest code-repository checkpoint: `7969031f049fb2d54df2ce8a6bccd014c5ea1a1e`.
-  It and the previous checkpoint `cbf3408e032eb6341df9d52bfbb289810035f412` change
-  only STATUS and the smoke ledger; application/runtime source is identical to
-  the implementation commit.
+- Latest code-repository checkpoint: `bb59311bfba32067a6f4ca3c8175deea2f05af38`.
+  Since implementation, checkpoints have changed STATUS, the smoke ledger,
+  measured test-isolation rows, and the tour test. Application/runtime source
+  remains identical to the implementation commit. `recovery-checkpoint.json`
+  records the exact changed paths and current validation status.
 - Base dev: `169af6421e2b9af10b98970cced2988fe2383b25`.
 - Ticket: `T-3656`, in `kevinrhaas/chicago-tickets`, state `review` with PR 2197.
 - Current progress and remaining actions are tracked on that PR and ticket.
 
 ## Completed formal checks in this checkpoint
 
-`gate/part1of8.log` through `part4of8.log` end with CHECK PASS:
-175, 174, 174, and 174 steps respectively. The source gate is green only when **all
+`gate/part1of8.log` through `part6of8.log` end with CHECK PASS:
+175, 174, 174, 174, 175, and 174 steps respectively. The source gate is green only when **all
 eight partitions** pass. `preflight-part1of8.log` also records the PR changelog
 and ticket-ID checks; it ran with `CHECK_PART=1/8`, so its PREFLIGHT PASS is not
 a claim that partitions 2–8 ran inside that command.
@@ -26,6 +27,22 @@ layout: the app's `tickets/` was a symlink, which the Python recursive walk did
 not traverse. The real tickets clone was moved to the normal app location and
 the outside alias points back to it. The targeted roof-pin check and then the
 entire partition passed without changing application code or gate assertions.
+
+`gate/ci-part6-step-isolation-failure.log` preserves a historical CI failure:
+the four newly added logic tests had no measured rows in `step_isolation.json`.
+Commit `03ecd9678e15988abe44c50e27c2bd9fec569530` adds those measured rows;
+the later local partition 6 passed. This does not declare the latest exact-head
+CI green.
+
+`gate/part7-tour-source-span-failure.log` preserves partition 7's tour-order
+failure. The old assertion searched a source-text span rather than mounting the
+Guide. Commit `bb59311bf` replaces that assertion with a check that the original
+tour element leads the actual mounted Guide's controls and hosted sections.
+Focused tour/Guide checks passed, and `gate/tour-order-negative-checks.json`
+records both deliberately moved and omitted tour mutations being rejected.
+Application code and the intended ordering are unchanged. The complete
+partition 7 rerun is still pending in this checkpoint; the historical failure
+is never labeled green. Partition 8 remains pending.
 
 `renderer/mobile-1.log` through `mobile-12.log`, plus `mobile-14.log` and `mobile-15.log`, are completed, unmodified official
 `tools/smoke_renderer.mjs --published` runs at 390×780, one stage per command.
@@ -40,6 +57,13 @@ copied for testing so concurrent source gates could not replace its files.
 The earlier publication footer named the parent commit; the manifest hashes
 identify the runtime bytes actually tested.
 
+`renderer/mobile-13-ci.log` now supplies the missing stage: GitHub run
+`44385930725`, job `135090381320`, completed successfully with **157 passed,
+zero failed, SMOKE PASS in 8m28**. Together, these local runs and the CI stage
+cover all fifteen mobile stages: 921 assertions including repeated scaffolding
+(726 staged assertions and 195 always-on assertions). This is complete mobile
+renderer coverage, not a declaration that source or desktop release gates passed.
+
 `renderer/mobile-6-contention-failure.log` preserves the original stage 6
 failure. A second full-world boot timed out at the unchanged 240-second limit
 while source workers and a first software-rendered world occupied the machine.
@@ -52,13 +76,15 @@ is historical evidence, not an additional green result.
 suite-completion failure. No application assertion failed before the cap, but
 the What's New reload tail was not verified. The passing assertions in this
 incomplete run are not included in the completed-stage total above. No timeout
-or assertion was changed to complete it. The unchanged official stage 13 is
-running separately in GitHub run
+or assertion was changed to complete it. The unchanged official stage 13 subsequently
+passed separately in GitHub run
 [44385930725](https://github.com/kevinrhaas/chicago/actions/runs/44385930725),
 job `135090381320`, on metadata head `7969031f0` with unchanged runtime.
+The local-only `progress-checkpoint.json` intentionally retains its original
+incomplete-at-cap record; the later CI success is a separate artifact.
 
-At this checkpoint, source partitions 1–4 were green and partition 5 running,
-with 6–8 still pending. Mobile stage 13 was incomplete locally with remote completion running,
+At this checkpoint, source partitions 1–6 were green, the repaired partition 7
+was being rerun, and partition 8 remained pending. Mobile coverage was complete,
 and the complete desktop formal smoke still active in
 [44372747109](https://github.com/kevinrhaas/chicago/actions/runs/44372747109),
 targeting implementation commit 6c83e8cf9. The duplicate full mobile run
@@ -67,6 +93,10 @@ was deliberately cancelled; it is not a passing result. The required source CI f
 metadata head cbf3408e is [44375593498](https://github.com/kevinrhaas/chicago/actions/runs/44375593498).
 Read the PR's exact-head checks for the latest checkpoint. Their final results
 must be read separately; this archive does not assume them.
+
+The next browser-only work is checkpointed separately in
+[`../t3657-t3658-hunt-accessibility-2026-11-18/`](../t3657-t3658-hunt-accessibility-2026-11-18/).
+Its fixtures and photo audit do not extend this PR's full-town release verdict.
 
 ## Focused checks and their limits
 
