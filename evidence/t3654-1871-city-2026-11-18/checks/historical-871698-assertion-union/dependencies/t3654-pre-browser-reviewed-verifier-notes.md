@@ -1,0 +1,13 @@
+# Reviewed temporary source-coverage verifier
+
+Use `/tmp/t3654-pre-browser-source-coverage-reviewed.py` with an explicit, reviewed `--bindings` file. Its SHA256 is `0b204f89658f4c35cb1124caf4685b037ead6048dc7dd94fd0e518dda4ab621b`. This supersedes the original verifier for future queueing decisions while preserving that original file and every frozen historical proof.
+
+The independent reviewer found no remaining blocking findings for the documented offline verification contract. Thirty positive/refusal tests pass in `/tmp/t3654-pre-browser-context-v3-candidate-tests.log`; the reviewer also independently checked real current local 8/16 and qualified local 6/16 success and genuine old 8/16 exit-sidecar substitution refusal.
+
+Beyond the original explicit artifact/head/tree/base/run bindings, the reviewed helper requires positive execution evidence for the three source declarations that can otherwise report a sandbox warning while exiting zero: installed raster readers, changelog history held against the bound base, and rulings checked against the bound base. It refuses native failed-step markers even if a timeout prevents a final verdict. Normal process sidecars must match the bound receipt's exact process end, rounded duration, and invocation start interval, so a genuine older successful sidecar cannot prove a later attempt's exit.
+
+The stronger helper has reverified all of the frozen 871698 evidence offline. `/tmp/t3654-source-assertion-union-871698-reviewed-context-exit-supplement.json` contains all 1,379 ordinals and zero omissions; its SHA256 is `37b4b1655f8ff14b4e7fe474790c65d838d63f04f10487020323f3926626acd2`. This is dated evidence only, with browser readiness and merge authorization both false. The original frozen full coverage proof and semantic supplement remain unchanged.
+
+The current new source 6409dda1222e1284e111ab0efde1c471f3284d60 must start from an empty exact-source binding. No old receipt, completed source part, timeout exclusion, kernel exception, or declaration coverage carries forward automatically. Its actual hosted checkout must be evidenced before it is labeled actual; a provisional PR merge candidate is insufficient.
+
+A dispatcher must pin both verifier and binding hashes; run the verifier immediately before dispatch; require successful `--require-complete` exit and a fresh, exhaustive exact-source report; and independently check live branch/dev/run/job identities and conclusions. This helper never changes the canonical hosted gate, creates a CI success, authorizes merging, or replaces the full hosted green requirement. Root reviews the concrete proof and retains the first-dispatch authorization boundary.

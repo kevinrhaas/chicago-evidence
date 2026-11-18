@@ -1,0 +1,11 @@
+# Reviewed historical assertion coverage on 871698
+
+The dated proof covers all 1,379 source declarations (1,376 ordinary plus three prerequisites) on source `871698ae94659100fcb8894f4967d4b15c62150f`, tree `8a4cf0055119d8dcf4b5bc813590abaf5231944d`, base `169404c9f99d2defeca2b05f2364c868a4f4e745`. It combines eleven accepted local invocations and seven successful hosted parts. Actual hosted checkout `bd8bbfdff8f2575f1d7437be255f6617509ce6fc` had the same tree. Repeated declarations are credited once; counts are not simply summed.
+
+This is successful assertion coverage across those invocations, not a successful hosted aggregate or a single full gate execution. The hosted part 6 timeout contributes no pass credit. Its unchanged failure evidence and later administrative aggregate cancellation are under `../../ci/current-871698/`. The qualified local 6/16 exit remains kernel-recovered, without an ordinary shell process receipt, and its duration remains approximate.
+
+The reviewed verifier is `dependencies/t3654-pre-browser-source-coverage-reviewed.py`, SHA256 `0b204f89658f4c35cb1124caf4685b037ead6048dc7dd94fd0e518dda4ab621b`. Thirty positive/refusal controls pass. The review adds positive semantic context for raster readers, changelog and rulings checks against the bound base; failed-step refusal; and exact invocation exit/timing identity, including rejection of a genuine successful sidecar from another attempt. The original verifier and intermediate supplement remain preserved as historical versions.
+
+`original-dependency-manifest.json` freezes 73 dependencies and their original paths. `archive-dependency-map.json` maps every dependency to its archived bytes, reusing earlier copies without duplicating logs. Three narrow native harness files are exact `git show` extracts from 871698. The old 8/16 attempt 1 process receipt is solely a negative-control fixture, not accepted coverage. Helpers retain absolute execution paths and are not portable one-command launchers.
+
+The stronger offline supplement still records browser readiness and merge authorization as false. Live upstream had advanced, and new source 6409 requires its own bindings and evidence. This historical proof supplies no current-head source, hosted, browser or merge acceptance. No helper was executed or CI job dispatched while creating this archive.
