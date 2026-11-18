@@ -5,8 +5,8 @@ branch `steward/t3656-browser-classroom`. This checkpoint preserves completed wo
 **it is not a declaration that the full release gate passed or the PR merged.**
 
 - Original implementation runtime: `6c83e8cf9558c0d6f9ffb422f299764837fc4ed2`.
-- Latest code checkpoint: `7019f986b3773a27a3acc1b47135fa14f9086aa3` (bounded CI completion allowance).
-- Current application runtime remains `ae4e0bdd7368b989dd7569509a6e1d94bf9f6cbc`; the later commit changes workflow, test and documentation files.
+- Latest code checkpoint: `5034a724d993abe0876a4db7bbfff02d2bb4da0a` (stage 13 expected-budget pin repair).
+- Current application runtime remains `ae4e0bdd7368b989dd7569509a6e1d94bf9f6cbc`; the later commits change workflow, tests and documentation files.
 - Latest completed focused photo/notebook runtime: `45b35a2c7d910ec1e73f5a60489b1b22c4aff278`.
   This revision adds bounded caption fitting, notebook draft pruning, a
   person-row alias repair, and on-mount classroom styles. Fresh actual-town
@@ -114,8 +114,10 @@ Primary 45b source run 44397687385 failed: partition 1 reached its 600-second
 cap and exited 124. Its aggregate failure and the earlier bb593 partition 1
 PASS (175 steps, 565.647s) are retained under `gate/`. Neither the timeout nor
 the earlier pass establishes latest-head success. Complete required checks are
-running for the latest primary head 7019f986b; consult PR 2197 for current run
-IDs and final results. This archive does not assume them.
+running for primary 5034a724d: source 44412406486 is pending and moving/upload
+44412406478 queued. Old 7019 moving/upload passed and source partitions 2–6
+passed, with the rest cancelled; those are historical partial results, not the
+latest complete source gate. Consult PR 2197 for current verdicts.
 
 The next browser-only work is checkpointed separately in
 [`../t3657-t3658-hunt-accessibility-2026-11-18/`](../t3657-t3658-hunt-accessibility-2026-11-18/).
@@ -172,11 +174,11 @@ the remaining 15 partitions and release gates remain required. No browser ran
 in that preflight. The precise logs/manifest are in the follow-up evidence folder.
 
 Neither PR is merged at this checkpoint. Required gates remain running. Primary
-desktop stages 3 and 6 completed as recorded below; stage 10 is active and stage
-11 pending, with no passing receipt archived for either.
+desktop stages 3, 6, 10 and 11 plus mobile stage 1 completed as recorded below.
+The corrected desktop stage 13 is active; no result is archived for that rerun.
 `ci-completion/checkpoint.json` supplies the recovery pointers.
 
-## Fresh completed desktop stages 3 and 6
+## Initial fresh desktop stages 3 and 6
 
 `renderer/current-desktop-3.log` ends SMOKE PASS with **107 passed, zero failed**
 in **6m23s** (94 staged assertions and 13 always-on checks).
@@ -190,8 +192,9 @@ at 22:11:14 UTC. It identifies primary code head 7019f986b and the ae4e0bdd7
 published build, verifies the harness and both main.js hashes, and separately
 records the supplied runtime-tree declaration. Its helper does not independently
 recompute that entire runtime tree. The snapshot predates stage 10's launch, so
-its `not_run` entry is historical; stage 10 is active at this checkpoint and is
-not counted green. The failed/capped stage 5 remains separate.
+its `not_run` entry is historical. Stage 10 subsequently completed in the next
+batch below; this original snapshot is unchanged. The failed/capped stage 5
+remains separate.
 
 The coordinator now uses the owner's budget authorization for new local
 renderer stages: **1,200 seconds plus a 5-second kill grace**. Stage 3 completed
@@ -199,6 +202,49 @@ under the earlier 595-second cap; stage 6 used 1,200 seconds. Unmodified smoke
 logs still print their existing 10-minute guidance footer; the recorded launch
 commands identify the actual supervisor cap. Source preflight remains capped at
 595 seconds. No timeout or incomplete stage is converted into a pass.
+
+## Additional completed stages and stage 13 pin repair
+
+The next completed local batch is archived under `renderer/`:
+
+| Stage | Passed / failed | Time | Staged / repeated scaffolding |
+| --- | --- | --- | --- |
+| Desktop 10 | 31 / 0 | 6m54s | 18 / 13 |
+| Desktop 11 | 21 / 0 | 6m19s | 8 / 13 |
+| Mobile 1 | 95 / 0 | 2m51s | 82 / 13 |
+
+Each log ends SMOKE PASS after suite completion, zero-page-error and vendor
+checks. `local-stages-before-stage13-pin.json` records all five completed local
+stages (desktop 3/6/10/11 and mobile 1): **274 passing assertions**, including
+**65 repeated scaffolding assertions** and 209 staged checks. Their harness is
+`285a38d2…` at primary 7019f986b and application runtime ae4e0bdd. They are a
+partial cohort, not a complete renderer gate.
+
+Remote desktop stage 13 in run 44403522127 completed **155 passed, two failed**
+in **27m58s**, with zero page errors. Both failures expected the old ordinary
+Full pin after returning from Ghost to Normal; the actual private/public budget
+was the authorized **3,630,000**. The unmodified failed log is
+`renderer/desktop13-ae4e-stale-full-pin-failure.log`. A completed failed run is
+not relabeled green because its defect was subsequently understood.
+
+Commit **5034a724d** repairs the exact expected Full value in the stage 13 smoke
+predicate and its pure policy test, preserving Ghost and lower-tier limits and
+adding stale/inflated/public-stat divergence controls. `renderer/stage13-pin-repair/`
+contains the coordinator proof, nine passing policy/transition tests, the nine
+full-policy negative controls, measured no-write isolation, isolation audit, and
+smoke contract checks. The archive independently verified both immutable smoke
+hashes and proved the complete smoke file differs only by the one Full value and
+its explanatory comment. The only other changed paths are the pure test and
+budget documentation; application, assets, data, generators and publisher are
+unchanged.
+
+The corrected smoke hash is `eeebfe0a…`. These byte checks preserve the precise
+scope of unaffected completed stages; they do not supply a fresh stage 13 result.
+Both corrected desktop and mobile stage 13 remain required. Desktop 13 is active
+under **2,100 seconds plus a 5-second kill grace**; other renderer stages use
+1,200+5, and source preflight remains 595 seconds. The active corrected log is
+not copied into this checkpoint. Neither PR is merged and no latest aggregate
+release pass is claimed.
 
 ## Focused checks and their limits
 

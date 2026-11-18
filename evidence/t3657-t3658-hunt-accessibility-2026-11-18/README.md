@@ -35,9 +35,14 @@ This is only one partition; the other 15 remain required. The standard wrapper
 success banner is broader than the explicitly partitioned command. No browser
 or renderer check ran in this preflight.
 
-Primary head is 7019f986b. Full required gates are still running, and its local
+Primary head is 5034a724d; follow-up remains 6ee1a6890. The primary-only stage 13
+smoke pin correction has no application change and is not yet incorporated here.
+Full required gates are still running, and the primary local
 desktop stage 5 budget retry was incomplete at 595 seconds, with no complete
 stand/tier sweep or final PASS. The classroom evidence records that log separately.
+Primary source 44412406486 is pending and moving/upload 44412406478 queued.
+Its newly completed local stages and failed historical desktop 13 run are saved
+in the classroom folder; the corrected desktop 13 rerun is still active.
 Consult both PRs for current checks before merging; keep the existing rebase
 boundary and discard duplicate first-PR repairs only after they are upstream.
 
