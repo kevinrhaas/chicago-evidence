@@ -4,14 +4,14 @@ Recovery evidence for [chicago PR #2197](https://github.com/kevinrhaas/chicago/p
 branch `steward/t3656-browser-classroom`. This checkpoint preserves completed work;
 **it is not a declaration that the full release gate passed or the PR merged.**
 
-- Implementation: `6c83e8cf9558c0d6f9ffb422f299764837fc4ed2`.
-- Latest code-repository checkpoint: `bb59311bfba32067a6f4ca3c8175deea2f05af38`.
-  Since implementation, checkpoints have changed STATUS, the smoke ledger,
-  measured test-isolation rows, and the tour test. Its committed application
-  runtime remains identical to the implementation commit. New working-tree
-  resource, person-alias, and lazy-CSS repairs are being integrated separately;
-  they do not inherit these base-runtime test results. `recovery-checkpoint.json`
-  records the exact committed paths and current validation status.
+- Original implementation runtime: `6c83e8cf9558c0d6f9ffb422f299764837fc4ed2`.
+- Latest tested code/runtime checkpoint: `45b35a2c7d910ec1e73f5a60489b1b22c4aff278`.
+  This revision adds bounded caption fitting, notebook draft pruning, a
+  person-row alias repair, and on-mount classroom styles. Fresh actual-town
+  photo/notebook/link flows passed at both sizes on these exact bytes. Earlier
+  formal mobile results remain scoped to the original runtime; they are not
+  silently extended to the repairs. `recovery-checkpoint.json` records this
+  distinction and the remaining release checks.
 - Base dev: `169af6421e2b9af10b98970cced2988fe2383b25`.
 - Ticket: `T-3656`, in `kevinrhaas/chicago-tickets`, state `review` with PR 2197.
 - Current progress and remaining actions are tracked on that PR and ticket.
@@ -50,8 +50,13 @@ failure is retained separately and is never relabeled green.
 preserve local and CI partition 8 failures. The dataset validator reports two
 errors: a local person-row alias is interpreted as reading nonexistent
 `placement.id`, and four byte-identical year pages have crossed its 64 KB
-duplication threshold. Root is integrating the person-alias and lazy-CSS repairs;
-no passing replacement partition 8 or full source verdict is recorded here.
+duplication threshold. Commit `45b35a2c7` repairs the alias and moves photo/notebook
+CSS loading to their mounted views. The completed official rerun is preserved
+in `gate/part8-resource-runtime-pass.log`: **174 steps, CHECK PASS, 314.004s**.
+The published era pages are 65,534 bytes each. The earlier failures are retained.
+All eight source partitions now have completed passing receipts across the
+implementation and repair checkpoints. This does not mean all partitions were
+rerun on 45b or that its exact-head GitHub checks are already green.
 
 `renderer/mobile-1.log` through `mobile-12.log`, plus `mobile-14.log` and `mobile-15.log`, are completed, unmodified official
 `tools/smoke_renderer.mjs --published` runs at 390×780, one stage per command.
@@ -60,8 +65,8 @@ All fourteen end with SMOKE PASS (764 total assertions including repeated scaffo
 in 5m11; stage 15 passed 34 assertions in 9m28. `renderer/progress-checkpoint.json`
 preserves the stage-by-stage counts, times, hashes, and incomplete stage 13 status.
 These completed runs cover the frozen
-published mirror identified by `renderer/runtime-manifest.json` at the final
-implementation runtime. The mirror was produced by `tools/publish.sh` and then
+published mirror identified by `renderer/runtime-manifest.json` at the
+original implementation runtime 6c83e8cf9. The mirror was produced by `tools/publish.sh` and then
 copied for testing so concurrent source gates could not replace its files.
 The earlier publication footer named the parent commit; the manifest hashes
 identify the runtime bytes actually tested.
@@ -71,7 +76,8 @@ identify the runtime bytes actually tested.
 zero failed, SMOKE PASS in 8m28**. Together, these local runs and the CI stage
 cover all fifteen mobile stages: 921 assertions including repeated scaffolding
 (726 staged assertions and 195 always-on assertions). This is complete mobile
-renderer coverage, not a declaration that source or desktop release gates passed.
+renderer coverage for 6c83e8cf9, not a declaration that the later 45b runtime or
+complete desktop release gate passed.
 
 `renderer/mobile-6-contention-failure.log` preserves the original stage 6
 failure. A second full-world boot timed out at the unchanged 240-second limit
@@ -92,9 +98,9 @@ job `135090381320`, on metadata head `7969031f0` with unchanged runtime.
 The local-only `progress-checkpoint.json` intentionally retains its original
 incomplete-at-cap record; the later CI success is a separate artifact.
 
-At this checkpoint, source partitions 1–7 were green and partition 8 red.
-Mobile coverage was complete for the committed base runtime,
-and the complete desktop formal smoke still active in
+All source partitions now have passing receipts, with partition 8 rerun on 45b.
+Formal mobile coverage is complete for the original 6c83 runtime. The complete
+desktop formal smoke was last observed active in
 [44372747109](https://github.com/kevinrhaas/chicago/actions/runs/44372747109),
 targeting implementation commit 6c83e8cf9. The duplicate full mobile run
 [44373274865](https://github.com/kevinrhaas/chicago/actions/runs/44373274865)
@@ -107,8 +113,9 @@ The next browser-only work is checkpointed separately in
 [`../t3657-t3658-hunt-accessibility-2026-11-18/`](../t3657-t3658-hunt-accessibility-2026-11-18/).
 Its fixtures and photo audit do not extend this PR's full-town release verdict.
 The follow-up evidence also preserves newly measured resource regressions and
-repairs backed up at `e579424f02287d38639f643b102688ef0846f000`. Primary integration
-and verification of those application changes remain separate work.
+repairs backed up at `e579424f02287d38639f643b102688ef0846f000`. Those caption/draft
+repairs are now integrated into primary 45b; the fresh focused verification
+below is separate from the follow-up fixtures.
 
 ## Focused checks and their limits
 
@@ -180,12 +187,12 @@ report embeds an exact tested-tree hash. These reports support the individual
 flow claims in earlier STATUS prose, not complete release coverage or a
 final-runtime photo-to-notebook flow.
 
-### Completed final photo-to-notebook integration
+### Completed photo-to-notebook integration on the original 6c83 runtime
 
 `harnesses/final-photo-notebook-smoke.mjs` **passed all five integrated checks
 at 390×780 and 1280×800**, each in a separate command with exit 0. No harness,
 application, assertion, or timeout changes were needed during either run. Both
-reports verify the frozen final runtime hashes before launching the browser and
+reports verify the frozen original 6c83 runtime hashes before launching the browser and
 record the exact file hashes they tested. The reports, logs, full PNG exports,
 and selected notebook screenshots are in `focused/final-photo-notebook-390/`
 and `focused/final-photo-notebook-1280/`.
@@ -227,34 +234,73 @@ timeout --signal=TERM --kill-after=5s 595s env \
 
 The desktop command used width `1280` and its own matching output directory/log.
 The unfiltered default runs both sequentially, but separate commands preserve
-the per-command budget. This completed final-runtime integration supersedes the
+the per-command budget. This completed original-runtime integration supersedes the
 older mixed-run evidence for this specific photo-to-notebook-to-share flow; it
 does not replace pending complete source/renderer release gates.
 
-## Prepared verification of the new resource runtime
+## Completed verification of repaired runtime 45b
 
-After the preceding checkpoint, the primary branch pushed
-`45b35a2c7d910ec1e73f5a60489b1b22c4aff278`, integrating caption fitting, notebook
-draft pruning, the person-row alias repair, and on-mount photo/notebook styles.
-**No new-runtime browser or complete release verdict is recorded here yet.**
-The existing frozen build, manifest, and passing photo/notebook reports remain
-pre-repair evidence for 6c83e8cf9.
+After the source partition 8 publisher completed and the coordinator granted a
+quiet browser window, its official mirror was copied to a new immutable test
+root, `/workspace/chicago-classroom-final-published`. The original frozen root,
+manifest and all reports remain unchanged as pre-repair 6c83 evidence.
 
-`harnesses/resource-photo-notebook-smoke.mjs` is prepared and syntax checked,
-but unrun. It retains all five integrated assertions and accepts `QA_MANIFEST`.
-It adds checks that unopened classroom styles are not requested, that each
-view's real stylesheet loads with CSS rules when mounted, and that one link is
-kept per document. `harnesses/resource-manifest.py` is also prepared but unrun;
-it verifies the completed publisher's build stamp and every authored JS/CSS
-file against the immutable Git commit, accounting for the changelog's published
-fleet path, then records generated-page hashes separately.
+`harnesses/resource-manifest.py` verified the publication stamp against
+`45b35a2c7d910ec1e73f5a60489b1b22c4aff278` and matched **428 authored JS/CSS files**
+to that immutable Git commit. `renderer/resource-runtime-manifest.json` records
+**432 published hashes** including separately hashed generated entry pages and
+the changelog re-export. Both new browser reports verified these hashes before
+launching, then recorded them with the exact runtime commit.
 
-`prepared-resource-rerun.json` records the planned new frozen root, manifest,
-and per-viewport output locations. Wait for the complete source gate and the
-coordinator's explicit quiet-window grant before copying the official tree,
-building that manifest, or launching a browser. Do not snapshot a live publisher
-or replace the earlier evidence. New runs use the existing 595-second command
-cap and each viewport separately.
+`harnesses/resource-photo-notebook-smoke.mjs` passed **all five integrated checks
+at 390×780 and 1280×800**, run sequentially, one page/world at a time, each under
+the unchanged 595-second command cap. It retained every preceding assertion:
+actual People selection and four canonical Hogan citations; an actual production
+shutter capture with one normal render tick; actual Save to notebook and note
+editing; copied-link navigation with person/view, photo, note and all ten
+captured Sauganash citations preserved byte-for-byte; bounded images/storage;
+zero page errors/missing local resources and no horizontal overflow. Each
+viewport used exactly two boots. No application or harness repair was needed
+during these runs.
+
+The additional stylesheet assertions passed at both sizes. Photo and notebook
+CSS remained unrequested and absent from the DOM before their views opened;
+mounting each view loaded its actual stylesheet with 13 CSS rules and exactly
+one link per document. Opening Guide retained one photo stylesheet link.
+After shared navigation, the notebook stylesheet loaded once in the new
+document. The reports retain the precise requests and sheet URLs.
+
+| Viewport | Boots (seconds) | PNG dimensions | Local JPEG | Notebook / photo characters |
+| --- | --- | --- | --- | --- |
+| 390×780 | 33.23 / 36.88 | 390×886 | 282×640 | 33,702 / 27,223 |
+| 1280×800 | 37.884 / 37.440 | 1174×840 | 640×458 | 53,722 / 47,243 |
+
+Reports, unmodified logs, full PNG exports, and before/after notebook screenshots
+are under `focused/resource-photo-notebook-390/` and
+`focused/resource-photo-notebook-1280/`. The phone supervisor returned exit 0.
+The desktop's original tool return was truncated during context rollover; its
+completed all-green report, final PASS log and terminated browser/harness were
+verified. A recovered desktop supervisor exit code is not claimed.
+`prepared-resource-rerun.json` now records completion and reproduction paths.
+
+The actual phone command was:
+
+```sh
+timeout --signal=TERM --kill-after=5s 595s env \
+  QA_MANIFEST=/tmp/t3656-resource-renderer-manifest.json \
+  QA_ROOT=/workspace/chicago-classroom-final-published \
+  QA_WIDTHS=390 QA_OUT=/tmp/t3656-resource-photo-notebook-390 \
+  /tmp/chicago-check-runtime/node_modules/node/bin/node \
+  /tmp/t3656-resource-photo-notebook-smoke.mjs \
+  > /tmp/t3656-resource-photo-notebook-390.log 2>&1
+```
+
+The desktop command substituted width `1280` and its matching output paths.
+These are actual-town functional checks. Continuous software-GPU drawing is
+paused between interactions; the shutter uses one real normal frame. This is
+not sustained weak-device performance evidence and does not replace the full
+official renderer or latest-head CI gates. Narration uses the same controlled
+index helper as the official smoke; audio correctness is outside this flow.
 
 ## Reproduction and integrity
 
