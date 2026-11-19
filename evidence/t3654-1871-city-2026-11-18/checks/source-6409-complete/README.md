@@ -1,0 +1,13 @@
+# Complete source assertion coverage, fixed before first browser batch
+
+The proof recorded at 01:08:19 UTC on 19 November 2026 covers all 1,379 declared checks: 1,376 ordinary checks and three prerequisites, with none missing. Every accepted invocation binds source `6409dda1222e1284e111ab0efde1c471f3284d60`, tree `eeaaefef97d3275b048f308c57c3df5514dbb028`, and dev base `c676aa2f4ad6ee8cff0521da6ba8add70d55949c`. Hosted checkout `9aea1d7aa0706146cf93f11ae4983e5f5cc5496d` has that exact tree.
+
+The union accepts completed hosted parts 1, 2, 4, 5 and 6 of 8, and local parts 3, 6, 7, 8, 11, 15 and 16 of 16. Overlap is credited once. All accepted local runs retain original exit-0 process receipts, required readers and base checks. This proves declaration coverage across 12 completed invocations; it is not one whole gate invocation or a successful canonical hosted aggregate. No historical coverage, kernel-recovered receipt, timeout exception, incomplete local 4 or unrun local 12 is credited.
+
+New local 11 passed 89 checks, including 27 self-tests, in 371.794 seconds with original exit 0. Its raw log, timings, wrapper and process receipt are under `local11/`. Local 3 and 11 cover exactly the 176 declarations selected by hosted part 3, with only the three prerequisites overlapping; that equivalence does not mark the hosted job green. The newly completed hosted part 4 has its own raw log, metadata and timing under `../../ci/current-6409/completed-part4/`.
+
+The two original manifests and `archive-dependency-map.json` bind 61 unique source/pre-dispatch dependencies, reusing exact earlier originals where appropriate. The strict verifier SHA `accc8728fb6e35995f52b910c5bad86a1a1b8617dbe74cf7e5409800591a1b07`, 36 controls and recorded independent review are under `strict-helper/`. Incomplete invocations receive no coverage; a real failure marker cannot be hidden by an incomplete status. Fixture results themselves supply no application coverage.
+
+`root-review/` preserves the independent root review and live PR/source metadata. Its earlier `browser_dispatch_authorized:false` is intentional: authorization occurred later and is separately archived under `../../ci/legacy-6409-first-batch/`. The stable reviewed proof, preflight proof and actual dispatch-time proof have distinct capture timestamps and hashes; none is substituted for another.
+
+At this fixed first-batch boundary, the canonical hosted source snapshot has five successful parts and three pending parts. Later hosted results do not alter it. Complete hosted parts plus aggregate and all required browser results remain necessary before merge. The assertion proof alone never authorizes merge.

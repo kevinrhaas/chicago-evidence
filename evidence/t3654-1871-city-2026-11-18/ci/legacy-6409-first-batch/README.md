@@ -1,0 +1,11 @@
+# Authorized first browser batch, fixed dispatch snapshot
+
+Root authorized all 12 planned browser groups at 01:16:03 UTC on 19 November 2026 after independently reviewing complete current source assertion coverage. The exact dispatcher SHA is `13aa2f4492a21e7d8ad849941aef36f0758e0101875d14c62ce6f5cadb871cb8`; source is `6409dda1222e1284e111ab0efde1c471f3284d60` with dev base c676aa and runtime fingerprint `sha256:be6a6a9e5ee3c3e2`.
+
+The completed dispatch process exited 0. The result captured at 01:18:01 UTC records 12 unique run IDs covering stages 1–15 at both mobile and desktop widths, or 30 planned cells. Each run ID was recorded before the next request. All runs were queued at dispatch and supply zero browser passing credit. The original authorization, before/pending/after ledgers, completed log and result are retained verbatim. Read `t3654-6409-first-batch-result.json` for each group's exact URL, stage, viewport, creation time and status.
+
+`authorizing-source-proof.json` is the actual surviving dispatch-time proof, SHA `7764adb680bd03c1cc93ab696964cc56e7e74349f3257c2d01012ab0f3f38e9f`, matching the after-ledger. `authorizing-proof-provenance.json` maps its original active execution path to the immutable copy and archived bytes. It was not reconstructed. Earlier stable auditor and preflight proofs remain separate, with their own timestamps and hashes; all bind the same strict verifier and source binding.
+
+`original-manifest.json` and `archive-dependency-map.json` retain the released seven-file dispatch closure. The later frozen authorizing proof is additionally bound by its provenance sidecar and the global index/checksums. The dispatcher itself is reused from `../../resumption/dispatch-6409-complete/pre-dispatch/`.
+
+This is a dated launch receipt, not current live CI status. The authorizing source snapshot has five of eight hosted parts successful; later source results are deliberately outside this checkpoint. Both supporting workflows were already successful. Complete hosted source plus aggregate and actual required browser coverage remain prerequisites for merge. Reconcile these existing 12 run IDs before any retry; never replay a dispatch command blindly.

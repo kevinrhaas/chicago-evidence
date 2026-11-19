@@ -1,0 +1,110 @@
+Portable-person conventions for a future 1871 directory-backed card
+Read-only inspection, 2026-11-19 UTC; app HEAD 6409dda1222e1284e111ab0efde1c471f3284d60.
+Repository prefix for the relative paths below: /workspace/chicago/chicago/4d/.
+No app/Git/ticket edits, tests, browser runs or asset builds were performed.
+
+Current boundary
+- data/scenes/1871.json: target_date 1871-10-08, lighting.local_time 16:00 in
+  local mean solar time; layers are terrain, water, context only. The afternoon
+  weather/visibility is explicitly reconstructed. This calendar date is Sunday.
+- data/humans/instances/ currently has 1812, 1835 and 1904 directories, no 1871.
+  data/sidecars/1871/ has no people.json or human instance data. 1871 therefore
+  does not currently display people; nothing should be implied to inherit from
+  another scene. renderers/web/js/humans.js:1398-1465 is the current scene gate.
+- renderers/web/js/transport-scenes.js only enables town transport for 1812,
+  1835 and 1904. A new person's occupation cannot itself enable a carriage or
+  horsecar scene. The pre-fire field notebook also leaves Sunday operation open.
+
+Identity/card first, depicted actor second
+- tools/compile_scene.py:1074 (scene_people_manifest), :1147 (compile_people),
+  and :3355 use the scene's own household records and emit its people sidecar.
+  For later scenes the convention is data/residents_<scene>/households/.
+  Source IDs must resolve under data/sources/, and any home/workplace claiming
+  a structure must refer to a structure actually standing in that scene.
+  A context building alone must not be silently treated as a sourced structure
+  identity. A historical street number remains source text until period mapping
+  supports its location; do not modern-geocode 75 Huron.
+- A canonical directory row uses id, name, household/file, grade, occupation,
+  present, lives_at/works_at where supported. Its person record carries sources,
+  note and per-field confidence. Do not invent a household composition, spouse,
+  relationship, age, expanded initials or arrival date just to fill this pattern.
+- renderers/web/js/person-card.js:139 (personModel) reads the record's name,
+  occupation and graded facts, then its story/note and sources. It does not
+  authorize inventing a biography. card_facts with label/value/grade can expose
+  the exact 1871 printed name, occupation, workplace and historical residence;
+  notes/source links should retain the directory edition and page/scan locator.
+  The generic census image-link helper is tailored to census fields, so do not
+  pretend a directory entry is a census observation just to obtain that UI.
+- Parent's inspected candidate, "Alexander J. C. carpenter, McVicker's Theatre,
+  r. 75 Huron", supports that listed name and occupational/address association.
+  This conventions pass did not reread the primary image and claims no extra
+  biographical facts. The named actor would still not be a witnessed appearance
+  at the theatre on October 8 at 16:00.
+
+Portable instance and appearance
+- Authority: docs/HUMAN-ASSET-CONTRACT.md sections 10-11 and
+  data/humans/human_instance.schema.json. The actor lives at
+  data/humans/instances/1871/hi_<person_id>_1871.json, indexed by that directory's
+  index.json, after the canonical person exists. No second person directory is
+  created by an instance. Named interaction opens resident_card, not role_card.
+- Fields separate appearance.asset_id/variants; placement.local_e/local_n in
+  metres, heading_deg and terrain/walk_surface anchor; animation.clip/loop/phase;
+  behaviour; interaction.selectable/radius_m/opens; lod; display; review_required;
+  and provenance.grade/basis/sources/liberty/seed/replaceable_by.
+- The person's existence/occupation and the depiction have separate grades.
+  Body, apparent age, face, complexion, hair, height, clothing cut/color/wear,
+  tools, stance, gait and exact position are reconstructed unless independently
+  supported. A cleared generic body is an engineering ingredient, not a likeness.
+  Record the bounded choices under liberties; no invented dialogue presented as
+  evidence. Each asset needs license provenance in assets/LICENSES.md; source
+  check_required is insufficient for deriving an asset.
+- Useful existing example: data/humans/instances/1835/hi_peck_philip_1835.json
+  separates an attested merchant from a reconstructed body, clothes, time and
+  storefront placement. Reuse the contract, not Peck's identity or 1835 wardrobe.
+- The shared portable-human pipeline uses canonical masters, c4d_humanoid_v1,
+  glTF/JSON provenance and LOD exports. The T1789 library README explicitly calls
+  its modular male workwear a source checkpoint, not photographic acceptance.
+  Existing source tests or old model pictures cannot qualify a new 1871 outfit.
+
+Sunday 16:00 activity/route boundary
+- renderers/web/js/human-days.js implements behaviour.presence and
+  behaviour.day[{dates?, chance?, note?, spans}]. Dates support ISO from/to,
+  months and years; this schema has no weekday field. A date-bounded October 8
+  variant can state its Sunday assumption explicitly instead of inheriting a
+  generic weekday routine. Spans cover 0-24 local solar hours.
+- Each span has from/to/indoors; an indoor span names where; an outdoor span
+  names at {local_e,local_n,heading_deg}. activity may be stand/talk/work/walk.
+  A walk uses to_point and optional via/once, work can use spots, and doing is
+  the short action phrase exposed on the card/harness. These are staged choices,
+  not an archival itinerary. Doors and an indoor Ask interaction also require
+  a real dated building/door record, not an invented entrance.
+- Do not infer that a directory-listed theatre carpenter was working that Sunday,
+  at home, carrying a saw, supervising staff, attending a performance, or taking
+  a specific street route. Any such choice must be separately reconstructed.
+  The directory does not identify his working hours or exact October presence.
+- Important runtime behavior: human-days.js:37-72 can turn a lone stand into
+  small chore motions, gather nearby people, and add breaks. A minimal pose is
+  therefore not necessarily inert. Review the actual activity produced before
+  describing it as a limited reconstruction; avoid weekday-store templates.
+- route.js uses dated streets/walks, footprints, water and bridge decks; it
+  explicitly rejects importing a modern grid into earlier scenes. Walking
+  prefers walks, with collision-safe approaches. human-days.js routes between
+  spans, while handwritten via points still represent chosen routes. Validate
+  future positions against the 1871 ground and crossings, not today's address
+  numbering. No route or coordinates are proposed in this handoff.
+
+Later/earlier asset cautions
+- data/humans/recipes/worker_1835.json is bounded to 1833-1836 and explicitly
+  calls the garment cuts, colors, dimensions and body choices reconstructed.
+  Its portable construction may inform new work, but its evidence does not
+  establish 1871 dress or a named carpenter's personal wardrobe.
+- data/humans/recipes/working_driver_1904.json refers to Hans Johnson and the
+  studebaker_1893_brougham_reconstruction_01 vehicle. Neither that identity,
+  wardrobe qualification, seated coach pose nor vehicle belongs in 1871 by
+  inheritance. Do not copy 1904 portraits/skins, coats/livery or transport assets.
+- Some prose in docs/HUMAN-ASSET-CONTRACT.md section 11 still says 1812/1904
+  lack people. That sentence is stale: current directories and runtime code
+  support those years. The current 1871 absence above was checked directly.
+
+This file is an original implementation-reading handoff, contains no external
+image bytes, and may accompany the parent's explicit public packet whitelist.
