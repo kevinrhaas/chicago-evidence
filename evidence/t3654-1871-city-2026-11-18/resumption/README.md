@@ -1,5 +1,7 @@
 # Resuming T-3654 validation
 
+**Final session state:** research PR2206 is merged into dev; baseline PR2198 remains draft/unmerged. Local monitors stopped and the own lease was released. GitHub checks were left running. Read `session-final/README.md`, `822-session-final/README.md` and the final browser resume document first; they supersede earlier active-watcher instructions. No background monitoring is promised.
+
 Latest committed checkpoint: `822f0a9ae94b52c893a00aaf7baf698a3cd1a6b9`, base `69d9659ea09bcb8f87f9d9be9c475c657b6f5b8f`, runtime fingerprint `sha256:f681e5412b836a8d`. Read `CURRENT-STATUS.json` first. The count-only owner repair, focused checks and fresh publication pass; the old 933 derived-count failure remains recorded. The six fresh browser groups already have IDs and zero verified cells at the fixed capture; the new source matrix has eight queued jobs and zero verified parts. Reconcile existing IDs before any retry. Full current source/supporting/browser acceptance remains pending.
 
 The latest evidence is under `../repairs/liberties-count-933/`, `../integration/release-fold-69d/`, `../publication/822f0a9a/`, `../ci/current-822f0a9a/initial/` and `../ci/legacy-822f0a9a-six-groups/`. Old 933 source/browser retirements remain separately documented, including the real source failure and narrow administrative aggregate cancellation. The folded changelog comparison used c23 as its recorded origin/dev reference; it is not a full 69d gate. The following paragraphs retain earlier dated recovery history.
