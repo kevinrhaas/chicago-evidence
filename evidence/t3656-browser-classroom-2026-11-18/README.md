@@ -5,7 +5,7 @@ branch `steward/t3656-browser-classroom`. This checkpoint preserves completed wo
 **it is not a declaration that the full release gate passed or the PR merged.**
 
 - Original implementation runtime: `6c83e8cf9558c0d6f9ffb422f299764837fc4ed2`.
-- Latest remote combined checkpoint: `edc7099032cd6d55d7a7e7f0d66d313b15960f10` (all three tickets in PR2197, folded DEVd47 integrated; final gates pending).
+- Latest remote combined checkpoint: `af466d1638fda72a468ecd3ac22456844b870c1b` (all three tickets in PR2197, folded upstream and smoke repairs integrated; final gates pending).
 - The completed local desktop 13 retry passed on frozen code `5034a724d993abe0876a4db7bbfff02d2bb4da0a` / published build `ae4e0bdd7`. It does not test b1's changed upstream inputs.
 - Latest completed focused photo/notebook runtime: `45b35a2c7d910ec1e73f5a60489b1b22c4aff278`.
   This revision adds bounded caption fitting, notebook draft pruning, a
@@ -17,6 +17,35 @@ branch `steward/t3656-browser-classroom`. This checkpoint preserves completed wo
 - Base dev: `169af6421e2b9af10b98970cced2988fe2383b25`.
 - Ticket: `T-3656`, in `kevinrhaas/chicago-tickets`, state `review` with PR 2197.
 - Current progress and remaining actions are tracked on that PR and ticket.
+
+## Current folded af, frozen 347 and focused Space checkpoint
+
+Current release head **af466d1638fda72a468ecd3ac22456844b870c1b** differs from347 only by the upstream T3562
+entry removal and changelog fold. Both queued347 remote13–15 runs were cancelled
+with zero steps and replaced by af dispatches; all current release gates remain
+pending. The local mobile publication stays frozen347.
+
+The pushed combined head is **3472ec872d00e33761490b0138b23da1c63daee2**, tree **33239df61859c000e76ae6a5bd8ec91124ea8352**.
+[combined-347-c23-20261119/README.md](combined-347-c23-20261119/README.md) binds exact integration, focused command exits,
+completed publication and dispatch-only receipts. Current release gates remain
+pending; active mobile1–12 output is excluded. The independent desktop1–12
+scope proof retains original DDC/b501 attribution and explicit data limits.
+
+The separate [Space probe archive](../t3657-t3658-hunt-accessibility-2026-11-18/stage14-space-focus-b327/README.md) records phone11/11
+and desktop retry11/11 on edc runtime with b327 smoke. The first desktop remains
+failed/incomplete, exit1. These are actual **stage14** slice checks, not a full
+347 gate; original misleading stage13 filenames/scope strings are preserved
+and corrected by the archive index. The upstream texture review and UNRUN
+diagnostic claim no completed stage15 repair validation. All final source,
+moving/upload and fresh13–15 both-width gates remain required. Earlier sections
+below retain their original checkpoint context.
+
+The old DDC full mobile run is now terminal **cancelled/incomplete**, with an
+actual stage14 Space failure and no final suite/page/vendor/PASS verdict.
+Its raw log and terminal cancellation receipt are preserved in the follow-up
+`current-dev-keyboard/renderer/mobile1-15-cancelled/` folder; zero stages receive
+coverage. Superseded347 source CI was automatically cancelled after af was
+pushed; that cancellation also provides no green gate.
 
 ## Combined single-PR delivery on folded DEV d47
 

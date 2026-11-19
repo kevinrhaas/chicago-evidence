@@ -9,9 +9,9 @@ No production promotion, new server, account service, or paid API is involved.
 
 [Next-work preparation](next-work-preparation/README.md) preserves the read-only priority #8 recommendation and historical traps. It claims no new ticket, implementation or change to the current PRs.
 
-- Latest combined delivery checkpoint: `edc7099032cd6d55d7a7e7f0d66d313b15960f10`.
-- Latest completed focused native runtime: `5674d33df9f39048e5c3ced87c33e3855afdf3ee`.
-- Integrated current dev: `d47d9550bf914d33860a56b99fd11ad2f6f6018b`; earlier evidence retains its original dev/input provenance.
+- Latest combined delivery checkpoint: `af466d1638fda72a468ecd3ac22456844b870c1b`.
+- Latest completed integrated photo/hunt native runtime: `5674d33df9f39048e5c3ced87c33e3855afdf3ee`.
+- Integrated current dev: `69d9659ea09bcb8f87f9d9be9c475c657b6f5b8f`; earlier evidence retains its original dev/input provenance.
 - Original combined fixture commit: `f1f2229f0879c4f1771b07fd9409f994cfc6a986`.
 - Current delivery branch: `steward/t3656-browser-classroom`; the older follow-up branch remains historical.
 - Base: `03ecd9678e15988abe44c50e27c2bd9fec569530` from the classroom branch.
@@ -25,6 +25,39 @@ No production promotion, new server, account service, or paid API is involved.
   `integration-checkpoint.json` records current branch/dev heads, verified base
   ancestry, and completed focused combined native-town work without extending
   earlier fixture results to another runtime.
+
+## Current folded af, 347 scope review and focused Space proof
+
+Current release head **af466d1638fda72a468ecd3ac22456844b870c1b** adds only the upstream entry removal and
+changelog fold to347. Frozen347 mobile1–12 remains active; fresh af13–15 and
+source/moving/upload remain pending. Queued34713–15 runs were cancelled before
+any steps and provide no coverage.
+
+The combined committed head is **3472ec872d00e33761490b0138b23da1c63daee2**, with DEVc23 integrated.
+[desktop-early-stage-scope-347/README.md](desktop-early-stage-scope-347/README.md) retains original-attribution DDC desktop1–4/6–12
+and bounded b501 stage5 evidence through exact dependency checks. This review
+runs no tests and does not extend those results to changed1904/source/global
+inputs outside its stated scope.
+
+[stage14-space-focus-b327/README.md](stage14-space-focus-b327/README.md) preserves phone11/11 and desktop retry11/11 on
+frozen edc runtime with b327 smoke, plus the first desktop failure, cleanup and
+upstream2204 texture review. **The Space block is official stage14**, despite
+historical stage13 filenames in raw reports. It is a bounded slice; later
+Go-to typing/full free-fly and the official release group remain untested by
+this probe. The prepared texture diagnostic is UNRUN.
+
+Current347 publication and focused commands completed; all final release gates
+remain pending. Mobile1–12 is active and no partial output was archived. Fresh
+13–15 at both widths and combined source/moving/upload remain required. The
+[primary current checkpoint](../t3656-browser-classroom-2026-11-18/combined-347-c23-20261119/README.md) holds exact committed
+provenance and dated recovery. Older sections keep their original attribution.
+
+The old DDC full mobile run is now terminal **cancelled/incomplete**, with an
+actual stage14 Space failure and no final suite/page/vendor/PASS verdict.
+Its raw log and terminal cancellation receipt are preserved in the follow-up
+`current-dev-keyboard/renderer/mobile1-15-cancelled/` folder; zero stages receive
+coverage. Superseded347 source CI was automatically cancelled after af was
+pushed; that cancellation also provides no green gate.
 
 ## Combined delivery and preserved failing receipts
 
