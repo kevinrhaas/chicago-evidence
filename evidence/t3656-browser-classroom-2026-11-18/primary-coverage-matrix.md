@@ -1,5 +1,9 @@
 # Primary renderer coverage at b1
 
+**Historical baseline:** delivery is now combined edc/d47 in PR2197. This matrix
+retains b1/c676 attribution; see the [combined checkpoint](combined-edc-d47-20261119/verification.json)
+for current pending gates and separately preserved failed ddc results.
+
 Target baseline: `b1f507400cb743a3985cb1d50de1ebd085bd4f63`, with dev `c676aa2f` integrated.
 
 **DEV has since advanced to 21f609244. This matrix remains b1/c676 evidence.** [Incoming-input review](dev-21f-20261119/coverage-review.md) requires actual folded-DEV integration, current source checks, and fresh stages 13–15 at both sizes before release.
@@ -46,6 +50,6 @@ Mobile 2’s original shell-exit receipt was lost across reconnection; its final
 
 The retained review does not validate revised source-detail edges, changed hidden monument prose or the full revised 50-stop route. Stage 3 asserts unchanged 1835 subsets/counts/layout; stage 12 consumes an identical handout projection across 96 rows. The newly archived primary5034 stage5 receipt exercises the unchanged 1835 geometry and policy; the older b501 QA geometry evidence remains separate.
 
-**Release remains pending:** all eight partitions of source run 44422645793 attempt 2 now passed1394 steps on the b1/c676 baseline, but its separate aggregate job was still queued at02:00UTC. The [latest baseline verification](dev-21f-20261119/verification.json) preserves that distinction. Cancelled attempt1 remains historical. Moving/upload run44422645797 passed on actual PR mergecda72c805, including32 upload checks. These results do not validate new DEV21f: actual folded-DEV integration, current source checks and fresh13–15 at both widths remain required. Neither PR is declared merged.
+**Release remains pending for combined edc/d47.** Historical b1/c676 source attempt2 completed all eight native partitions (1394 steps) and its aggregate job passed, but the overall workflow was cancelled by the edc update. The [final baseline receipt](ci/source-44422645793/attempt2-final-baseline-receipt.json) preserves those distinct outcomes. Baseline moving/upload also passed; none of these receipts establishes current combined source/moving or fresh13–15 coverage. No PR merge is claimed.
 
 Earlier failed and capped attempts remain in the archive and are excluded from successful coverage. See [README](README.md), [final phone verification](renderer/b1-mobile-complete/verification.json), and [fresh desktop verification](renderer/b1-desktop-13-15/verification.json).

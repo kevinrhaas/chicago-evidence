@@ -5,7 +5,7 @@ branch `steward/t3656-browser-classroom`. This checkpoint preserves completed wo
 **it is not a declaration that the full release gate passed or the PR merged.**
 
 - Original implementation runtime: `6c83e8cf9558c0d6f9ffb422f299764837fc4ed2`.
-- Latest remote primary checkpoint: `b1f507400cb743a3985cb1d50de1ebd085bd4f63` (current dev integrated into the feature branch).
+- Latest remote combined checkpoint: `edc7099032cd6d55d7a7e7f0d66d313b15960f10` (all three tickets in PR2197, folded DEVd47 integrated; final gates pending).
 - The completed local desktop 13 retry passed on frozen code `5034a724d993abe0876a4db7bbfff02d2bb4da0a` / published build `ae4e0bdd7`. It does not test b1's changed upstream inputs.
 - Latest completed focused photo/notebook runtime: `45b35a2c7d910ec1e73f5a60489b1b22c4aff278`.
   This revision adds bounded caption fitting, notebook draft pruning, a
@@ -18,7 +18,49 @@ branch `steward/t3656-browser-classroom`. This checkpoint preserves completed wo
 - Ticket: `T-3656`, in `kevinrhaas/chicago-tickets`, state `review` with PR 2197.
 - Current progress and remaining actions are tracked on that PR and ticket.
 
-## DEV advance to 21f: current validation is a prior-base checkpoint
+## Combined single-PR delivery on folded DEV d47
+
+All three tickets now deliver together through **PR2197**, branch
+`steward/t3656-browser-classroom`, at **edc7099032cd6d55d7a7e7f0d66d313b15960f10**,
+tree **b9c9b74ecb9f98869ff6a46a4d56a1993db25dd8**, parents **ddc786069** and
+folded DEV **d47d9550**. The independent Git checks in
+`combined-edc-d47-20261119/verification.json` bind the preparation record to
+this pushed commit: incoming DEV paths and shipped changelog are preserved,
+the renderer differs from ddc only in the folded changelog, the smoke harness
+is identical, and the focused XR checker is included exactly. One pending
+`T-3656.json` entry describes the combined delivery; `T-3657.json` is removed.
+
+Ticket checkpoint **5206e4c9e38126fadb4db9fc872712c829615af7** keeps all three
+in review, points each to2197, and records their shared group. The former
+parent-first/rebase plan is superseded. PR2199 is superseded; its closure is
+owned by the coordinator and is not claimed by this archive. No PR has merged.
+
+The bundle preserves official measurement of the incoming unique-ID validator
+and the combined isolation audit (1068 measured tools,1337 keyed steps).
+The follow-up evidence folder contains the test-only fd27937a XR repair:
+20 focused checks, keyboard regression and measured zero writes. Its empty
+quiet audit log has an explicit exit0 receipt; silence alone is not counted.
+The active part7 repair rerun was excluded.
+
+The completed frozen ddc source sequence is preserved as **parts1–6 PASS,
+part7 FAIL1/174, part8/preflight UNRUN**. The original failure was a stale XR
+capture-shape assertion; the focused repair is not a full combined gate.
+Its original part1 shell-exit receipt remains lost. Ddc desktop6–12 completed
+**111/0 in82m18s**,98 staged checks plus13 always-on checks once. Ddc desktop
+13–15 completed **308/2 in50m39s**: Space did not inspect, and transfer texture
+blob errors failed the zero-page-error assertion. That failed run remains red;
+neither consolidation nor focused source tests silently resolve it.
+
+The b1/c676 source baseline now has **all8 native partitions and the aggregate
+job successful**,1394 steps. Its overall workflow conclusion is **CANCELLED**
+after the edc update, so it is not labeled overall workflow success. The final
+API receipt and aggregate log are under `ci/source-44422645793/`. All b1/ddc
+baseline results retain their original inputs. Current combined source run
+**44442868750**, preflight/moving/upload and fresh official13–15 at both widths
+remain required. This checkpoint is not merge approval. Earlier sections are
+historical candidate and delivery plans.
+
+## Earlier DEV advance to 21f checkpoint
 
 DEV advanced from c676 to **21f609244a4a54135e0d3657bf0d1fff44ee30c7** with
 T-3635's 2027 Prairie integration. **Primary b1 is not merge-ready against this

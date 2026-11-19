@@ -1,0 +1,106 @@
+{
+  "head": "fd27937a007937189b573263eead231f2cca8c96",
+  "tree": "286c9502e056dc231fdf8e2851e303dfc3573724",
+  "parent": "ddc78606998ea8aee589941c6ab6cae76a80440a",
+  "branch": "steward/t3658-xr-capture-check",
+  "backup_remote": "refs/heads/steward/t3658-xr-capture-check",
+  "pushed": true,
+  "base": "c676aa2f4ad6ee8cff0521da6ba8add70d55949c",
+  "source_gate_cohort": "Parts1\u20136 passed on parent ddc; stale XR assertion failed part7 there. New test-only head will rerun full7 and preflight8. Not yet a final combined-head gate.",
+  "changed_paths": [
+    "chicago/4d/tools/check_xr_mode.mjs"
+  ],
+  "runtime_data_assets_unchanged": true,
+  "clean": true,
+  "focused_validation": {
+    "xr_checks": 20,
+    "keyboard": "PASS",
+    "syntax": "PASS",
+    "official_isolation": "No in-tree writes; existing row unchanged",
+    "audit": "PASS",
+    "audit_self_test": "PASS",
+    "measurement_self_test": "PASS"
+  },
+  "review": "budget_context independent read-only review: no blockers; native headset/browser behavior unclaimed",
+  "logs": {
+    "isolation-audit-self-test.log": {
+      "path": "/tmp/t3658-xr-capture-repair/isolation-audit-self-test.log",
+      "sha256": "2f2f68149a1bd2a71e5a87950168b474814b3db96277a777734425b9a9047951"
+    },
+    "isolation-audit.log": {
+      "path": "/tmp/t3658-xr-capture-repair/isolation-audit.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "isolation-measure-self-test.log": {
+      "path": "/tmp/t3658-xr-capture-repair/isolation-measure-self-test.log",
+      "sha256": "e0893ec5c279996aaa8cafcfea6156ac40b3fbc4732bea67b7f19a48daf95e7c"
+    },
+    "isolation-measure.log": {
+      "path": "/tmp/t3658-xr-capture-repair/isolation-measure.log",
+      "sha256": "3e4d138f5103168fb0b5a4869e24222b59a8a3051e680f0f80738983dc3657f0"
+    },
+    "keyboard-focused.log": {
+      "path": "/tmp/t3658-xr-capture-repair/keyboard-focused.log",
+      "sha256": "df49a181189e1653c9de088d96973c471d095b603c86ba1b69f1ae99b9789687"
+    },
+    "xr-focused.log": {
+      "path": "/tmp/t3658-xr-capture-repair/xr-focused.log",
+      "sha256": "de1abeedc882dddaed6fc48b420a299a8cfe984ea8a56d16c734b170def693e2"
+    }
+  },
+  "created_utc": "2026-11-19T02:12:16.247991+00:00",
+  "parts": [
+    {
+      "part": "7/8",
+      "started_utc": "2026-11-19T02:12:52.982853+00:00",
+      "elapsed_seconds": 330.648,
+      "exit_code": 0,
+      "verdict": "CHECK PASS \u2014 part 7/8: 174 steps, none red.",
+      "log": "/tmp/t3658-xr-capture-repair/source-part7of8.log",
+      "sha256": "a33124b53fff8e977e9a016487c322a7db103595d98b95ac601717539ff6d85f",
+      "head_after": "fd27937a007937189b573263eead231f2cca8c96",
+      "base_after": "c676aa2f4ad6ee8cff0521da6ba8add70d55949c",
+      "tracked_status_after": ""
+    }
+  ],
+  "patch_sha256": "1bedc8f59fcb72900cffe648663f74184f502e9a59b7016aa8559413803853c1",
+  "focused_commands": [
+    {
+      "command": "node tools/check_xr_mode.mjs",
+      "exit_code": 0,
+      "log": "xr-focused.log",
+      "checks": 20
+    },
+    {
+      "command": "node tools/test_keyboard_ownership.mjs",
+      "exit_code": 0,
+      "log": "keyboard-focused.log"
+    },
+    {
+      "command": "node tools/measure_step_isolation.mjs --tool tools/check_xr_mode.mjs",
+      "exit_code": 0,
+      "log": "isolation-measure.log"
+    },
+    {
+      "command": "node tools/audit_step_isolation.mjs --check --quiet",
+      "exit_code": 0,
+      "log": "isolation-audit.log",
+      "note": "Empty stdout/stderr is expected for successful --quiet. Shell recorded audit=0."
+    },
+    {
+      "command": "node tools/audit_step_isolation.mjs --self-test",
+      "exit_code": 0,
+      "log": "isolation-audit-self-test.log"
+    },
+    {
+      "command": "node tools/measure_step_isolation.mjs --self-test",
+      "exit_code": 0,
+      "log": "isolation-measure-self-test.log"
+    },
+    {
+      "command": "node --check tools/check_xr_mode.mjs",
+      "exit_code": 0,
+      "note": "Syntax check emitted no stdout/stderr. Shell recorded syntax=0."
+    }
+  ]
+}

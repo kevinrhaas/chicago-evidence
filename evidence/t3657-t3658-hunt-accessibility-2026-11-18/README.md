@@ -1,24 +1,23 @@
 # T-3657 / T-3658 — photo hunt and accessibility checkpoint
 
-Recovery evidence for [draft PR 2199](https://github.com/kevinrhaas/chicago/pull/2199),
-targeting dev and dependent on classroom tools PR 2197.
-**Focused native-town checks now pass at both sizes, alongside the earlier logic,
-fixture, and photo-audit evidence. Full source and published renderer release
-gates remain separate and are not declared green here.**
+Recovery evidence for T-3657/T-3658, now included with T-3656 in
+[combined PR2197](https://github.com/kevinrhaas/chicago/pull/2197). Former PR2199 is superseded.
+**Earlier focused native-town checks passed at both sizes on their recorded
+commits, alongside logic, fixture and photo-audit evidence. These results are
+not relabeled as combined edc/d47 tests; final release gates remain pending.**
 No production promotion, new server, account service, or paid API is involved.
 
 [Next-work preparation](next-work-preparation/README.md) preserves the read-only priority #8 recommendation and historical traps. It claims no new ticket, implementation or change to the current PRs.
 
-- Latest combined checkpoint: `6ee1a689077839dd9923edbc80269dd2cbaccfb6`.
+- Latest combined delivery checkpoint: `edc7099032cd6d55d7a7e7f0d66d313b15960f10`.
 - Latest completed focused native runtime: `5674d33df9f39048e5c3ced87c33e3855afdf3ee`.
-- Current dev: `c676aa2f4ad6ee8cff0521da6ba8add70d55949c`; old-dev evidence retains its 169404 provenance.
+- Integrated current dev: `d47d9550bf914d33860a56b99fd11ad2f6f6018b`; earlier evidence retains its original dev/input provenance.
 - Original combined fixture commit: `f1f2229f0879c4f1771b07fd9409f994cfc6a986`.
-- Branch: `steward/t3657-t3658-hunt-accessibility`.
+- Current delivery branch: `steward/t3656-browser-classroom`; the older follow-up branch remains historical.
 - Base: `03ecd9678e15988abe44c50e27c2bd9fec569530` from the classroom branch.
-- Draft PR 2199 depends on PR 2197; neither is merged. After PR 2197 merges, use
-  the normalized follow-up plan plus the keyboard repair below against the actual dev squash/fold.
-  The original base is an audit boundary, not permission to merge raw old history.
-  Preserve upstream changelog verbatim and omit duplicate parent repairs.
+- All three tickets remain review under PR2197 with one pending T-3656 entry.
+  The separate parent-first plan is superseded; previous recovery sections retain
+  original provenance and historical instructions only. No merge is claimed.
 - `combined/manifest.json` identifies the base, combined commit, scope, and exact
   file hashes. Every listed hash was independently checked against that immutable
   Git commit while creating this archive. `repair-checkpoint.json` identifies
@@ -27,7 +26,30 @@ No production promotion, new server, account service, or paid API is involved.
   ancestry, and completed focused combined native-town work without extending
   earlier fixture results to another runtime.
 
-## DEV advance: final integration and refreshed coverage required
+## Combined delivery and preserved failing receipts
+
+`combined-edc-delivery.json` identifies pushed edc709 on PR2197 and folded DEVd47.
+The primary folder's combined provenance proves exact incoming paths, unchanged
+ddc runtime except folded changelog, identical smoke harness, and inclusion of
+the focused XR checker. All three tickets now link to2197 and share group
+metadata; there is no remaining parent-first delivery step. PR2199 is superseded.
+
+`source-ddc-c676-completed-attempt/` preserves completed parts1–6, the original
+part7 XR assertion failure, and the unrun part8/preflight status. Part1's direct
+exit receipt was lost; its final PASS survives. `xr-capture-repair-fd27937a/`
+preserves20 focused checks and explicit command exits; the quiet audit's empty
+log is expected and backed by exit0. This is a test-only repair, not native
+headset validation or a full source gate. Active repair-part7 output is excluded.
+
+Historical ddc desktop6–12 passed111/0 (98 staged+13 always-on once),82m18s.
+Desktop13–15 failed308/2 in50m39s: Space-inspect and transfer texture-blob/page-error
+assertions. Both full logs and exact-environment receipts are under
+`current-dev-keyboard/renderer/`; the failed group is not green. Final combined
+source/preflight/moving/upload and fresh13–15 on desktop/mobile remain required.
+Previous b1 source native parts+aggregate succeeded, but its overall workflow
+was cancelled by edc sync. No combined release or PR merge is claimed.
+
+## Earlier DEV advance review
 
 DEV21f609244 changes the 1904 villa and related world/global-source inputs plus
 a validator. Frozen ddc still contains c676 inputs; its ongoing local source
