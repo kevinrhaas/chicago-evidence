@@ -27,7 +27,21 @@ No production promotion, new server, account service, or paid API is involved.
   ancestry, and completed focused combined native-town work without extending
   earlier fixture results to another runtime.
 
-## Completed ddc desktop 1–4 range
+## DEV advance: final integration and refreshed coverage required
+
+DEV21f609244 changes the 1904 villa and related world/global-source inputs plus
+a validator. Frozen ddc still contains c676 inputs; its ongoing local source
+gate was not moved or modified. Completed results remain on their original
+candidate. The [incoming-input review](../t3656-browser-classroom-2026-11-18/dev-21f-20261119/coverage-review.md)
+and independently verified25-path provenance apply to both frozen candidates,
+subject to verifying actual integration. Neither is merge-ready against newDEV.
+Integrate actual foldedDEV, preserve shipped changelog, finish current source
+checks and run unchanged official13–15 at both desktop and mobile widths on the
+final follow-up runtime. Prior1–12 and focused fixture results retain only their
+reviewed input scope. This does not relabel earlier1904-town fixtures or certify
+new geometry, full route content or future merged-tree behavior.
+
+## Earlier completed ddc desktop 1–4 range
 
 Published renderer run **44426888539** completed on exact
 **ddc78606998ea8aee589941c6ab6cae76a80440a** with **320 passed,0 failed in38m29s**

@@ -1,6 +1,8 @@
 # Primary renderer coverage at b1
 
-Target: `b1f507400cb743a3985cb1d50de1ebd085bd4f63`, with current dev `c676aa2f` integrated.
+Target baseline: `b1f507400cb743a3985cb1d50de1ebd085bd4f63`, with dev `c676aa2f` integrated.
+
+**DEV has since advanced to 21f609244. This matrix remains b1/c676 evidence.** [Incoming-input review](dev-21f-20261119/coverage-review.md) requires actual folded-DEV integration, current source checks, and fresh stages 13–15 at both sizes before release.
 Desktop 1–12 and mobile 1 retain their original results under the [scoped DEV-input review](../t3657-t3658-hunt-accessibility-2026-11-18/integration-c676/t3657-t3658-rebase-c676-plan.md). Desktop 13–15 and mobile 2–15 have fresh exact b1 published results. This is not an all-fresh thirty-stage run.
 
 The [machine-readable matrix](primary-coverage-matrix.json) contains every full SHA-256, source commit, scope, count and elapsed time. Each abbreviated hash below links to that full record. Raw logs retain original identities.
@@ -44,6 +46,6 @@ Mobile 2’s original shell-exit receipt was lost across reconnection; its final
 
 The retained review does not validate revised source-detail edges, changed hidden monument prose or the full revised 50-stop route. Stage 3 asserts unchanged 1835 subsets/counts/layout; stage 12 consumes an identical handout projection across 96 rows. The newly archived primary5034 stage5 receipt exercises the unchanged 1835 geometry and policy; the older b501 QA geometry evidence remains separate.
 
-**Release remains pending:** source run 44422645793 attempt 2 has only partition 4 PASS174 so far. All eight parts and the aggregate are required; partition 2 from cancelled attempt 1 is historical and cannot substitute for attempt 2. [Attempt receipts](ci/source-44422645793/summary.json) preserve the distinction. Moving/upload run44422645797 passed on actual PR mergecda72c805, including32 upload checks. Neither PR is declared merged.
+**Release remains pending:** all eight partitions of source run 44422645793 attempt 2 now passed1394 steps on the b1/c676 baseline, but its separate aggregate job was still queued at02:00UTC. The [latest baseline verification](dev-21f-20261119/verification.json) preserves that distinction. Cancelled attempt1 remains historical. Moving/upload run44422645797 passed on actual PR mergecda72c805, including32 upload checks. These results do not validate new DEV21f: actual folded-DEV integration, current source checks and fresh13–15 at both widths remain required. Neither PR is declared merged.
 
 Earlier failed and capped attempts remain in the archive and are excluded from successful coverage. See [README](README.md), [final phone verification](renderer/b1-mobile-complete/verification.json), and [fresh desktop verification](renderer/b1-desktop-13-15/verification.json).

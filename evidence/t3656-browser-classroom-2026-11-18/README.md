@@ -18,7 +18,42 @@ branch `steward/t3656-browser-classroom`. This checkpoint preserves completed wo
 - Ticket: `T-3656`, in `kevinrhaas/chicago-tickets`, state `review` with PR 2197.
 - Current progress and remaining actions are tracked on that PR and ticket.
 
-## Completed b1 phone cohort and source rerun attempts
+## DEV advance to 21f: current validation is a prior-base checkpoint
+
+DEV advanced from c676 to **21f609244a4a54135e0d3657bf0d1fff44ee30c7** with
+T-3635's 2027 Prairie integration. **Primary b1 is not merge-ready against this
+new DEV.** Its complete scoped renderer coverage, moving/upload results and
+source receipts remain attributable to frozen b1/c676. The follow-up ddc source
+gate remains frozen on c676 in its isolated worktree and was not disturbed.
+
+`dev-21f-20261119/` preserves the dated API receipt, input provenance and read-only
+coverage review. All 25 incoming paths were independently checked as the old
+blob/absence in both b1 and ddc; this verifies their current inputs, not a
+merged candidate. The incoming renderer subtree is unchanged, but the 1904
+villa model and yard/door/inside inputs, global liberty collection, source
+counts/detail edges, jaunt opening and unique-ID validator change. Those
+inputs cannot inherit a whole-scene pass by source-code similarity alone.
+
+After incorporating the **actual latest folded DEV**, complete the current
+source/metadata gates and rerun unchanged official **13–15 on both desktop and
+mobile** for every final runtime being released. The review supports scoped
+retention of 1–12, with explicit hidden-prose, count, source-detail and route
+limits; it does not certify a future merge or weaken any assertion. The pending
+release fragment at 21f is not yet the final folded changelog.
+
+The saved source attempt2 baseline now has parts **1, 2, 3, 4, 5, 6, 7, 8**
+completed (1394 steps); pending parts are **none**.
+Aggregate success observed in this snapshot: **no**. The separate aggregate
+job135281050097 was queued at02:00UTC; all eight partition successes do not
+invent an aggregate verdict.
+Logs preserve actual checkout cda72 into c676 and never overwrite attempt1.
+`premerge-b1-c676/` contains only two metadata portions: changelog-entry passed,
+and the ticket-ID check explicitly returned not-applicable because tickets are
+a separate repository. Both exited 0; this is not complete preflight or 21f
+validation. Earlier sections and the coverage matrix remain historical
+b1/c676 records, not current-DEV merge approval.
+
+## Earlier completed b1 phone cohort and source rerun attempts
 
 The [consolidated primary coverage matrix](primary-coverage-matrix.md) links every retained and fresh renderer log to its full SHA-256 record, with the scoped DEV-input review and remaining source requirements.
 The [independent reuse review](coverage-review/independent-review-20261119.md) is preserved separately as a read-only consumer/input audit, with its explicit coverage limits and no new test execution.
