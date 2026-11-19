@@ -21,6 +21,7 @@ branch `steward/t3656-browser-classroom`. This checkpoint preserves completed wo
 ## Completed b1 phone cohort and source rerun attempts
 
 The [consolidated primary coverage matrix](primary-coverage-matrix.md) links every retained and fresh renderer log to its full SHA-256 record, with the scoped DEV-input review and remaining source requirements.
+The [independent reuse review](coverage-review/independent-review-20261119.md) is preserved separately as a read-only consumer/input audit, with its explicit coverage limits and no new test execution.
 
 All **b1 mobile stages 2–15 passed 826/0 checks**, comprising 644 staged checks
 and 182 repeated scaffolding checks. Summed reported runtime was **69m25s** in

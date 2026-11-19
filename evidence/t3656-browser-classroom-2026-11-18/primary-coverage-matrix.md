@@ -5,6 +5,8 @@ Desktop 1–12 and mobile 1 retain their original results under the [scoped DEV-
 
 The [machine-readable matrix](primary-coverage-matrix.json) contains every full SHA-256, source commit, scope, count and elapsed time. Each abbreviated hash below links to that full record. Raw logs retain original identities.
 
+The [independent applicability review](coverage-review/independent-review-20261119.md) checks the changed inputs and the stage 3/5/12 consumers and raw hashes. It found no gap within the stated reuse scope, while explicitly excluding new monument wording, source-backlink text, the complete revised route, and future changed inputs. It ran no new tests.
+
 | Viewport / stages | Evidence | Passed | Staged + always-on | Raw log | SHA-256 record |
 | --- | --- | ---: | ---: | --- | --- |
 | desktop 1 | Retained 7019f986b | 95 | 82 + 13 | [log](renderer/remote-7019-desktop-1.log) | [`09e045155d326ef0`](primary-coverage-matrix.json) |
