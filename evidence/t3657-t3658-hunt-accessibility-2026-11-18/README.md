@@ -25,7 +25,28 @@ No production promotion, new server, account service, or paid API is involved.
   ancestry, and completed focused combined native-town work without extending
   earlier fixture results to another runtime.
 
-## New keyboard ownership checkpoint and pushed normalized QA
+## Dated ddc dispatch and primary progress checkpoint
+
+The normalized ddc renderer groups are now dispatched. The original receipt is
+`current-dev-keyboard/dispatches-20261119-0054.json`; its queued states describe
+the **00:10–00:11 UTC dispatch**, not later execution. The separate status file
+records the **00:54 UTC** checkpoint: desktop 1–4 (**44426888539**) and 6–12
+(**44426953188**) were running; desktop 13–15 (**44426968208**) and mobile 1–15
+(**44426984452**) were queued. No completed group or complete renderer pass is
+credited. Stage 5 retains only the documented original b501 geometry/policy
+evidence, not a fresh ddc measurement or new keyboard validation.
+
+Primary b1 mobile 2–12 completed **490/0 checks**; its stage 13 was active and
+excluded from this archive. Primary moving/upload run44422645797 is green,
+including 32 upload checks, on actual PR merge **cda72c805** into dev **c676**.
+Source partition2 passed174; the other seven parts and aggregate remain pending.
+The classroom folder holds the raw logs and dated monitor/DEV/runner receipts.
+DEV was still c676 at00:54:20UTC. Ticket recovery49b415cf73d188c807c13a77da77b9930330488e
+is pushed. Neither PR is merged and the actual future dev squash/fold must
+still be checked before reusing candidate evidence. Prior sections retain
+their original preparation and checkpoint status.
+
+## Earlier keyboard ownership checkpoint and pushed normalized QA
 
 `keyboard-ownership/` preserves the before-repair reproduction, actual native
 browser harness, two screenshots, complete report, isolation measurement and

@@ -18,7 +18,39 @@ branch `steward/t3656-browser-classroom`. This checkpoint preserves completed wo
 - Ticket: `T-3656`, in `kevinrhaas/chicago-tickets`, state `review` with PR 2197.
 - Current progress and remaining actions are tracked on that PR and ticket.
 
-## Completed retry, keyboard backup and current publication
+## Completed b1 mobile 2–12 and current merge CI receipts
+
+At this dated **2026-11-19 00:54 UTC** checkpoint, local b1 mobile stages **2–12
+passed 490/0 checks**: 347 staged checks and 143 repeated scaffolding checks.
+`renderer/b1-mobile-2-12/` preserves the eleven complete raw logs, original
+00:50:59 manifest and per-stage verification. Every log has final SMOKE PASS,
+completed suite, zero page-error and both vendor guards; hashes match the
+manifest. Stage 2's shell exit receipt was lost across the workspace restart,
+so no exit code is invented. Stages 3–12 have operator-reported exit 0. The
+manifest predates stage 13's launch; **stage 13 was active at the later checkpoint
+and its raw log was neither read nor copied**. Stages 13–15 remain uncredited.
+These runs use published b1, build 2026-11-19T00:01:25Z, and retain their own
+source/runtime/harness provenance independently from earlier passing cohorts.
+
+CI run **44422645797** completed both moving frames and upload-release
+successfully; upload-release passed **32 checks**. Source run **44422645793**
+partition **2/8 passed 174 steps**; the other seven partitions and aggregate
+remain pending. All three completed logs explicitly checked out PR merge
+**cda72c80519f5478380dd44b67615e2f97142dd5**, merging workflow head b1 into dev
+c676. `ci/checkpoint-20261119-0054/` preserves their logs and dated monitor,
+recovery, runner-label and DEV receipts. DEV remained c676 at **00:54:20 UTC**;
+runner labels were observed earlier at **00:08:28 UTC**. These snapshots are not
+evergreen queue or branch claims. Current b1 desktop 13–15 was still running.
+
+The ddc follow-up's renderer groups have now been dispatched: desktop 1–4 and
+6–12 were running; desktop 13–15 and mobile 1–15 were queued. No completed ddc
+group is claimed here. The follow-up folder records original dispatch times and
+the later status snapshot separately. Ticket recovery checkpoint
+**49b415cf73d188c807c13a77da77b9930330488e** is pushed. Full required gates remain
+incomplete and neither PR is declared merged. Earlier sections below retain
+their historical checkpoint context.
+
+## Earlier completed retry, keyboard backup and publication
 
 The corrected frozen **5034/ae4 desktop 13 retry passed 157/0 in 35m34s** under
 the authorized 2,700-second command allowance, with completed suite, zero page
