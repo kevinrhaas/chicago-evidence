@@ -1,5 +1,10 @@
 # T-3656 classroom tools — verification checkpoint
 
+**Latest continuation:** [merged DEV8c targeted publication checks passed; source parts 1/2/5/6 complete](portable-handoff-20261119/publication-complete-source1256/HANDOFF.md).
+Moving retry, remaining source/aggregate and remote 13–15 still require terminal
+passing evidence. Original failures and all cohort identities remain preserved.
+No overall green release or merge is claimed.
+
 **New continuation update:** [phone6–8, sourcepart5 and preserved moving failure](portable-handoff-20261119/postwrap-af-moving-failure/HANDOFF.md).
 The unchanged moving retry is pending, upload success is carried forward,
 and DEV8c static dependency proof is complete while merged publication checks remain pending. No overall green or

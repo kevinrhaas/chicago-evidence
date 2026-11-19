@@ -1,0 +1,208 @@
+{
+  "at_utc": "2026-11-19T03:47:53.930623+00:00",
+  "status": "PASS targeted publication dependency validation",
+  "candidate_commit": "539f09beb735e7555745566667140de72c44b796",
+  "candidate_tree": "6b2c34dfa605a475fc9695abcfb2d0c0b019bb76",
+  "steps": [
+    {
+      "label": "checkout",
+      "cwd": "/workspace/chicago-af-prefire-validation",
+      "command": [
+        "git",
+        "read-tree",
+        "--reset",
+        "-u",
+        "HEAD"
+      ],
+      "started_at_utc": "2026-11-19T03:40:18.292882+00:00",
+      "ended_at_utc": "2026-11-19T03:40:51.032318+00:00",
+      "elapsed_seconds": 32.74,
+      "exit_code": 0,
+      "cap_seconds": 595,
+      "kill_after_seconds": 5,
+      "log": "/tmp/t3656-af-prefire-validation/checkout.log"
+    },
+    {
+      "label": "tickets-clone",
+      "cwd": "/workspace/chicago-af-prefire-validation",
+      "command": [
+        "git",
+        "clone",
+        "--quiet",
+        "https://github.com/kevinrhaas/chicago-tickets.git",
+        "chicago/4d/tickets"
+      ],
+      "started_at_utc": "2026-11-19T03:40:58.047787+00:00",
+      "ended_at_utc": "2026-11-19T03:44:08.111514+00:00",
+      "elapsed_seconds": 190.064,
+      "exit_code": 0,
+      "cap_seconds": 595,
+      "kill_after_seconds": 5,
+      "log": "/tmp/t3656-af-prefire-validation/tickets-clone.log"
+    },
+    {
+      "label": "publish",
+      "cwd": "/workspace/chicago-af-prefire-validation/chicago/4d",
+      "command": [
+        "bash",
+        "tools/publish.sh"
+      ],
+      "started_at_utc": "2026-11-19T03:44:17.144755+00:00",
+      "ended_at_utc": "2026-11-19T03:45:57.066383+00:00",
+      "elapsed_seconds": 99.922,
+      "exit_code": 0,
+      "cap_seconds": 595,
+      "kill_after_seconds": 5,
+      "log": "/tmp/t3656-af-prefire-validation/publish.log"
+    },
+    {
+      "label": "check-published",
+      "cwd": "/workspace/chicago-af-prefire-validation/chicago/4d",
+      "command": [
+        "node",
+        "tools/check_published.mjs"
+      ],
+      "started_at_utc": "2026-11-19T03:46:08.937019+00:00",
+      "ended_at_utc": "2026-11-19T03:46:13.786252+00:00",
+      "elapsed_seconds": 4.849,
+      "exit_code": 0,
+      "cap_seconds": 595,
+      "kill_after_seconds": 5,
+      "log": "/tmp/t3656-af-prefire-validation/check-published.log"
+    },
+    {
+      "label": "validate-site",
+      "cwd": "/workspace/chicago-af-prefire-validation/chicago/4d",
+      "command": [
+        "python3",
+        "tools/validate.py",
+        "--site"
+      ],
+      "started_at_utc": "2026-11-19T03:46:22.072163+00:00",
+      "ended_at_utc": "2026-11-19T03:46:50.185693+00:00",
+      "elapsed_seconds": 28.114,
+      "exit_code": 0,
+      "cap_seconds": 595,
+      "kill_after_seconds": 5,
+      "log": "/tmp/t3656-af-prefire-validation/validate-site.log"
+    },
+    {
+      "label": "prefire-mirror",
+      "cwd": "/workspace/chicago-af-prefire-validation/chicago/4d",
+      "command": [
+        "bash",
+        "../pre_fire_v1/tools/publish.sh",
+        "--check"
+      ],
+      "started_at_utc": "2026-11-19T03:46:54.403025+00:00",
+      "ended_at_utc": "2026-11-19T03:46:54.856867+00:00",
+      "elapsed_seconds": 0.454,
+      "exit_code": 0,
+      "cap_seconds": 595,
+      "kill_after_seconds": 5,
+      "log": "/tmp/t3656-af-prefire-validation/prefire-mirror.log"
+    },
+    {
+      "label": "notebook-syntax",
+      "cwd": "/workspace/chicago-af-prefire-validation/chicago/4d",
+      "command": [
+        "bash",
+        "-c",
+        "node --input-type=module --check < ../pre_fire_v1/viewer/notebook.js"
+      ],
+      "started_at_utc": "2026-11-19T03:47:04.855574+00:00",
+      "ended_at_utc": "2026-11-19T03:47:04.944176+00:00",
+      "elapsed_seconds": 0.089,
+      "exit_code": 0,
+      "cap_seconds": 595,
+      "kill_after_seconds": 5,
+      "log": "/tmp/t3656-af-prefire-validation/notebook-syntax.log"
+    },
+    {
+      "label": "research-syntax",
+      "cwd": "/workspace/chicago-af-prefire-validation/chicago/4d",
+      "command": [
+        "bash",
+        "-c",
+        "node --input-type=module --check < ../pre_fire_v1/viewer/research.js"
+      ],
+      "started_at_utc": "2026-11-19T03:47:04.883623+00:00",
+      "ended_at_utc": "2026-11-19T03:47:04.943950+00:00",
+      "elapsed_seconds": 0.06,
+      "exit_code": 0,
+      "cap_seconds": 595,
+      "kill_after_seconds": 5,
+      "log": "/tmp/t3656-af-prefire-validation/research-syntax.log"
+    },
+    {
+      "label": "publication-proof",
+      "cwd": "/workspace/chicago-af-prefire-validation",
+      "command": [
+        "python3",
+        "/tmp/t3656-af-prefire-validation/record_publication.py"
+      ],
+      "started_at_utc": "2026-11-19T03:47:11.187780+00:00",
+      "ended_at_utc": "2026-11-19T03:47:15.002657+00:00",
+      "elapsed_seconds": 3.815,
+      "exit_code": 0,
+      "cap_seconds": 595,
+      "kill_after_seconds": 5,
+      "log": "/tmp/t3656-af-prefire-validation/publication-proof.log"
+    }
+  ],
+  "publication_totals": {
+    "site/4d": {
+      "files": 7667,
+      "bytes": 515614141
+    },
+    "site/pre-fire": {
+      "files": 70,
+      "bytes": 80916131
+    },
+    "site": {
+      "files": 7942,
+      "bytes": 689592349
+    }
+  },
+  "primary_preservation": {
+    "full_content_rechecked": true,
+    "file_count": 7667,
+    "bytes": 515543560,
+    "differences": [],
+    "equal_to_inventory": "/tmp/t3658-347-mobile-2-12/mirror-inventory.json",
+    "reference_inventory_sha256": "89d0794baf108252fb5c21f2fe2d48bdca878af2b0a338482b2fc1a4faa3cfb0",
+    "head": "3472ec872d00e33761490b0138b23da1c63daee2",
+    "origin_dev": "c676aa2f4ad6ee8cff0521da6ba8add70d55949c",
+    "tracked_status": ""
+  },
+  "evidence_sha256": {
+    "provenance.json": "22d4757d19e51b49277fff359b154446a6b27bef2c7822063ad1f504f69a9121",
+    "publication-proof.json": "ed5e0994ef16635f5946385d87f6402ce7d0734cd2ac88ea0fce49aedb14d8b9",
+    "published-prefire-inventory.json": "55d478c4b8d4a20dc52286df367d1b74647a02b5e5213c9fd11bb641424dce84",
+    "primary-before.json": "b9f7b93d41e7dcf21edd11d0f071d6008a22f5ace7ecd8c1218bcd54e1834033",
+    "checkout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tickets-clone.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "publish.log": "12dd39e4e541b698b8610c209d7a887079ef852286aafe78e6fa5f304c0d29fb",
+    "check-published.log": "31ef316a55ee4d104100b305089756e71aa5b92c1b8cd780fc72862f57c7f2cd",
+    "validate-site.log": "f0ad4639505d00a83d003f378b7744fbcbe4812f4e7b61d0b9a5482273b9218a",
+    "prefire-mirror.log": "e85cfb6f3dbed2c6680d2a8decb4af4564e39f94c27ed007f70aeb3009a6dbcc",
+    "notebook-syntax.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "research-syntax.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "publication-proof.log": "251ee378d48a392d1419b220713df508effc4e666a74c1f3e3391a5dc8317d78",
+    "checkout.receipt.json": "0664fee2294a53f09141266c6cf2129485b79990fc59313968a3d9b32ba12bf2",
+    "tickets-clone.receipt.json": "d1b78f89f26f1bec37685ea94a928c7b5d36fe9b7fff6c73cdcb5d5bfa996f5b",
+    "publish.receipt.json": "e33c477931501ece210364b233b160ba7571bfab16105f7fcb94e276210a50dc",
+    "check-published.receipt.json": "136c4ead6b74d8a0d16e4bcbb760576cb88ae15c6177992f8ff8930f1c1a713e",
+    "validate-site.receipt.json": "872deefe8466fabfca46e564613c532e6fe081d48ea3038fd86ac28ac8458b40",
+    "prefire-mirror.receipt.json": "2de3d96d58e9d776385ab85e3d0c23abe6df26dc548ef08154c658ed07ab7de7",
+    "notebook-syntax.receipt.json": "f49a7c31534b96b26cedfda77537248c7b0cfa0e5af4cada84de6f7fa5b6c3b5",
+    "research-syntax.receipt.json": "49be484e7923c8ed298db162ffce734c8333cfcdef881578b0137129e99ca8eb",
+    "publication-proof.receipt.json": "a5cb714de7387370da243f550adc321c679c76e09d7a606d1a2c7b0f0f8deafb"
+  },
+  "limits": [
+    "Not a fresh full eight-part source gate. Existing af source/renderer/moving/GPU-upload results keep their original heads and runs.",
+    "No browser was run and no research-content validation beyond existing source/site parity is claimed.",
+    "No source code, assertion, budget, application branch or remote ref was changed; candidate remains detached local and clean.",
+    "Measured whole-site working tree is not an uploaded Pages artifact or a live deployment."
+  ]
+}

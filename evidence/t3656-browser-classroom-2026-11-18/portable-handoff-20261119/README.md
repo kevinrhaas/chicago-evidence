@@ -1,5 +1,10 @@
 # Portable continuation checkpoint
 
+**Latest continuation:** [merged DEV8c targeted publication checks passed; source parts 1/2/5/6 complete](publication-complete-source1256/HANDOFF.md).
+Moving retry, remaining source/aggregate and remote 13–15 still require terminal
+passing evidence. Original failures and all cohort identities remain preserved.
+No overall green release or merge is claimed.
+
 **Latest update:** [phone complete and sourcepart2](phone-complete-source2/HANDOFF.md).
 Local CPU is released after585/0 and unchanged final fullhash; prior running
 instructions are historical. Remaining release/merged-publication gates still apply.
