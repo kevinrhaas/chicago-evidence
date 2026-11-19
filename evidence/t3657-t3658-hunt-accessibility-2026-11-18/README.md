@@ -7,6 +7,8 @@ fixture, and photo-audit evidence. Full source and published renderer release
 gates remain separate and are not declared green here.**
 No production promotion, new server, account service, or paid API is involved.
 
+[Next-work preparation](next-work-preparation/README.md) preserves the read-only priority #8 recommendation and historical traps. It claims no new ticket, implementation or change to the current PRs.
+
 - Latest combined checkpoint: `6ee1a689077839dd9923edbc80269dd2cbaccfb6`.
 - Latest completed focused native runtime: `5674d33df9f39048e5c3ced87c33e3855afdf3ee`.
 - Current dev: `c676aa2f4ad6ee8cff0521da6ba8add70d55949c`; old-dev evidence retains its 169404 provenance.
