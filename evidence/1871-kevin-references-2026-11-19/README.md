@@ -13,5 +13,5 @@ Neither site holds the originals. Before any image becomes a cited source or an 
 | kurz-lasalle-from-court-house-square-1865.png | Louis Kurz print, "La Salle Street from Court House Square, Chicago, in the Year 1865": the square's fountain, attached stone fronts with arched windows and mansards, trees, gas lamps | pre-fire, dated 1865 on the print; use |
 | library-hall-young-mens-association-lantern-slide.png | Library Hall (Young Men's Association library), arched upper windows, lettered frieze, a dirt street, BOOK BINDER and JOB PRINTING signs | pre-fire (the library burned in 1871); use |
 | state-street-horse-cars-date-unconfirmed.png | State Street with horse cars, awnings and crowds | unconfirmed (could be the early-1870s rebuilt street); reference only until dated |
-| POSTFIRE-state-street-cable-cars-c1890.png | State Street with cable trains and a STOVES sign | post-fire (cable cars from 1882); do not use for 1871 |
-| POSTFIRE-aerial-federal-building-c1890s.png | aerial with the 1879 Federal Building and a tall clock tower | post-fire; do not use for 1871 |
+
+Two post-fire pictures Kevin sent at the same time (State Street with cable cars, about 1890; an aerial with the 1879 Federal Building) were moved out of this folder to evidence/postfire-references-2026-11-19/ on his word ("you can dump or tag those post-fire pictures so its not confusing"). Do not use them for 1871.
