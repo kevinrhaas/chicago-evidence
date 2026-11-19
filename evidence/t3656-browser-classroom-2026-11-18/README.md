@@ -1,5 +1,9 @@
 # T-3656 classroom tools — verification checkpoint
 
+**Latest continuation:** [all eight source partitions passed; complete scoped phone 1–15 coverage](portable-handoff-20261119/source8-phone15/HANDOFF.md).
+Source aggregate, desktop 13–15 and moving retry still require terminal passing
+evidence. Recovered phone stage 1 remains distinct; no overall release or merge is claimed.
+
 **Latest continuation:** [merged DEV8c targeted publication checks passed; source parts 1/2/5/6 complete](portable-handoff-20261119/publication-complete-source1256/HANDOFF.md).
 Moving retry, remaining source/aggregate and remote 13–15 still require terminal
 passing evidence. Original failures and all cohort identities remain preserved.
