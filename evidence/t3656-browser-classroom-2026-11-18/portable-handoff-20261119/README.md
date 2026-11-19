@@ -1,5 +1,10 @@
 # Portable continuation checkpoint
 
+**New continuation update:** [phone6–8, sourcepart5 and preserved moving failure](postwrap-af-moving-failure/HANDOFF.md).
+The unchanged moving retry is pending, upload success is carried forward,
+and DEV8c static dependency proof is complete while merged publication checks remain pending. No overall green or
+merge is claimed; earlier observations remain dated.
+
 **Latest incremental update:** [coordinator handoff after mobile5](mobile5-update/HANDOFF.md).
 [Normal stage5](../renderer/347-mobile5-complete/README.md) now passed30/0
 with exit0 and all final guards in354.664seconds. Stage6 is active and excluded.

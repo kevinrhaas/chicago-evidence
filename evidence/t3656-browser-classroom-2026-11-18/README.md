@@ -1,5 +1,10 @@
 # T-3656 classroom tools — verification checkpoint
 
+**New continuation update:** [phone6–8, sourcepart5 and preserved moving failure](portable-handoff-20261119/postwrap-af-moving-failure/HANDOFF.md).
+The unchanged moving retry is pending, upload success is carried forward,
+and DEV8c static dependency proof is complete while merged publication checks remain pending. No overall green or
+merge is claimed; earlier observations remain dated.
+
 Recovery evidence for [chicago PR #2197](https://github.com/kevinrhaas/chicago/pull/2197),
 branch `steward/t3656-browser-classroom`. This checkpoint preserves completed work;
 **it is not a declaration that the full release gate passed or the PR merged.**
