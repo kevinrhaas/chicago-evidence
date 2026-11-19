@@ -26,6 +26,14 @@ No production promotion, new server, account service, or paid API is involved.
   ancestry, and completed focused combined native-town work without extending
   earlier fixture results to another runtime.
 
+## Frozen 347 mobile stages 2–4 checkpoint
+
+[Normal completed stages2–4](../t3656-browser-classroom-2026-11-18/renderer/347-mobile2-4-complete/README.md) passed267/0 with durable exit0 and all
+final guards. Recovered stage1 remains separately attributed with its missing
+normal supervisor receipt explicit. The dated partial manifest/events snapshot
+shows stage5 running; its active log and later stages receive no coverage.
+The complete mobile/release gates remain pending.
+
 ## Recovered frozen 347 mobile stage 1
 
 [The stage1 recovery archive](../t3656-browser-classroom-2026-11-18/renderer/347-mobile1-recovered/README.md) records **95/0**, all final guards and

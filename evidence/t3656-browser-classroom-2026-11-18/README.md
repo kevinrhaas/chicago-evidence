@@ -18,6 +18,23 @@ branch `steward/t3656-browser-classroom`. This checkpoint preserves completed wo
 - Ticket: `T-3656`, in `kevinrhaas/chicago-tickets`, state `review` with PR 2197.
 - Current progress and remaining actions are tracked on that PR and ticket.
 
+## Portable handoff for continuation
+
+[The saved coordinator handoff and evidence map](portable-handoff-20261119/README.md)
+record draft PR2197af and dependent draft PR2205fc51, completed phone2–4 plus
+separate recovered1, active5 with no coverage, and remaining gates. Release_checks
+owns the authorized PR2197 merge endgame after all required checks are green.
+No DEV merge is claimed; keep the healthy mobile supervisor and frozen347
+publication intact. All queue/process observations are dated.
+
+## Frozen 347 mobile stages 2–4 checkpoint
+
+[Normal completed stages2–4](renderer/347-mobile2-4-complete/README.md) passed267/0 with durable exit0 and all
+final guards. Recovered stage1 remains separately attributed with its missing
+normal supervisor receipt explicit. The dated partial manifest/events snapshot
+shows stage5 running; its active log and later stages receive no coverage.
+The complete mobile/release gates remain pending.
+
 ## Recovered frozen 347 mobile stage 1
 
 [The stage1 recovery archive](renderer/347-mobile1-recovered/README.md) records **95/0**, all final guards and

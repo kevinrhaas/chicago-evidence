@@ -1,5 +1,11 @@
 # T-3663 Gossip investigation — source checkpoint
 
+**Subsequent draft PR creation:** [PR2205](https://github.com/kevinrhaas/chicago/pull/2205)
+is open on fc51, depends on PR2197, and remains draft. The exact creation receipt
+is [pr2205/creation-receipt.json](pr2205/creation-receipt.json). Full source,
+browser and release checks remain pending. The source checkpoint below predates
+PR creation; its earlier pending-PR wording is historical.
+
 Implementation is backed up on `steward/t3663-gossip-evidence` at
 **fc51c9efcd56f863a3493d67101ae2e1ec60e75e**, tree
 **40026071373e24c8450c681e5ef3c5499429bf68**. The feature adds a bounded source
