@@ -18,6 +18,13 @@ branch `steward/t3656-browser-classroom`. This checkpoint preserves completed wo
 - Ticket: `T-3656`, in `kevinrhaas/chicago-tickets`, state `review` with PR 2197.
 - Current progress and remaining actions are tracked on that PR and ticket.
 
+## Latest portable update: normal mobile stage5 complete
+
+[The latest saved handoff](portable-handoff-20261119/mobile5-update/HANDOFF.md)
+adds normal stage5PASS30/0, exit0, all guards and354.664seconds. Normal2–5 now
+have297/0; recovered1 remains separate. Stage6 is active, no partial log copied,
+and the final release gates remain pending. Earlier snapshots stay unchanged.
+
 ## Portable handoff for continuation
 
 [The saved coordinator handoff and evidence map](portable-handoff-20261119/README.md)

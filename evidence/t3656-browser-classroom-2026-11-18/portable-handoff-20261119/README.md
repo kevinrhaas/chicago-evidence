@@ -1,5 +1,10 @@
 # Portable continuation checkpoint
 
+**Latest incremental update:** [coordinator handoff after mobile5](mobile5-update/HANDOFF.md).
+[Normal stage5](../renderer/347-mobile5-complete/README.md) now passed30/0
+with exit0 and all final guards in354.664seconds. Stage6 is active and excluded.
+The earlier handoff below remains an immutable dated snapshot.
+
 Read [the coordinator handoff](HANDOFF.md) first. It records the requested
 continuation and delegated release ownership. All status is dated: PR2197 at
 `af466d1638fda72a468ecd3ac22456844b870c1b` and PR2205 at
