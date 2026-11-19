@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Make your case fixture</title>
+<meta name="color-scheme" content="dark light">
+<link rel="stylesheet" href="./web/css/walk.css"> <link rel="stylesheet" href="./web/css/drawer.css"> <link rel="stylesheet" href="./web/css/navigator.css"> <link rel="stylesheet" href="./web/css/confidence-overlays.css"> <link rel="stylesheet" href="./web/css/inspect.css"> <link rel="stylesheet" href="./web/css/photos.css"> <link rel="stylesheet" href="./web/css/tour.css"> <link rel="stylesheet" href="./web/css/handout.css"> <link rel="stylesheet" href="./web/css/goto.css"> <link rel="stylesheet" href="./web/css/travel.css"> <link rel="stylesheet" href="./web/css/people.css"> <link rel="stylesheet" href="./web/css/businesses.css"> <link rel="stylesheet" href="./web/css/evidence.css"> <link rel="stylesheet" href="./web/css/card.css"> <link rel="stylesheet" href="./web/css/recall.css"> <link rel="stylesheet" href="./web/css/skins.css"> <link rel="stylesheet" href="./web/css/signin.css"> 
+<link rel="stylesheet" href="./web/css/jaunt.css">
+<style>
+  /* Fixture only: let the panel scroll as one tall page for a full-page picture. */
+  html, body { overflow: auto !important; height: auto !important; }
+  #gate { position: static !important; inset: auto !important; min-height: 100vh; }
+  .fx-note { font: 12px/1.4 system-ui; color: #aab; margin: 8px 0; }
+</style>
+</head>
+<body>
+<div id="gate" class="gate" aria-labelledby="gate-title">
+  <div class="gate-card">
+    <div id="welcome">
+      <section id="welcome-jaunts-region" class="welcome-region" aria-label="Jaunts">
+        <div id="welcome-jaunts-content"></div>
+      </section>
+    </div>
+  </div>
+</div>
+<div id="notebook-host" class="navigator" style="max-width:640px;margin:16px auto;padding:0 16px;text-align:left"></div>
+<script type="module">
+import { jauntInvestigation, createInvestigationDraft } from './web/js/jaunt-investigation.js';
+import { renderInvestigation } from './web/js/jaunt-investigation-view.js';
+import { readerCopy } from './web/js/reader-text.js';
+import { mountFieldNotebook, notebookHTML } from './web/js/field-notebook-view.js';
+import { fieldNotebook } from './web/js/field-notebook.js';
+import { icon } from './web/js/menu-icons.js';
+const q = new URLSearchParams(location.search);
+const year = q.get('year'), file = q.get('file');
+let jaunt = await (await fetch(`./data/sidecars/${year}/jaunts/${file}.json`)).json();
+let overlay = null;
+try { const r = await fetch(`./data/reader/jaunts_${year}.json`); if (r.ok) overlay = await r.json(); } catch {}
+jaunt = readerCopy(jaunt, overlay);
+window.__overlay = !!overlay;
+const session = { session: 'fixture', jaunt, phase: 'outcome', outcome: { completion_eligible: true },
+  visited: jaunt.stops.map(s => ({ id: s.id, committed: true })) };
+const root = document.getElementById('welcome-jaunts-content');
+const note = document.createElement('section'); note.className = 'jaunt-session-note jaunt-outcome';
+const head = document.createElement('div'); head.className = 'jaunt-outcome-head';
+const words = document.createElement('div'); words.className = 'jaunt-outcome-words';
+const h = document.createElement('h3'); h.textContent = 'Outing complete';
+const tt = document.createElement('p'); tt.className = 'jaunt-outcome-title'; tt.textContent = jaunt.title;
+const mark = document.createElement('span'); mark.className = 'jaunt-outcome-mark'; mark.append(icon('done', 22));
+if (jaunt.keepsake?.title) { const kept = document.createElement('p'); kept.className = 'jaunt-outcome-kept'; const sp = document.createElement('span'); sp.textContent = jaunt.keepsake.title; kept.append(icon('kept', 14), sp); words.append(h, tt, kept); } else words.append(h, tt);
+const close = document.createElement('button'); close.type = 'button'; close.className = 'welcome-link jaunt-outcome-close'; close.setAttribute('aria-label', 'Close the finished outing'); close.append(icon('close', 16));
+head.append(mark, words, close);
+const more = document.createElement('details'); more.className = 'jaunt-outcome-more';
+const sum = document.createElement('summary'); const ss = document.createElement('span'); ss.textContent = 'The ending and keepsake'; sum.append(ss, icon('more', 16)); more.append(sum);
+note.append(head, more);
+const model = jauntInvestigation(session);
+const draft = createInvestigationDraft(); draft.open = true;
+const view = renderInvestigation(document, model, draft);
+if (view) note.append(view);
+root.append(note);
+const link = document.createElement('link'); link.rel = 'stylesheet'; link.href = './web/css/jaunt-investigation.css'; document.head.append(link);
+window.__model = model;
+window.__mountNotebook = () => { const nb = mountFieldNotebook(document.getElementById('notebook-host')); document.getElementById('field-notebook').open = true; return true; };
+window.__exportHTML = () => notebookHTML(fieldNotebook.read().entries);
+window.__ready = true;
+</script>
+</body>
+</html>
