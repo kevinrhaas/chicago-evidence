@@ -1,5 +1,9 @@
 # Portable continuation checkpoint
 
+**Latest update:** [phone complete and sourcepart2](phone-complete-source2/HANDOFF.md).
+Local CPU is released after585/0 and unchanged final fullhash; prior running
+instructions are historical. Remaining release/merged-publication gates still apply.
+
 **New continuation update:** [phone6–8, sourcepart5 and preserved moving failure](postwrap-af-moving-failure/HANDOFF.md).
 The unchanged moving retry is pending, upload success is carried forward,
 and DEV8c static dependency proof is complete while merged publication checks remain pending. No overall green or

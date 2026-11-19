@@ -26,6 +26,14 @@ No production promotion, new server, account service, or paid API is involved.
   ancestry, and completed focused combined native-town work without extending
   earlier fixture results to another runtime.
 
+## Local frozen347 mobile1–12 complete
+
+[Final phone evidence](../t3656-browser-classroom-2026-11-18/renderer/347-mobile1-12-complete/README.md) records585/0: accepted recovered1 separate
+from eleven normal2–12 exits. The full7,667-file mirror digest is unchanged,
+all final guards pass, and CPU/mirror freeze was released. Current af source
+parts2/5 pass; other source/aggregate, moving retry, remote13–15 and merged
+DEV8c publication checks remain required. No full release or merge is claimed.
+
 ## Frozen 347 mobile stages 2–4 checkpoint
 
 [Normal completed stages2–4](../t3656-browser-classroom-2026-11-18/renderer/347-mobile2-4-complete/README.md) passed267/0 with durable exit0 and all

@@ -23,6 +23,14 @@ branch `steward/t3656-browser-classroom`. This checkpoint preserves completed wo
 - Ticket: `T-3656`, in `kevinrhaas/chicago-tickets`, state `review` with PR 2197.
 - Current progress and remaining actions are tracked on that PR and ticket.
 
+## Local frozen347 mobile1–12 complete
+
+[Final phone evidence](renderer/347-mobile1-12-complete/README.md) records585/0: accepted recovered1 separate
+from eleven normal2–12 exits. The full7,667-file mirror digest is unchanged,
+all final guards pass, and CPU/mirror freeze was released. Current af source
+parts2/5 pass; other source/aggregate, moving retry, remote13–15 and merged
+DEV8c publication checks remain required. No full release or merge is claimed.
+
 ## Latest portable update: normal mobile stage5 complete
 
 [The latest saved handoff](portable-handoff-20261119/mobile5-update/HANDOFF.md)
