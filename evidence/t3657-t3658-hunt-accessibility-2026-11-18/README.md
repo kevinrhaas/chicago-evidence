@@ -26,6 +26,15 @@ No production promotion, new server, account service, or paid API is involved.
   ancestry, and completed focused combined native-town work without extending
   earlier fixture results to another runtime.
 
+## Recovered frozen 347 mobile stage 1
+
+[The stage1 recovery archive](../t3656-browser-classroom-2026-11-18/renderer/347-mobile1-recovered/README.md) records **95/0**, all final guards and
+kernel-observed exit0 for the exact durable timeout PID. The original Python
+supervisor was SIGKILLed before saving its normal completion receipt; original
+manifest/events remain unchanged and the missing normal end record is explicit.
+The separate2–12 cohort is saved only as prepared/started; no active outputs
+are copied or credited. Current release gates remain pending.
+
 ## Current folded af, 347 scope review and focused Space proof
 
 Current release head **af466d1638fda72a468ecd3ac22456844b870c1b** adds only the upstream entry removal and

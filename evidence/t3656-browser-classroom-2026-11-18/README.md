@@ -18,6 +18,15 @@ branch `steward/t3656-browser-classroom`. This checkpoint preserves completed wo
 - Ticket: `T-3656`, in `kevinrhaas/chicago-tickets`, state `review` with PR 2197.
 - Current progress and remaining actions are tracked on that PR and ticket.
 
+## Recovered frozen 347 mobile stage 1
+
+[The stage1 recovery archive](renderer/347-mobile1-recovered/README.md) records **95/0**, all final guards and
+kernel-observed exit0 for the exact durable timeout PID. The original Python
+supervisor was SIGKILLed before saving its normal completion receipt; original
+manifest/events remain unchanged and the missing normal end record is explicit.
+The separate2–12 cohort is saved only as prepared/started; no active outputs
+are copied or credited. Current release gates remain pending.
+
 ## Current folded af, frozen 347 and focused Space checkpoint
 
 Current release head **af466d1638fda72a468ecd3ac22456844b870c1b** differs from347 only by the upstream T3562

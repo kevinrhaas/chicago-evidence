@@ -1,0 +1,41 @@
+--- runner-v1.py
++++ runner-v2.py
+@@ -81,6 +81,11 @@
+     for key in ['repo', 'app', 'mirror', 'node', 'chromium', 'bc_directory']:
+         if not Path(cfg[key]).is_absolute():
+             raise ValueError(f'{key} must be absolute')
++    stages = cfg.get('stages', STAGES)
++    if (not isinstance(stages, list) or not stages or
++            any(type(n) is not int or n not in STAGES for n in stages) or
++            stages != list(range(stages[0], stages[-1] + 1))):
++        raise ValueError('Requested stages must be one explicit contiguous subset of mobile1–12')
+     return cfg
+ 
+ def provenance(cfg):
+@@ -288,6 +293,7 @@
+ 
+ def execute(cfg, out, resume):
+     global CHILD
++    requested_stages = cfg.get('stages', STAGES)
+     out = Path(out).resolve()
+     if not out.exists():
+         out.mkdir(parents=True)
+@@ -326,7 +332,8 @@
+         durable_json(out / 'config.json', cfg)
+         manifest = {'schema_version': SCHEMA, 'created_utc': now(), 'status': 'running',
+                     'config_sha256': config_digest, 'runner_sha256': script_digest,
+-                    'scope': 'Fresh local mobile stages 1–12 only; not the full renderer gate',
++                    'scope': f'Fresh local mobile stages {requested_stages[0]}–{requested_stages[-1]} only; not the full renderer gate',
++                    'requested_stages': requested_stages,
+                     'timeout_seconds': 1200, 'kill_after_seconds': 5,
+                     'provenance': pins, 'mirror_inventory_sha256': sha(canonical(baseline)),
+                     'mirror_files': len(baseline), 'mirror_bytes': sum(r['size'] for r in baseline),
+@@ -341,7 +348,7 @@
+     signal.signal(signal.SIGTERM, stop_handler)
+     signal.signal(signal.SIGINT, stop_handler)
+     try:
+-        for stage in STAGES:
++        for stage in requested_stages:
+             if any(r['stage'] == stage for r in manifest['stages']):
+                 continue
+             require_not_stopped()
