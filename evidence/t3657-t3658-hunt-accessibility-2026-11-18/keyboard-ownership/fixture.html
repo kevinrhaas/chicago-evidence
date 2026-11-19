@@ -1,0 +1,66 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Desktop keyboard ownership fixture</title><link rel="icon" href="data:,"><link rel="stylesheet" href="/css/navigator.css"><script type="importmap">{"imports":{"three":"/vendor/three-0.185.1/three.module.js","three/addons/":"/vendor/three-0.185.1/addons/"}}</script><style>
+:root{--ink:#f7f2df;--ink-dim:#d9d0b5;--ink-faint:#b4aa8c;--panel:#242620;--panel-solid:#242620;--edge:#858068;--edge-strong:#aea387;--accent:#ffcf69;--signal:#ff7979;--font-body:system-ui,sans-serif;--font-mono:ui-monospace,monospace;--ease-detent:ease;--shadow:0 8px 20px #0007}*{box-sizing:border-box}body{margin:0;color:var(--ink);background:#111811;font:15px system-ui,sans-serif}[hidden]{display:none!important}button,input,summary{font:inherit;color:inherit;background:#30392d;border:1px solid #858068;padding:8px;min-height:36px}button:focus-visible,canvas:focus-visible,dialog:focus-visible{outline:3px solid #ffcf69;outline-offset:2px}.fixture-controls{position:relative;margin-left:auto;width:280px;padding:12px}canvas{display:block;background:#284033;width:240px;height:75px}dialog{background:#242620;color:#fff;max-width:280px}.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}#popup{position:absolute;z-index:50;right:8px;top:60px;background:#242620;padding:12px}
+</style></head><body><div class="fixture-controls"><h1>Keyboard ownership</h1><p>Real Navigator and desktop input modules; no world or renderer.</p><canvas id="world" tabindex="0" aria-label="World focus target"></canvas><button id="outside-action">Native action</button><details id="native-details"><summary id="native-summary">Native summary</summary><p>Opened by Space.</p></details></div><section id="navigator" class="navigator" aria-label="Navigator" data-str-label="nav.name" data-detent="dock" tabindex="-1">
+  <span class="nav-screw nav-screw-tl" aria-hidden="true"></span><span class="nav-screw nav-screw-tr" aria-hidden="true"></span>
+  <span class="nav-screw nav-screw-bl" aria-hidden="true"></span><span class="nav-screw nav-screw-br" aria-hidden="true"></span>
+  <button id="nav-grip" class="nav-grip" type="button" aria-label="Open the Navigator" data-str-label="nav.open" aria-expanded="false" aria-controls="nav-home"><i aria-hidden="true"></i></button>
+  <header class="nav-head" id="nav-head">
+    <span class="c4d-lamp nav-lamp" data-on="true" aria-hidden="true"><i class="c4d-lamp-bulb"></i></span>
+    <span class="nav-label" data-str="nav.label">NAVIGATOR MK II</span>
+    <!-- T-2619: shown only while the device is closed — the year and the icon of the app it opens to. -->
+    <span class="nav-dock-app" id="nav-dock-app" aria-hidden="true"></span>
+    <span class="nav-dock-year" id="nav-dock-year" aria-hidden="true"></span>
+    <span class="nav-code" id="nav-code" data-str="nav.home.code">SCR 01 · HOME</span>
+    <span class="nav-date" id="nav-date"></span>
+    <!-- T-3571: the owner, 2026-11-12: "add mute all sound and mute music toggles to navigator".
+         Lit means muted; js/main.js flips the same levels Settings › Sound's sliders hold. -->
+    <button class="nav-mute" type="button" id="nav-mute-all" aria-pressed="false" aria-label="Mute all sound" data-str-label="nav.mute.all" title="Mute all sound"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z"/><path class="mute-on" d="M16 9.5l5 5m0-5l-5 5"/><path class="mute-off" d="M15.5 9c1.4 1.6 1.4 4.4 0 6m2.6-8.5c2.8 3 2.8 8 0 11"/></svg></button>
+    <button class="nav-mute" type="button" id="nav-mute-music" aria-pressed="false" aria-label="Mute music" data-str-label="nav.mute.music" title="Mute music"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 17.5V6l10-2v11.5"/><circle cx="6.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="15.5" r="2.5"/><path class="mute-on" d="M3.5 3.5l17 17"/></svg></button>
+    <!-- T-3578: MUTE NARRATION, the jaunt voices (js/narration.js); lit means muted. -->
+    <button class="nav-mute" type="button" id="nav-mute-narration" aria-pressed="false" aria-label="Mute narration" data-str-label="nav.mute.narration" title="Mute narration"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5.5h14a1.5 1.5 0 0 1 1.5 1.5v8a1.5 1.5 0 0 1-1.5 1.5h-7l-4.5 3.5v-3.5H5A1.5 1.5 0 0 1 3.5 15V7A1.5 1.5 0 0 1 5 5.5z"/><path class="mute-off" d="M8 11h.01M12 11h.01M16 11h.01"/><path class="mute-on" d="M3.5 3.5l17 17"/></svg></button>
+    <!-- T-2742: the open device's close key; it does what the rail's collapse arrow does. -->
+    <button class="nav-close" type="button" id="nav-close" aria-label="Close the Navigator" data-str-label="nav.close" title="Close" data-str-title="nav.close.short"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </header>
+  <div class="nav-body">
+    <nav class="nav-rail" id="nav-rail" aria-label="Navigator apps" data-str-label="nav.rail">
+      <button class="nav-app nav-collapse" type="button" id="nav-collapse" aria-label="Collapse the Navigator" title="Collapse"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button>
+    </nav>
+    <div class="nav-screen" id="nav-home" role="tabpanel" aria-labelledby="nav-home-title" tabindex="-1">
+      <h2 id="nav-home-title" class="visually-hidden" tabindex="-1" data-str="nav.home.title">Navigator Home</h2>
+      <section class="nav-block" aria-labelledby="nav-where-k">
+        <span class="nav-k" id="nav-where-k" data-str="nav.where.k">You are at</span>
+        <strong class="nav-place" id="nav-where" data-str="nav.where.looking">Looking for the street…</strong>
+        <span class="nav-sub" id="nav-where-detail"></span>
+      </section>
+      <!-- T-2630: Home's three choices (§04 E). T-3629: Take a Jaunt left them, since the
+           labelled Jaunts tab sits beside them on the rail; Other years took its place, for
+           Jump left the rail. -->
+      <div class="nav-choices" role="group" aria-label="What next">
+        <button class="nav-choice" type="button" data-segment="goto"><strong>Go to…</strong><span>A house, a person, a shop</span></button>
+        <button class="nav-choice" type="button" id="nav-choice-years" data-app="jump"><strong>Other years</strong><span>1812, 1835, 1904</span></button>
+        <button class="nav-choice" type="button" data-segment="roam"><strong>Free roam</strong><span>Wander on your own</span></button>
+      </div>
+      <section class="nav-block nav-front" id="nav-front" aria-labelledby="nav-front-k" aria-live="polite">
+        <span class="nav-k" id="nav-front-k" data-str="nav.front.k">Right in front of you</span>
+        <strong class="nav-place" id="nav-front-name" data-str="nav.front.none">Nothing close by</strong>
+        <span class="nav-sub" id="nav-front-detail"></span>
+        <!-- T-3629: Inspect wears the accent, not signal red; red is for Recall, which leaves. -->
+        <button class="nav-key nav-roam nav-inspect-key" id="nav-inspect" type="button" hidden>Inspect <span aria-hidden="true">→</span></button>
+      </section>
+      <section class="nav-block" id="nav-jaunt" aria-labelledby="nav-jaunt-k" hidden>
+        <span class="nav-k nav-k-row"><span id="nav-jaunt-k" data-str="nav.jaunt.k">Jaunt in progress</span><span class="nav-step" id="nav-jaunt-step"></span></span>
+        <strong class="nav-jaunt-title" id="nav-jaunt-title"></strong>
+        <span class="nav-meter" aria-hidden="true"><i id="nav-jaunt-bar"></i></span>
+      </section>
+      <!-- T-3021: each tile opens its app (the owner, 2026-10-22: "the move walking and
+           confidence view would go to those settings"). T-3043: the tile's name sits beside
+           its open key, not inside it, so "Confidence view" stays a locked term's first
+           appearance that explains itself on tap; the key's hit area covers the tile and the
+           term sits above it, so a tap on the term shows its line and opens nothing. -->
+      <div class="nav-tiles">
+        <div class="nav-tile"><span class="nav-k" id="nav-tile-move-k" data-str="nav.tile.move">Move</span><button class="nav-tile-open" id="nav-tile-move" type="button" data-app="move" aria-labelledby="nav-tile-move-k nav-move"><span id="nav-move">Walking</span></button></div>
+        <div class="nav-tile"><span class="nav-k" id="nav-tile-confidence-k" data-str="nav.tile.confidence">Confidence view</span><button class="nav-tile-open" id="nav-tile-confidence" type="button" data-app="confidence" aria-labelledby="nav-tile-confidence-k nav-confidence"><span id="nav-confidence">Off</span></button></div>
+      </div>
+    </div>
+  </div>
+</section><aside id="popup" hidden tabindex="-1"><button id="popup-action">Card action</button><input id="popup-input" aria-label="Card note"></aside><dialog id="native-dialog" tabindex="-1"><p>Native dialog with no explicit role.</p><button id="dialog-close">Close</button></dialog><script type="module" src="/fixture.js"></script></body></html>

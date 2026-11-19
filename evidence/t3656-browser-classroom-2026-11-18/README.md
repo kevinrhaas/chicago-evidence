@@ -6,7 +6,7 @@ branch `steward/t3656-browser-classroom`. This checkpoint preserves completed wo
 
 - Original implementation runtime: `6c83e8cf9558c0d6f9ffb422f299764837fc4ed2`.
 - Latest remote primary checkpoint: `b1f507400cb743a3985cb1d50de1ebd085bd4f63` (current dev integrated into the feature branch).
-- The active local retry remains frozen at code `5034a724d993abe0876a4db7bbfff02d2bb4da0a` and published application build `ae4e0bdd7`. It does not test the new remote b1 revision.
+- The completed local desktop 13 retry passed on frozen code `5034a724d993abe0876a4db7bbfff02d2bb4da0a` / published build `ae4e0bdd7`. It does not test b1's changed upstream inputs.
 - Latest completed focused photo/notebook runtime: `45b35a2c7d910ec1e73f5a60489b1b22c4aff278`.
   This revision adds bounded caption fitting, notebook draft pruning, a
   person-row alias repair, and on-mount classroom styles. Fresh actual-town
@@ -18,7 +18,39 @@ branch `steward/t3656-browser-classroom`. This checkpoint preserves completed wo
 - Ticket: `T-3656`, in `kevinrhaas/chicago-tickets`, state `review` with PR 2197.
 - Current progress and remaining actions are tracked on that PR and ticket.
 
-## Latest dev integration and newly completed receipts
+## Completed retry, keyboard backup and current publication
+
+The corrected frozen **5034/ae4 desktop 13 retry passed 157/0 in 35m34s** under
+the authorized 2,700-second command allowance, with completed suite, zero page
+errors and vendor checks. `renderer/corrected-desktop13-2700s-pass.log` preserves
+the full timed log. Its printed standard ten-minute steward guidance is the
+harness footer; the actual command allowance is recorded in the frozen manifest.
+The earlier 2,100-second incomplete attempt remains separate and is not green.
+`renderer/local-stages-5034-complete.json` has SHA-256
+`d65790467cb783f5f23761da4d768ba94164be31f03e5fec1e76abbec1dd2eb8`.
+It records seven completed local stages, 588 assertions including 91 repeated
+scaffolding checks, with explicit pre-pin and corrected-harness cohorts. It
+declares **full_renderer_gate: false**; this is not latest b1 aggregate coverage.
+
+The official b1 publication is now complete, build **2026-11-19T00:01:25Z**.
+`publication-b1/` records the publisher log, build stamp, saved monitor/recovery
+snapshots and verification. The published main.js independently matches b1's
+immutable Git source; the unchanged harness SHA is also verified. The reported
+smoke-tree prefix `6a914d94e3eb1159` is attributed to the coordinator, not
+independently recomputed here. Local b1 mobile validation is in progress; **no
+active mobile log was copied**. Remote mobile run **44422910837** was cancelled
+while wholly queued and supplies no executed coverage. Source **44422645793**,
+moving/upload **44422645797**, and desktop 13–15 **44422884843** remain required;
+their current completion is not established by this archive.
+
+The follow-up folder now separately preserves the historical **b501 QA desktop
+13 PASS157/0 in 27m47s**, a **20-check keyboard DOM/browser fixture** at 3131/597,
+and the pushed normalized QA **ddc78606998ea8aee589941c6ab6cae76a80440a**. These
+have separate runtime scopes. ddc's parent is b1 and all 46 current-dev changed
+blobs are preserved; no full combined renderer success is claimed. Neither PR
+has merged. The following sections retain earlier checkpoint context.
+
+## Earlier dev integration and completed receipts
 
 Remote primary **b1f507400cb743a3985cb1d50de1ebd085bd4f63** has parents 5034a724d
 and current dev **c676aa2f4ad6ee8cff0521da6ba8add70d55949c**, with tree
@@ -28,17 +60,17 @@ independently checked as exact in this actual tree and the predicted normalized
 follow-up tree. See the follow-up folder's `integration-c676/` provenance.
 
 The latest application still requires source **44422645793**, moving/upload
-**44422645797**, affected desktop stages 13–15 **44422884843**, and mobile stages
-2–15 **44422910837**. Historical stage results keep their original runtime and
+**44422645797**, affected desktop stages 13–15 **44422884843**, and fresh mobile stages
+2–15. The original remote mobile dispatch **44422910837** was subsequently
+cancelled wholly queued; local b1 mobile work replaces that queue plan. Historical stage results keep their original runtime and
 checkout identities; applicability to changed inputs is documented separately.
 The final dependency review supports retaining prior desktop 1–12 and mobile 1
 behavior, with explicit stage-3 hidden-prose and stage-12 handout-projection limits.
 It does not validate the changed paragraph, source-detail edges, full revised
 route, or new changelog/model behavior. The final mapping is in
 `../t3657-t3658-hunt-accessibility-2026-11-18/integration-c676/t3657-t3658-rebase-c676-plan.md`.
-There is no latest-head full-source/renderer or merge verdict here. The local
-2,700-second desktop 13 retry remains on frozen 5034/ae4; its actively written
-log is not copied. Ticket checkpoint 85ea6b1 predates this dev integration.
+There is no latest-head full-source/renderer or merge verdict here. The completed
+2,700-second desktop 13 retry above remains scoped to frozen 5034/ae4. Ticket checkpoint 85ea6b1 predates this dev integration.
 
 The newly completed historical receipts are:
 

@@ -14,7 +14,7 @@ No production promotion, new server, account service, or paid API is involved.
 - Branch: `steward/t3657-t3658-hunt-accessibility`.
 - Base: `03ecd9678e15988abe44c50e27c2bd9fec569530` from the classroom branch.
 - Draft PR 2199 depends on PR 2197; neither is merged. After PR 2197 merges, use
-  the final normalized 24-file delta plan below against the actual dev squash/fold.
+  the normalized follow-up plan plus the keyboard repair below against the actual dev squash/fold.
   The original base is an audit boundary, not permission to merge raw old history.
   Preserve upstream changelog verbatim and omit duplicate parent repairs.
 - `combined/manifest.json` identifies the base, combined commit, scope, and exact
@@ -25,7 +25,57 @@ No production promotion, new server, account service, or paid API is involved.
   ancestry, and completed focused combined native-town work without extending
   earlier fixture results to another runtime.
 
-## Latest dev provenance and remaining validation
+## New keyboard ownership checkpoint and pushed normalized QA
+
+`keyboard-ownership/` preserves the before-repair reproduction, actual native
+browser harness, two screenshots, complete report, isolation measurement and
+self-test. **20 checks passed: 10 at 390×780 and 10 at 1280×800**, with zero page
+errors, HTTP errors or blocked external requests. The test used actual Navigator,
+desktop capture, PointerLockControls and movement code, without a world or WebGL.
+It covers native rail/app-button keys, standalone controls, native dialog
+ownership, Popup E versus text entry, hand/automatic Inspect, world focus,
+releasing held movement on Tab, and already-prevented keys. Pointer-lock requests
+were counted at the canvas method; mouse capture was not granted. This is not
+full-town, physical-device, screen-reader or complete accessibility certification.
+
+The report tested **3131c798648f4ea244009c4bc66162826565b2e9**, with only an
+uncommitted four-line isolation metadata row. The pushed backup is
+**597a7c392f7300eeafd069b2afe245c44c1bb7cf**, branch
+`backup/t3658-keyboard-ownership`. All seven reported runtime hashes match both
+commits and the new normalized QA below. The exact harness hash is verified.
+`verification.json` records the committed zero-write measurement row and tool
+SHA `d8f2163a1b9f38ebcaf83f68ff1660cf6485bd731b89f7e2e58707c9b853b21d`.
+The saved measurement and self-test passed. The coordinator reported the full
+audit PASS, but no nonempty saved full-audit receipt was available; the unrelated
+empty rail audit file is excluded and no audit was rerun by the archivist.
+
+Normalized QA **ddc78606998ea8aee589941c6ab6cae76a80440a** is now independently
+verified pushed to `qa/t3657-t3658-current-dev-keyboard`. Its tree is
+**fa70a0164ccbef670529470937b170677c5a99b0**, parent **b1f5074**, current dev
+**c676aa2f**. `current-dev-keyboard/` preserves the original Git-object preparation
+receipt and patches; `recovery.json` separately verifies the later push, exact
+parent/tree, all 46 upstream changed blobs, source hashes and retained policy
+and harness blobs. No full renderer had been dispatched for this candidate at
+the coordinator checkpoint. Full combined gates remain pending; PR 2199's real
+head is still 6ee and neither PR is merged. The eventual first-PR squash/fold
+must be checked again and shipped dev changelog preserved.
+The review-authored `current-dev-keyboard/stage5-reuse.json` permits only the
+original b501 stage-5 measured 1835 geometry/policy evidence to carry forward;
+its API-driven checks and unchanged indexed assets do not exercise keyboard
+ownership or establish a fresh ddc runtime pass.
+
+Historical **b501 QA desktop 13 passed 157/0 in 27m47s**, including completed
+suite, zero page errors and vendor checks; its raw log is
+`parent-pin-validation/desktop13-pass.log`. This is old-dev, pre-keyboard evidence,
+not validation of ddc's keyboard or c676's changed changelog/source inputs.
+The frozen primary 5034/ae4 desktop 13 retry also completed 157/0, separately in
+the classroom folder. Primary b1 is now published and local mobile work is in
+progress; remote mobile 44422910837 was cancelled wholly queued. No active local
+mobile logs were copied. Primary source, moving/upload and changed desktop
+13–15 checks remain required. The following sections retain earlier checkpoint
+context and source attribution.
+
+## Earlier dev provenance and remaining validation
 
 Actual remote primary **b1f507400cb743a3985cb1d50de1ebd085bd4f63** combines 5034
 with current dev c676, with tree **858aa04a6f34329f71efbbe0c472ad5902fea23b**.
@@ -49,9 +99,10 @@ merged-input 13–15 and all eight source parts remain required. The listed run
 IDs record dispatch, not successful results.
 
 PR 2199's real head remains 6ee and still depends on PR 2197; neither is merged.
-The active local primary retry remains frozen on 5034/ae4, separate from b1's
-new source 44422645793, moving/upload 44422645797, desktop 13–15 run 44422884843,
-and mobile 2–15 run 44422910837. No latest aggregate gate pass is inferred from
+The completed local primary retry remains scoped to 5034/ae4, separate from
+b1's required source 44422645793, moving/upload 44422645797 and desktop 13–15
+run 44422884843. Remote mobile 44422910837 was cancelled wholly queued; local
+b1 mobile validation is in progress. No latest aggregate gate pass is inferred from
 the historical receipts. Ticket checkpoint 85ea6b1 predates this integration.
 
 The b501 QA desktop 5 job now passed **30 checks in 13m32s**, including all three
