@@ -1,5 +1,13 @@
 # T-3656 classroom tools — verification checkpoint
 
+**MERGED:** [PR2197 delivered to dev; T3656/T3657/T3658 done](portable-handoff-20261119/merged-2197/HANDOFF.md).
+All required premerge validation passed under the recorded scopes. PR2205
+remains parked and unmerged. Earlier pending/failure snapshots remain historical.
+
+**Latest continuation:** [the unchanged moving retry passed; only source aggregate remains pending](portable-handoff-20261119/moving-pass-aggregate-pending/HANDOFF.md).
+Original failure, one-retry limit and upload carry-forward provenance remain
+explicit. No overall release pass or merge is claimed.
+
 **Latest continuation:** [scoped renderer coverage complete at both widths](portable-handoff-20261119/final-renderer-coverage/HANDOFF.md).
 All original cohorts and recovery/reuse limits remain explicit. The source
 aggregate and moving retry still require terminal success; no merge is claimed.
