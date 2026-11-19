@@ -1,0 +1,35 @@
+--- /tmp/t3654-6409-source-control.py
++++ /tmp/t3654-6409-source-control-8and16.py
+@@ -17,7 +17,7 @@
+ RUN=44421763389
+ OUT=Path('/tmp/t3654-6409-source-ledger.json')
+ STOP=Path('/tmp/t3654-6409-source-stop')
+-ALLOWED=('6/16','14/16')
++ALLOWED=('16/16','8/16')
+ ANSI=re.compile(r'\x1b\[[0-9;]*m')
+ sha=lambda p:hashlib.sha256(Path(p).read_bytes()).hexdigest()
+ git=lambda *args:subprocess.check_output(['git',*args],cwd=APP,text=True).strip()
+@@ -67,10 +67,12 @@
+             print(json.dumps({'stopped':'exact-current hosted source succeeded','run':RUN,'head':HEAD}));sys.exit(75)
+     rows=declarations()
+     if OUT.exists():d=json.loads(OUT.read_text())
+-    else:d={'schema':'t3654-6409-source-ledger-v1','scope':'Fresh6409 local6/16 and14/16 only; no historical evidence imported and no full-gate claim.',
++    else:d={'schema':'t3654-6409-source-ledger-v1','scope':'Fresh6409 receipts only; run only explicitly authorized native partitions; no historical evidence or full-gate claim.',
+             'source_commit':HEAD,'source_tree':TREE,'included_dev_base':BASE,'hosted_run_id':RUN,'prepared_snapshot':s,
+             'declarations':rows,'declaration_snapshot':s['harness_sha256']['tools/check.sh'],'planned_parts':list(ALLOWED),'attempts':[]}
+     assert d['source_commit']==HEAD and d['declarations']==rows and not any(r['status']=='running' for r in d['attempts'])
++    d['scope']='Fresh6409 receipts only; run only explicitly authorized native partitions; no historical evidence or full-gate claim.'
++    d['planned_parts']=list(dict.fromkeys([r['part'] for r in d['attempts']]+list(ALLOWED)))
+     attempt=1+sum(r['part']==part for r in d['attempts']);base=Path('/tmp/t3654-6409-source-'+part.replace('/','of')+f'-attempt{attempt}')
+     log=Path(str(base)+'.log');timings=Path(str(base)+'-timings.tsv');process=Path(str(base)+'.process.json');wrapper=Path(str(base)+'-wrapper.sh')
+     assert log!=process and not any(p.exists() for p in (log,timings,process,wrapper)),'Refuse to overwrite evidence'
+@@ -86,7 +88,8 @@
+     run={'part':part,'status':'running','start_epoch_s':time.time(),'start_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+          'start_snapshot':s,'declaration_snapshot':s['harness_sha256']['tools/check.sh'],'declared_steps':len(rows),'selected_ordinals':selected(part,rows),
+          'log':str(log),'timings':str(timings),'wrapper':str(wrapper),'wrapper_sha256':sha(wrapper),'process_receipt_path':str(process),
+-         'required_readers':True,'required_base':True,'timeout_s':590,'kill_after_s':5,'jobs':4}
++         'required_readers':True,'required_base':True,'timeout_s':590,'kill_after_s':5,'jobs':4,
++         'controller':str(Path(__file__)), 'controller_sha256':sha(__file__)}
+     d['attempts'].append(run);d['state']='running';save(d)
+     print(json.dumps({k:run[k] for k in ['part','log','timings','wrapper','wrapper_sha256','process_receipt_path']}))
+ elif mode=='finish':
