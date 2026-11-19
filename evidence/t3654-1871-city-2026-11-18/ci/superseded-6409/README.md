@@ -1,0 +1,9 @@
+# Historical 6409 browser results and bounded supersession
+
+The final snapshot at 02:09:08 UTC on 19 November 2026 preserves source `6409dda1222e1284e111ab0efde1c471f3284d60` as historical evidence. Its full hosted source gate succeeded. Three original mobile browser groups completed successfully: stages 1–4 passed 323 checks, 5–8 passed 76, and 9–12 passed 69, with zero failures/page errors. That is 468 recorded checks across 12 of 30 stage/viewport cells; repeated always-on checks are not distinct coverage. No complete browser gate was obtained.
+
+Root authorized ordinary cancellation of exactly the nine unfinished original 6409 smoke runs after required upstream integration made a new frozen tree necessary. The producer verified the repository, workflow, branch and head identities before each cancellation. Authorization, before/after/final metadata, HTTP responses and per-run receipts preserve the actual actions. All nine finished cancelled; the three successful runs were untouched. No force cancellation or new dispatch was performed, and cancellation is not a test failure.
+
+`original-manifest.json` and `archive-dependency-map.json` bind all 58 released dependencies, reusing previous exact originals. `6409-final-dated-ledger.json` retains 12 dated verified cells and explicitly gives the integrated head zero coverage. Some original planning and recording prose still describes the earlier active batch; the later supersession fields and final statuses control its historical scope. The authorization names the upstream integration requirement known at its capture; later integration commits are documented separately.
+
+The earlier first-batch, four-cell and full-source receipts remain unchanged. Neither those results nor this supersession ledger provide source/browser acceptance for the next head. Existing IDs are historical records, not a queue to replay.

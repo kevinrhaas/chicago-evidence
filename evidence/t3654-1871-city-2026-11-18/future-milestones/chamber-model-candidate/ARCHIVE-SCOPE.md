@@ -1,0 +1,13 @@
+# Isolated Chamber model candidate: incomplete image gate
+
+This archive preserves exactly the 58 payloads named by `public-archive-manifest.json` (30,853,755 bytes), plus that manifest and archive-authored scope/provenance. Original README and handoffs are retained unchanged. The raw files include a 6,597,140-byte GLB, recipe, deterministic emitter, source/rights records, native camera comparisons and geometry validation. The duplicate 25,269,667-byte tar was not copied; its verified original SHA is `d6f4c2d23b27292410dc6792e96d93e97ac823dff1d2151da7f597ffb8a49f51`.
+
+The actual GLB SHA is `15c8c236110fe5bdb34f5c8d3269580c2303bb761fbf446b967c776812716e6e`. Supplied validation reports 74,228 triangles, nine material primitives and three embedded original procedural textures, with deterministic regeneration and geometry integrity checks passing. The author invoked the existing native Three/GLTFLoader comparison tool against this isolated candidate and inspected both results. Those checks are not historical or visual acceptance.
+
+Both current camera match verdicts remain `differs`. Preliminary nine-corner fit residuals are 21.3997 px RMS / 41.5563 px maximum for Andreas and 15.0911 px RMS / 29.1725 px maximum for Chicago Illustrated. They are not accepted solved cameras. Ornament, facade alignment, portal/basement forms and material appearance remain open; the original-building view inventory and Carbutt photograph lead are incomplete.
+
+The working 93-by-181-foot shell retains the 180/181-foot depth conflict. The 24 m cornice, 31.0104 m roof deck, 38.3 m separate staff top and recent 0.8 m facade adjustment are declared reconstruction, not recovered absolute source heights. Andreas's contradictory 99-foot statements and the contemporary undatumed 100-foot report remain unresolved. Unpictured elevations and street-relative basement datum are also reconstructed.
+
+The candidate is unregistered, with null world placement. No named-property integration, source/license registration in the app, terrain contact, generic-context replacement, whole-city publication, image-gate acceptance or cinematic completion is claimed. The later implementation must resolve/refine the documented differences and separately validate placement and context replacement. This is distinct from the unapplied pre-fire research-site candidate.
+
+Only whitelisted public-domain-original reference routes and original generated code/materials are present. No CHM poster bytes, full source books, external dependency symlinks, browser profiles, copied app tree or third-party textures were archived. The original rights records retain attribution and their qualifications; no new CC0 claim is made.
