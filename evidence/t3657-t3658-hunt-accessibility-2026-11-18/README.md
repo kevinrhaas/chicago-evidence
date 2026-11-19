@@ -25,7 +25,29 @@ No production promotion, new server, account service, or paid API is involved.
   ancestry, and completed focused combined native-town work without extending
   earlier fixture results to another runtime.
 
-## Dated ddc dispatch and primary progress checkpoint
+## Completed ddc desktop 1–4 range
+
+Published renderer run **44426888539** completed on exact
+**ddc78606998ea8aee589941c6ab6cae76a80440a** with **320 passed,0 failed in38m29s**
+at1280×800. `current-dev-keyboard/renderer/desktop1-4-pass.log` and its verification
+record preserve actual `SMOKE_VIEWPORT=desktop`, `SMOKE_STAGE=1-4`, checkout,
+publication and complete final suite, zero-error and vendor assertions. The
+group contains **307 staged checks across1–4 plus13 always-on checks once**;
+it must not be counted as four separate13-check scaffolding runs.
+
+Other ddc remote ranges remain in progress at this saved checkpoint. The full
+local combined source gate is starting separately in an isolated validation
+worktree; no unfinished local or remote raw log was copied. No full combined
+source/renderer success is claimed. Primary b1 mobile2–15 now passed826/0,
+recorded separately in the classroom folder; stage2's lost shell-exit receipt
+remains explicit. Primary source44422645793 was refreshed once: attempt1's
+part2PASS174 is historical, attempt2 has part4PASS174, and seven parts plus
+aggregate remain pending. Primary b1 desktop13–15 additionally completed310/0
+in54m06s, archived in the classroom folder with exact published environment
+and final guards. Neither PR is declared merged. The earlier dispatch
+and preparation descriptions below remain dated historical observations.
+
+## Earlier dated ddc dispatch and primary checkpoint
 
 The normalized ddc renderer groups are now dispatched. The original receipt is
 `current-dev-keyboard/dispatches-20261119-0054.json`; its queued states describe

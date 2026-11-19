@@ -18,7 +18,52 @@ branch `steward/t3656-browser-classroom`. This checkpoint preserves completed wo
 - Ticket: `T-3656`, in `kevinrhaas/chicago-tickets`, state `review` with PR 2197.
 - Current progress and remaining actions are tracked on that PR and ticket.
 
-## Completed b1 mobile 2–12 and current merge CI receipts
+## Completed b1 phone cohort and source rerun attempts
+
+The [consolidated primary coverage matrix](primary-coverage-matrix.md) links every retained and fresh renderer log to its full SHA-256 record, with the scoped DEV-input review and remaining source requirements.
+
+All **b1 mobile stages 2–15 passed 826/0 checks**, comprising 644 staged checks
+and 182 repeated scaffolding checks. Summed reported runtime was **69m25s** in
+the software-rendered test environment; this is not a device benchmark.
+`renderer/b1-mobile-complete/` preserves the immutable final manifest, operator
+digest and completed 13–15 logs. Its verification references the unchanged
+2–12 logs in their earlier folder rather than duplicating them. All fourteen
+log hashes, final summaries and suite/page/vendor guards were checked. The
+manifest SHA-256 is
+`e111d4b45f6ac9798345299f26ed926f39d8577b046caaf0ab674b1484dd4610`;
+the digest SHA-256 is
+`105c3879f6db1d2372204330879a896c2ad563d6cec66be8fc80d1a7974b9a85`.
+Stage2's original shell-exit receipt remains lost; complete final PASS and all
+guards establish its recorded completion without inventing an exit code.
+Stages3–15 have operator-recorded exit0. Mobile1 retains its separately reviewed
+earlier evidence; it is not counted or relabeled as a fresh b1 execution here.
+The historical frozen 5034/ae4 manifest remains unchanged.
+
+Source run **44422645793** was refreshed **once** on unchanged b1 / PR merge
+**cda72c805** / dev **c676** inputs. `ci/source-44422645793/` preserves the pre,
+cancel and rerun receipts plus separate attempt records. Attempt1 retained
+**part2 PASS174** while the other seven jobs were cancelled wholly queued. The
+existing part2 log is referenced with its verified hash and explicit attempt1
+source alias; it is never overwritten or counted as an attempt2 pass. Attempt2
+now has **part4 PASS174**, completed at01:24:54UTC. Its other seven parts,
+including part2, and aggregate remain required. There is no complete source
+gate success in this checkpoint. Prior moving/upload success remains separately
+scoped to the same actual PR merge.
+
+The follow-up ddc desktop **1–4 group passed320/0 in38m29s**, including307 staged
+checks across the group and13 always-on checks counted once. Its exact environment,
+published checkout and final suite/page/vendor guards are archived in the
+follow-up folder. Other remote groups remain in progress at this dated snapshot;
+the isolated local combined source gate is separate and no partial output was
+copied. Current **b1 desktop13–15 also completed310/0 in54m06s** at01:27:36UTC,
+with297 staged checks across the range and13 always-on checks once. Its raw
+published log and exact environment/final-guard verification are in
+`renderer/b1-desktop-13-15/`; earlier desktop1–12 retain their separate reviewed
+behavioral applicability and original attribution. Required source checks
+remain pending; no whole release gate or PR merge is declared. Earlier sections retain their
+original checkpoint context.
+
+## Earlier b1 mobile 2–12 and merge CI checkpoint
 
 At this dated **2026-11-19 00:54 UTC** checkpoint, local b1 mobile stages **2–12
 passed 490/0 checks**: 347 staged checks and 143 repeated scaffolding checks.
