@@ -12,3 +12,11 @@ with the 20-check native DOM fixture in [keyboard-ownership](../keyboard-ownersh
 and integration into the ddc QA candidate. The historical recommendation is not
 rewritten to present that earlier concern as still uninvestigated. Full release
 status remains in the main evidence checkpoint.
+
+## Subsequent separate implementation checkpoint
+
+T-3663 now has a backed-up implementation and focused pure checks. See the
+[source checkpoint](../../t3663-gossip-investigation-2026-11-19/README.md).
+Its browser harness is unrun, its source-content wording finding has a separate
+exact-blob closure, and full release checks/PR work remain pending. This does not change
+the historical read-only status or scope of the recommendation above.
