@@ -1,0 +1,9 @@
+# Frozen v2 model checkpoint
+
+This folder copies exactly 79 whitelisted regular payloads (49,576,835 bytes), plus the original whitelist, archive checkpoint, archive dependency map and this scope note. The original candidate README/HANDOFF remain byte-identical. No tar, node_modules, dependency symlinks, browser profiles, complete app or restricted CHM bytes were added. The earlier v1 archive remains unchanged.
+
+The reproducible 18,595,376-byte GLB has 312,957 triangles, 397,059 vertices and nine material primitives. Its geometry-integrity and byte-reproduction checks pass. Generator, ornament helper, recipe, original textures, public source pages, full cleared Carbutt stereo card and acquisition/rights provenance are retained. This is an unplaced detailed master; city registration, suitable runtime derivative and terrain/footprint integration remain future work.
+
+All three actual native comparisons remain **differs**. Drawing cameras are unchanged preliminary fits; Carbutt is a degenerate diagnostic initialization with principal point outside the chosen exposure and fitted roll at its bound. No camera calibration, photo-match acceptance, photographic/cinematic completion or exact 1871 event/occupancy claim follows. Height, depth, grade, dial, hidden-face and material uncertainties are explicit in HANDOFF.txt and the match records. Historical first/second v2 screenshots are clearly labeled and are not the current three comparisons.
+
+Native rendering depended on externally installed Node/Chromium/Playwright/Three and read-only repository tools, whose provenance is recorded; these dependencies are not bundled. Reproduction and freshness are recorded candidate checks, not a full application or browser gate. The archive performed read-only hash/record verification and did not rerender or alter geometry.

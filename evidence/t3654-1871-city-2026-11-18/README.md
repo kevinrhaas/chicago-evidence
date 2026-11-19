@@ -16,6 +16,8 @@ The latest source checkpoint is `822f0a9ae94b52c893a00aaf7baf698a3cd1a6b9`, with
 
 The dated 822 source snapshot has zero verified parts, with all eight job IDs created and queued. Six authorized browser runs cover 30 planned cells; all were queued at dispatch, and the later fixed job addendum shows desktop stage 13 beginning checkout, with zero passing cells. Full current acceptance remains pending. The earlier 933 native failure, qualified part-8 and upload successes, six ordinary browser cancellations, and separate obsolete-source-aggregate cancellation remain under `ci/superseded-933-source/` and `ci/superseded-933-browser/`. No old-head result supplies current acceptance.
 
+The final bounded handoff adds `future-milestones/chamber-model-v2/`: the exact 79-file reproducible exterior candidate and all three native comparisons, each still **differs**. The full independently acquired Carbutt stereo card and its public-domain provenance are included; unresolved camera/height/grade/dial details remain explicit. Version 1 is preserved and no model is installed in the city. `future-milestones/prefire-carbutt-5363e65/` holds the seven-file final validation/handoff for pushed research commit 5363e654; this is separate follow-up work. Current pending validation IDs and safe resumption instructions are under `resumption/822-browser-wrapup/` and `resumption/822-source-wrapup/`, with zero verified 822 source/browser coverage in those fixed captures.
+
 ## Completed evidence
 
 | Location | Contents and scope |
