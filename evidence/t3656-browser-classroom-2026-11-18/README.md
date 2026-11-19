@@ -1,5 +1,9 @@
 # T-3656 classroom tools — verification checkpoint
 
+**Latest continuation:** [scoped renderer coverage complete at both widths](portable-handoff-20261119/final-renderer-coverage/HANDOFF.md).
+All original cohorts and recovery/reuse limits remain explicit. The source
+aggregate and moving retry still require terminal success; no merge is claimed.
+
 **Latest continuation:** [all eight source partitions passed; complete scoped phone 1–15 coverage](portable-handoff-20261119/source8-phone15/HANDOFF.md).
 Source aggregate, desktop 13–15 and moving retry still require terminal passing
 evidence. Recovered phone stage 1 remains distinct; no overall release or merge is claimed.
