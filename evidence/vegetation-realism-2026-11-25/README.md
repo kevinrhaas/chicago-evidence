@@ -52,3 +52,5 @@ Complete native partitions, preflight, exact-head CI and the mapped published sm
 `m2-evergreen-winter/` shows the actual cedar and pine templates retaining green colour under the corrected complete six-row atlas exemption. These are material fixtures, not historical scene photographs. The M2 relief regression first fails on Full → Light retaining the extra sampler, then passes after the reused street/front-yard material drops it and restores the same atlas on Full.
 
 `t3748-t3760-prototype.patch` and `vegetation-m2-complete-runtime.json` preserve the uncommitted seasonal layer over its staged M1 baseline. This is a reviewable prototype, not the final integrated PR head. Its complete seasonal scene sweep, integrated native gate, required CI, published smoke and memory/frame grid remain pending. The M1 native gate is also still completing; these scene receipts do not declare either change merge-ready.
+
+The four new M2 files needed alongside the prototype diff are in `t3748-t3760-new-files.tar.gz` (paths relative to `chicago/4d/`); `t3748-t3760-new-files.txt` lists them. The patch alone excludes these previously untracked files.
