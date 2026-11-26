@@ -41,3 +41,7 @@ For **1871 before/after**, a filename's `summer` describes the requested case. T
 ## Current M1 pull request
 
 [PR2358](https://github.com/kevinrhaas/chicago/pull/2358) is draft on `e86fbf5c1b22a5f45fa89b034ea2124e62f9c21e`, parentdev49a, oneT3747commit. Final [native](https://github.com/kevinrhaas/chicago/actions/runs/45861307850), [phone mapped smoke](https://github.com/kevinrhaas/chicago/actions/runs/45861297679), [desktop mapped smoke](https://github.com/kevinrhaas/chicago/actions/runs/45861302234), [memory/still grid](https://github.com/kevinrhaas/chicago/actions/runs/45861306637), and [moving/upload-release](https://github.com/kevinrhaas/chicago/actions/runs/45861307962) are queued/running. No merge claimed.
+
+## Refreshed1904 epoch and e86CI
+
+All8currentdev49a1904view jobs pass (`m2-dev49a-1904-views/index.json`,18images). Completee86nativeCI and moving/upload-release pass; phone mapped smoke passes. Standardgrid is14/15green, with1904phone554.7/550MiB red. The exact stock local reproduction reads533.4MiB; separate retainerprofile548.5MiB. No source/limits changed and no cause/fix is claimed (`m1-e86-final-ci-investigation/`). The classroomT3764update has since landed ondev5a, and is being integrated. FinalnewheadCI remains required. The first unobstructed capture was deliberately interrupted to run the memoryinvestigation, is retained unqualified and is being repeated;8new1904jobs staygreen. NativeM2retains8greenparts; part9was deliberately interrupted to serialize the newcorepreflight and will be repeated.
