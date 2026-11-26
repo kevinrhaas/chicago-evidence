@@ -34,7 +34,7 @@ Synthetic sources depict fictional adults, not archival people. Profile depth,
 unseen hair and body/clothes remain reconstructed. This is a visual pilot, not
 likeness approval. The review hair proposal is not the town default.
 software-measurement.json explicitly reports SwiftShader software rendering.
-Its 833.3 ms median / 1616.6 ms p95 frame interval is not a hardware-GPU pass.
+Its 783.4 ms median / 866.6 ms p95 frame interval is not a hardware-GPU pass.
 It includes 16 LOD2 figures, 152 draws, 176,568 triangles, pixel ratio 1.
 Hardware and complete-town low-power-PC performance still need measurement.
 The viewer exports the same report on the PC where it runs.
@@ -56,3 +56,26 @@ Phone stage 1: 96 passed, 0 failed, 6m11s. Desktop stage 1 rerun alone:
 scene capture. These are stage 1 of 15, not the complete renderer gate.
 The photo review and population contract checks pass. Real GPU qualification
 and default population rollout remain outstanding.
+
+FITTED HEAD SHAPE CORRECTION
+The before/after body reset originally zeroed head_shape and forehead_height,
+which are marked full-scope even though they shape the head. The review now
+preserves both. The comparison/gallery screenshots and software measurement
+were regenerated after this correction. head-parameter-check.json records the
+actual browser call into applyVariation, preserving the fitted head, forehead
+and option parameters. The old images/packages remain in repository history.
+
+REPRODUCTION
+writer-reproduction.json records two actual writes on a clean source commit,
+24 output mtimes advanced without changing any committed byte, and the refusal
+and byte-exact repair of a deliberately damaged atlas. Manifest ordering is
+explicitly pending after the body/variation/face-library writers it consumes.
+The viewer archive omits the unrelated application changelog module.
+
+GEOMETRY CACHE CORRECTION
+Before and after now use distinct geometry cache keys after their shared body
+seed is chosen. The checked main body mesh has distinct geometry and 1,828 of
+13,341 position components change. The fitted head, forehead and option values
+are captured at the actual browser call into applyVariation. Comparisons,
+all-sixteen view, phone view and software timing were regenerated after this
+cache fix. This checks the mesh as well as parameter plumbing and textures.
