@@ -1,5 +1,9 @@
 # Better Trees — T-3747, T-3748 and T-3760
 
+**Current integration update:** upstream `172bbb62b9ff07352a683a291bf34ea6d392b57d` regenerated the 1871 context and reassigned serial street-tree IDs. The old prototype placement deletions are **superseded and must not be applied to current dev**. A new immutable-input audit checks all 10,236 current tree centres (6,693 street + 3,543 context) against 38,598 context building plans and 19 named solid footprint parts: zero strict trunk-centre intrusions. No crown-clearance claim follows. The old pumping-works tree is absent upstream; the shared renderer handoff will preserve current planting.
+
+The frozen M1 candidate completed its entire local native gate through 17 green receipts (one 16-way slot split into its two 32-way halves). `T-3747-frozen-candidate-complete-native.json` and `logs/m1-frozen-native/` bind that source. The interrupted 11/16 log is retained, not counted. Integration now includes upstream Great Fire bare-tree state and regenerated reports; focused integration tests, preflight and whole exact-head CI are still required. Earlier scene/prototype receipts remain tied to their recorded inputs, not to this newer city dataset.
+
 Owner request: improve all trees and flora in Chicago 4D's 1812, 1835, 1871 and 1904 worlds, with adaptive detail and all four seasons. Integration target is `dev`.
 
 ## T-3747 methods
