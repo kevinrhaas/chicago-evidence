@@ -28,8 +28,12 @@ These are Chromium SwiftShader captures. The front-source fit and photographic t
 
 Exact added face textures, including mipmaps: 12,873,272 bytes (12.28 MiB); conservative metadata also stays below 13 MiB. Three crowd sheets share one resident-or-loading nearby page. Body/cloth textures, existing Grey skins, geometry, image decode and driver overhead are outside this added bound. This is not a complete-town hardware FPS qualification.
 
-The source index remains below its unchanged 328,000-byte capacity at 323,390 bytes. Compressed first-open index + Sources JS/CSS is 81,948 bytes, inside the unchanged 120,000-byte cap. One project-processing clearance record replaces duplicated derivative citations; every original archive citation, link, rights statement, person/source/crop identity and hash remains intact.
+The source index remains below its unchanged 328,000-byte capacity at 323,390 bytes. Compressed first-open index + Sources JS/CSS is 81,949 bytes, inside the unchanged 120,000-byte cap. One project-processing clearance record replaces duplicated derivative citations; every original archive citation, link, rights statement, person/source/crop identity and hash remains intact.
 
 Published local verification checks the served modules, all three default catalogs, all 19 detail pages, both period card portraits and all 7,610 actual body assignments across four years. Exact-ID, scene, sex, own-skin and visitor-choice guards, unchanged existing heads, age/height and child proportions are also checked.
 
 Evidence is stored here under the owner’s instruction in chicago/4d/AGENTS.md lines 417–423: “Bulky evidence goes to kevinrhaas/chicago-evidence, never to the tickets repo.”
+
+## Stored portrait cards
+
+Both daughters’ actual People cards deliver their 480×640 period portraits at 390px and 1280px widths, with zero page errors (`card-checks.json`). The four `rendered/card-*` captures show the edited period clothing and backgrounds. Desktop captures await decoded pixels before photographing. This checks UI delivery, not hardware frame rate.
