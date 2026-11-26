@@ -1,5 +1,7 @@
 # Current candidate: source-bound checks, merge still pending
 
+> Latest integration base: `49a0a39e1316a2b3b708238556f494aeea537e99`. It adds two 1904 structure/yard updates and First Fort tour narration. Both tree candidates preserve those changes; the tree renderer modules and 1871 tree inputs are unchanged. Official liberties/source-use owners and the new basement regression pass. The older 1904 photos and 538.5-MiB local memory row describe their earlier asset epoch, not acceptance of these new assets. A fresh official publication and 1904 recapture are in progress; final-head CI is still required. Neither app PR is merged yet.
+
 The follow-up patch applies to PR #2358 head `c1527e6cd948da887d98573796cc386eb7b75fc5`. These readings describe the current uncommitted candidate on data epoch `172bbb62b9ff07352a683a291bf34ea6d392b57d`. Dev has since accepted unrelated clothing changes through `a43ab36ae0bddfaa5ecf542a048d3b9dd7f98eed`; integration working trees now preserve that update, with all tree/plant runtime bytes verified unchanged; all required final-head checks remain pending. No merge acceptance is claimed here.
 
 Full keeps its 14-metre close ring and all three leaf sprays. A shared, three-sided supporting shoot now tapers to one tip, using three faces instead of six. The seven-form geometry comparison verifies unchanged Full leaves and dimensions, byte-identical ordinary/coarse/bare geometry, and no added degenerate faces. The tree records and density are unchanged.
