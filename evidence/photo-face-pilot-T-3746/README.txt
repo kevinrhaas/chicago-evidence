@@ -41,3 +41,18 @@ The viewer exports the same report on the PC where it runs.
 
 browser-checks.json records desktop 1180 x 1050 and mobile 390 x 780 with no
 browser errors. downloaded-measurement.json is the JSON exported by the page.
+
+CURRENT POPULATION COVERAGE
+All 1,234 drawn people were checked against their actual scene body assignments.
+1,048 generic adults get source-fitted photos across 1,076 assignments. 160 child
+and 27 personal-face assignments are protected. Multiple bodies retain one face.
+resident-eyes-checks.json verifies the four shown residents keep iris textures,
+softened sclera and the same source-guided lid rest as the town actor path.
+
+PUBLISHED FUNCTIONAL CHECKS
+Phone stage 1: 96 passed, 0 failed, 6m11s. Desktop stage 1 rerun alone:
+96 passed, 0 failed, 11m36s, zero page errors. That desktop run exceeds the
+10-minute foreground budget; the first concurrent run timed out settling a
+scene capture. These are stage 1 of 15, not the complete renderer gate.
+The photo review and population contract checks pass. Real GPU qualification
+and default population rollout remain outstanding.
