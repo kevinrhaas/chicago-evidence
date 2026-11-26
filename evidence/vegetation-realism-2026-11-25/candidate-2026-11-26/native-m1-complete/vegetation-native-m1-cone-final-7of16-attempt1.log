@@ -1,0 +1,313 @@
+
+[1m== Smoke input hashes retain page changes and hash published release metadata with the notes (T-2380)[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | PASS clean fixture has two hashes
+   self-test | PASS build stamp changes neither partition
+   self-test | PASS actual release value "1-4" changes only notes
+   self-test | PASS actual release value "wrong" changes only notes
+   self-test | PASS actual release value "3-1" changes only notes
+   self-test | PASS actual release value "" changes only notes
+   self-test | PASS missing page change invalidates global input hash
+   self-test | PASS duplicate page change invalidates global input hash
+   self-test | PASS renamed page change invalidates global input hash
+   self-test | PASS attributes page change invalidates global input hash
+   self-test | PASS html page change invalidates global input hash
+   self-test | PASS ignored published audio catalogue changes the global hash only
+   self-test | PASS ignored published audio catalogue changes the global hash only
+   self-test | PASS ignored published audio catalogue changes the global hash only
+   self-test | PASS missing published audio catalogue differs from both existing and empty
+   self-test | PASS canonical notes change only their partition
+   self-test | PASS unstaged chicago/4d/renderers/web/js/town.js cannot license reuse
+   self-test | PASS staged chicago/4d/renderers/web/js/town.js changes global hash
+   self-test | PASS unstaged chicago/4d/data/town.json cannot license reuse
+   self-test | PASS staged chicago/4d/data/town.json changes global hash
+   self-test | PASS unstaged chicago/4d/assets/town.glb cannot license reuse
+   self-test | PASS staged chicago/4d/assets/town.glb changes global hash
+   self-test | PASS unstaged chicago/4d/tools/smoke_renderer.mjs cannot license reuse
+   self-test | PASS staged chicago/4d/tools/smoke_renderer.mjs changes global hash
+   self-test | PASS unstaged chicago/4d/tools/write_entry_pages.mjs cannot license reuse
+   self-test | PASS staged chicago/4d/tools/write_entry_pages.mjs changes global hash
+   self-test | PASS unstaged chicago/4d/tools/audio_hosting.mjs cannot license reuse
+   self-test | PASS staged chicago/4d/tools/audio_hosting.mjs changes global hash
+   self-test | PASS unstaged chicago/4d/tools/audio_smoke_replay.mjs cannot license reuse
+   self-test | PASS staged chicago/4d/tools/audio_smoke_replay.mjs changes global hash
+   self-test | PASS unstaged chicago/4d/tools/audio-hosting.json cannot license reuse
+   self-test | PASS staged chicago/4d/tools/audio-hosting.json changes global hash
+   self-test | PASS unstaged chicago/4d/tools/audio-host-verification.json cannot license reuse
+   self-test | PASS staged chicago/4d/tools/audio-host-verification.json changes global hash
+   self-test | PASS restored fixture returns to exact original hashes
+   self-test | 35 smoke-input partition checks passed
+
+[1m== A batch's compact bounds hold three's own, rounded outward, and answer every reader with the positions gone (T-3173)[0m
+ok   1. every stored box and sphere contains three's own, within float32 steps
+ok   2. the Box3 and Sphere objects are gone, and a second compaction is a no-op
+ok   3. with the positions gone, the getters answer and the cull keeps what it kept
+ok   4. setGeometryAt drops the row; a later geometry and a stale id are three's
+ok   5. the rounding helpers round outward and keep exact values
+ok   6. actual front yards release 1712627 bytes; picks, templates, rebuild and disposal preserved
+{"fixtureRows":512,"oldBytes":20992,"newBytes":8622,"codec":{"rows":512,"bytes":8622,"codec":"q16-bit-exact","centerExceptions":33,"radiusDictionaryEntries":248,"radiusIndexBytes":1},"exactOldFloat32Values":true}
+ok   7. q16 cache answers the exact former Float32 oracle and retains native lifecycle/cull/raycast
+ok   8. q16 center exception IDs cover large row IDs; radius dictionaries preserve exact words
+ok   9. nonnormalized, off-grid and unprofitable batches retain the original Float32 representation
+ok   10. original Float32 oracle rejects broken signed-zero and non-grid admission
+{"actualBuildingQuantizerRows":256,"oldBytes":10496,"newBytes":4352,"codec":{"rows":256,"bytes":4352,"codec":"q16-bit-exact","centerExceptions":0,"radiusDictionaryEntries":0,"radiusIndexBytes":0},"officialWholeSceneSaving":"UNMEASURED"}
+ok   11. the actual building quantizer produces eligible caches with exact former Float32 answers
+batch bounds: 400 geometries compacted, every reader answered
+
+[1m== The joint-floor check refuses a missing seat, a forward offset and a batch key blind to the offset (T-3226)[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | PASS self-test: the joint-floor check refuses a missing seat, a forward offset and a blind batch key
+
+[1m== …and a bronze that is a darker gold, a drifted token or an unreadable ink is refused (T-2671)[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | self-test: the real palette passes ok
+   self-test | self-test: a bronze that is only a darker gold is refused ok
+   self-test | self-test: a stylesheet token drifting from GRADE_COLORS is refused ok
+   self-test | self-test: a light-theme ink too pale to read is refused ok
+   self-test | self-test: a silver that has drifted to gold is refused ok
+   self-test | self-test: a grade chip painted from a literal colour is refused ok
+
+[1m== A grown wood draws every copy of one template as one instanced entry, drawing the same stems with the same instance data, culled as before (T-3363)[0m
+  ok   every stem in view: one instanced draw per template, the same stems
+  ok   renderer.info is given the triangles of every instance past the first
+  ok   hidden stems and stems the frustum culls stay undrawn
+  ok   the sun's pass (onBeforeShadow) is regrouped too, with its own cull
+  ok   an unpatched material (a pick stand-in) is drawn as three draws it
+  ok   without an instanced multi-draw the batch is left as three draws it
+  ok   another batch's multi-draw passes through untouched
+  ok   a batch without room for its table draws nothing rather than the wrong stems
+  ok   the shader reads the table through the run (the patch is written once, after three's)
+  note 4000 stems: three's own list 0.895 ms, with the regroup 1.071 ms, 3 draws after
+
+OK: every copy of one template draws as one instanced entry, drawing the same stems
+
+[1m== Dated habitat audio qualifies real fauna, leaves silence and bounds voices, buffers and stale work (T-3534)[0m
+HABITAT AUDIO PASS: actual dated records/ground; sun, season, era and cold gates; distant offscreen bird anchors; finite phrases and real silence; bounded memory/voices; mute/disposal/decode races; existing mixer integration
+
+[1m== Home offers the Field Check once per device, declining or finishing never re-prompts, and the first Jaunt, Jump and Reconstructed building each hint once (T-2664)[0m
+test_tour_offer: the Field Check is offered once per device, declining never re-prompts, and each of five hints shows once
+
+[1m== Moment links contain only bounded public scene state and photos release their temporary raster (T-3656)[0m
+MOMENT PASS — private query omitted; Jump keeps only ground, facing, season and hour, nearest open ground in coverage; bounded scene state round-trips; bounds/collision enforced; 9307-character real source caption fitted in 14 measurements with intact metadata; stamped PNG released after encoding
+
+[1m== Inspect's Sources tab groups every fact by grade with real counts, names each source by its own citation with no id or tier label, folds the full citation, and lists Liberties by name (T-2644)[0m
+test_nav_sources: OK
+
+[1m== Jaunt flights and Fly rides rise over the buildings and chimneys in their way (T-3734)[0m
+PASS clearance arithmetic: polygon distance and the climb-before envelope
+PASS skyline: tops, reach, the stands left out
+PASS glide, a hop past one house: was 8.1 m inside, now clear (largest step 1.31 m a frame)
+PASS glide, a short glide down the street: was 4.4 m inside, now clear (largest step 1.72 m a frame)
+PASS glide, across the street diagonally: was 6.2 m inside, now clear (largest step 1.31 m a frame)
+PASS closing look: hovers over the roofs, not inside them
+PASS Fly ride down the street of houses: was 18.2 m inside, now clear
+PASS Fly ride over one house to the next street: was 21.1 m inside, now clear
+PASS Fly ride diagonally across the block: was 11.0 m inside, now clear
+PASS Fly ride beside a 60 m tower: climbs in place, then over it, and arrives
+PASS flight clearance (T-3734)
+
+[1m== everyone in town tells a story, their own first, and none twice until all are told (T-3553)[0m
+  1835: 3 stories wait for a teller: s35-pch-going, s35-pch-town-boy, s35-pch-mission
+test_tales: 28856 checks passed
+
+[1m== loading evidence refuses promoted or unrelated facts (T-1275)[0m
+.....
+----------------------------------------------------------------------
+Ran 5 tests in 20.255s
+
+OK
+
+[1m== An 1812 engagé's working dress is sourced, layered and skinned on the shared rig[0m
+........
+----------------------------------------------------------------------
+Ran 8 tests in 28.645s
+
+OK
+
+[1m== C02 actual door hierarchy refuses closed-preserving detachment (T-2794)[0m
+[
+  {
+    "name": "reparent-all-door-geometry",
+    "checker": "test_carriage_c02_door.py",
+    "returncode": 1,
+    "expected_success": false,
+    "receipt_survives": true,
+    "receipt": "reparent-all-door-geometry-receipt.json",
+    "log": "reparent-all-door-geometry.log",
+    "verified_receipt_stage": "closed_geometry_and_actual_ancestry_binding",
+    "verified_rejection_reason": "Actual door ancestry mismatch for source part door_lower_panel at exported node 35"
+  },
+  {
+    "name": "reparent-one-door-part",
+    "checker": "test_carriage_c02_door.py",
+    "returncode": 1,
+    "expected_success": false,
+    "receipt_survives": true,
+    "receipt": "reparent-one-door-part-receipt.json",
+    "log": "reparent-one-door-part.log",
+    "verified_receipt_stage": "closed_geometry_and_actual_ancestry_binding",
+    "verified_rejection_reason": "Actual door ancestry mismatch for source part door_lower_panel at exported node 35"
+  },
+  {
+    "name": "orphan-door-part",
+    "checker": "test_carriage_c02_door.py",
+    "returncode": 1,
+    "expected_success": false,
+    "receipt_survives": true,
+    "receipt": "orphan-door-part-receipt.json",
+    "log": "orphan-door-part.log",
+    "verified_receipt_stage": "closed_geometry_and_actual_ancestry_binding",
+    "verified_rejection_reason": "Active exported triangle missing for source part door_lower_panel"
+  },
+  {
+    "name": "duplicate-active-pivot",
+    "checker": "test_carriage_c02_door.py",
+    "returncode": 1,
+    "expected_success": false,
+    "receipt_survives": true,
+    "receipt": "duplicate-active-pivot-receipt.json",
+    "log": "duplicate-active-pivot.log",
+    "verified_receipt_stage": "active_export_decode",
+    "verified_rejection_reason": "One active exported door pivot required"
+  },
+  {
+    "name": "selected-empty-scene",
+    "checker": "test_carriage_c02_door.py",
+    "returncode": 1,
+    "expected_success": false,
+    "receipt_survives": true,
+    "receipt": "selected-empty-scene-receipt.json",
+    "log": "selected-empty-scene.log",
+    "verified_receipt_stage": "active_export_decode",
+    "verified_rejection_reason": "One active exported door pivot required"
+  }
+]
+
+[1m== Licensed farm-box master preserves credited sources, actual articulated geometry and compressed LOD contracts (T-2793)[0m
+{"result": "PASS: exact licensed master/current exports/actual geometry contracts; photographic acceptance on QUALIFICATION.json (T-3558)", "source_sha256": "13600b73c1777545e1454d452c58d141469f031b2c5e6c29b1c6fdefe9145046", "master_sha256": "fb0c507048ad8a95e19cc0d8a1e57ade5c2937060eeef3adc9e45af96a0e4ee4", "clearances": [{"wheel": "wheel_fl_CartDetails_0", "radius_bound_m": 0.5371279286051331, "minimum_gap_m": 0.08201219404603499, "worst": {"y_band_m": [0.9149834203720095, 0.9199834203720095], "gap_m": 0.08201219404603499}, "scope": "All wheel roll phases and every steer angle within declared limit; actual tyre/eight-spoke geometry vs actual body/frame, excluding intended axle/hub interfaces"}, {"wheel": "wheel_fr_CartDetails_0", "radius_bound_m": 0.5350843667987362, "minimum_gap_m": 0.01356600157560428, "worst": {"y_band_m": [0.9149834203720095, 0.9199834203720095], "gap_m": 0.01356600157560428}, "scope": "All wheel roll phases and every steer angle within declared limit; actual tyre/eight-spoke geometry vs actual body/frame, excluding intended axle/hub interfaces"}], "actual_joinery_surface_pairs": {"pole_to_bearing": 18, "bearing_to_axle": 32}, "web_bytes": 8464492, "ground": [{"frame": "vehicle_wheel_front_left", "neutral_ground_gap_m": -2.622604367008563e-08, "all_roll_ground_lower_bound_m": -0.0021279286051331114, "scope": "Original artist rim irregularity retained, <=3mm; not perfect-circle or suspension certification"}, {"frame": "vehicle_wheel_front_right", "neutral_ground_gap_m": -2.622604367008563e-08, "all_roll_ground_lower_bound_m": -8.436679873613517e-05, "scope": "Original artist rim irregularity retained, <=3mm; not perfect-circle or suspension certification"}, {"frame": "vehicle_wheel_rear_left", "neutral_ground_gap_m": -2.38418573772492e-09, "all_roll_ground_lower_bound_m": -2.7673325431187834e-07, "scope": "Original artist rim irregularity retained, <=3mm; not perfect-circle or suspension certification"}, {"frame": "vehicle_wheel_rear_right", "neutral_ground_gap_m": -2.38418573772492e-09, "all_roll_ground_lower_bound_m": -0.002616825848202553, "scope": "Original artist rim irregularity retained, <=3mm; not perfect-circle or suspension certification"}], "actual_reach_surface_pairs": {"front_fixed_bolster": 24, "rear_axle": 34}, "negative_controls": ["actual body moved into wheel envelope rejected", "actual pole disconnected from bearing rejected", "actual reach detached from both axles rejected"], "limits": "No axle/hub force, suspension, horses/harness, occupied interface or continuous general solid collision claim. Modern construction reference and reconstructed finish are not historic specimen evidence."}
+
+[1m== The woman's seated draft reproduces from Otis Bardwell's reviewed pose on her own rest chain (T-3423)[0m
+seated transfer flynn_mary_1835_dress_study: reproduces
+
+[1m== The 1812 crossing boats are what their layer writes: on dry banks, afloat at the stern, a path deep enough to float them over (T-3510)[0m
+lay_crossing_boats_1812: data/boats/crossings_1812.json re-derives byte for byte
+
+[1m== Prairie Avenue child source recipes match their pinned bodies (T-3548)[0m
+ok five 1904 child clothing recipes; canonical exports and visual acceptance remain required
+
+[1m== Every 1812 town child is dressed as their own, the girls' hair longer than the boys', as children.py writes it (T-3520)[0m
+1812 children's dress: 19 children, current
+
+[1m== Each man of the 1812 garrison has his own complexion, hair, eyes and height from the period's registers, drawn on clones, on his card with a stand-in portrait (T-3491)[0m
+human looks: 51 men, 34 colourings (commonest 4), heights 68.0 ± 2.7 in, Grummo 73.1 in: PASS
+
+[1m== A named resident's face fitted to a cited portrait reproduces from its marks, and the card's still is of this fit (T-3413)[0m
+ok face fits reproduce
+
+[1m== Every person's name fits their floating name card; on by default, a tap opens their card (T-3614)[0m
+ok   1812: all 834 names fit their card (18 on two lines)
+ok   1835: all 3891 names fit their card (10 on two lines)
+ok   1904: all 442 names fit their card (2 on two lines)
+ok   a short name is one line at the largest size
+ok   a long label breaks evenly over two lines: ["A man of the Chicago militia,","name not recorded (1 of 6)"]
+ok   past two lines at the smallest size a name is cut with an ellipsis, inside the card
+ok   a card is never wider than its slot
+ok   1812: every card has a name
+ok   1812: the children of named families carry the family's surname, and the post's children a likely one
+ok   1812: the sixteen counted-and-unnamed town cards and nine children of known families carry names of ours (25)
+ok   1812: John Kinzie, Le Clerc, Lee's son and Mirandeau, all documented, read attested
+ok   Kinzie's second servant: attested, his name ours, his card's edge reconstructed
+ok   1812 jaunts: every unnamed figure has a name of ours, said so with what they stand for
+ok   Light cards at most 14
+ok   only within reach and in view
+ok   nearest first
+ok   a phone (Light) cards fewer, nearer, than a desktop
+ok   a card is larger close by and stays readable at reach
+ok   it fades over the last metres of its reach
+ok   control-room: panel #12233F, ink #ECE6D8, accent #8CF5A8
+ok   brass: panel #2A1E15, ink #F4E6CD, accent #F2B154
+ok   worlds-fair: panel #F8F4EA, ink #1E3A3D, accent #0F7178
+ok   deep-space: panel #11141A, ink #E4E2DC, accent #7AD7F6
+ok   the four appearances give four different cards
+ok   with no CSS read, a card still has colours and a type
+ok   Retro Future is a pill, never past half the body
+ok   two cards under the point: the nearer
+ok   above the body: nothing
+ok   a card fading in or out is not picked
+ok   the farther of two overlapping cards rises above the nearer (0.078, 0.000, 0.000)
+ok   three overlapping cards stack three high (0.000, 0.078, 0.162)
+ok   a crowd stacks at most four cards high
+ok   hats, their trim and hair count as the crown; skin and clothes do not
+ok   standing: the hat's top is 1.850 m (head bone 1.55 + 0.30)
+ok   it moves with the person (on a step, a seat)
+ok   tipped forward, the card still clears the hat (2.366 >= 2.366)
+ok   a hat not drawn (hidden for a dressed one) does not count
+ok   the card's notch stands 0.12 m clear of the crown
+ok   a person's own grade is their card's
+ok   an unnamed extra is reconstructed; a record with no grade shows none
+ok   a reconstructed name on an attested person reads reconstructed
+ok   1812: every person has a grade for their card (0 without)
+ok   1835: every person has a grade for their card (0 without)
+ok   1904: every person has a grade for their card (0 without)
+ok   colours mix
+ok   on a dark panel the grade is lightened to a soft edge; on a light one it keeps its own colour
+ok   the colours are the Confidence view's, as the visitor set them
+ok   the default is on (hud.js DEFAULT_SETTINGS.nameCards)
+ok   the switch is a Settings row wired to nameCards
+ok   it sits under People in the Show tab
+ok   a change turns the cards on or off at once
+ok   a click or tap on a card opens the person as clicking them does
+ok   a jaunt stop's castmates are carded too
+ok   all three grades are carded by default
+ok   each grade is a box wired to its setting
+ok   the three boxes are built by hud.js (the page is copied to every door and has no bytes to spare, T-0722)
+ok   the boxes are put under the name-card switch, before they are wired
+ok   the boxes give any mix: all, attested and inferred, reconstructed alone, none
+ok   a change re-chooses the cards at once, and a reload starts with the mix chosen
+ok   a card of a grade left off is not chosen (and fades out)
+ok   on a desktop with the mouse free, a click on a card opens the person instead of taking the look
+ok   the atlas is 3.4 MiB on Light, 6.8 MiB on Full
+
+all passed
+
+[1m== the merge drivers this clone needs are registered (T-1548)[0m
+merge drivers OK — all four registered in this clone
+
+[1m== the tickets are here (kevinrhaas/chicago-tickets, cloned at tickets/)[0m
+tickets: tickets/ exists and is not a clone of https://github.com/kevinrhaas/chicago-tickets.git — leaving it as it is
+
+[1m== publish the mirror the gate measures (site/4d/ is generated, T-0938)[0m
+AUDIO HOST POLICY PASS
+Glessner v4 package verified; 0 missing GLB(s) materialized.
+shipped derivatives: 1151 pair(s) carry the master's triangles, node identity and contract attributes; worst bounding-box disagreement 2.68 of 4 rungs; 0 asset(s) lose their material identity to the publish path (banked, K36(b)); 5 master passthrough(s), all of them decided (K38); and every one of them records the master it was made from, which is still the master in the tree (K39)
+Prairie Avenue browser published: /workspace/work/better-trees/site/4d/prairie-1904
+published 16 map images + viewer + media to site/pre-fire
+   prairie-1904/maps/  3.85 MB served from /prairie-1904/maps/
+   prairie-1904/research/public/  39.30 MB served from /prairie-1904/research/public/, 4 file(s) not at the root kept here
+   pre-fire/maps/images/  43.87 MB served from /pre-fire/maps/images/
+   pre-fire/media/  33.98 MB served from /pre-fire/media/
+   reference browsers: 121.01 MB not shipped twice (T-1828)
+audio: 97 verified remote deliveries; catalogue only in the site
+   changelog.js published to site/4d/js/changelog.js (T-0722)
+   changelog.js published to site/4d/walk/js/changelog.js (T-0722)
+   sheets (data/gltf): 71 shared by 116 GLB(s), 315.078 -> 111.445 MiB
+household notes deferred: 2003 household(s) on 425 record(s) → sidecars/<scene>/households/<id>.json
+boot sidecars packed: 1812 — 68 record(s) in 2 part(s), sharing 285 value(s) → sidecars/1812/boot/
+boot sidecars packed: 1835 — 765 record(s) in 16 part(s), sharing 1592 value(s) → sidecars/1835/boot/
+boot sidecars packed: 1871 — 25 record(s) in 1 part(s), sharing 59 value(s) → sidecars/1871/boot/
+boot sidecars packed: 1904 — 286 record(s) in 6 part(s), sharing 360 value(s) → sidecars/1904/boot/
+letter-list cohort: 773 records packed from 9.31 MiB of per-record files to 4.61 MiB in 23 shard(s) and a 666-string roster (T-0438)
+   humans: officer_first_infantry_1812_lieutenant not drawn in town, not published
+   humans: surgeons_mate_first_infantry_1812 not drawn in town, not published
+   sheets (data/humans/web): 321 shared by 136 GLB(s), 239.212 -> 49.051 MiB
+strip_page_comments: walk/index.html 88,766 -> 66,275 bytes (102 developer comments out, 0 placeholder(s) kept)
+entry pages: index.html, 1812/index.html, 1835/index.html, 1871/index.html, 1880/index.html, 1904/index.html
+1835: ground built in 2980 ms — 232 tiles, 10036 pieces, 30895134 bytes, 69 inputs → /workspace/work/better-trees/site/4d/data/prebuilt/1835
+1835: base built in 276 ms — 1 meshes, 7503 pieces, 3909436 bytes, 75 inputs → /workspace/work/better-trees/site/4d/data/prebuilt/1835
+1835: streets built in 4041 ms — 6 meshes, 1189 pieces, 30385004 bytes, 69 inputs → /workspace/work/better-trees/site/4d/data/prebuilt/1835
+1835: yards built in 4188 ms — 4 surfaces, 830 pieces, 31096884 bytes, 90 inputs → /workspace/work/better-trees/site/4d/data/prebuilt/1835
+1835: frontage built in 1430 ms — 127 meshes, 63321600 bytes, 77 inputs → /workspace/work/better-trees/site/4d/data/prebuilt/1835
+   build c1527e6cd9  Nov 26, 2026, 8:06 AM CT
+   pack 1812: 5080 files, 308.5 MB
+   pack 1835: 7946 files, 396.4 MB
+   pack 1871: 5004 files, 346.4 MB
+   pack 1904: 5750 files, 436.0 MB
+tools/publish.sh: line 1009: bc: command not found
+published ../../site/4d  (0.00 MB)

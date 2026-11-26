@@ -12,7 +12,7 @@ Balanced woodland uses the existing smaller atlases and inexpensive grown-leaf m
 
 The complete scripted moving-frame gate passes all twelve tier/move combinations, with zero ground, zone or yard verification disagreements. Its setup now suppresses unmeasured raster drawing while preparing a tier, restoring the renderer with `finally`. Measured loops, limits, live mode and explicit rendering remain. The immutable full official publication is selected with `--root`. These are software-renderer checks, not hardware FPS evidence.
 
-The current whole native gate is still running. Earlier complete receipts apply to their own source snapshots; individual green partitions do not establish current completion. Final integrated CI, mapped smoke and PR links will be recorded when complete.
+The complete frozen tree candidate native gate has passed: twenty green partitions cover the full gate, with four timed-out parents replaced by their exact children (`native-m1-complete/index.json`). The integrated M1 candidate is `e86fbf5c1b22a5f45fa89b034ea2124e62f9c21e` on dev49a; its integration preflight is running, and final exact-head CI remains required. Earlier complete receipts apply to their own source snapshots; individual green partitions do not establish current completion. Final integrated CI, mapped smoke and PR links will be recorded when complete.
 
 ## Measurement exclusions
 

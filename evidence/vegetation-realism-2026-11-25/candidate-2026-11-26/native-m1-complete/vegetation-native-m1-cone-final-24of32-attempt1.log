@@ -1,0 +1,691 @@
+
+[1m== the compact-bounds gate refuses bounds rounded to nearest[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | FAIL 1. every stored box and sphere contains three's own, within float32 steps
+   self-test |      geometry 0: sphere 0.10250067710876465 does not hold three's (needs 0.10250069945391119)
+   self-test | ok   2. the Box3 and Sphere objects are gone, and a second compaction is a no-op
+   self-test | ok   3. with the positions gone, the getters answer and the cull keeps what it kept
+   self-test | ok   4. setGeometryAt drops the row; a later geometry and a stale id are three's
+   self-test | ok   5. the rounding helpers round outward and keep exact values
+   self-test | self-test ok: nearest rounding refused (1 check(s) red)
+
+[1m== Each grade's look — tint, dither or ghost at an opacity — and the ghost pass drawn last with depthWrite off (T-2646)[0m
+T-2646 — per-grade looks and the ghost pass
+  ok   the default looks are the view that shipped: Attested and Inferred tinted, Reconstructed dithered at 34%
+  ok   each grade takes any mode at any opacity, and reads it back
+  ok   a grade that is not one, a mode that is not one and a non-number opacity are refused and change nothing
+  ok   resetGrades puts every colour, mode and opacity back
+  ok   ghosting needs the view on and a ghosted grade that is not hidden
+  ok   a dithered or ghosted grade is no occluder while the view is on, on its own band only
+  ok   the patched shader reads per-grade mode and opacity, and the old single-grade uniforms are gone
+  ok   a shader without three's output anchor never claims a ghost alpha
+  ok   with no ghost, render() is one plain renderer.render and touches nothing
+  ok   with Reconstructed ghosted: the opaque pass leaves out what is only Reconstructed, the ghost pass draws only what holds it
+  ok   an instance something else had hidden stays hidden through both passes
+  ok   a ghosted grade that is hidden is not ghosted
+  ok   a mesh added later with a patched material is reached when the object list is next rebuilt
+  ok   a geometry whose page arrays were freed is read from the range kept for it, or drawn in both passes
+  ok   when the ghosting ends, the next frame takes the ghost layer off everything it was put on
+  ok   under setGhostAsDither, a named layer ghosts as a dither in the opaque pass and never enters the ghost pass
+  ok   disposing a material disposes its twin
+
+all checks passed
+
+[1m== Recorded transport follows moving dated actors with bounded spatial voices and mute cleanup (T-3544)[0m
+TRANSPORT AUDIO PASS: dated actual actors, movement/dwell/holds, distance/pan, effects-only, four voices, two buffers, stale decode, mute and disposal
+
+[1m== Field notebook preserves evidence and notes, bounds storage, and reports failed writes (T-3656)[0m
+Field notebook: persistence, limits, quota failures, cross-tab reads, evidence export and bounded photo copies pass.
+
+[1m== Jaunt resources, Revise, endings and saved-session replay (T-1256)[0m
+PASS three mechanic fixtures compile and the walker reaches every path
+PASS bounds clamp defensively and unaffordable or full choices stay disabled beside a viable path
+PASS purchase event is committed once and Previous/Next never spends twice
+PASS Revise truncates the later route, replays resources and reaches another ending
+PASS story time changes only through an explicit effect and plain outings expose no strip
+PASS valid sessions replay while corrupt and version-mismatched saves are discarded with a note
+PASS T-3753: a stop of the route is jumped to straight, back or ahead, and replays to the same place
+PASS runtime fallback is visible when no declared ending matches
+JAUNT MECHANICS PASS — 8 cases
+
+[1m== loading cards: seeded bags, dwell, stop and humor cap (T-1275)[0m
+Humor: 52/10000 seeded sessions (at most one per session)
+LOADING RUNTIME PASS — seed, shuffle, phase, dwell, warm/fast, stop, optional fetch and hydration
+
+[1m== Harness body fit reproduces original crossings and enforces 5 mm bind-pose clearance[0m
+PASS actualbindpose originalproper=100 repairedsurface=0;63animatedsamples separately qualified
+
+[1m== Natural standing derivative preserves canonical parents, old clips and planted lower-body channels (T-1790)[0m
+.............
+----------------------------------------------------------------------
+Ran 13 tests in 3.012s
+
+OK
+
+[1m== Nobody stands in anybody else's place: a talk in a ring, people standing together talk, one alone is at a job, and every year's figures kept a body's width apart through the day, and nobody stands in a mat or bark lodge wall (T-3504, T-3520)[0m
+human spacing: one point taken apart, a step at a time when drawn, walkers round standers; 1812 plan: 1122 spans played anew, 41.25 post-hours stood; 1812: 284 figures, nearest pair 0.61 m; 1835: 4 figures, nearest pair 21.42 m; 1904: 7 figures, nearest pair 1.40 m: PASS
+
+[1m== 1904 people use actual drawn pedestrian tops only beneath enabled terrain-cut masks, preserving decks, positive yards and other epochs (T-2795)[0m
+{"status":"PASS","checks":47,"fixtureBuildMs":0.9618700000000047,"fixture10000QueryMs":108.37322400000001,"maxIndependentPlaneResidual":8.881784197001252e-16,"fixtureIndex":{"initialized":true,"disposed":false,"surfaces":2,"triangles":3,"grid_cells":4,"nonempty_buckets":4,"triangle_references":10,"queries":10003,"owned_buffer_bytes":388,"aliased_geometry_bytes":96,"duplicated_xyz_bytes":0,"calls":10005,"admitted":10003},"qualification":"Synthetic Float32/mask/composition controls only; actual district cost and post-change feet remain unmeasured"}
+
+[1m== …incompatible skeletons, missing slots and morphs, duplicate clips, non-metric scale, missing provenance and L1 refused by name[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | the contract
+   self-test |   ok   the committed contract holds to its own rules: clean
+   self-test |   ok   a bone declared twice: contract.duplicate_bone: bone 'pelvis' is declared twice
+   self-test |   ok   a bone whose parent is not declared: contract.unknown_parent: 'toe_l' names parent 'nowhere', which is not declared above it; contract.asymmetric: 'toe_l' has no twin 'toe_r'
+   self-test |   ok   a left bone with no right twin: contract.asymmetric: 'toe_l' has no twin 'toe_r'
+   self-test |   ok   a morph both required and optional: contract.morphs_vocabulary: morphs: a name is repeated, or both required and optional
+   self-test |   ok   the schema's clip pattern drifting from the contract's: contract.pattern_drift: the instance schema's clip pattern is not the contract's clips.name_pattern
+   self-test | GLB — conforming fixtures pass
+   self-test |   ok   a conforming lod0 body: clean
+   self-test |   ok   a conforming lod2 body without a face: clean
+   self-test |   ok   an ext_ leaf bone: clean
+   self-test | GLB — each named incompatibility is refused, by name
+   self-test |   ok   a missing contract bone (hand_l): skeleton.missing_bone: contract bone 'hand_l' is not a joint of the skin; skeleton.wrong_parent: 'thumb_01_l' hangs from 'lowerarm_l'; the contract says 'hand_l'; skeleton.wrong_parent: 'index_01_l' hangs from 'lowerarm_
+   self-test |   ok   a renamed bone (spine_02 -> spine2): skeleton.missing_bone: contract bone 'spine_02' is not a joint of the skin; skeleton.unknown_bone: 'spine2' is neither a contract bone nor an ext_* extension; skeleton.wrong_parent: 'spine_03' hangs from 'spine2'; the co
+   self-test |   ok   a reparented bone (calf_l under pelvis): skeleton.wrong_parent: 'calf_l' hangs from 'pelvis'; the contract says 'thigh_l'
+   self-test |   ok   a contract bone hung under an ext_ bone: skeleton.under_extension: 'neck_01' hangs under extension bone 'ext_collar'
+   self-test |   ok   a different declared skeleton: skeleton.incompatible: declares skeleton 'mixamo', the contract's is 'c4d_humanoid_v1'
+   self-test |   ok   more than four influences per vertex: skeleton.influences: 'body' carries JOINTS_1/WEIGHTS_1: more than 4 influences per vertex
+   self-test |   ok   a missing material slot (footwear): material.missing_slot: required material slot 'footwear' is on no primitive
+   self-test |   ok   a material on no contract slot (cloak): material.unknown_slot: material 'cloak' is not <slot> or <slot>__<variant> on a contract slot; material.missing_slot: required material slot 'skin' is on no primitive
+   self-test |   ok   lod0 without the face: morph.missing_required: lod0 owes the face: morph 'eyeBlinkLeft' is missing; morph.missing_required: lod0 owes the face: morph 'eyeBlinkRight' is missing; morph.missing_required: lod0 owes the face: morph 'jawOpen' is mi
+   self-test |   ok   a morph outside the vocabulary: morph.unknown: morph 'smileBig' is not in the contract's vocabulary (or ext_*); morph.missing_required: lod0 owes the face: morph 'eyeBlinkLeft' is missing
+   self-test |   ok   duplicate clip names: clip.duplicate: two clips are named 'idle'
+   self-test |   ok   a clip not in lower snake case: clip.bad_name: clip 'Walk' is not lower snake case <verb>[_<variant>]
+   self-test |   ok   a clip with no contract verb: clip.unknown_verb: clip 'dance': verb not in ['idle', 'walk', 'talk', 'gesture', 'work', 'sit', 'turn']
+   self-test |   ok   centimetres instead of metres: frame.height: rest height 178.000 — outside 0.45-2.3 m; non-metric scale? (a 1.75 m adult in centimetres reads 175)
+   self-test |   ok   metric positions hidden under a 0.01 armature: frame.node_scale: node 'c4d_armature' carries scale [0.01, 0.01, 0.01]; size belongs in vertex positions, not a transform; frame.height: rest height 178.000 — outside 0.45-2.3 m; non-metric scale? (a 1.75 m adult in cent
+   self-test |   ok   soles off the ground: frame.origin: the soles stand at y = 0.900; they belong at y = 0
+   self-test |   ok   a root bone moved off the origin: frame.origin: root bone stands at (2.000, 0.000, 0.000) m; it belongs at the origin, on the ground
+   self-test |   ok   a missing socket (socket_hand_r): socket.missing: socket 'socket_hand_r' is missing
+   self-test |   ok   no provenance block: provenance.missing: no scenes[].extras.chicago4d_human block (export the Blender scene's custom properties)
+   self-test |   ok   no licence: provenance.missing_field: chicago4d_human.license is missing or empty
+   self-test |   ok   a check_required licence: provenance.license: licence 'check_required' is not one the repository can honour (AGENTS.md rule 6)
+   self-test |   ok   attested with no source: provenance.attested_unsourced: an attested depiction names no source
+   self-test |   ok   a source that does not resolve: provenance.unknown_source: source 'no_such_source' does not resolve in data/sources/
+   self-test |   ok   reconstructed with no liberty: provenance.liberty_missing: a reconstructed depiction names no docs/LIBERTIES.md entry in `liberty`
+   self-test |   ok   a lod that disagrees with its file name: provenance.lod_mismatch: lod 1 but the file is lod0
+   self-test |   ok   KTX2 textures the renderer cannot open: delivery.refused_extension: KHR_texture_basisu: KTX2 textures: the renderer never calls setKTX2Loader (tools/web_derivatives.sh, BAKE_KTX2)
+   self-test |   ok   Draco geometry the renderer cannot open: delivery.refused_extension: KHR_draco_mesh_compression: Draco: the renderer never calls setDRACOLoader; Meshopt is this project's compression
+   self-test |   ok   a file not named <asset_id>.lod<N>.glb: provenance.file_name: 'fixture_body.glb' is not named <asset_id>.lod<0-3>.glb
+   self-test | GLB — a Meshopt derivative is read beside its master (T-1787)
+   self-test |   ok   a quantised body with no master: frame.quantised: positions are quantised (KHR_mesh_quantization), so the rest frame cannot be read from accessor bounds; keep the derivative in web/ beside its master
+   self-test |   ok   a quantised derivative whose master passes: clean
+   self-test |   ok   a derivative that renamed a clip: derivative.drift: clips differ from the master's; a derivative changes bytes, not names
+   self-test |   ok   a derivative whose master is in centimetres: frame.master: its master fixture_body.lod1.glb: frame.height: rest height 178.000 — outside 0.45-2.3 m; non-metric scale? (a 1.75 m adult in centimetres reads 175)
+   self-test |   ok   a derivative with no master beside it: frame.no_master: a quantised derivative with no master at /tmp/tmpdlc6anv8/fixture_body.lod1.glb
+   self-test | instances
+   self-test |   ok   a withheld 1835 instance bound to beaubien_mark: clean
+   self-test |   ok   current owner policy permits a shown portable instance: clean
+   self-test |   ok   current policy preserves review metadata without blocking display: clean
+   self-test |   ok   shown instance may not drop its person review metadata: instance.review_dropped: 'rc_fb_anderson_benjamin' is review_required on their record; the instance must say so too
+   self-test |   ok   explicit synthetic L1 gate still refuses shown: instance.l1: display `shown` while L1 stands: no human figure is drawn, for anyone (AGENTS.md)
+   self-test |   ok   a person the residents layer does not hold: instance.unknown_person: person 'nobody_at_all' does not resolve; this file never mints a person
+   self-test |   ok   review dropped for rc_fb_anderson_benjamin: instance.review_dropped: 'rc_fb_anderson_benjamin' is review_required on their record; the instance must say so too
+   self-test |   ok   a variant on no contract slot: instance.unknown_slot: variant on 'cloak', which is not a contract material slot
+   self-test |   ok   a clip with no contract verb: instance.unknown_verb: clip 'dance': verb not in the contract
+   self-test |   ok   a record missing `display`: instance.schema: (record): 'display' is a required property
+   self-test |   ok   walk_surface with no structure: instance.schema: placement: 'structure_id' is a required property
+   self-test |   ok   attested with no source: instance.attested_unsourced: an attested depiction names no source
+   self-test |   ok   reconstructed with no liberty: instance.liberty_missing: a reconstructed depiction names no LIBERTIES entry
+   self-test |   ok   a scene with no people layer: instance.no_people_layer: scene '1812' has no people layer to bind to
+   self-test |   ok   the same person standing twice in one scene: instance.duplicate_person: 'beaubien_mark' already stands in 1835 as 'hi_beaubien_mark_1835'
+   self-test | instance browser indexes
+   self-test |   ok   browser manifest is not treated as an instance: clean
+   self-test |   ok   every listed instance is still discovered: clean
+   self-test |   ok   records without a browser index refuse: instance.index_missing: 1835 has instances but no browser index
+   self-test |   ok   repeated ids: instance.index_duplicate: /tmp/tmpmwd6kr7i/1835/index.json: repeated instance id
+   self-test |   ok   missing listed file: instance.index_missing_file: /tmp/tmpmwd6kr7i/1835/index.json: hi_absent_1835 has no regular record file; instance.index_inventory: /tmp/tmpmwd6kr7i/1835/index.json: listed ids and instance files differanonymous Python schema/semantic refusal checks passed
+   self-test | 
+   self-test |   ok   unlisted record: instance.index_inventory: /tmp/tmpmwd6kr7i/1835/index.json: listed ids and instance files differ
+   self-test |   ok   index scene mismatch: instance.index_schema: /tmp/tmpmwd6kr7i/1835/index.json: exact scene and safe instance-id list required
+   self-test |   ok   unsafe id: instance.index_schema: /tmp/tmpmwd6kr7i/1835/index.json: exact scene and safe instance-id list required
+   self-test |   ok   non-list ids: instance.index_schema: /tmp/tmpmwd6kr7i/1835/index.json: exact scene and safe instance-id list required
+   self-test |   ok   record id differs from filename: instance.index_record: /tmp/tmpmwd6kr7i/1835/hi_existing_resident_1835.json: index, filename, id and scene must agree
+   self-test |   ok   record scene differs from directory: instance.index_record: /tmp/tmpmwd6kr7i/1835/hi_existing_resident_1835.json: index, filename, id and scene must agree
+   self-test |   ok   malformed index: instance.index_schema: /tmp/tmpmwd6kr7i/1835/index.json: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+   self-test |   ok   symlink record: instance.index_missing_file: /tmp/tmpmwd6kr7i/1835/index.json: hi_existing_resident_1835 has no regular record file
+   self-test | human_contract self-test: OK (0 assertion(s) did not fire as required)
+
+[1m== the merge drivers this clone needs are registered (T-1548)[0m
+merge drivers OK — all four registered in this clone
+
+[1m== the tickets are here (kevinrhaas/chicago-tickets, cloned at tickets/)[0m
+tickets: tickets/ exists and is not a clone of https://github.com/kevinrhaas/chicago-tickets.git — leaving it as it is
+
+[1m== publish the mirror the gate measures (site/4d/ is generated, T-0938)[0m
+AUDIO HOST POLICY PASS
+Glessner v4 package verified; 0 missing GLB(s) materialized.
+shipped derivatives: 1151 pair(s) carry the master's triangles, node identity and contract attributes; worst bounding-box disagreement 2.68 of 4 rungs; 0 asset(s) lose their material identity to the publish path (banked, K36(b)); 5 master passthrough(s), all of them decided (K38); and every one of them records the master it was made from, which is still the master in the tree (K39)
+Prairie Avenue browser published: /workspace/work/better-trees/site/4d/prairie-1904
+published 16 map images + viewer + media to site/pre-fire
+   prairie-1904/maps/  3.85 MB served from /prairie-1904/maps/
+   prairie-1904/research/public/  39.30 MB served from /prairie-1904/research/public/, 4 file(s) not at the root kept here
+   pre-fire/maps/images/  43.87 MB served from /pre-fire/maps/images/
+   pre-fire/media/  33.98 MB served from /pre-fire/media/
+   reference browsers: 121.01 MB not shipped twice (T-1828)
+audio: 97 verified remote deliveries; catalogue only in the site
+   changelog.js published to site/4d/js/changelog.js (T-0722)
+   changelog.js published to site/4d/walk/js/changelog.js (T-0722)
+   sheets (data/gltf): 71 shared by 116 GLB(s), 315.078 -> 111.445 MiB
+household notes deferred: 2003 household(s) on 425 record(s) → sidecars/<scene>/households/<id>.json
+boot sidecars packed: 1812 — 68 record(s) in 2 part(s), sharing 285 value(s) → sidecars/1812/boot/
+boot sidecars packed: 1835 — 765 record(s) in 16 part(s), sharing 1592 value(s) → sidecars/1835/boot/
+boot sidecars packed: 1871 — 25 record(s) in 1 part(s), sharing 59 value(s) → sidecars/1871/boot/
+boot sidecars packed: 1904 — 286 record(s) in 6 part(s), sharing 360 value(s) → sidecars/1904/boot/
+letter-list cohort: 773 records packed from 9.31 MiB of per-record files to 4.61 MiB in 23 shard(s) and a 666-string roster (T-0438)
+   humans: officer_first_infantry_1812_lieutenant not drawn in town, not published
+   humans: surgeons_mate_first_infantry_1812 not drawn in town, not published
+   sheets (data/humans/web): 321 shared by 136 GLB(s), 239.212 -> 49.051 MiB
+strip_page_comments: walk/index.html 88,766 -> 66,275 bytes (102 developer comments out, 0 placeholder(s) kept)
+entry pages: index.html, 1812/index.html, 1835/index.html, 1871/index.html, 1880/index.html, 1904/index.html
+1835: ground built in 1393 ms — 232 tiles, 10036 pieces, 30895134 bytes, 69 inputs → /workspace/work/better-trees/site/4d/data/prebuilt/1835
+1835: base built in 189 ms — 1 meshes, 7503 pieces, 3909436 bytes, 75 inputs → /workspace/work/better-trees/site/4d/data/prebuilt/1835
+1835: streets built in 3007 ms — 6 meshes, 1189 pieces, 30385004 bytes, 69 inputs → /workspace/work/better-trees/site/4d/data/prebuilt/1835
+1835: yards built in 3059 ms — 4 surfaces, 830 pieces, 31096884 bytes, 90 inputs → /workspace/work/better-trees/site/4d/data/prebuilt/1835
+1835: frontage built in 1022 ms — 127 meshes, 63321600 bytes, 77 inputs → /workspace/work/better-trees/site/4d/data/prebuilt/1835
+   build c1527e6cd9  Nov 26, 2026, 8:44 AM CT
+   pack 1812: 5080 files, 308.5 MB
+   pack 1835: 7946 files, 396.4 MB
+   pack 1871: 5004 files, 346.4 MB
+   pack 1904: 5750 files, 436.0 MB
+tools/publish.sh: line 1009: bc: command not found
+published ../../site/4d  (0.00 MB)
+
+[1m== the K01 structure versions are the bytes their version records build (T-3721)[0m
+k01_versions_emit --check: ok — every K01 version is the bytes its record builds
+
+[1m== reconciled PRs preserve resident identities and refuse back-projected trades[0m
+....
+----------------------------------------------------------------------
+Ran 4 tests in 0.122s
+
+OK
+
+[1m== the 1904 front yards stand clear of every house, stoop, walk and door (T-3203, T-3223)[0m
+front yards: data/front_yards/1904.json is what the tool writes, and every planting clears every door, stoop, walk and fence ({'lots': 149, 'shrubs': 156, 'trees': 12, 'beds': 11, 'creeper_patches': 55, 'attested_plants': 38, 'lots_with_a_door': 121, 'schemes': {'corners': 72, 'group': 23, 'lawn': 34, 'pictured': 3, 'pictured bare': 7, 'stoop': 10}})
+
+[1m== the K05 roof kit builds every roof as one closed, uncrossed solid with its declared ridges, hips and valleys (T-2301)[0m
+/workspace/work/better-trees/chicago/4d/generators/archetypes/k14_condition.py:66: RuntimeWarning: overflow encountered in scalar add
+  h = (np.asarray(i, dtype=np.int64).astype(np.uint64) * np.uint64(0x9E3779B1)
+ok   armour_corwith_house_1945_prairie/as_mapped_1904: roof from the K05 kit, 1364 triangles, graph {'abutment': 42, 'curb': 11, 'eave': 9, 'hip': 9, 'kick': 1, 'ridge': 2, 'valley': 4}
+ok   armour_house_2115_prairie/as_mapped_1904: roof from the K05 kit, 11670 triangles, graph {'abutment': 177, 'curb': 11, 'eave': 10, 'hip': 11, 'kick': 3, 'ridge': 3, 'valley': 6}
+ok   buckingham_house_2036_prairie/as_mapped_1904: roof from the K05 kit, 952 triangles, graph {'abutment': 39, 'curb': 7, 'eave': 5, 'hip': 5, 'ridge': 1}
+ok   coleman_ames_house_1811_prairie/as_mapped_1904: roof from the K05 kit, 1998 triangles, graph {'abutment': 31, 'eave': 10, 'hip': 6, 'kick': 2, 'ridge': 2, 'valley': 4, 'verge': 2}
+ok   dent_house_1823_prairie/as_mapped_1904: roof from the K05 kit, 1260 triangles, graph {'abutment': 45, 'curb': 5, 'eave': 6, 'hip': 10, 'kick': 1, 'ridge': 1, 'valley': 2}
+ok   dexter_house_1721_prairie/as_mapped_1904: roof from the K05 kit, 380 triangles, graph {'abutment': 14, 'eave': 2}
+ok   doane_house_1827_prairie/as_mapped_1904: roof from the K05 kit, 636 triangles, graph {'abutment': 28, 'curb': 5, 'eave': 6, 'hip': 12, 'kick': 1, 'return': 4, 'ridge': 1, 'valley': 4}
+ok   edson_keith_house_1906_prairie/as_mapped_1904: roof from the K05 kit, 296 triangles, graph {'abutment': 12, 'curb': 4, 'eave': 4, 'hip': 4}
+ok   elbridge_keith_house_1900_prairie/as_mapped_1904: roof from the K05 kit, 2384 triangles, graph {'abutment': 54, 'curb': 4, 'eave': 4, 'hip': 4, 'ridge': 1}
+ok   flats_2127_prairie/as_mapped_1904: roof from the K05 kit, 294 triangles, graph {'abutment': 11, 'eave': 1}
+ok   george_glessner_house_1706_prairie/as_mapped_1904: roof from the K05 kit, 666 triangles, graph {'abutment': 26, 'curb': 3, 'eave': 3, 'hip': 2, 'ridge': 1}
+ok   glessner_lee_house_1700_prairie/as_mapped_1904: roof from the K05 kit, 684 triangles, graph {'abutment': 34, 'curb': 2, 'eave': 2, 'ridge': 1}
+ok   goodman_house_1612_prairie/as_built_1869: roof from the K05 kit, 196 triangles, graph {'abutment': 8, 'eave': 4, 'hip': 4, 'ridge': 1}
+ok   henderson_house_1816_prairie/as_mapped_1904: roof from the K05 kit, 562 triangles, graph {'abutment': 25, 'curb': 5, 'eave': 4, 'hip': 4, 'ridge': 1}
+ok   hibbard_house_1701_prairie/as_mapped_1904: roof from the K05 kit, 168 triangles, graph {'abutment': 8, 'curb': 2, 'eave': 4, 'hip': 4, 'ridge': 6}
+ok   high_house_2021_prairie/as_mapped_1904: roof from the K05 kit, 446 triangles, graph {'abutment': 11, 'eave': 3, 'hip': 4, 'ridge': 1}
+ok   house_1600_prairie/as_mapped_1904: roof from the K05 kit, 172 triangles, graph {'abutment': 12, 'eave': 4, 'hip': 4, 'ridge': 3}
+ok   house_1604_prairie/as_mapped_1904: roof from the K05 kit, 172 triangles, graph {'abutment': 12, 'eave': 4, 'hip': 4, 'ridge': 3}
+ok   house_1608_prairie/as_mapped_1904: roof from the K05 kit, 172 triangles, graph {'abutment': 12, 'eave': 4, 'hip': 4, 'ridge': 3}
+ok   house_1613_prairie/as_mapped_1904: roof from the K05 kit, 330 triangles, graph {'abutment': 11, 'eave': 1}
+ok   house_1615_prairie/as_mapped_1904: roof from the K05 kit, 330 triangles, graph {'abutment': 11, 'eave': 1}
+ok   house_1616_prairie/as_mapped_1904: roof from the K05 kit, 352 triangles, graph {'abutment': 21, 'eave': 6, 'hip': 4, 'ridge': 4, 'verge': 2}
+ok   house_1619_prairie/as_mapped_1904: roof from the K05 kit, 330 triangles, graph {'abutment': 11, 'eave': 1}
+ok   house_1621_prairie/as_mapped_1904: roof from the K05 kit, 1296 triangles, graph {'abutment': 23, 'eave': 8, 'ridge': 2, 'valley': 2, 'verge': 2}
+ok   house_1623_prairie/as_mapped_1904: roof from the K05 kit, 224 triangles, graph {'abutment': 11, 'eave': 5, 'hip': 4, 'ridge': 1}
+ok   house_1625_prairie/as_mapped_1904: roof from the K05 kit, 3520 triangles, graph {'abutment': 40, 'curb': 3, 'eave': 15, 'hip': 5, 'kick': 1, 'ridge': 3, 'valley': 9}
+ok   house_1626_prairie/as_mapped_1904: roof from the K05 kit, 172 triangles, graph {'abutment': 12, 'eave': 4, 'hip': 4, 'ridge': 3}
+ok   house_1628_prairie/as_mapped_1904: roof from the K05 kit, 172 triangles, graph {'abutment': 12, 'eave': 4, 'hip': 4, 'ridge': 3}
+ok   house_1634_prairie/as_mapped_1904: roof from the K05 kit, 330 triangles, graph {'abutment': 11, 'eave': 1}
+ok   house_1636_prairie/as_mapped_1904: roof from the K05 kit, 330 triangles, graph {'abutment': 11, 'eave': 1}
+ok   house_1708_prairie/as_mapped_1904: roof from the K05 kit, 330 triangles, graph {'abutment': 11, 'eave': 1}
+ok   house_1712_prairie/as_mapped_1904: roof from the K05 kit, 120 triangles, graph {'abutment': 4, 'eave': 4, 'hip': 4, 'ridge': 1}
+ok   house_1726_prairie/as_mapped_1904: roof from the K05 kit, 354 triangles, graph {'abutment': 19, 'eave': 6, 'hip': 4, 'ridge': 4, 'valley': 2, 'verge': 2}
+ok   house_1730_prairie/as_mapped_1904: roof from the K05 kit, 346 triangles, graph {'abutment': 46, 'curb': 4, 'eave': 4, 'hip': 4, 'ridge': 1}
+ok   house_1736_prairie/as_mapped_1904: roof from the K05 kit, 2882 triangles, graph {'abutment': 65, 'curb': 2, 'eave': 2, 'hip': 1, 'ridge': 1}
+ok   house_1828_prairie/as_mapped_1904: roof from the K05 kit, 754 triangles, graph {'abutment': 23, 'curb': 4, 'eave': 4, 'hip': 4, 'ridge': 1}
+ok   house_1918_prairie/as_mapped_1904: roof from the K05 kit, 2000 triangles, graph {'abutment': 14, 'curb': 4, 'eave': 4, 'hip': 5}
+ok   house_2001_prairie/as_mapped_1904: roof from the K05 kit, 402 triangles, graph {'abutment': 17, 'eave': 6, 'hip': 4, 'ridge': 2, 'verge': 2}
+ok   house_2003_prairie/as_mapped_1904: roof from the K05 kit, 330 triangles, graph {'abutment': 11, 'eave': 1}
+ok   house_2005_prairie/as_mapped_1904: roof from the K05 kit, 330 triangles, graph {'abutment': 11, 'eave': 1}
+ok   house_2011_prairie/as_mapped_1904: roof from the K05 kit, 366 triangles, graph {'abutment': 30, 'eave': 8, 'ridge': 3, 'valley': 4, 'verge': 2}
+ok   house_2017_prairie/as_mapped_1904: roof from the K05 kit, 464 triangles, graph {'abutment': 27, 'curb': 7, 'eave': 5, 'hip': 4, 'ridge': 1}
+ok   house_2018_prairie/as_mapped_1904: roof from the K05 kit, 372 triangles, graph {'abutment': 15, 'eave': 1}
+ok   house_2026_prairie/as_mapped_1904: roof from the K05 kit, 1818 triangles, graph {'abutment': 44, 'curb': 5, 'eave': 4, 'hip': 4, 'ridge': 1}
+ok   house_2027_prairie/as_mapped_1904: roof from the K05 kit, 446 triangles, graph {'abutment': 15, 'eave': 6, 'hip': 4, 'ridge': 2, 'valley': 2, 'verge': 2}
+ok   house_2101_prairie/as_mapped_1904: roof from the K05 kit, 424 triangles, graph {'abutment': 15, 'eave': 6, 'hip': 4, 'ridge': 2, 'valley': 2, 'verge': 2}
+ok   house_2120_prairie/as_mapped_1904: roof from the K05 kit, 190 triangles, graph {'abutment': 8, 'eave': 4, 'hip': 4, 'ridge': 1}
+ok   house_2123_prairie/as_mapped_1904: roof from the K05 kit, 2350 triangles, graph {'abutment': 57, 'curb': 4, 'eave': 4, 'hip': 4, 'ridge': 1}
+ok   jones_house_1834_prairie/as_mapped_1904: roof from the K05 kit, 470 triangles, graph {'abutment': 18, 'curb': 4, 'eave': 4, 'hip': 4, 'ridge': 1}
+ok   keith_house_1808_prairie/as_built_1886: roof from the K05 kit, 428 triangles, graph {'abutment': 14}
+ok   kellogg_house_1709_prairie/as_mapped_1904: roof from the K05 kit, 520 triangles, graph {'abutment': 18, 'curb': 4, 'eave': 4, 'hip': 4, 'ridge': 1}
+ok   kellogg_house_1923_prairie/as_mapped_1904: roof from the K05 kit, 348 triangles, graph {'abutment': 13, 'curb': 4, 'eave': 4, 'hip': 4, 'ridge': 1}
+ok   kimball_house_1801_prairie/as_mapped_1904: roof from the K05 kit, 6244 triangles, graph {'abutment': 83, 'curb': 10, 'eave': 9, 'hip': 14, 'kick': 11, 'return': 12, 'ridge': 1, 'valley': 7}
+ok   law_house_1620_prairie/restored_1904: roof from the K05 kit, 2402 triangles, graph {'abutment': 57, 'curb': 9, 'eave': 8, 'hip': 6, 'kick': 1, 'ridge': 2, 'valley': 4}
+ok   mark_kimball_house_2108_prairie/as_mapped_1904: roof from the K05 kit, 288 triangles, graph {'abutment': 11, 'eave': 1}
+ok   marsh_house_1824_prairie/as_mapped_1904: roof from the K05 kit, 210 triangles, graph {'abutment': 8, 'eave': 4, 'hip': 4, 'ridge': 1}
+ok   marshall_field_house_1905_prairie/as_mapped_1904: roof from the K05 kit, 1240 triangles, graph {'abutment': 38, 'curb': 5, 'eave': 5, 'hip': 5, 'ridge': 1}
+ok   marshall_field_jr_house_1919_prairie/as_mapped_1904: roof from the K05 kit, 746 triangles, graph {'abutment': 28, 'eave': 14, 'hip': 5, 'kick': 1, 'ridge': 3, 'valley': 3, 'verge': 4}
+ok   mayer_house_2009_prairie/as_mapped_1904: roof from the K05 kit, 2086 triangles, graph {'abutment': 24, 'eave': 5, 'hip': 4, 'return': 1, 'ridge': 1}
+ok   moulton_lowden_house_1912_prairie/as_mapped_1904: roof from the K05 kit, 598 triangles, graph {'abutment': 18, 'curb': 4, 'eave': 5, 'hip': 4, 'return': 3, 'ridge': 1}
+ok   murdoch_house_2130_prairie/as_mapped_1904: roof from the K05 kit, 388 triangles, graph {'abutment': 17, 'eave': 3, 'hip': 4, 'ridge': 1}
+ok   otis_house_2033_prairie/as_mapped_1904: roof from the K05 kit, 330 triangles, graph {'abutment': 11, 'eave': 1}
+ok   pullman_house_1729_prairie/as_mapped_1904: roof from the K05 kit, 17768 triangles, graph {'abutment': 167, 'curb': 4, 'eave': 5, 'hip': 4, 'ridge': 1}
+ok   ream_house_1901_prairie/as_mapped_1904: roof from the K05 kit, 1030 triangles, graph {'abutment': 33, 'curb': 5, 'eave': 5, 'hip': 5, 'ridge': 1}
+ok   rees_house_2110_prairie/as_mapped_1904: roof from the K05 kit, 422 triangles, graph {'abutment': 18, 'eave': 9, 'hip': 5, 'ridge': 1}
+ok   reid_house_2013_prairie/as_mapped_1904: roof from the K05 kit, 328 triangles, graph {'abutment': 10, 'eave': 2}
+ok   roloson_house_2109_prairie/as_mapped_1904: roof from the K05 kit, 1566 triangles, graph {'abutment': 54, 'curb': 4, 'eave': 8, 'hip': 4, 'ridge': 1}
+ok   rothschild_house_2112_prairie/as_mapped_1904: roof from the K05 kit, 1442 triangles, graph {'abutment': 38, 'curb': 4, 'eave': 4, 'hip': 4, 'ridge': 1}
+ok   sears_meeker_house_1815_prairie/as_mapped_1904: roof from the K05 kit, 2880 triangles, graph {'abutment': 44, 'curb': 5, 'eave': 8, 'hip': 9, 'kick': 2, 'return': 4, 'ridge': 2, 'valley': 5}
+ok   sherman_house_2100_prairie/as_mapped_1904: roof from the K05 kit, 4042 triangles, graph {'abutment': 42, 'curb': 4, 'eave': 5, 'hip': 4, 'ridge': 1}
+ok   spalding_house_1637_prairie/as_mapped_1904: roof from the K05 kit, 4416 triangles, graph {'abutment': 30, 'curb': 5, 'eave': 8, 'hip': 9, 'kick': 2, 'ridge': 2, 'valley': 5}
+ok   stone_house_2035_prairie/as_mapped_1904: roof from the K05 kit, 330 triangles, graph {'abutment': 11, 'eave': 1}
+ok   tolman_house_2031_prairie/as_mapped_1904: roof from the K05 kit, 330 triangles, graph {'abutment': 11, 'eave': 1}
+ok   wheeler_house_1812_prairie/as_built_1884: roof from the K05 kit, 1124 triangles, graph {'abutment': 31, 'curb': 5, 'eave': 6, 'hip': 6, 'ridge': 1}
+ok   K05 roof kit: 11 roofs and 74 house(s), 610/610 rules hold
+
+[1m== a mansard crown may stand over a stretch of the front and turn a canted corner (T-3283)[0m
+ok   1945's crown stands over the front from 6.95 m onto the canted corner
+ok   its curb 1.4 m over the house's (the 1928 photograph's corner block)
+ok   with the corner block's two dormers and the cant's on it
+ok   and none of them left on the house's mansard
+ok   1945 builds
+ok   the cut eats the crown's end side at inset 1.631 m, under its ridge
+ok   at that inset the end side's far corner stands on the cut's line
+ok   past it the end face closes to one point, on the far side and on the line
+ok   short of it the far corner stays where it was
+ok   on the house's own mansard the cut never reaches the far corner (its rings are cut as before)
+ok   every face of the crown's ring stack is planar (worst 1.6e-16 m off its plane)
+ok   the stack closes the end face at its far corner, at the end inset's height
+ok   refused: a stretch that stops on the canted corner
+ok   refused: a stretch under 3 m
+ok   refused: a key a front crown does not take
+ok   refused: a crown 2.5 m over the main curb
+ok   refused: a dormer across the crown's hip
+ok   refused: a dormer over the cut
+ok   refused: two crown dormers that meet
+ok   refused: a crown deeper than half the house
+ok   refused: a dormer on the house's mansard standing in the crown
+ok   refused: a stack standing in the crown
+
+all checks passed
+
+[1m== a K01 wing runs past its host wall; a K08 corner turret stands at a wing's end (T-2900)[0m
+ok   1801's east range stands on r3b's 6 m (the sheet's rectangle behind the gabled section) and runs past it to v 18.3 (past ((6.0, 18.3),), on (0.0, 6.0))
+ok   the gabled section, inside the main rear wall, runs past nothing
+ok   the range's hip runs along it
+ok   a wing past its host that does not say so: refused (rear_wings: r2 runs v 0.0..18.3, past its host wall's 0.0..6.0 (a wing longer than its host wall say...)
+ok   past_host on a wing inside its host: refused (rear_wings: r3 says past_host and runs v 0.0..6.0, inside its host wall's 0.0..11.0...)
+ok   a wing standing on 0.5 m of its host wall: refused (rear_wings: r2 stands on 0.50 m of its host wall's 0.0..6.0, under the 1.0 m a wing stands on...)
+ok   a front light behind the host: refused (rear_wings: r2's front window at s 4.0 is not 0.30 m clear inside the stretches past its host wall [...)
+ok   a front on a wing with none: refused (rear_wings: r3 has no front wall (south, north, rear)...)
+ok   a turret's ring past the end wall's plane: refused (bays: turret's ring stands -0.100 m inside its left end; a corner turret's stands 0-0.3 m inside it,...)
+ok   a turret's ring 0.4 m inside its end: refused (bays: turret's ring stands 0.400 m inside its left end; a corner turret's stands 0-0.3 m inside it, ...)
+ok   a turret at the wrong end: refused (bays: turret's ring stands 6.600 m inside its right end; a corner turret's stands 0-0.3 m inside it,...)
+ok   a turret whose eaves are not the wing's: refused (bays: turret is a corner turret whose wall top 8.25 m is not its wing's (6.35 m); its eaves are the ...)
+ok   an octagonal corner turret: refused (bays: turret: corner is 'left' or 'right', on a round tower only...)
+ok   the turret without `corner` (T-2842's rule then holds): refused (bays: turret's tower is 1.4 m in radius, its centre -0.3 m proud; a tower is 1.0-4.0 m in radius and...)
+ok   a corner turret on a main wall: refused (bays: t2 is a corner turret, and a corner turret stands on a rear wing's wall...)
+ok   its front is walled past the host (59.0 m2 of about 78.1 less its lights)
+ok   and nothing along the host, which is the host's wall (0.00 m2)
+ok   its slate runs past its front where it runs past the host (2 vertices)
+ok   and is cut off at its front along the host (0 vertices past it)
+ok   the turret is a corner turret with a whole cap
+ok   its cone stands whole round its axis (12 of 12 sectors)
+ok   where an ordinary tower's, centre in the wall, is cut by it
+ok   and has no back closed on the wall plane
+ok   its wall top is the range's (6.35 m)
+ok   the assembly closes nothing behind it over the wall head (0.00 m2)
+test_k01_wing_past_host: all passed
+
+[1m== the 1835 library's normal maps are handed as named, OpenGL and DirectX (T-2299)[0m
+   ground/lake_michigan_dune_sand/normal_gl.png               red -0.959  green +0.902
+   ground/lake_michigan_dune_sand/normal_dx.png               red -0.959  green -0.902
+   ground/muddy_rutted_street/normal_gl.png                   red -0.996  green +0.996
+   ground/muddy_rutted_street/normal_dx.png                   red -0.996  green -0.996
+   ground/packed_black_loam/normal_gl.png                     red -0.957  green +0.958
+   ground/packed_black_loam/normal_dx.png                     red -0.957  green -0.958
+   ground/river_stone_gravel_fill/normal_gl.png               red -0.998  green +0.998
+   ground/river_stone_gravel_fill/normal_dx.png               red -0.998  green -0.998
+   ground/wet_prairie_muck/normal_gl.png                      red -0.973  green +0.973
+   ground/wet_prairie_muck/normal_dx.png                      red -0.973  green -0.973
+   masonry/cat_and_clay_chimney/normal_gl.png                 red -0.987  green +0.987
+   masonry/cat_and_clay_chimney/normal_dx.png                 red -0.987  green -0.987
+   masonry/cat_and_clay_chimney/normal_gl.webp                red -0.987  green +0.987
+   masonry/chicago_clay_brick_lime_mortar/normal_gl.png       red -0.999  green +1.000
+   masonry/chicago_clay_brick_lime_mortar/normal_dx.png       red -0.999  green -1.000
+   masonry/chicago_clay_brick_lime_mortar/normal_gl.webp      red -0.999  green +1.000
+   masonry/limestone_rubble_lime_mortar/normal_gl.png         red -0.996  green +0.996
+   masonry/limestone_rubble_lime_mortar/normal_dx.png         red -0.996  green -0.996
+   props/blue_painted_shutter/normal_gl.png                   red -0.999  green +0.818
+   props/blue_painted_shutter/normal_dx.png                   red -0.999  green -0.818
+   props/signboard_weathered/normal_gl.png                    red -0.999  green +0.820
+   props/signboard_weathered/normal_dx.png                    red -0.999  green -0.820
+   props/wrought_iron_forged/normal_gl.png                    red -0.799  green +0.798
+   props/wrought_iron_forged/normal_dx.png                    red -0.799  green -0.798
+   roofs/roof_boards_weathered/normal_gl.png                  red -0.823  green +0.999
+   roofs/roof_boards_weathered/normal_dx.png                  red -0.823  green -0.999
+   roofs/roof_boards_weathered/normal_gl.webp                 red -0.823  green +0.999
+   roofs/wood_shingles_weathered/normal_gl.png                red -0.979  green +0.988
+   roofs/wood_shingles_weathered/normal_dx.png                red -0.979  green -0.988
+   roofs/wood_shingles_weathered/normal_gl.webp               red -0.979  green +0.988
+   timber/fresh_sawn_framing/normal_gl.png                    red -0.999  green +0.795
+   timber/fresh_sawn_framing/normal_dx.png                    red -0.999  green -0.795
+   timber/heavy_timber_weathered/normal_gl.png                red -0.999  green +0.819
+   timber/heavy_timber_weathered/normal_dx.png                red -0.999  green -0.819
+   timber/sawn_board_weathered/normal_gl.png                  red -0.999  green +0.835
+   timber/sawn_board_weathered/normal_dx.png                  red -0.999  green -0.835
+   walls/board_and_batten_weathered/normal_gl.png             red -1.000  green +0.815
+   walls/board_and_batten_weathered/normal_dx.png             red -1.000  green -0.815
+   walls/clapboard_board_face/normal_gl.png                   red -0.933  green +0.997
+   walls/clapboard_board_face/normal_dx.png                   red -0.933  green -0.997
+   walls/clapboard_board_face/normal_gl.webp                  red -0.933  green +0.997
+   walls/clapboard_red_oxide/normal_gl.png                    red -0.989  green +0.989
+   walls/clapboard_red_oxide/normal_dx.png                    red -0.989  green -0.989
+   walls/clapboard_weathered_oak/normal_gl.png                red -0.989  green +0.989
+   walls/clapboard_weathered_oak/normal_dx.png                red -0.989  green -0.989
+   walls/clapboard_white_lead_paint/normal_gl.png             red -0.989  green +0.989
+   walls/clapboard_white_lead_paint/normal_dx.png             red -0.989  green -0.989
+   walls/clapboard_whitewash/normal_gl.png                    red -0.989  green +0.989
+   walls/clapboard_whitewash/normal_dx.png                    red -0.989  green -0.989
+   walls/hewn_log_face/normal_gl.png                          red -0.996  green +0.997
+   walls/hewn_log_face/normal_dx.png                          red -0.996  green -0.997
+   walls/hewn_log_face/normal_gl.webp                         red -0.996  green +0.997
+   walls/hewn_log_oak_chinked/normal_gl.png                   red -0.985  green +0.999
+   walls/hewn_log_oak_chinked/normal_dx.png                   red -0.985  green -0.999
+   walls/vertical_sawn_board/normal_gl.png                    red -0.999  green +0.798
+   walls/vertical_sawn_board/normal_dx.png                    red -0.999  green -0.798
+   waterfront/dock_timber_tar_darkened/normal_gl.png          red -0.999  green +0.797
+   waterfront/dock_timber_tar_darkened/normal_dx.png          red -0.999  green -0.797
+   waterfront/plank_walk_weathered/normal_gl.png              red -0.815  green +0.999
+   waterfront/plank_walk_weathered/normal_dx.png              red -0.815  green -0.999
+27 material(s), 60 normal map(s): handed as named
+
+[1m== every structure function is a term of the closed vocabulary[0m
+OK 1145 structures, 131 terms, every function.value canonical
+
+[1m== Kinzie's Addition's block numerals re-derive from the reading and the run[0m
+kinzie addition numerals: 52 cell(s), 51 figure(s) read on the sheet, 1 named, 1 refusal(s)
+
+[1m== every party-line note says what its placement did[0m
+verified 45 party-line notes against their footprints and the plat
+
+[1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |    fires: a block dropped from the reading
+   self-test |    fires: one number used twice
+   self-test |    fires: a cell that stops obeying the scheme
+   self-test |    fires: a crop box off the raster
+   self-test |    fires: a section that is no longer a mile wide
+   self-test |    fires: the word `Reserved` promoted to a read figure
+   self-test |    fires: a word-cell that stops saying it is one
+   self-test | school section numerals self-test: 7 of 7 assertions fire when broken
+
+[1m== the woodpiles re-derive from the yard-by-household rule[0m
+verified 426 woodpiles at 429 dwellings (3 refused for want of room) — {'cabin': 42, 'cottage': 198, 'house': 92, 'keeper': 25, 'merchant': 37, 'shanty': 32}
+
+[1m== flag form values have an actual renderer and honest geometry labels[0m
+......
+----------------------------------------------------------------------
+Ran 6 tests in 0.009s
+
+OK
+
+[1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | 
+   self-test |   FAIL 1 committed platted block(s) stand off the modelled ground: blk_washington_clark. A block the plat emits is a block the schedule will deal roofs to, and every one of those placements dies in tools/generate_block_infill.py. Extend the terrain or withdraw the street control that emitted the block.
+   self-test | 
+   self-test | SOUTHERN GROUND FAIL
+   self-test | 
+   self-test |   FAIL the programme's stated southern coverage is not what the ground measures.
+   self-test |        land_south_of_committed_plat_ha: programme 697.3569, measured 701.3569
+   self-test |        Re-run tools/reconcile_665.py. If the terrain has reached further south, the roofs move with it.
+   self-test | 
+   self-test | SOUTHERN GROUND FAIL
+   self-test | 
+   self-test |   FAIL the programme's stated southern coverage is not what the ground measures.
+   self-test |        columns_carried_to_madison: programme 7, measured 6
+   self-test |        Re-run tools/reconcile_665.py. If the terrain has reached further south, the roofs move with it.
+   self-test | 
+   self-test | SOUTHERN GROUND FAIL
+   self-test | 
+   self-test | SOUTHERN GROUND PASS
+   self-test | 
+   self-test | SELF-TEST PASS
+
+[1m== …and its assertions fire when either reading, the line or the bridge drifts[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | PASS a moved road_only_reading easting is caught — canal stands +1.01 m off kinzie_canal road-only, not the committed +0.01 m
+   self-test | PASS a road_only_reading northing the bridge no longer answers for is caught — canal stands +0.04 m off kinzie_canal road-only, not the committed +0.01 m
+   self-test | PASS a moved kinzie_canal control point is caught — canal's control spread as committed is 6.35 m, not the committed 6.85 m
+   self-test | PASS a moved canal centreline is caught — canal stands +4.11 m off fulton_canal as committed, not the committed +4.61 m
+   self-test | PASS an undeclared bridge variance is caught — north_branch_bridge declares no centreline.control_variance_m
+   self-test | PASS the committed tree is green
+
+[1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |    ok    the committed dataset passes, so a break below is this test's own doing
+   self-test |    ok    the six-roof target this ticket corrected is caught
+   self-test |    ok    a target BELOW the ledger is caught too — it is not a ceiling
+   self-test |    ok    the court-house standing again on 1 July is caught
+   self-test |    ok    a civic roof quietly losing its roof is caught
+   self-test |    ok    a roof on the roofless estray pen is caught
+   self-test |    ok    dropping the land-office kind guard is caught
+   self-test |    ok    an exclusion re-dated back into the scene is caught
+   self-test |    ok    the old south 10 / north 1 apportionment is caught
+   self-test |    ok    a row total that no longer equals I1+I2+I3 is caught
+   self-test | SELF-TEST PASS
+
+[1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |    ok    the plate and the record agree today
+   self-test |    ok    a highest point at the east angle is caught
+   self-test |    ok    a highest point at the west angle is caught
+   self-test |    ok    a work rising at the drawn angle is caught
+   self-test |    ok    a corner work added at the north-east angle is caught
+   self-test |    ok    a corner work raised above the curtain is caught
+   self-test |    ok    the edge of the middle third is not a fault
+   self-test | 
+   self-test | SELF-TEST PASS
+
+[1m== Spanish jaunt overlays are as built from their words files (T-3681)[0m
+JAUNTS ES PASS — 246 jaunts in Spanish; 35 passage(s) whose English changed since translation read in English
+
+[1m== …and its own assertions still fire when the wall or a street moves[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |    ok   a rotated footprint reaches further west than half its width — E -108.62
+   self-test |    ok   …and the centre would have reported it 8.62 m further east
+   self-test |    ok   the derived wall lands on the lattice west of the clearance — E -705
+   self-test |    ok   …and clears the clearance rather than landing just inside it — 33.46 m >= 32.7 m
+   self-test |    ok   a clearance that lands exactly on a lattice column does not add a spare one — E -702.5
+   self-test |    ok   the round -700 does NOT clear the worst residual — short by 4.24 m
+   self-test |    ok   a placement moved 50 m west moves the derived wall west with it — E -755
+   self-test |    ok   …and the gate refuses the committed reading against it
+   self-test |    ok   a DRAWN street carried past the derived wall lands in the drawn population
+   self-test |    ok   …and not in the platted-only one
+   self-test |    ok   …and the gate refuses the committed reading against it
+   self-test |    ok   the committed reading re-derives
+   self-test | SELF-TEST PASS
+
+[1m== publication aliases retain exact bytes, logical LOD identities, year membership and strict source integrity (T-2795)[0m
+{"status":"PASS","checks":44,"realHTTP":true,"browserOffline":"separate required fixture","threeYears":["1812","1835","1904"],"requestCount":4}
+
+[1m== the tickets repo: claim is a pushed lock, done waits on the merge, ask stays in the queue[0m
+1. the claim is the lock
+  ok    run A claims T-1501
+  ok    …and the claim is on the remote at once
+  ok    run B, pulling after the push, is refused
+  ok    run A claims T-1502
+  ok    run B's stale tree still reads T-1502 open
+  ok    a stale claim of the same ticket cannot land — the push conflicts and is refused
+  ok    …and run A still holds it on the remote
+2. a dead claim is stolen
+  ok    list --workable prints a dead claim as TAKEABLE, with its age, in its queue place
+  ok    …and a fresh claim as claimed, with its age, and not takeable
+  ok    …and says a dead claim is workable and claim steals it
+  ok    the fresh claim is still protected: claim refuses it
+  ok    a dead claim whose work sits in an open PR titled with it is REFUSED, naming the PR (T-2138)
+  ok    …and the dead claim is left where it was, not stolen
+  ok    a claim from three weeks ago is stolen
+3. done is review until the PR merges
+  ok    done sets review with the PR
+  ok    …and keeps the queue line
+  ok    settle: a merged PR makes its ticket done, closed on the merge instant
+  ok    settle: …and takes its queue line
+  ok    settle: a PR closed unmerged reopens its ticket with a note
+3b. settle moves a chain on: a ticket blocked on the merged one takes its place
+  ok    settle: a ticket blocked on exactly the merged ticket reopens, with a note
+  ok    …in the merged ticket's queue line, above the line that was below it
+  ok    …while one whose block names more than the ticket stays blocked and listed
+3c. a chain whose merged ticket had lost its line opens below band 9, not at the foot
+  ok    settle: the successor of a merged ticket with no line opens at the head of the band below band 9
+4. new tickets: the folder of 250, and a collision renumbered
+  ok    new lands in the folder its number belongs to
+  ok    B minted on a stale read and was renumbered on push, not landed twice
+  ok    …and its queue line was renumbered with it
+  ok    …and front matter agrees with the file name
+5. ask keeps the ticket in the queue, and the loop steps over it
+  ok    ask: decision pending, question and options in the ticket
+  ok    ask: the ticket keeps its queue line, with its question directly under it
+  ok    list --workable leaves it out and names it as waiting on the owner
+  ok    claim refuses a ticket waiting on the owner
+  ok    once answered it is claimable, and the claim drops the question line
+  ok    tickets.json carries each ticket's path and PR url
+5b. sync: a hand edit pushes under its own message, and a dirty clone still pulls
+  ok    sync -m names the commit, and does not try to pull over the edit
+  ok    check counts an asked decision as waiting on the owner
+5c. a command commits only what it was asked to change (T-2280)
+  ok    done refuses over a local edit to a ticket it was not asked to change, naming each file
+  ok    …and pushes nothing: the remote is where it was, T-1502 still claimed
+  ok    …and discards nothing: both edits are still on disk
+  ok    an edit to the ticket the command names still rides it
+6. no tickets is a failure, not a pass
+  ok    check with no tickets/ at all fails and names the fix
+
+test_ticket_repo_mode: all hold
+
+[1m== ...and a guessed date, a borrowed name and a rising persistence curve are refused[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |   ok    a bare year is read at 1 January
+   self-test |   ok    a year and month are read at the 1st
+   self-test |   ok    a full date is read as itself
+   self-test |   ok    an unreadable date is refused rather than guessed
+   self-test |   ok    a row whose evidence brackets the scene date pins no day before it
+   self-test |   ok    a row whose evidence stops before the scene is priced off where it stops
+   self-test |   ok    a plain readable date still outranks the derived reach
+   self-test |   ok    the same household and lag redraw the same presence
+   self-test |   ok    two households of the same lag draw independently
+   self-test |   ok    persistence is 1 at the scene date and falls with the lag
+   self-test |   ok    the name key is surname and first initial
+   self-test |   ok    a name with no surname yields no key
+   self-test |   ok    a retired readmission's row is not minted again
+   self-test |   ok    a normalised reading is capitalised, not re-read
+   self-test |   ok    the model reads its three horizons off the committed crosswalks
+   self-test |   ok    the fitted rate is a decay and not a growth
+   self-test |   ok    the programme carries this stage and gives it to this ticket
+   self-test |   ok    the programme's readmission pass is the one these cards wear
+   self-test |   ok    every class is either spent here or owned by a named ticket
+   self-test |   ok    R4 and R6 are not this stage's to spend
+
+[1m== the residency-tested residents re-derive from the register[0m
+   OK: 5 resident(s) minted by the residency test, 156 candidate(s) refused
+
+[1m== …and its corpus, outcome and read-beside rules still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | DEPARTURE RULING SELF-TEST PASS — 0 failure(s), 6 unit(s), 2 outcome(s)
+
+[1m== the 1 April 1834 return's 193 lines still reach what the concordance says they reach[0m
+ok  letter_list_1834_04_01_concordance.json: 193 lines, 218 letters, 30 dropped by the 1 April transcription, 2 of them by every claim the corpus holds
+
+[1m== the research domains hold one shape[0m
+  12 domain(s); 10722 record(s), 8566 claim(s), 426 declared coverage item(s), 12 inventoried and not asserted read
+OK: the 12 domains hold their shape
+
+[1m== …and a roll bounds a presence, a tax roll bounds property, and neither reaches the scene[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |   ok:   a day-precision list reaches its own day
+   self-test |   ok:   a bare year reaches 31 December
+   self-test |   ok:   a month reaches its last day
+   self-test |   ok:   an unreadable list date is refused rather than guessed
+   self-test |   ok:   a tax row bounds property and not presence
+   self-test |   ok:   a tax row puts no body in the town
+   self-test |   ok:   a poll row bounds a presence
+   self-test |   ok:   a year-precision poll bounds only the year's end
+   self-test |   ok:   no row reaches the scene date
+   self-test |   ok:   every derived bound is inferred and none is attested
+   self-test |   ok:   no derived bound covers the scene date
+   self-test |   ok:   every tax bound refuses to place a body
+   self-test |   ok:   every presence bound reaches before the scene date is over
+   self-test |   ok:   every bound names the archival source and only it
+   self-test |   ok:   every bound names a record the roll actually holds
+   self-test |   ok:   the applier changes exactly one key
+   self-test |   ok:   the applier is idempotent
+   self-test |   ok:   the block lands in its slot and not at the end of the record
+   self-test |   ok:   a rewrite carries the land register's group through untouched
+   self-test |   19 check(s), 0 failure(s)
+
+[1m== the school-section sale still reads the way T-1017 ruled it[0m
+   ok    data/research/land_sales/school_section_sale_1833.json re-derives — 337 rows, 105 buyers, 46.7% upheld against 15.7% elsewhere, and 11 buyers the layer has no surname for
+
+[1m== every Newberry lead is ruled on, anchored, and re-derives from the cards[0m
+newberry lead rulings: 1033 leads on 1430 cards, 0 merges
+
+[1m== every in-window trade has a workplace or a stated reason it has none[0m
+31 raised houses and the ledger re-derive.
+
+[1m== the 1835 staffing join re-derives, and holds from both ends[0m
+OK: the 1835 staffing join re-derives — 146 workplaces on 113 cards, joined both ways, 51 printed names left unmatched
+
+[1m== the letter lists' suspected misreadings stay a worklist and not evidence[0m
+   ok    data/research/residents/letter_list_reading_suspicions.json re-derives — 16 suspicion(s), none of them evidence
+
+[1m== …and a planted path, snake_case id, 'tier', 'ticket', 'order book' and a stale allowlist entry are each refused[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |    ok   the committed visitor UI passes ([])
+   self-test |    ok   a file path in the string table is refused
+   self-test |    ok   a snake_case id in the string table is refused
+   self-test |    ok   the word tier in the string table is refused
+   self-test |    ok   the word ticket in the string table is refused
+   self-test |    ok   the words order book in the string table is refused
+   self-test |    ok   a ticket number in the string table is refused
+   self-test |    ok   the words order book under the researcher namespace are allowed (Researcher mode holds it)
+   self-test |    ok   and under a researcher segment inside an app's own section
+   self-test |    ok   a ticket number in a Researcher-mode string is still refused
+   self-test |    ok   a snake_case id in a Researcher-mode string is still refused
+   self-test |    ok   a file path in a Researcher-mode string is still refused
+   self-test |    ok   the word ticket in a Researcher-mode string is still refused
+   self-test |    ok   the word tier in a Researcher-mode string is still refused
+   self-test |    ok   a namespace merely starting with `researcher` is not Researcher mode's
+   self-test |    ok   a path in a page's <code> is refused, with its line
+   self-test |    ok   a title attribute is read
+   self-test |    ok   an alt attribute is read
+   self-test |    ok   a data-researcher subtree and its own attributes may name the order book
+   self-test |    ok   the exemption ends with the marked element
+   self-test |    ok   scripts, styles and comments are not visible text
+   self-test |    ok   a ticket number and a path in Researcher-mode text are refused
+   self-test |    ok   a ticket as a link behind plain words, in Researcher mode, is allowed
+   self-test |    ok   a ticket link with no label is refused
+   self-test |    ok   a ticket link outside Researcher mode is refused
+   self-test |    ok   a link to anything else is not a ticket link
+   self-test |    ok   a ticket link labelled with its number is refused
+   self-test |    ok   a Go to row's limit naming a structure id is refused (the T-2620 finding)
+   self-test |    ok   a firm not trading at the scene date is not read (its row says so instead)
+   self-test |    ok   a business named by its id is refused
+   self-test |    ok   a liberty's field naming a ticket is refused (492 of 623 did, T-2825)
+   self-test |    ok   a liberty's field naming a record id is refused
+   self-test |    ok   a liberty's title is read
+   self-test |    ok   a field the list never prints as a row (Recorded, Revised, Covers) is not read
+   self-test |    ok   a subject's compiled name that is still an id is refused
+   self-test |    ok   a ground claim's note naming a file is refused
+   self-test |    ok   an open question's research note is read by its label
+   self-test |    ok   a claim's id is the data's, not a sentence, and is not read
+   self-test |    ok   a household note naming a ticket, read with no overlay, is refused
+   self-test |    ok   …and read through its overlay it passes ('Seated by other work off the Bacon household; see the directories data.')
+   self-test |    ok   an overlay with no edit for the sentence leaves the leak in place, and it is refused
+   self-test |    ok   a bare id's name that is still an id is refused
+   self-test |    ok   a named building whose title says its production step is refused
+   self-test |    ok   …and its compiled plain name passes ('1600 Prairie Avenue — brick corner house')
+   self-test |    ok   an allowlist entry that matches nothing is refused as stale
+   self-test |    ok   without the allowlist the leaks it holds are reported
+   self-test |    ok   the allowlist is empty, or every entry is a surface T-2825 is still fixing
+   self-test |    ok   css/skins.css hides a [data-researcher] element while Researcher mode is off
+   self-test |    ok   a stylesheet without that rule is refused
+   self-test |    ok   every allowlist entry names its owning ticket and its reason
+   self-test |    every planted fault refused
+
+[32mCHECK PASS[0m — part 24/32: 47 steps, none red.
+  12 of them are self-tests that prove a gate by breaking it; their
+  assertions fire on purpose and every line of it is prefixed 'self-test |'.
+  This is part 24 of 32; the other 1381 steps are in the other parts. The gate is
+  green only when every part is: tools/check.sh --part 1/32 through --part 32/32.

@@ -1,0 +1,1103 @@
+
+[1m== Picture comparisons bind the planting drawn, its grown-plant renderers and anchor placement (T-1881)[0m
+ok   picture planting review: named lots, reachable parkway trees and street furniture, renderer/anchor freshness, refusals
+
+[1m== The structures batch stores normals, uvs and tones compact and aligned, each within its format's bound (T-2568)[0m
+PASS constant batch scalars: exact bytes/source/geometry/version; varying, dynamic, malformed and ownership fallbacks
+PASS alignment: every compact stride is a multiple of four bytes, and a narrower one is refused
+PASS compact formats: 52 -> 32 bytes a vertex, every channel within its format's bound
+PASS one plan per batch: out-of-range, NaN and missing channels stay as they arrived
+PASS batch: BatchedMesh keeps the compact formats and the instance colour is exact
+PASS packed scalars: four channels in four bytes (24 a vertex here), exact where the data is, GLSL = readback
+PASS positions: Int16 x4 over +/-46.95 m, drawn within half a 1.43 mm step, one grid per structure
+PASS normals: under the uniform dequantize scale three lights the building's own normal
+PASS structure frame: the relief patches read metres in the structure's frame off the instance matrix
+PASS batch: BatchedMesh keeps Int16 x4 positions and a pick lands on the roof through the instance matrix
+PASS timber final scalars: exact U8 leaf/encoded FP16 grades, other lanes and sources retained, native clones and invalid-value fallbacks
+PASS timber final channels: Int8 normal, Uint16 uv, Uint16 x4 colour (alpha 1), out-of-range channels kept float
+
+[1m== A coursed wall's mortar floor is drawn behind the stone faces lying on it, so the two never fight for a pixel (T-3226)[0m
+PASS joint floor: mortar drawn behind its stones (factor 1, units 4) on 50 shipped houses
+
+[1m== The grade colours are one set — gold, silver, bronze — legible on every machine's panel and apart under colour-vision deficiency (T-2671)[0m
+PASS grade colours: one set in confidence.js and walk.css; fills 3:1 and inks 4.5:1 on 10 panels (base + four machines, both themes); bronze browner than gold; all three distinct under protanopia, deuteranopia and tritanopia
+
+[1m== A phone lays a structure bucket over 65,535 vertices as 16-bit-indexed batches, every piece with its twins and every structure whole where it fits (T-3408)[0m
+short index: 46 entries in 7 batches, index 4042896 -> 2445012 bytes
+
+[1m== Jaunt narration: one script for app and voicer keyed by its words, only changed words or voices voiced, the player follows, queues, ducks and mutes (T-3578)[0m
+voiced glessner-household-tour/opening:opening (narrator essayist, 850 chars, directed) → narration/0d206c94e5ba5046f7e6952c38c6b2d2d7191b3de532bc8e2ec6e78d36cee936.mp3 4000 bytes
+voiced glessner-household-tour/stop:john (glessner_john_j, 807 chars, directed) → narration/61646f1d9367cf87cf39cb11e497e5cb5bec69fe347460f8cdc6da7745191709.mp3 4000 bytes
+voiced glessner-household-tour/ending:finish (narrator essayist, 513 chars, directed) → narration/54249f045b8faa4e951c78c2cae1848e167da3b723a8c93796394efbca13a571.mp3 4000 bytes
+voiced glessner-household-tour-grades-3-5/opening:opening (narrator essayist, 620 chars, directed) → narration/d5310851fb26619765f71c4503f0153c7cab78b4c57e803e5dde44d3df25422a.mp3 2001 bytes
+voiced glessner-household-tour-grades-3-5/opening:opening (narrator storyteller, 620 chars, directed) → narration/2391e956e13d73e84dad56d454703088fd52afe158132d305c28db3a335a58cc.mp3 2002 bytes
+NARRATION PASS — one script for app and voicer, keyed by its words; only changed words or voices are voiced; the index only grows; the player follows, queues, ducks and stops on mute, and says who is speaking and how loud
+
+[1m== The Field Check's seven steps each move on only on their own action, resume after a reload, skip and replay, in bubbles of 14 words or fewer (T-2663)[0m
+test_tour: eleven steps, each on its own action (select, release, Interact, Jaunts, Move, Settings), the bug key passed over where hidden; resume at 4, skip at 6, replay; bubbles of 14 words or fewer
+
+[1m== Navigator deep links (?nav=app[:id]&tab=) and Back closing the open app before the page (T-2621)[0m
+NAV LINK PASS — ?nav=app[:id]&tab= parsed and bad parts dropped quietly; Back closes the open app and stays, the next Back leaves; a reopen while our own Back travels waits for it to land (T-3664)
+
+[1m== Guide's controls sheet shows touch on a phone and the keyboard on a laptop, from the controls in use, and lists every key the page binds (T-2661)[0m
+test_nav_guide: touch on a phone, keyboard on a laptop, following the live controls; every drawer key listed; the popover gone
+
+[1m== Jaunt flies to its start, welcome, final stop and readable road notes (T-3432)[0m
+PASS glide seconds: 3.5 s for a hop, never more than 8 s
+PASS glide path: up, along, down, onto the given framing
+PASS glide controller: lands exactly, on time, when stopped and at the first move
+PASS jaunt start: flies with the welcome up, arrives on landing, jumps when asked or declined
+PASS final stop: known on a walk and on a branching stop
+PASS openings and closings: flown while read, a closing scene, then Outing complete
+PASS meter: scene in real time, the jaunt as a row of stops
+JAUNT START/FINISH PASS — glide clock, path and landings, welcome phase, final stop, readable road notes, openings and closings, meter
+
+[1m== the Tell me a story library re-derives from its stories and the drawn town (T-3553)[0m
+
+[1m== loading library: 160 sourced, phase-local cards (T-1275)[0m
+LOADING CONTENT PASS — 160 entries; {'assess': 30, 'collect': 35, 'land': 28, 'prepare': 42, 'resolve': 25} {'build': 32, 'fact': 50, 'humor': 2, 'operational': 56, 'source': 20}
+
+[1m== The 1812 children's dress (town boy, girl and toddler; Potawatomi boy and girl) is sourced, layered and skinned on child bodies of the shared rig (T-3465)[0m
+...........
+----------------------------------------------------------------------
+Ran 11 tests in 48.121s
+
+OK
+
+[1m== C02 door preserves actual exported surfaces at discrete study endpoints (T-2794)[0m
+0 0
+5 0
+10 0
+15 0
+20 0
+25 0
+30 0
+35 0
+40 0
+45 0
+50 0
+55 0
+60 0
+65 0
+70 0
+PASS: 11512 actual active triangles, actual door ancestry/poses, 15 discrete angles, zero contacts; no continuous/inside/occupant acceptance
+
+[1m== Parked W01 fine timber regenerates exact original geometry and reviewed surface binding (T-2793)[0m
+{"verified": false, "asset_id": "wagon_w01_parked_refined", "glb_sha256": "274e737b51872983df792d0b24de8e75de8631890a8d586a32d9c6f0066484fb", "triangles": 12104, "draw_batches": 23, "texture_RGBA8_mip_bytes": 6291456}
+{"source_regenerated": true, "sha256": "e1e5b4f1d7dfe6bf08cca21e8cfae2e88748a3f6e6c6959753334ae2b0c84dd8", "verified": true, "photographic_acceptance": false}
+
+[1m== Active seated drivers reproduce their bounded looking clip from exact parent exports (T-2804)[0m
+{"sha256":"c5b1e37cc39b44e5dfb74496df957de7d93e5e0341f58e6d608f6fb09857bd88","bytes":564628,"route":"single_skin_weighted_rebind_v3","images_decoded":false,"images_encoded":false,"full_optimizer_used":false}
+{"sha256":"6c5182d709ce9de5be003a650c4f7f69b90ae9591d0865174d4303103bd97de4","bytes":551488,"route":"single_skin_weighted_rebind_v3","images_decoded":false,"images_encoded":false,"full_optimizer_used":false}
+{"generated": 8, "checked": true, "native_qualified": false}
+
+[1m== Each 1904 carriage its own paint, wear and marks on one program, no texture, glass and the inside clean (T-3558)[0m
+prairie_driven_brougham_loop_1904: 25 meshes their own, panels/timber/gear/trim painted, glass and the inside clean, disposed cleanly
+prairie_driven_brougham_north_loop_1904: 25 meshes their own, panels/timber/gear/trim painted, glass and the inside clean, disposed cleanly
+prairie_driven_brougham_south_loop_1904: 25 meshes their own, panels/timber/gear/trim painted, glass and the inside clean, disposed cleanly
+prairie_driven_brougham_glessner_1904: 25 meshes their own, panels/timber/gear/trim painted, glass and the inside clean, disposed cleanly
+coachwork: every coach its own paint, wear and marks on one program, no texture: PASS
+
+[1m== Prairie Avenue generated residents and appearance profiles reproduce (T-3547, T-3548)[0m
+ok Prairie people outputs reproduce
+
+[1m== Every 1812 Potawatomi and Miami person is dressed as their own, as dress.py writes it (T-3506)[0m
+dress file current
+
+[1m== Clothes hang, lie and are trimmed as cloth at load: nothing under shows through more than drawn, standing or striding; John J. Glessner's coat has its lapels, collar, front buttons and seams, the lapels off his shoulders; a lady's collar under her chin; skin rows whole, every step short (T-3553)[0m
+  glessner_john_j_1904 lod0                shows through  1637 (before  4701), longest step 172 ms, lapels 720 points, buttons, collar
+  glessner_john_j_1904 lod1                shows through   666 (before  2524), longest step 80 ms, lapels 432 points, buttons, collar
+  glessner_john_j_1904 lod2                shows through   648 (before  1045), longest step 47 ms, lapels 240 points, collar
+  glessner_john_j_1904 lod3                shows through   458 (before   480), longest step 30 ms, lapels 144 points, collar
+  glessner_frances_m_1904 lod0             shows through  1221 (before  2497), longest step 214 ms, collar top 7.0 mm under the chin
+  glessner_frances_m_1904 lod2             shows through   332 (before   701), longest step 60 ms, collar top 11.4 mm under the chin
+  nelson_charles_1904_coachman lod0        shows through  7790 (before 12001), longest step 171 ms
+  nelson_charles_1904_coachman lod2        shows through   695 (before  2787), longest step 143 ms
+  reynolds_mary_1904_maid lod0             shows through  1203 (before  1508), longest step 126 ms, collar cut again
+  reynolds_mary_1904_maid lod2             shows through   285 (before   395), longest step 18 ms, collar cut again
+  anonymous_working_driver_1904 lod0       shows through   632 (before  1078), longest step 92 ms
+  bardwell_otis_1835 lod0                  shows through   603 (before  1055), longest step 44 ms
+  coachman's skirt: 2010 of 2010 points as cut by the fairing
+  short gown's skirt under the apron: 420 of 420 points still under it after the fairing
+human-drape: 12 body levels hung, faired and trimmed; nothing shows through more, rows whole, steps short; lapels, buttons, collar and seams on John Glessner's coat; Frances Glessner's collar under her chin: PASS
+[33m   ~ Clothes hang, lie and are trimmed as cloth at load: nothing under shows through more than drawn, standing or striding; John J. Glessner's coat has its lapels, collar, front buttons and seams, the lapels off his shoulders; a lady's collar under her chin; skin rows whole, every step short (T-3553) failed in the pool and PASSED ALONE — T-1336, a step beside it moved the tree[0m
+
+[1m== Every person gets their own face, height and build: no two of 400 alike, a seated driver's face only, clothes outside the skin, LODs agree (T-3412)[0m
+ok human variation: 49 axes, no two of 400 alike, seated face only, clothes outside the skin, LODs agree; 850 of 1234 drawn people wear a library face, 358 keep their body's own skin by the draw, 26 have a face or a sheet of their own; 29 are drawn twice, 4 of them on two different bodies
+
+[1m== Every person placed in town is named by the look tag, found, and followed beside them (T-3404)[0m
+follow: waits outside while they are in their doorway, then follows; stops at their door going in PASS
+follow: right behind, looking her way, behind her back standing, pulled in at a fence, swung off a wall, held, look held, jump, wait, ride/input/fly/lost stop PASS
+follow: round a corner by her trail (worst 2.35 m, no set-down), set down off a wall after 2.40 s PASS
+follow: smooth behind a carriage at 60 fps with dropped frames (speed sd 0.000 m/s, yaw 0.08°/s, pitch 0.06°/s) PASS
+people-look: person nearer than the building, reach, unchanged answers, stop PASS
+transport heading_deg matches the vehicle root's ahead PASS
+goToTarget: beside a standing figure facing them, router-guarded; card addresses go home; someone at home met at their door and brought out (T-3573); door stands off porches and outside the house, a doorway waited at PASS
+person card: Find and Follow live only for someone placed in town or at home in it (T-3573), greyed with the reason otherwise PASS
+ok person interaction (T-3404)
+
+[1m== the merge drivers this clone needs are registered (T-1548)[0m
+merge drivers OK — all four registered in this clone
+
+[1m== the tickets are here (kevinrhaas/chicago-tickets, cloned at tickets/)[0m
+tickets: tickets/ exists and is not a clone of https://github.com/kevinrhaas/chicago-tickets.git — leaving it as it is
+
+[1m== publish the mirror the gate measures (site/4d/ is generated, T-0938)[0m
+AUDIO HOST POLICY PASS
+Glessner v4 package verified; 0 missing GLB(s) materialized.
+shipped derivatives: 1151 pair(s) carry the master's triangles, node identity and contract attributes; worst bounding-box disagreement 2.68 of 4 rungs; 0 asset(s) lose their material identity to the publish path (banked, K36(b)); 5 master passthrough(s), all of them decided (K38); and every one of them records the master it was made from, which is still the master in the tree (K39)
+Prairie Avenue browser published: /workspace/work/better-trees/site/4d/prairie-1904
+published 16 map images + viewer + media to site/pre-fire
+   prairie-1904/maps/  3.85 MB served from /prairie-1904/maps/
+   prairie-1904/research/public/  39.30 MB served from /prairie-1904/research/public/, 4 file(s) not at the root kept here
+   pre-fire/maps/images/  43.87 MB served from /pre-fire/maps/images/
+   pre-fire/media/  33.98 MB served from /pre-fire/media/
+   reference browsers: 121.01 MB not shipped twice (T-1828)
+audio: 97 verified remote deliveries; catalogue only in the site
+   changelog.js published to site/4d/js/changelog.js (T-0722)
+   changelog.js published to site/4d/walk/js/changelog.js (T-0722)
+   sheets (data/gltf): 71 shared by 116 GLB(s), 315.078 -> 111.445 MiB
+household notes deferred: 2003 household(s) on 425 record(s) → sidecars/<scene>/households/<id>.json
+boot sidecars packed: 1812 — 68 record(s) in 2 part(s), sharing 285 value(s) → sidecars/1812/boot/
+boot sidecars packed: 1835 — 765 record(s) in 16 part(s), sharing 1592 value(s) → sidecars/1835/boot/
+boot sidecars packed: 1871 — 25 record(s) in 1 part(s), sharing 59 value(s) → sidecars/1871/boot/
+boot sidecars packed: 1904 — 286 record(s) in 6 part(s), sharing 360 value(s) → sidecars/1904/boot/
+letter-list cohort: 773 records packed from 9.31 MiB of per-record files to 4.61 MiB in 23 shard(s) and a 666-string roster (T-0438)
+   humans: officer_first_infantry_1812_lieutenant not drawn in town, not published
+   humans: surgeons_mate_first_infantry_1812 not drawn in town, not published
+   sheets (data/humans/web): 321 shared by 136 GLB(s), 239.212 -> 49.051 MiB
+strip_page_comments: walk/index.html 88,766 -> 66,275 bytes (102 developer comments out, 0 placeholder(s) kept)
+entry pages: index.html, 1812/index.html, 1835/index.html, 1871/index.html, 1880/index.html, 1904/index.html
+1835: ground built in 1810 ms — 232 tiles, 10036 pieces, 30895134 bytes, 69 inputs → /workspace/work/better-trees/site/4d/data/prebuilt/1835
+1835: base built in 602 ms — 1 meshes, 7503 pieces, 3909436 bytes, 75 inputs → /workspace/work/better-trees/site/4d/data/prebuilt/1835
+1835: streets built in 3356 ms — 6 meshes, 1189 pieces, 30385004 bytes, 69 inputs → /workspace/work/better-trees/site/4d/data/prebuilt/1835
+1835: yards built in 5408 ms — 4 surfaces, 830 pieces, 31096884 bytes, 90 inputs → /workspace/work/better-trees/site/4d/data/prebuilt/1835
+1835: frontage built in 3376 ms — 127 meshes, 63321600 bytes, 77 inputs → /workspace/work/better-trees/site/4d/data/prebuilt/1835
+   build c1527e6cd9  Nov 26, 2026, 7:57 AM CT
+   pack 1812: 5080 files, 308.5 MB
+   pack 1835: 7946 files, 396.4 MB
+   pack 1871: 5004 files, 346.4 MB
+   pack 1904: 5750 files, 436.0 MB
+tools/publish.sh: line 1009: bc: command not found
+published ../../site/4d  (0.00 MB)
+
+[1m== Glessner plain brick and member grain preserve geometry and contacts (T-2226)[0m
+PASS: Full/Light geometry and contacts identical; only plain brick roles change; gate grain follows timber at metric scale with valid ends; deterministic joint maps and +V normals
+
+[1m== Glessner's canonical UV caches are complete and reject stale or corrupt layouts (T-2494)[0m
+PASS 2048: committed canonical UV layout validates (3334899 corners)
+PASS 1024: committed canonical UV layout validates (397389 corners)
+PASS stale mesh/recipe, missing layout, altered bytes, shape, dtype and NaNs are refused
+PASS unchanged inputs retain UVs; the complete atlas key still guards AO reuse
+PASS an interrupted cache write preserves the previous atlas
+
+[1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |   ok    a fired assertion never starts a line
+   self-test |   ok    every transcript line is tagged, stderr included
+   self-test |   ok    the assertion's own words are kept, not silenced
+   self-test |   ok    a self-test that fires leaves the gate green
+   self-test |   ok    a green run prints no failure-shaped line of its own
+   self-test |   ok    a self-test that stops firing still fails the gate
+   self-test |   ok    the roll-up names every failing step, once each
+   self-test |   ok    the roll-up counts steps, not lines
+   self-test |   ok    a failing step is named at the end, not only inline
+   self-test |   ok    three parts run every step of the whole gate exactly once (CHECK_JOBS=1)
+   self-test |   ok    an every_part step runs in each part (CHECK_JOBS=1)
+   self-test |   ok    three parts run every step of the whole gate exactly once (CHECK_JOBS=4)
+   self-test |   ok    an every_part step runs in each part (CHECK_JOBS=4)
+   self-test |   ok    a part deals the steps out in declared order, every N-th from its own (the prerequisite holds ordinal 1)
+   self-test |   ok    --part 1/1 is the whole gate
+   self-test |   ok    part 1/8 equals its two 16-way halves, without missing or duplicate work (CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=1/8, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=1/8, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=1/8, CHECK_JOBS=1)
+   self-test |   ok    part 2/8 equals its two 16-way halves, without missing or duplicate work (CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=2/8, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=2/8, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=2/8, CHECK_JOBS=1)
+   self-test |   ok    part 3/8 equals its two 16-way halves, without missing or duplicate work (CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=3/8, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=3/8, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=3/8, CHECK_JOBS=1)
+   self-test |   ok    part 4/8 equals its two 16-way halves, without missing or duplicate work (CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=4/8, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=4/8, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=4/8, CHECK_JOBS=1)
+   self-test |   ok    part 5/8 equals its two 16-way halves, without missing or duplicate work (CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=5/8, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=5/8, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=5/8, CHECK_JOBS=1)
+   self-test |   ok    part 6/8 equals its two 16-way halves, without missing or duplicate work (CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=6/8, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=6/8, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=6/8, CHECK_JOBS=1)
+   self-test |   ok    part 7/8 equals its two 16-way halves, without missing or duplicate work (CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=7/8, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=7/8, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=7/8, CHECK_JOBS=1)
+   self-test |   ok    part 8/8 equals its two 16-way halves, without missing or duplicate work (CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=8/8, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=8/8, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=8/8, CHECK_JOBS=1)
+   self-test |   ok    part 1/8 equals its two 16-way halves, without missing or duplicate work (CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=1/8, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=1/8, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=1/8, CHECK_JOBS=4)
+   self-test |   ok    part 2/8 equals its two 16-way halves, without missing or duplicate work (CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=2/8, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=2/8, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=2/8, CHECK_JOBS=4)
+   self-test |   ok    part 3/8 equals its two 16-way halves, without missing or duplicate work (CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=3/8, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=3/8, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=3/8, CHECK_JOBS=4)
+   self-test |   ok    part 4/8 equals its two 16-way halves, without missing or duplicate work (CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=4/8, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=4/8, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=4/8, CHECK_JOBS=4)
+   self-test |   ok    part 5/8 equals its two 16-way halves, without missing or duplicate work (CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=5/8, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=5/8, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=5/8, CHECK_JOBS=4)
+   self-test |   ok    part 6/8 equals its two 16-way halves, without missing or duplicate work (CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=6/8, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=6/8, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=6/8, CHECK_JOBS=4)
+   self-test |   ok    part 7/8 equals its two 16-way halves, without missing or duplicate work (CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=7/8, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=7/8, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=7/8, CHECK_JOBS=4)
+   self-test |   ok    part 8/8 equals its two 16-way halves, without missing or duplicate work (CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=8/8, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=8/8, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=8/8, CHECK_JOBS=4)
+   self-test |   ok    part 1/16 equals its two 32-way halves, without missing or duplicate work (CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=1/16, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=1/16, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=1/16, CHECK_JOBS=1)
+   self-test |   ok    part 2/16 equals its two 32-way halves, without missing or duplicate work (CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=2/16, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=2/16, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=2/16, CHECK_JOBS=1)
+   self-test |   ok    part 3/16 equals its two 32-way halves, without missing or duplicate work (CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=3/16, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=3/16, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=3/16, CHECK_JOBS=1)
+   self-test |   ok    part 4/16 equals its two 32-way halves, without missing or duplicate work (CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=4/16, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=4/16, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=4/16, CHECK_JOBS=1)
+   self-test |   ok    part 5/16 equals its two 32-way halves, without missing or duplicate work (CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=5/16, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=5/16, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=5/16, CHECK_JOBS=1)
+   self-test |   ok    part 6/16 equals its two 32-way halves, without missing or duplicate work (CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=6/16, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=6/16, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=6/16, CHECK_JOBS=1)
+   self-test |   ok    part 7/16 equals its two 32-way halves, without missing or duplicate work (CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=7/16, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=7/16, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=7/16, CHECK_JOBS=1)
+   self-test |   ok    part 8/16 equals its two 32-way halves, without missing or duplicate work (CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=8/16, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=8/16, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=8/16, CHECK_JOBS=1)
+   self-test |   ok    part 9/16 equals its two 32-way halves, without missing or duplicate work (CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=9/16, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=9/16, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=9/16, CHECK_JOBS=1)
+   self-test |   ok    part 10/16 equals its two 32-way halves, without missing or duplicate work (CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=10/16, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=10/16, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=10/16, CHECK_JOBS=1)
+   self-test |   ok    part 11/16 equals its two 32-way halves, without missing or duplicate work (CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=11/16, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=11/16, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=11/16, CHECK_JOBS=1)
+   self-test |   ok    part 12/16 equals its two 32-way halves, without missing or duplicate work (CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=12/16, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=12/16, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=12/16, CHECK_JOBS=1)
+   self-test |   ok    part 13/16 equals its two 32-way halves, without missing or duplicate work (CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=13/16, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=13/16, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=13/16, CHECK_JOBS=1)
+   self-test |   ok    part 14/16 equals its two 32-way halves, without missing or duplicate work (CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=14/16, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=14/16, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=14/16, CHECK_JOBS=1)
+   self-test |   ok    part 15/16 equals its two 32-way halves, without missing or duplicate work (CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=15/16, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=15/16, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=15/16, CHECK_JOBS=1)
+   self-test |   ok    part 16/16 equals its two 32-way halves, without missing or duplicate work (CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=16/16, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=16/16, CHECK_JOBS=1)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=16/16, CHECK_JOBS=1)
+   self-test |   ok    part 1/16 equals its two 32-way halves, without missing or duplicate work (CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=1/16, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=1/16, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=1/16, CHECK_JOBS=4)
+   self-test |   ok    part 2/16 equals its two 32-way halves, without missing or duplicate work (CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=2/16, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=2/16, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=2/16, CHECK_JOBS=4)
+   self-test |   ok    part 3/16 equals its two 32-way halves, without missing or duplicate work (CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=3/16, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=3/16, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=3/16, CHECK_JOBS=4)
+   self-test |   ok    part 4/16 equals its two 32-way halves, without missing or duplicate work (CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=4/16, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=4/16, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=4/16, CHECK_JOBS=4)
+   self-test |   ok    part 5/16 equals its two 32-way halves, without missing or duplicate work (CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=5/16, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=5/16, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=5/16, CHECK_JOBS=4)
+   self-test |   ok    part 6/16 equals its two 32-way halves, without missing or duplicate work (CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=6/16, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=6/16, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=6/16, CHECK_JOBS=4)
+   self-test |   ok    part 7/16 equals its two 32-way halves, without missing or duplicate work (CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=7/16, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=7/16, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=7/16, CHECK_JOBS=4)
+   self-test |   ok    part 8/16 equals its two 32-way halves, without missing or duplicate work (CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=8/16, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=8/16, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=8/16, CHECK_JOBS=4)
+   self-test |   ok    part 9/16 equals its two 32-way halves, without missing or duplicate work (CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=9/16, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=9/16, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=9/16, CHECK_JOBS=4)
+   self-test |   ok    part 10/16 equals its two 32-way halves, without missing or duplicate work (CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=10/16, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=10/16, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=10/16, CHECK_JOBS=4)
+   self-test |   ok    part 11/16 equals its two 32-way halves, without missing or duplicate work (CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=11/16, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=11/16, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=11/16, CHECK_JOBS=4)
+   self-test |   ok    part 12/16 equals its two 32-way halves, without missing or duplicate work (CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=12/16, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=12/16, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=12/16, CHECK_JOBS=4)
+   self-test |   ok    part 13/16 equals its two 32-way halves, without missing or duplicate work (CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=13/16, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=13/16, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=13/16, CHECK_JOBS=4)
+   self-test |   ok    part 14/16 equals its two 32-way halves, without missing or duplicate work (CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=14/16, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=14/16, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=14/16, CHECK_JOBS=4)
+   self-test |   ok    part 15/16 equals its two 32-way halves, without missing or duplicate work (CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=15/16, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=15/16, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=15/16, CHECK_JOBS=4)
+   self-test |   ok    part 16/16 equals its two 32-way halves, without missing or duplicate work (CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=16/16, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=16/16, CHECK_JOBS=4)
+   self-test |   ok    each split run keeps both every_part prerequisites (k=16/16, CHECK_JOBS=4)
+   self-test |   ok    a part's pass names its part and the steps it left to the others
+   self-test |   ok    a red step fails the part it is in
+   self-test |   ok    a part's failure names its part
+   self-test |   ok    …and only that part: the other part is green
+   self-test |   ok    a malformed part "0/3" stops the gate before any step runs
+   self-test |   ok    a malformed part "4/3" stops the gate before any step runs
+   self-test |   ok    a malformed part "3" stops the gate before any step runs
+   self-test |   ok    a malformed part "a/b" stops the gate before any step runs
+   self-test |   ok    a malformed part "1/33" stops the gate before any step runs
+   self-test |   ok    a malformed part "-1/2" stops the gate before any step runs
+   self-test |   ok    a step started in a part cannot see the part, so it cannot inherit it
+   self-test | 
+   self-test | -- self-test: the scan is shown a gate that breaks the rule --
+   self-test |   ok    a self-test left on step() is refused
+   self-test |   ok    a plain gate dressed as a self-test is refused
+   self-test |   ok    every self-test in check.sh runs through selftest(), and nothing else does
+   self-test | 
+   self-test | -- self-test: the label scan is shown a gate that breaks the rule --
+   self-test |   ok    a label whose backticks bash would expand is refused
+   self-test |   ok    …and an escaped backtick, which is the fix, is not
+   self-test |   ok    no step label in check.sh carries a backtick bash would expand
+   self-test |   ok    417 self-test steps are tagged
+   self-test |   ok    a four-job run prints byte-for-byte what a serial run prints, and agrees on the verdict
+   self-test |   ok    a step that exits non-zero still fails the gate under the pool
+   self-test |   ok    the pool counts every step it ran
+   self-test |   ok    a slow step prints before the fast one declared after it, though it finished last
+   self-test |   ok    a step that fails in the pool and passes alone does NOT fail the gate
+   self-test |   ok    and it is counted as a race rather than forgotten
+   self-test |   ok    the race is named inline, with the step's own label
+   self-test |   ok    a step that is red on a quiet tree too still fails the gate
+   self-test |   ok    and it is not miscounted as a race
+   self-test |   ok    the failure's own output is printed once, not twice by the retry
+   self-test |   ok    CHECK_JOBS=1 reports no races, because it cannot have one
+   self-test |   ok    CHECK_TIMINGS records the gate without appearing in it
+   self-test |   ok    …and the serial path agrees with the pool under the instrument too
+   self-test |   ok    a timed run actually wrote rows (4 of them)
+   self-test |   ok    each row is seconds, kind, command, label
+   self-test |   ok    the recorded command keeps its %q quoting, backslashes and all
+   self-test |   ok    every duration is a non-negative number of seconds to three decimals
+   self-test |   ok    the default uses all four available fixture cores
+   self-test |   ok    a single available fixture core legitimately defaults to one job
+   self-test |   ok    …and an explicit CHECK_JOBS still wins, which is the escape hatch
+   self-test | CI partition: required gate and all eight native parts; 14 refusal controls pass
+   self-test |   ok    CI requires every native part before the required gate can pass
+   self-test | bake gate: all sixteen parts at 600 s before the PR and bundle; 9 refusal controls pass
+   self-test |   ok    the content build runs every part of its N-part gate, N >= 16, before its PR or bundle
+   self-test | 
+   self-test | 247 passed, 0 failed
+
+[1m== Buildings share an image they carry identically: one decode, closed by its last holder (T-2464)[0m
+ok   two houses carrying the same picture decode it once
+ok   …and both hold the very same decoded image
+ok   …each through its own texture, never the original
+ok   different pictures stay different
+ok   the counts say so
+ok   retiring house A keeps the bitmap house B still draws with
+ok   …retiring house B lets the last holder close it
+ok   a picture whose bitmap was closed is decoded afresh, not shared closed
+ok   an image the module never shared may always be closed
+ok   same length, different bytes: two decodes
+ok   a GLB picture is recorded against the source its clones share
+ok   …without its bytes by default
+ok   a texture the module never saw has no record
+ok   keepEncoded keeps the bytes and their mime type to decode from again
+ok   a texture with no source is shared, not a TypeError
+PASS register returns original GLTF loader
+PASS embedded light GLB drops exactly mip0
+PASS cached original texture/source/chain stay full
+PASS sampler and color space survive
+PASS remaining mip payloads stay exact
+PASS light retained bytes equal exact existing tail sum
+PASS idle transcode resolver no longer retains full reply
+PASS repeat decode never trims cached source twice
+PASS repeat delivery shares reduced GPU source identity
+PASS full cache and reduced deliveries own their mip descriptors
+PASS releasing one delivery preserves all cached original payloads
+PASS releasing one delivery preserves another delivery payloads
+PASS cached reduced variant still serves populated mips after release
+PASS decode rejection propagates
+PASS full profile uses an ownership-isolating adapter
+PASS full GLB retains every mip byte and original GPU source identity
+PASS single-mip texture remains valid
+PASS real GLTFLoader receives reduced embedded basecolor and emissive images
+PASS real GLTFLoader preserves distinct sampler settings
+PASS two real GLTF parses share reduced image source identity
+PASS real GLTFLoader full transcoder cache remains unmodified
+PASS full: combined real parser delivery releases uploaded mip arrays
+PASS full: combined release keeps cached raw full payloads exact
+PASS full: cached real GLTF reread after release gets populated exact selected mips
+PASS full: combined original GLTF residency revisit uploads exact selected bytes
+PASS full: combined refill preserves full cache and reports zero errors
+PASS light: combined real parser delivery releases uploaded mip arrays
+PASS light: combined release keeps cached raw full payloads exact
+PASS light: cached real GLTF reread after release gets populated exact selected mips
+PASS light: combined original GLTF residency revisit uploads exact selected bytes
+PASS light: combined refill preserves full cache and reports zero errors
+PASS desktop uploaded compressed source levels are released
+PASS desktop original material and GPU handle remain unchanged
+PASS released source can become a populated tail-mip stand-in
+PASS returning source is transcoded exactly once
+PASS restored desktop uploads every original mip byte exactly
+PASS restored desktop returns to original material slot
+PASS refilled arrays release again after upload
+PASS desktop roundtrip reports zero problems
+PASS unadopted hung leaf keeps the full texture while its source is away
+PASS that draw uploads the released levels, empty
+PASS a source drawn while away is uploaded again on its return, every byte
+PASS adopt takes a hung leaf sharing a batch texture
+PASS an adopted leaf takes the stand-in with the batch
+PASS an adopted leaf gets the full texture back with the batch
+PASS a leaf adopted while its source is away takes the stand-in at once
+PASS a texture no batch draws is left alone
+PASS source without encoded recovery is never released
+PASS legacy desktop option retains source levels
+PASS source awaiting GPU upload keeps every byte
+PASS failed encoded refill reports the real decoding failure
+PASS failed encoded refill keeps the valid stand-in without a pending upload
+PASS false: regular image retains its source record
+PASS false: regular encoded retention matches the explicit mode
+PASS false: compressed encoded retention matches the explicit mode
+PASS true: regular image retains its source record
+PASS true: regular encoded retention matches the explicit mode
+PASS true: compressed encoded retention matches the explicit mode
+PASS compressed: regular image retains its source record
+PASS compressed: regular encoded retention matches the explicit mode
+PASS compressed: compressed encoded retention matches the explicit mode
+PASS desktop regular source creates no eager stand-in canvas
+PASS desktop regular source keeps decoded image open without encoded duplicate
+PASS desktop regular source lazily creates valid stand-in on actual eviction
+PASS desktop regular return reuses the live original image and Source
+PASS desktop regular return uploads without decoding or pending work
+PASS desktop recoverable compressed source eagerly prepares its tail stand-in
+PASS desktop recoverable compressed source releases only after upload
+PASS desktop compressed-only mode recovers through actual encoded refill path
+PASS compressed source without encoded recovery does not eagerly allocate a stand-in
+PASS compressed source without encoded recovery retains every original level
+PASS phone true/all mode still eagerly prepares regular bitmap stand-in
+PASS phone native uploaded-image release still closes its original bitmap
+PASS phone true/all mode decodes, uploads and closes returning image
+PASS phone blob mode keeps a Blob and no page view of the bytes
+PASS residency counts a blob record's bytes
+PASS phone blob mode decodes again from the Blob's own bytes
+PASS phone blob mode uploads and closes the returning image like the view mode
+PASS without blob mode a record keeps its view (desktop unchanged)
+PASS real source release collapses the node tree and clears the row node
+PASS collapsed source retains only primitive original texture-slot keys and counts
+PASS actual released GLTF accepts an intact raw GLTF reread
+PASS actual released GLTF still refuses a reread missing the base-color slot
+PASS actual released GLTF still refuses a reread missing the second sampler slot
+PASS a required texture on the wrong node cannot replace its original slot
+PASS restored raw GLTF reread passes the unchanged required-slot contract
+PASS collapsed source preserves repeated original material-slot multiplicity
+PASS deduplicating a required original material slot is refused
+PASS reordering distinct original material nodes is refused
+PASS restoring every repeated slot and original node restores acceptance
+90 controls PASS; NO actual-browser/GPU/memory/visual qualification claimed
+0 failure(s)
+
+[1m== the South Branch to Bridgeport still carries what its tracer writes (T-2501)[0m
+ok: data/terrain/1812_south_branch_to_bridgeport.geojson holds its measured literals (107 vertices, 2416.9 m, forks at 2269.2 m)
+
+[1m== the 1904 street furniture re-lays from the street grid (T-3199)[0m
+street furniture: {'items': 180, 'gas_lamps': 101, 'fire_hydrants': 19, 'utility_poles': 60, 'wires': 56, 'corner_lamps': 28, 'attested': 16, 'inferred': 2, 'reconstructed': 162}, as written
+
+[1m== …and a broken trace, a clockwise or out-of-lot outline, an unnamed or twice-named building still fails it[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |   ok   trace: a rectangle is four corners
+   self-test |   ok   trace: its area is the pixel count
+   self-test |   ok   trace: an L is six corners
+   self-test |   ok   simplify: a staircase hypotenuse becomes a line
+   self-test |   ok   classify: brick, stone, frame, paper, ink
+   self-test |   ok   inside_tol: inside
+   self-test |   ok   inside_tol: within tolerance
+   self-test |   ok   inside_tol: refuses outside
+   self-test |   ok   assign: street building takes front and attached
+   self-test |   ok   assign: alley building takes the rear
+   self-test |   ok   assign: an untraced census id is reported
+   self-test |   ok   assign: a non-building use at the street takes its id
+   self-test |   ok   assign: two detached ids on one joined outline
+   self-test |   ok   assign: a one-part outline does not absorb a second id
+   self-test |   ok   grounds: a frontage over two lots reads them as one ground
+   self-test |   ok   contract: a good document passes
+   self-test |   ok   contract: refuses an outline outside its lot
+   self-test |   ok   contract: refuses a clockwise outline
+   self-test |   ok   contract: refuses an unnamed building
+   self-test |   ok   contract: refuses a census id assigned twice
+   self-test |   ok   px rules: the scans they were set on read at scale 1.0, unchanged
+   self-test |   ok   px rules: a scan 3.7x coarser scales lengths, areas by the square, and takes the line rule
+   self-test |   ok   classify: on a coarse scan a blurred one-pixel wall is line, its 2 px break closed
+   self-test |   ok   classify: on a fine scan the same wall reads as the brick it is drawn on
+   self-test |   ok   frontage shares: three frontages on one lot, north first in address order, each with its stable
+   self-test |   ok   frontage shares: two frontages on one drawn building stay one share
+   self-test | self-test: PASS
+
+[1m== the K06 window kit builds every window as a closed recess over an enclosed room, one glass layer deep (T-2297)[0m
+ok   the K06 window kit: 28 variants, each a recess with a closed reveal, its stages in depth order, one glass layer per line of sight over an enclosed room, no doubled face; 72-900 triangles an opening; the specimen GLB is the generator's bytes
+
+[1m== a K08 finial may be turned on a crocketed collar and a hooded dormer's face slated (T-1890)[0m
+ok   the tower's finial is turned, 2.9 m over a collar 0.45 m out ({'height_m': 2.9, 'radius_m': 0.14, 'collar_m': 0.45, 'form': 'turned'})
+ok   and laid in zinc sheet, not the cap's slate (zinc_sheet)
+ok   its tip at 20.02 m, on the cone T-1890 raised to both pictures ({'top_m': 20.019, 'form': 'turned', 'collar_m': 0.45, 'crockets': 24})
+ok   its collar ringed with 24 crockets
+ok   the collar reaches down the cone to its rim and the turning up to the tip (15.84-20.02 m)
+ok   a plain spike is the kit's ({'top_m': 19.719})
+ok   an unknown form: refused (bays: tower's finial.form 'urn': spike or turned...)
+ok   a spike's collar: refused (bays: tower's finial.collar_m 0.45: a turned finial's collar, 0.2-0.8 ...)
+ok   a collar 1.0 m out: refused (bays: tower's finial.collar_m 1.0: a turned finial's collar, 0.2-0.8 m...)
+ok   an unknown fabric: refused (bays: tower's finial.fabric 'gold_leaf': one of zinc_sheet...)
+ok   an unknown key: refused (bays: tower's finial.crockets 12: false, on a collar, takes its crocke...)
+ok   1801's three hooded dormers are slated, each light in a 0.1 m frame
+ok   a frame on a stone face: refused (mansard.dormers[0].hood.frame_m: a frame stands in a slated face only...)
+ok   a frame as wide as its surround: refused (mansard.dormers[0].hood.frame_m 0.2: a slated face's frame is 0.05 m w...)
+ok   a face of brick: refused (mansard.dormers[0].hood.face 'brick': stone or slate...)
+test_k08_turned_finial: all passed
+
+[1m== a hood's parapet may be pierced with rings under finials; a cornice stack may break the curb (T-3634)[0m
+ok   2017's porch railing is a band pierced with five rings: {'height_m': 0.45, 'post_m': 0.3, 'rail_m': [0.24, 0.1], 'pierced': {'rings': 5, 'diameter_m': 0.27}, 'finials': {'plinth_m': [0.32, 0.1], 'ball_m': 0.34}}
+ok   ...under two ball finials: {'plinth_m': [0.32, 0.1], 'ball_m': 0.34}
+ok   the hood builds eleven rings and two finials, no balusters: {'modillions': 8, 'consoles': 2, 'rings': 11, 'finials': 2, 'finial_top_m': 5.94, 'top_m': 5.5, 'columns': 2, 'fabric': 'stone', 'railing_fabric': 'trim'}
+ok   the finials top out over the posts: {'modillions': 8, 'consoles': 2, 'rings': 11, 'finials': 2, 'finial_top_m': 5.94, 'top_m': 5.5, 'columns': 2, 'fabric': 'stone', 'railing_fabric': 'trim'}
+ok   the north stack stands on the cornice astride the wall: {'u_m': 14.8, 'v_m': 0.0, 'plan_m': (1.0, 0.7), 'top_m': 12.5, 'base_m': 8.5, 'cap_proud_m': 0.05, 'cap_depth_m': 0.15, 'stone': False, 'on_cornice': True}
+ok   refused: rings taller than the band (entrance_kit.hood.railing.pierced: 5 rings 0.4 m across do not fit a band 0.35 m high and 2.12 m long with 0.03 m about each)
+ok   refused: rings wider than their cells (entrance_kit.hood.railing.pierced: 9 rings 0.27 m across do not fit a band 0.35 m high and 2.12 m long with 0.03 m about each)
+ok   refused: a pierced band without its diameter (entrance_kit.hood.railing.pierced takes rings (1-12) and diameter_m)
+ok   refused: balusters and a pierced band at once (entrance_kit.hood takes ['brackets', 'cornice', 'fascia_m', 'out_m', 'soffit_m', 'width_m'], its cornice height_m and proud_m, and either a railing (height_m, post_m, rail_m [width, depth], and baluster_m and pitch_m or a pierced band; optionally finials) or a pediment)
+ok   refused: a pierced band under a narrow rail (entrance_kit.hood.railing.pierced: a pierced band needs a rail 0.12 m wide or more, and no splayed end)
+ok   refused: a plinth wider than the post (entrance_kit.hood.railing.finials: a plinth 0.1-0.40 m wide (the post's width and 0.1 m) and 0.03-0.4 m high, under a ball 0.08 m to its width and 0.05 m)
+ok   refused: a ball wider than its plinth (entrance_kit.hood.railing.finials: a plinth 0.1-0.40 m wide (the post's width and 0.1 m) and 0.03-0.4 m high, under a ball 0.08 m to its width and 0.05 m)
+ok   refused: a stack on the cornice through the curb's corner (chimney at (0.85, 0.0) stands on the curb at v 0.15)
+ok   the deck lays a south cresting: [{'side': 'south', 'from_m': 0.399, 'to_m': 14.2, 'pattern': 'crenellated', 'merlons': 41}, {'side': 'north', 'from_m': 0.399, 'to_m': 16.101, 'pattern': 'crenellated', 'merlons': 47}, {'side': 'street', 'from_m': 2.73, 'to_m': 4.12, 'pattern': 'crenellated', 'merlons': 5}, {'side': 'street', 'from_m': 5.68, 'to_m': 9.851, 'pattern': 'crenellated', 'merlons': 13}, {'side': 'rear', 'from_m': 0.399, 'to_m': 9.851, 'pattern': 'crenellated', 'merlons': 28}]
+ok   the south cresting stops short of the stack: [{'side': 'south', 'from_m': 0.399, 'to_m': 14.2, 'pattern': 'crenellated', 'merlons': 41}]
+
+all passed
+
+[1m== a K01 brick wing's stone belts and corner quoins (T-3353)[0m
+ok   middle_range names its quoins at its north-east corner
+ok   middle_range carries three stone belts on its north wall and stepped-out face
+ok   middle_range registers one quoin instance, its corner's
+ok   middle_range's 27 courses run from 0.0 m to its wall top 9.6 m
+ok   middle_range's corner stands in limestone from 0.0 to 9.6 m
+ok   middle_range's quoins stand proud of both faces at the corner
+ok   rear_range names its quoins at its north-east corner
+ok   rear_range carries three stone belts on its north wall and stepped-out face
+ok   rear_range registers one quoin instance, its corner's
+ok   rear_range's 27 courses run from 0.0 m to its wall top 9.6 m
+ok   rear_range's corner stands in limestone from 0.0 to 12.71 m
+ok   rear_range's quoins stand proud of both faces at the corner
+ok   the garage is undressed
+ok   a corner on a wall the wing has not got (the garage has no stepped-out face): refused (rear_wings: garage has no south_front corner (its walls: south, north, rear)...)
+ok   a corner named twice: refused (rear_wings: middle_range's quoins name their corners once each...)
+ok   a quoin out of bounds: refused (rear_wings: middle_range's quoins stand from 0 to a metre under the wall top, in courses 0.2-0.5 m high, 0.2 m...)
+ok   a quoin through the rear range's light at s 8.2: refused (rear_wings: rear_range's south_front quoins run through the light at s 8.2 on k01.wall.wing.rear_range.south (...)
+ok   a belt through the lights: refused (rear_wings: middle_range's belts[0] runs through the light at s 1.6 on k01.wall.wing.middle_range.front...)
+ok   a belt on a wall the wing has not got: refused (rear_wings: middle_range's belts name the walls they run on (south, north, rear, front)...)
+ok   an unknown dressing: refused (rear_wings: middle_range's dressings take belts (with belt_sides) and/or quoins...)
+ok   dressings on a frame wing: refused (rear_wings: middle_range's dressings are stone laid in a brick wing's walls...)
+test_k01_wing_dressings: all passed
+
+[1m== side_bays take read windows; a read round head on a stone side face has no flat arch (T-3097)[0m
+ok   no sash a storey at 15.6 m, where the print has the pair
+ok   the round-headed pair is laid once, at its own sill ([(14.93, 6.08), (16.03, 6.08)])
+ok   the light over the side arch is laid once, at 18.67 m, off the arch's axis
+ok   the plain number (1.6 m) is still a column on both storeys
+ok   the front's second-storey light stands 5.4-7.7 m ([(5.4, 7.7)])
+ok   side_bays reads as centres ((1.6, 14.93, 16.03, 18.67))
+ok   each read round head's spandrels are dressed in the flank's stone (2)
+ok   a read light narrower than the sash with no reason: refused (side_bays[1].width_m = 0.5 is outside the K01 contract's range [0.75, 1.15] (k01_contract....)
+ok   two read lights on one pier too narrow: refused (side_bays[2] meets another read window, or its lintel...)
+ok   a read light at the wall's end: refused (side_bays[3] stands within 0.45 m of the wall's ends (0.1 m of one a rear wing carries on ...)
+
+all ok
+
+[1m== the K10 cornice kit turns every corner and seats every bracket, rail, coping, dormer and bar (T-2316)[0m
+ok   K10 cornice kit: 8 variants, 180 pieces seated or rooted, no doubled face, corner returns, projections, bracket courses, balustrade, roof, cresting, budgets and the specimen hold
+
+[1m== every drop-in library sheet carries its KTX2: its web map's size, a full mip chain, no orphans (T-2582)[0m
+ok   73 KTX2 sheet(s): present, their web map's size, full mip chains, no orphans; lake_michigan_dune_sand luma sidecar matches its master
+
+[1m== …and that reading's assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |   ok: a chip median moved without its separation matrix
+   self-test |   ok: a separation entry edited by hand
+   self-test |   ok: the class grouping edited to make nine colours look separable
+   self-test |   ok: a legend line reworded in the record
+   self-test |   ok: a chip box moved off its frozen row
+   self-test |   ok: a band's local metres edited away from its own pixels
+   self-test |   ok: a band marked on-map whose centroid is off it
+   self-test |   ok: the school-section cross-check edited away from the bands
+   self-test |   ok: the raster block drifting from the registration's
+   self-test | ok: self-test, 0 assertion(s) did not fire
+
+[1m== no derived figure is rounded by accumulation drift[0m
+python 3.12: bare sum() is COMPENSATED here, so it hides the drift this gate is about — CI runs 3.11, where it does not
+191 figure(s) summed exactly with math.fsum; 2 site(s) annotated; 0 unconverted
+5 committed aggregate(s) re-added exactly; 0 within 1e-12 of a rounding boundary
+37 pure-Python emitter module(s) censused; 32 built-in sum() call(s) left, 0 in the district draft
+
+[1m== North freight roof on the North Water bank matches its recipe[0m
+recon_1835_bank_freight_f3_001: front 3.00 m inside the lot line, traced bank 25.42 m, nearest 37.31 m (recon_1835_north_d1_001), ground 1.15 m, relief 0.03 m
+PASS: the North freight roof re-derives exactly
+
+[1m== Kinzie's Addition's street reading re-derives from its own pixels[0m
+kinzie addition street grid: 24 corridor reading(s), the module and the Original Town control all re-derive from the committed pixels
+
+[1m== Wabansia's street reading re-derives from its own pixels[0m
+wabansia streets: 7 corridors re-derive from their committed pixels; 2 adjudications carry arguments
+
+[1m== every frontage run stands across the lots its recipe declares[0m
+18 frontage entr(ies) measured, none over-declared, 3 naming a business front wider than their own run
+
+[1m== …and that ratchet fires in both directions[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | ok: the ratchet fires on undeclared drift, on healed drift and against an empty baseline; 0 file(s) stand today; and publish-then-drift is still a round trip this gate takes
+
+[1m== every opened street's bed lies below its walks, as wide as the road is painted (T-1812)[0m
+STREET SECTION PASS — 29 street(s) graded below their walks; spec and streets.js agree on the worked width
+
+[1m== a stated compound aperture set is refused outside its room's wall, through its own rake, with two ways in or on the bounded elbow[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | ok   refused: a room the record does not state (compound aperture names no stated room)
+   self-test | ok   refused: a boolean room index (compound aperture names no stated room)
+   self-test | ok   refused: a room whose +y wall is not an outward face (compound aperture face is not an outward face of its room)
+   self-test | ok   refused: an unsupported face (compound aperture face is one of +y)
+   self-test | ok   refused: an unsupported zone (compound aperture zone is wall or gable)
+   self-test | ok   refused: an unsupported kind (compound aperture kind is aperture or door)
+   self-test | ok   refused: a non-finite coordinate (compound aperture needs four finite coordinates)
+   self-test | ok   refused: a boolean coordinate (compound aperture needs four finite coordinates)
+   self-test | ok   refused: a negative width (compound aperture needs positive width and height)
+   self-test | ok   refused: a negative height (compound aperture needs positive width and height)
+   self-test | ok   refused: a wall aperture past its room's corner (compound wall aperture outside its own room's wall)
+   self-test | ok   refused: a wall aperture inside the corner margin (compound wall aperture outside its own room's wall)
+   self-test | ok   refused: a wall aperture into the wall head (compound wall aperture outside the wall's height)
+   self-test | ok   refused: a gable aperture reaching below the eave (compound gable aperture reaches below the eave)
+   self-test | ok   refused: a gable aperture standing through its own rake (compound gable aperture stands through its own rake)
+   self-test | ok   refused: a gable aperture off the end of the rake (compound gable aperture stands through its own rake)
+   self-test | ok   refused: a way in that does not reach the ground (a compound aperture door stands on the ground, in the wall)
+   self-test | ok   refused: a way in up in the gable (a compound aperture door stands on the ground, in the wall)
+   self-test | ok   refused: two ways in (a compound aperture set states at most one way in)
+   self-test | ok   refused: two apertures with no wall between them (compound apertures overlap or leave no wall between them)
+   self-test | ok   refused: two apertures that overlap (compound apertures overlap or leave no wall between them)
+   self-test | ok   refused: an empty stated set (compound_apertures states at least one aperture; omit the attribute to state none)
+   self-test | ok   refused: more apertures than the bound allows (compound_apertures states 1..6 apertures)
+   self-test | ok   refused: an aperture missing a key (a compound aperture needs exactly room,face,zone,kind,u0,u1,z0,z1)
+   self-test | ok   refused: a set on the bounded elbow (compound_apertures is not supported on the bounded elbow)
+   self-test | ok   refused: a set on a house with no stated rooms (compound_apertures needs compound_parts)
+   self-test | 
+   self-test | all checks passed
+
+[1m== the building material re-derives from the rule that chose the lots[0m
+verified 9 pile(s) on 1 lot(s) that were building (23 record(s) refused with a reason)
+
+[1m== the fort wood re-derives from the palisade and the apron it stands off[0m
+verified 11 stems of salix_nigra at 9.3-11.4 m, 13 of 24 grid points refused
+
+[1m== first-fort explicit fronts preserve positional defaults and keep supports off apertures[0m
+PASS fort fronts: legacy16 positionals/keyword-only opt-ins and tower outline; support clearance, deterministic count, empty-front/default fallback and refusal; all five canopy joints, unchanged roofs/posts/decks and Float32 contact
+
+[1m== the anonymous roofs re-audit against the programme the step above re-derived[0m
+OK: the anonymous-roof redeal re-derives — 638 audited, 638/0/0 keep/refamily/retire
+
+[1m== a refused block is short of control, or was never a block[0m
+block                       street           gap m    wet   of  class
+blk_south_water_clinton     south_water        325     20   65  never_platted
+
+  blk_south_water_clinton: south_water is 325 m away and 20 of 65 samples between them are water. The two are on opposite banks; no trace joins them.
+
+BLOCK GATING PASS
+
+[1m== the south bank at the Dearborn reach still carries no ground outside its own street[0m
+
+[1m== …and that assertion fires when a roof leaves the frontage line[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | north_bank_shed_dearborn_w__shed_1835: committed 5.050 m (ok=True), moved 3 m north 8.050 m (ok=False)
+   self-test | OK  the assertion fires when a roof leaves the frontage line.
+
+[1m== the School Section's Monroe-Adams tier re-derives from the committed grid and the 1833 register[0m
+ok school_section_second_tier_lots.json re-derives
+
+[1m== …and its sums and ceilings still refuse when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | ok   an owed household dropped from the rungs: the owed households do not add up to their rungs
+   self-test | ok   a tract's area inflated: the tracts carry 1003732700.0 m² of West ground but the grid read 3732700.0
+   self-test | ok   the farm ground inflated: the farm ground is not the unsubdivided ground outside the limits
+   self-test | ok   the ground ceiling raised: the ground ceiling is not the whole forties of the farm ground
+   self-test | ok   the programme ceiling raised: the programme ceiling exceeds the West's remaining D1 or A2
+   self-test | ok   no West ground: no West ground was read — the branches or the box moved
+
+[1m== no unresolved source is newly built into the town[0m
+rights derivation: 819 geometry-bearing attribute(s) on 73 record(s) are built from a source whose rights are unresolved, 479 of them with no other support (25 graded attested); the population is banked and may not grow
+
+[1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | FIXTURE SELF-TEST PASS: per-side widths/offsets; native gateway closure; runtime wicket ownership; duplicate leaf, blocked/moved/undersized cut refusals
+   self-test |    ok    the committed mesh passes, so a break below is this test's own doing
+   self-test |    ok    a gate with no leaves at all is caught
+   self-test |    ok    the 0.90 m slot this file was written for is caught
+   self-test |    ok    a 30 mm gap — three times the tolerance — is caught
+   self-test |    ok    a leaf lying across the curtain is caught
+   self-test |    ok    a gap inside the tolerance is NOT called a fault
+   self-test | 
+   self-test | SELF-TEST PASS
+
+[1m== scene membership prevents another year's reconstructions from being backcast (T-3654)[0m
+.........
+----------------------------------------------------------------------
+Ran 9 tests in 0.637s
+
+OK
+
+[1m== Jaunt schema, destinations and reachable state graph (T-1253)[0m
+JAUNTS PASS — 20 jaunts; 32619 catalog bytes
+JAUNTS PASS — 140 jaunts; 143124 catalog bytes
+JAUNTS PASS — 15 jaunts; 22832 catalog bytes
+JAUNTS PASS — 101 jaunts; 121099 catalog bytes
+
+[1m== Glessner's Prairie lights stand on HABS sheet 6, Taylor 2135 refitted on them (T-2858)[0m
+Glessner's Prairie front stands on sheet 6, Taylor 2135 refitted
+
+[1m== the town off the modelled ground is still the town the reading measured[0m
+north-of-box reading holds: 0 m of drawn street off the modelled ground, 9120 m of one-way edge
+
+[1m== …and the tripwire scanner behind `done` still fires, and still ignores prose[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |   self-test | ok    a trace recording {T-0001: open} is caught
+   self-test |   self-test | ok    the same trace recording `done` does not fire when closing to done
+   self-test |   self-test | ok    a ruling with disposition unresolved naming the ticket is caught
+   self-test |   self-test | ok    the same ruling settled (disposition refused) is not caught
+   self-test |   self-test | ok    a ticket merely NAMED in prose is ignored
+   self-test |   self-test | ok    the TICKET = provenance constant shape is ignored
+   self-test |   self-test | ok    a value that is not a ticket state is ignored
+   self-test |   self-test | 7 assertion(s) fired
+
+[1m== year packs: membership, the update diff and the kill switch (T-2561)[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | write_year_packs self-test: ok (pack membership, the update diff, the kill switch)
+
+[1m== a whole-town bake derives exactly the masters whose bytes moved (T-2314)[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |   ok   a master matching its record, with a derivative, is skipped
+   self-test |   ok   a master whose bytes moved is derived
+   self-test |   ok   a master the record never saw is derived
+   self-test |   ok   a master with no derivative is derived
+   self-test |   ok   a version master is always derived
+   self-test |   ok   no record at all derives every master
+   self-test | stale_derivatives self-test: PASS
+
+[1m== a claim that outlived the window is work, a merged branch is litter, and a branch under review is neither[0m
+
+  a constructed branch list, no network, ticket.mjs inflight
+  ok    1. a branch pushed minutes ago on an open ticket is live
+  ok    2. THE FAULT: a 5h branch whose claim still stands is reported in flight — held
+  ok       …with its age shown, and named as a claim that outlived a run
+  ok       …and the run's own claim marker is in flight beside it
+  ok    3. T-0987: a ticket claimed on dev by design, whose lock was released, stays cold — cold
+  ok    4. T-0429: the run that died after its merge is cold, not resurrected as work
+  ok    5. an old branch on a ticket nobody claimed is cold, as it always was
+  ok    6. a done ticket is cold however young the branch, and however stray the lock
+  ok    7. `review` is held on the same footing as `claimed`
+  ok    8. an unknowable age is live, never cold — a blip may not invent litter
+  ok    9. the cold heading no longer calls a held branch finished or litter
+  ok    10. the IN FLIGHT count is every live and held branch, and no cold one — IN FLIGHT — 7 branch(es) on unfinished tickets:
+  ok    11. a near miss: T-0042's claim lock does not make T-0429 held
+  ok    12. it exits 0 and reports; it is a report, not a gate — status 0
+
+  an unreachable remote
+  ok    13. an empty branch list says so and accuses nobody — no remote branches readable (no network, or no git) — nothing to report
+
+  the same branches, held against a constructed PR list
+  ok    14. THE FAULT: an old branch on an unfinished ticket that no merged PR names — recoverable
+  ok       …is printed under RECOVERABLE with the compare URL that opens its PR
+  ok    15. T-0429 stays cold: a merged PR names it, so the branch really is litter — cold
+  ok    16. a branch whose PR was opened and closed is cold — it was never invisible — cold
+  ok    17. a claim marker is a lock, never recoverable work
+  ok       …and live and held readings are untouched by any of it
+  ok    17b. T-0987, claimed on dev by design: its merged stretches stay litter, both of — one PR naming the ticket accounts for every branch carrying it
+  ok    19. THE FAULT: a branch with an OPEN pull request is not "work nobody can see" — open_pr
+  ok       …it is printed with its PR number, under a heading of its own
+  ok    20. a `hold` label is said out loud: parked for the owner, do not rebuild it
+  ok    21. and it is in NEITHER list that would have a run overwrite or delete it — the cold list's standing advice is `git push origin --delete <branch>`
+  ok    22. the RECOVERABLE reading still finds the branch that really is invisible — one open PR must not swallow the reading it sits beside
+  ok       …and --json carries the PR number for a caller that is not reading prose
+  ok       …and it still exits 0 — status 0
+
+  …and with no answer from the PR list
+  ok    18. without the PR list nothing is called recoverable — silence is not evidence — the fixture run must reach no network at all
+  ok       …and --no-landed says the same, without asking
+
+  resume pull requests, and the lap locks beside them
+  ok    24. a resume PR whose lap lock is younger than a run is BEING LAPPED — held
+  ok        …and says so on its in-flight line too, where a run reads it
+  ok    25. #442's shape: no lock, but a branch pushed minutes ago, is a caution — not free — recent
+  ok    26. a dead run's lap does not hold the PR: it is FREE, and the marker named as dead
+  ok    27. a PR the owner holds is not offered for lapping at all
+  ok    28. a resume PR on a branch that names no ticket is still listed, and free —           FREE. Take it before you merge a line:
+  ok    29. a lap marker is never read as a work branch — status 0
+
+  an open pull request whose branch names no ticket
+  ok    30. #449's shape: a PR whose TITLE names the ticket is listed under it, open_pr — {"id":"T-0055","state":"open","branch":"claude/project-thread-gfksyy","age_hours":9,"reading":"open_pr","open_pr":449,"by_title":true,"lap":null,"group":null}
+  ok        …and printed in the open-PR section, saying the title is what ties it —  — 1 branch(es) whose work is already up for review:
+
+  T-0055  open            The old branch on a ticket nobody ever claimed
+          ↳ claude/project-thread-gfksyy   9h ago   (the branch names no ticket — its PR title does)
+          PR #449 is OPEN: https://github.com/kevinrhaas/chicago/pull/449
+
+The branch is older than a run, or names no ticket at all, so every branch reading
+here calls it cold or misses it — but the work is visible, somebody put it up, and
+deleting the branch would shut the pull request. Read the PR before you touch the ticket.
+
+RECOVERABLE — 6 branch(es) carrying work
+  ok    31. a title that names a ticket mid-sentence carries nothing — []
+  ok    32. a title naming a FINISHED ticket is not work in flight
+
+  the query the fixtures cannot reach
+  ok    23. the PR fetch asks for open pull requests as well as closed ones — the query asks state=all (read from the source, not from a run)
+
+  inflight reads a long claim as work, a merged branch as litter, an unseen branch as recoverable, and a branch under review as neither
+
+
+[1m== no caller of the derived manifest re-runs one of its steps out of sequence[0m
+callers of the derived manifest OK — 1 script(s) read, 0 manifest step(s) re-run bare, none with a step below it
+
+[1m== ...and every rule that decides who gets a family refuses its own case[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |    a present, civic, single-head, adult male household is eligible  ok
+   self-test |    an uncertain presence no ruling settles is refused               ok
+   self-test |    an uncertain presence T-1386 ruled present is admitted           ok
+   self-test |    an evidenced absence is refused however it was ruled             ok
+   self-test |    every household the rulings file names was ruled present         ok
+   self-test |    a letter-list mint is refused                                    ok
+   self-test |    an evidence-only container is refused by its id                  ok
+   self-test |    an evidence-only container is refused by its name alone          ok
+   self-test |    the two evidence-only markers name the same five records         ok
+   self-test |    no evidence-only container carries a person this stage drew      ok
+   self-test |    a household that already holds a second person is refused        ok
+   self-test |    a head a source marries after the scene date is refused (3b)     ok
+   self-test |    the fort is refused                                              ok
+   self-test |    a household under a standing review is refused                   ok
+   self-test |    a head the sources place under a vow is refused                  ok
+   self-test |    a woman heading her own household is refused                     ok
+   self-test |    a head under twenty is refused                                   ok
+   self-test |    a head with no age band is refused                               ok
+   self-test |    the same seed draws the same face twice                          ok
+   self-test |    two households draw different faces                              ok
+   self-test |    the size histogram is cut at the kin range                       ok
+   self-test |    a forename steps past a name the family already bears            ok
+   self-test |    a ruling forename steps past an initial a read name waits on (T-2021) ok
+   self-test |    an age of 9 bands as a child                                     ok
+   self-test |    an age of 50 bands as the open cohort                            ok
+   self-test |    a surname is the head's last printed word                        ok
+   self-test |    a drawn person names the stage that wrote them                   ok
+   self-test |    a woman marries only into her own division                       ok
+   self-test |    a woman is never wife to a head below her floor                  ok
+   self-test |    the lowest head is served first and takes the highest floor he fits ok
+   self-test |    no woman is wife to two heads                                    ok
+   self-test |    the child cap lifts a woman's floor to her eldest plus twenty    ok
+   self-test |    a house past the kin range is held back                          ok
+   self-test |    a house T-1564 already re-familied is held back                  ok
+   self-test |    a printed wife is unseated onto her own card before the draw     ok
+   self-test |    …and seated as the wife in place of the one the model drew       ok
+   self-test |    every pair names a refused house                                 ok
+   self-test |    a tree that has never folded matches the whole town              ok
+   self-test |    a pair whose head is gone is dropped and nobody re-pairs         ok
+   self-test |    a head refused since the freeze is matched, only to a woman no fold named ok
+   self-test |    a woman a dropped pair released is matched to nobody, though no fold names her now ok
+   self-test |    she is his wife and her children come with her                   ok
+   self-test |    the block sits after the presence, as a drawn family's does      ok
+   self-test |    nobody is renamed by the fold                                    ok
+   self-test |    unfold restores her card exactly                                 ok
+   self-test |    unfold strips the host back to his lone head                     ok
+   self-test |    a host a card merge retired gives her house back, and stays retired ok
+   self-test |    a host that is nowhere is refused                                ok
+   self-test |    a folded person no fold accounts for is refused                  ok
+   self-test |    a house both standing and folded is refused                      ok
+   self-test |    the fold carries exactly the measured pairs                      ok
+   self-test |    no folded house stands in the layer                              ok
+   self-test |    the count stops the walk at the first family past the room       ok
+   self-test |    a smaller family after the stop is not packed into the room left ok
+   self-test |    the under-ten bracket stops the walk too                         ok
+   self-test |    inside both bounds every house is admitted                       ok
+   self-test |    the ruling is frozen on disk                                     ok
+   self-test |    the ruling never carries the town past the count                 ok
+   self-test |    the ruling's admitted houses are a prefix of its seeded order    ok
+   self-test |    the build reads the frozen list and re-deals nobody              ok
+   self-test |    a house the frozen list turns away is not drawn, whatever its seed ok
+   self-test |    a head read female and a printed bride withdraw, with the cells they held ok
+   self-test |    a house the fold married withdraws as well                       ok
+   self-test |    a ruling whose admitted houses all stand withdraws nothing       ok
+   self-test |    a house that left for any other reason is not withdrawn here     ok
+   self-test |    cells left undrawn that are not the withdrawn families are refused ok
+   self-test |    a head ruled absent withdraws an admitted house with its cells, and a lone one with none ok
+   self-test |    a stood-alone house whose head is read female is named, and only she ok
+   self-test |    68 rule(s) checked, 0 failed
+
+[1m== ...and an invented surname, a read nation and a doubled printing are refused[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |   ok    the clerk's parenthesis comes off the display name
+   self-test |   ok    a card is capitalised without an English initial
+   self-test |   ok    an origin is read off `de Green Bay` and graded at the row's grade
+   self-test |   ok    `sauvage` alone yields no origin at all
+   self-test |   ok    no nation is read off a place
+   self-test |   ok    the spouse is read off the entry's own locator
+   self-test |   ok    every card carries review_required and touches_removal
+   self-test |   ok    every person carries the stage that is allowed to write them
+   self-test |   ok    no card writes a nation
+   self-test |   ok    no surname is invented for anybody
+   self-test |   ok    the only kin on a card is the entry's parent tie, as the derivation writes it
+   self-test |   ok    every withheld row names a reason this file states
+   self-test |   ok    the two printings of one woman make one card, not two
+   self-test |   ok    the town finding is refused as the crosswalk ruled it and not as out of scope
+   self-test |   ok    the two women the register names are the two the town did not carry
+   self-test |   ok    the husbands and children on those entries WERE already carried
+   self-test |   ok    presence is priced off the LAST sighting the book gives
+   self-test |   ok    the stage does not read its own output as the layer
+   self-test |   ok    no person written here is invented — every id is a read name
+   self-test |   ok    the remainder of the register is refused a draw, and says why
+   self-test |   ok    20 rule(s) hold
+
+[1m== …and the name pool's declared keys, and a refusal naming its source, still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |    ok   the declaration covers the committed tree (no undeclared key)
+   self-test |    ok   the declared pool is the raw-text pool it replaced
+   self-test |    ok   an undeclared key carrying a proper name is reported, not read
+   self-test |    ok   …and --check names its kind, key, file and word
+   self-test |    ok   an ignored key's words stay out of the pool and raise nothing
+   self-test |    ok   a read key's words enter the pool with their file and key
+   self-test |    ok   a refusal names the file and key its word came from
+   self-test |    ok   a lost seat's drift line names the refusal that took its man
+   self-test |    ok   …and says so when he is not among the candidates at all
+   self-test |    self-test: 0 failure(s)
+
+[1m== …and a moved measurement cannot pass as an unchanged report[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | CLOSING AUDIT SELF-TEST PASS — 0 failure(s), 8 case(s)
+
+[1m== …and its carrier, outcome and coverage rules still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | OK: 37 trade and premises units, six outcomes, every carrier shown
+
+[1m== cohort 14's ruled ledger still follows from its crosswalks and T-0816's rulings[0m
+T-0509 ledger green: 76 completed, 0 pending, {'candidate_identity': 27, 'corroborated': 9, 'corroborated_enrichment': 11, 'no_corroboration': 29}
+
+[1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | ok    self-test
+
+[1m== the one-letter candidate test still measures the blind spot it was written for[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |    OK: every assertion holds
+
+[1m== Every waitForFunction passes its options in the third slot, not as the page function's argument (T-2899)[0m
+ok: 902 waitForFunction calls in 317 scripts pass options in the third slot
+
+[1m== …and the trade-sentinel predicate all four crosswalks import[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | trade_recorded --self-test: 10 cases and 2 sentinels hold
+
+[1m== …and that pass writes two fields, moves no grade and repeats without drift[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | spend_civic_voter_lists self-test: 17 assertion(s) hold
+
+[1m== the old-settlers rolls rebuild from their committed transcription[0m
+  327 name(s) read; 45 merged, 282 refused or unmatched
+OK: the old-settlers rolls rebuild from the committed transcription
+
+[1m== no land-sale ruling has left the file without saying so[0m
+   ok    base origin/dev at 172bbb62b
+   ok    chicago/4d/data/research/land_sales/resident_rulings.json: 213 -> 213 adjudication(s), none lost
+   ok    chicago/4d/data/research/books/trade_census_1835_spend_rulings.json: 36 -> 36 adjudication(s), none lost
+   ok    chicago/4d/data/research/newspapers/trade_class_rulings.json: 149 -> 149 adjudication(s), none lost
+   ok    chicago/4d/data/research/newspapers/place_vocabulary.json: 128 -> 128 adjudication(s), none lost
+   ok    chicago/4d/data/research/directories/fergus_1839_lots_corrections.json: 120 -> 120 adjudication(s), none lost
+   ok    chicago/4d/data/residents/card_merge_rulings.json: 146 -> 146 adjudication(s), none lost
+
+[1m== …and the 1839 street face compiled off it rebuilds too[0m
+fergus 1839 street faces: matches the committed file
+
+[1m== the Newberry index stays a finding aid, and its reading rebuilds from the cards[0m
+newberry index: ok
+
+[1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test | self-test: 10 case(s), 0 failure(s)
+
+[1m== the business audit re-derives, and every identity ruling still holds[0m
+the business audit re-derives: 193 record(s), every identity ruling honoured
+
+[1m== every person says which roles and which places reach the scene date[0m
+
+[1m== the 1835 business staffing model re-derives, and staffs nobody the town cannot employ[0m
+OK: the 1835 business staffing model re-derives — 34 classes, 199 staff at the typical figure, 9 houses unstaffed for want of a trade
+
+[1m== the held heads the seats put under a dwelling are the family dwellings the book counts[0m
+  ok    318 family dwelling(s) re-derive from the seats and the book carries them (4 from beyond the index, 0 past the order); nobody minted
+
+[1m== …and its own assertions still fire when broken[0m [2m(self-test: the assertions below are meant to fire)[0m
+   self-test |    OK: 964 households and 4834 persons close on every total, the histogram and the industry columns; no name and no serial reaches the output
+
+[1m== every structure's grade follows its pictures, and every ruling says why (T-2686)[0m
+   1812: 14 attested, 47 inferred, 7 reconstructed
+   1835: 14 attested, 92 inferred, 659 reconstructed
+   1871: 13 attested, 12 inferred, 0 reconstructed
+   1904: 73 attested, 213 inferred, 0 reconstructed
+OK: every ruling names its structure, its picture and why
+
+[1m== string table: sections register and extend, placeholders fill, no key ever shown (T-2624)[0m
+SPANISH PASS — 794 of 1152 table strings, 2459 page strings, 278 patterns
+STRING TABLE PASS — sections register and extend, placeholders fill, no key ever shown, the page fills from the table
+
+[1m== the walkthrough's tier reader agrees with the published table[0m
+ok  the card reader and the published table agree on all 22010 attribute tiers (attested 701, inferred 3684, reconstructed 10786, unknown 6839)
+
+
+[33m1 step(s) failed in the pool and passed alone (T-1336):[0m
+  [33m~[0m Clothes hang, lie and are trimmed as cloth at load: nothing under shows through more than drawn, standing or striding; John J. Glessner's coat has its lapels, collar, front buttons and seams, the lapels off his shoulders; a lady's collar under her chin; skin rows whole, every step short (T-3553)
+  Each one read a working tree a neighbour was briefly holding wrong. The
+  verdict above is from the quiet re-run and is correct; these steps still
+  need to be taken out of the pool. CHECK_JOBS=1 reproduces without the race.
+[32mCHECK PASS[0m — part 6/16: 92 steps, none red.
+  22 of them are self-tests that prove a gate by breaking it; their
+  assertions fire on purpose and every line of it is prefixed 'self-test |'.
+  This is part 6 of 16; the other 1336 steps are in the other parts. The gate is
+  green only when every part is: tools/check.sh --part 1/16 through --part 16/16.
