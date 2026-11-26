@@ -37,3 +37,7 @@ Evidence is stored here under the owner’s instruction in chicago/4d/AGENTS.md 
 ## Stored portrait cards
 
 Both daughters’ actual People cards deliver their 480×640 period portraits at 390px and 1280px widths, with zero page errors (`card-checks.json`). The four `rendered/card-*` captures show the edited period clothing and backgrounds. Desktop captures await decoded pixels before photographing. This checks UI delivery, not hardware frame rate.
+
+## Broader portrait-archive audit
+
+`historical-portrait-archive-audit.json` accounts for all 63 JPEGs in the committed human portrait directory: 27 registered source portraits, their 27 generated model previews, seven painted Met stand-ins for the 1812 garrison, and two Kirkland line engravings. The two new Stirling period references are accounted for separately. The paintings retain their stand-in labels; the engravings need a separate age-aware reconstruction before photographic texture use. The unverified/uncleared Ira Couch candidate is excluded. This distinguishes stored reference artwork from usable identified photographs and introduces no extra actor.
