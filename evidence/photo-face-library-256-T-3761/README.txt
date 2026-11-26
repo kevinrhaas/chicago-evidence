@@ -52,3 +52,5 @@ and default rollout are pending. Current code/preflight/CI status is on PR2355; 
 renderer stages 2–15 remain outstanding from the original pilot handoff.
 
 Local preflight passed with CHECK_PART=2/8: 182 steps, 39 self-tests, plus PR changelog/id checks. Other parts and complete CI are not implied by that result.
+
+Measurement export is also verified: it correctly says 16 drawn heads from a 256-entry catalog. The measured renderer is SwiftShader software; a local gate was concurrent. measurement-context.json marks this as UI/export validation only, not a hardware performance result.
