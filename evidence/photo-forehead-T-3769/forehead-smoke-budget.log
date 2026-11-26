@@ -1,0 +1,34 @@
+WHAT YOU CHANGED, AND THE PARTS THAT COVER IT
+
+  tools/photo_face_library.py
+      NO PART — the gate's own tooling — not served to the browser
+  assets/humans/web/photo_faces/pilot/page_00_face_full.jpg
+      parts 1,4-5 — actual source/web human assets served by the scene; loader and town budgets
+  tools/test_photo_face_library.py
+      NO PART — the gate's own tooling — not served to the browser
+
+  parts to run: 1,4-5
+
+  RUN, from chicago/4d/ (each command packed under the foreground ceiling):
+
+    SMOKE_VIEWPORT=mobile SMOKE_STAGE=1 node tools/smoke_renderer.mjs --published
+        ≈ 5m 52s measured, 4m 08s of margin
+    SMOKE_VIEWPORT=mobile SMOKE_STAGE=4 node tools/smoke_renderer.mjs --published
+        ≈ 5m 52s measured, 4m 08s of margin
+    SMOKE_VIEWPORT=mobile SMOKE_STAGE=5 node tools/smoke_renderer.mjs --published
+        ≈ 5m 52s measured, 4m 08s of margin
+    (part 1,4-5 has no reading of its own; priced at the mean of those that do)
+    SMOKE_VIEWPORT=desktop SMOKE_STAGE=1 node tools/smoke_renderer.mjs --published
+        ≈ 8m 04s measured, 1m 56s of margin
+    SMOKE_VIEWPORT=desktop SMOKE_STAGE=4 node tools/smoke_renderer.mjs --published
+        ≈ 6m 11s measured, 3m 49s of margin
+    SMOKE_VIEWPORT=desktop SMOKE_STAGE=5 node tools/smoke_renderer.mjs --published
+        ≈ 6m 11s measured, 3m 49s of margin
+    (part 4-5 has no reading of its own; priced at the mean of those that do)
+
+  A staged run is NOT the gate and says so on its first line. The gate is
+  both viewports, every part — see the cost of that with no arguments.
+  File what you ran: node tools/dev-smoke-state.mjs record <log>
+  And redirect to a FILE, not a pipe: node block-buffers stdout to a pipe,
+  so a piped smoke log stays at zero bytes until the process exits — which
+  is how a run at 41 minutes was killed one minute from its finish (T-0235).
