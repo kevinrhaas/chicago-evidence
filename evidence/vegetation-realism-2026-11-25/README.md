@@ -43,3 +43,12 @@ The 1871 pumping-works probe under `m2-atomic-pumping/` checks actual visible wo
 The new leaf fixture verifies winter removes legacy deciduous leaf colour and both directional/point shadows while retaining wood. It also retains the vine mask, shadow/night checks, and seven grown habits. Flora CPU/fetched wind-normal pixels remain equal at the sampled times.
 
 Complete native partitions, preflight, exact-head CI and the mapped published smoke remain pending for the final merge. Earlier `T-3747-final.patch` and eight-part gate receipts describe the earlier candidate, before these corrections; they do not cover this runtime. All software frame samples remain diagnostic, with no hardware FPS claim.
+
+
+## Completed static-renderer comparisons
+
+`m1-final-comparison-receipt.json` binds the frozen M1 renderer, the original renderer overrides and the QA helper to 24 completed cases under `m1-final-scenes/`: 1871 and 1904, phone and desktop, before and after, all three tiers. Every case reports zero page/shader errors at DPR 1. All eight Full cases also pass night-light and Confidence checks. The 1904 desktop jobs were partitioned by tier after two aggregate attempts reached their outer 590-second limit; those interrupted logs are retained and are not passes. Individual completed desktop jobs took 435–512 seconds. Wind and people animation were not locked for the scene captures; frame samples under native-check contention remain diagnostic.
+
+`m2-evergreen-winter/` shows the actual cedar and pine templates retaining green colour under the corrected complete six-row atlas exemption. These are material fixtures, not historical scene photographs. The M2 relief regression first fails on Full → Light retaining the extra sampler, then passes after the reused street/front-yard material drops it and restores the same atlas on Full.
+
+`t3748-t3760-prototype.patch` and `vegetation-m2-complete-runtime.json` preserve the uncommitted seasonal layer over its staged M1 baseline. This is a reviewable prototype, not the final integrated PR head. Its complete seasonal scene sweep, integrated native gate, required CI, published smoke and memory/frame grid remain pending. The M1 native gate is also still completing; these scene receipts do not declare either change merge-ready.
