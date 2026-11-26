@@ -50,3 +50,5 @@ qualify a real low-power GPU or whole-town crowd performance. A 256-face library
 256 people drawn at once. Historical likeness and hair review, target-hardware timing
 and default rollout are pending. Current code/preflight/CI status is on PR2355; published
 renderer stages 2–15 remain outstanding from the original pilot handoff.
+
+Local preflight passed with CHECK_PART=2/8: 182 steps, 39 self-tests, plus PR changelog/id checks. Other parts and complete CI are not implied by that result.
