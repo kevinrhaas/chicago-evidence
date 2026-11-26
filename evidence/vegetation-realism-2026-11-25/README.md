@@ -30,3 +30,16 @@ The local native gate initially failed because the session's tickets directory w
 
 
 Native gate update: all eight fresh Node 22 partitions passed with required raster readers, on the frozen runtime candidate. `T-3747-native-gate.json` records the base, rebased candidate, timings and unchanged runtime hashes; `logs/gate-node22-*.log` are the complete receipts. `T-3747-final.patch` is the rebased reviewable change. Rebased preflight, exact-head CI, remaining published scene/smoke and memory checks are still pending; this update does not declare merge acceptance.
+
+
+## 26 November: rebuild ownership, memory and seasonal probes
+
+The static-release candidate follows the earlier patch: forests own their templates and instance records, repeated choices join their pending rebuild, and old trees remain mounted until replacements are ready. The M1 follow-up patch contains tracked-file changes; its new native regression is under `code/`. The runtime freeze identifies the actual uncommitted candidate.
+
+Published Full desktop memory passes: 1812 **843.7 MiB / 875**, 1835 **1347.0 MiB / 1475**, with zero page errors. These are local readings, not the final full viewport grid. Three close sprays now share a supporting shoot. The static woodland and thicket CPU triangle copies are released through the established path; the moving horizon keeps its arrays. The gallery settles the close LOD before capture; its `geometryBytes` is only retained CPU geometry, not GPU or total resident memory.
+
+The 1871 pumping-works probe under `m2-atomic-pumping/` checks actual visible wood/leaf instance pairs in fall and winter, not just placement counts. Earlier prototype matrices could capture an empty pending forest and are superseded as final image acceptance. The native held-checkpoint regression reproduces that gap and verifies the replacement and repeated request. `T-3760-named-footprint-audit.json` finds no trunk-centre hits against 19 named solid footprint parts, in addition to the previously confirmed two context-shop intrusions. No crown-clearance claim follows from those scans.
+
+The new leaf fixture verifies winter removes legacy deciduous leaf colour and both directional/point shadows while retaining wood. It also retains the vine mask, shadow/night checks, and seven grown habits. Flora CPU/fetched wind-normal pixels remain equal at the sampled times.
+
+Complete native partitions, preflight, exact-head CI and the mapped published smoke remain pending for the final merge. Earlier `T-3747-final.patch` and eight-part gate receipts describe the earlier candidate, before these corrections; they do not cover this runtime. All software frame samples remain diagnostic, with no hardware FPS claim.
