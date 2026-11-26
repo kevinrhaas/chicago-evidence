@@ -4,7 +4,7 @@ The existing fitted heads used generic skin. This applies retained photographic 
 
 Coverage: twenty own-person archive portraits, five previously labelled staff references, two existing Grey full skins and two new Stirling references. The atlas contains 27 entries: 26 currently cast people (27 body assignments, because Charles also drives) and the retained uncast Kate Ryan reference. William and Sarah retain their full skins. No new actor or historical presence is inferred from a photo. Twenty-five existing heads and all generic adult/child pixels remain unchanged.
 
-Source revision: `2f69aa0998` in kevinrhaas/chicago. Source PR: https://github.com/kevinrhaas/chicago/pull/2371. Local preflight part 6/8 passes all 182 steps. The latest unrelated dev changes are being integrated; every generic and named photo generator input remains byte-identical. Final CI/smoke and dev-delivery receipts will be added after the gates complete. Production is untouched.
+Final integrated source: `c9b3417f8c0f1a4ebee7cae969028b1769a2aa6d` in kevinrhaas/chicago. Source PR: https://github.com/kevinrhaas/chicago/pull/2371. All four local gate sections pass (361/361/362/361 steps) on the first integrated tree, recorded by tree hash in `historical-local-complete-gate.json`. The latest dev integration was rebuilt through all 209 steps, seven second-pass steps and a settled 60-step tail. Every generic and named photo-generator input remains byte-identical. Final targeted checks pass after integration. The published local mirror reports c9b3417f8c and passes served-code, three-library, 19-detail-page, two-period-portrait and 7,610-assignment checks (`historical-final-published-verification.json`). Hosted eight-part gate, human-rendering checks and all 30 published viewport/stage smoke legs are running or queued. Final CI and dev delivery receipts will be added before completion. Production is untouched.
 
 ## Pictures
 
@@ -28,7 +28,7 @@ These are Chromium SwiftShader captures. The front-source fit and photographic t
 
 Exact added face textures, including mipmaps: 12,873,272 bytes (12.28 MiB); conservative metadata also stays below 13 MiB. Three crowd sheets share one resident-or-loading nearby page. Body/cloth textures, existing Grey skins, geometry, image decode and driver overhead are outside this added bound. This is not a complete-town hardware FPS qualification.
 
-The source index remains below its unchanged 328,000-byte capacity at 323,390 bytes. Compressed first-open index + Sources JS/CSS is 81,949 bytes, inside the unchanged 120,000-byte cap. One project-processing clearance record replaces duplicated derivative citations; every original archive citation, link, rights statement, person/source/crop identity and hash remains intact.
+The source index remains below its unchanged 328,000-byte capacity at 323,418 bytes. Compressed first-open index + Sources JS/CSS is 81,975 bytes, inside the unchanged 120,000-byte cap. One project-processing clearance record replaces duplicated derivative citations; every original archive citation, link, rights statement, person/source/crop identity and hash remains intact.
 
 Published local verification checks the served modules, all three default catalogs, all 19 detail pages, both period card portraits and all 7,610 actual body assignments across four years. Exact-ID, scene, sex, own-skin and visitor-choice guards, unchanged existing heads, age/height and child proportions are also checked.
 
