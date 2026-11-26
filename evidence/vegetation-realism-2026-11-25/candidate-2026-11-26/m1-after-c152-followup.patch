@@ -1,0 +1,169 @@
+diff --git a/chicago/4d/changelog.d/T-3747.json b/chicago/4d/changelog.d/T-3747.json
+index 7e5c1a0ca8..ccfb7df01f 100644
+--- a/chicago/4d/changelog.d/T-3747.json
++++ b/chicago/4d/changelog.d/T-3747.json
+@@ -2,6 +2,6 @@
+   "title": "Tree crowns catch the light",
+   "kind": "improvement",
+   "items": [
+-    "Woodland and street trees, woody shrubs and vines have rounded foliage shading and warmer backlit leaves. Sunlight passing through leaves follows the shadows. Full adds smaller, layered sprays on fine twigs within 14 metres; capable devices show fine leaf relief. Light keeps its smaller textures and tree meshes. Switching season and detail safely rebuilds the crowns."
++    "Woodland and street trees, woody shrubs and vines have rounded foliage shading and warmer backlit leaves. Sunlight passing through leaves follows the shadows. Full adds smaller, layered sprays on fine twigs within 14 metres; capable devices show fine leaf relief. Balanced and Light use smaller woodland textures; their tree meshes retain their existing detail. Switching season and detail safely rebuilds the crowns."
+   ]
+ }
+diff --git a/chicago/4d/data/liberties.json b/chicago/4d/data/liberties.json
+index cdcc8aa15f..64d5e75824 100644
+--- a/chicago/4d/data/liberties.json
++++ b/chicago/4d/data/liberties.json
+@@ -81185,7 +81185,7 @@
+       "fields": [
+         {
+           "label": "Liberty",
+-          "text": "for grown woodland and street trees, yard shrubs and vines, and bank thickets in 1812, 1835, 1871 and 1904, a spray's vertex normals curve across its existing cutout, suggesting a volume. Full adds a close level within 14 m: each large spray becomes three smaller sprays at different depths and turns, each joined to its existing attachment by fine round wood. This botanical detail is reconstructed within the original clump; the species, skeleton, trunk, height, crown dimensions and planting remain the records' own. The existing near mesh is retained beyond that short ring. Balanced and Light retain their geometry counts. A small green-filtered backlight term uses the light already attenuated and shadowed by the renderer. The existing time-of-day skylight term is distributed toward the backlit face. These coefficients are artistic approximations of a thin leaf, not measured species transmittances or an archival lighting reconstruction. Capable devices reuse the existing leaf colour sheet for subtle bump relief; a weak device or Light omits that extra sampling. Bark, fruit, solid flowers and bare winter branches retain their existing materials and receive no leaf transmission."
++          "text": "for grown woodland and street trees, yard shrubs and vines, and bank thickets in 1812, 1835, 1871 and 1904, a spray's vertex normals curve across its existing cutout, suggesting a volume. Full adds a close level within 14 m: each large spray becomes three smaller sprays at different depths and turns, each joined to its existing attachment by fine round wood. This botanical detail is reconstructed within the original clump; the species, skeleton, trunk, height, crown dimensions and planting remain the records' own. The existing near mesh is retained beyond that short ring. Balanced and Light retain their geometry counts. Balanced woodland uses the existing half-size atlases and omits additional leaf-relief sampling; Full retains the larger sheets and relief. A small green-filtered backlight term uses the light already attenuated and shadowed by the renderer. The existing time-of-day skylight term is distributed toward the backlit face. These coefficients are artistic approximations of a thin leaf, not measured species transmittances or an archival lighting reconstruction. Capable devices reuse the existing leaf colour sheet for subtle bump relief; a weak device or Light omits that extra sampling. Bark, fruit, solid flowers and bare winter branches retain their existing materials and receive no leaf transmission."
+         },
+         {
+           "label": "Evidence",
+diff --git a/chicago/4d/docs/LIBERTIES.md b/chicago/4d/docs/LIBERTIES.md
+index e12c9cdc14..6974a1f962 100644
+--- a/chicago/4d/docs/LIBERTIES.md
++++ b/chicago/4d/docs/LIBERTIES.md
+@@ -46479,7 +46479,7 @@ ordinances for these blocks.
+ **Recorded:** 2026-11-26.
+ 
+ ### L-leaf-light-3747 — Rounded foliage and thin-leaf light in every wood
+-**Liberty:** for grown woodland and street trees, yard shrubs and vines, and bank thickets in 1812, 1835, 1871 and 1904, a spray's vertex normals curve across its existing cutout, suggesting a volume. Full adds a close level within 14 m: each large spray becomes three smaller sprays at different depths and turns, each joined to its existing attachment by fine round wood. This botanical detail is reconstructed within the original clump; the species, skeleton, trunk, height, crown dimensions and planting remain the records' own. The existing near mesh is retained beyond that short ring. Balanced and Light retain their geometry counts. A small green-filtered backlight term uses the light already attenuated and shadowed by the renderer. The existing time-of-day skylight term is distributed toward the backlit face. These coefficients are artistic approximations of a thin leaf, not measured species transmittances or an archival lighting reconstruction. Capable devices reuse the existing leaf colour sheet for subtle bump relief; a weak device or Light omits that extra sampling. Bark, fruit, solid flowers and bare winter branches retain their existing materials and receive no leaf transmission.
++**Liberty:** for grown woodland and street trees, yard shrubs and vines, and bank thickets in 1812, 1835, 1871 and 1904, a spray's vertex normals curve across its existing cutout, suggesting a volume. Full adds a close level within 14 m: each large spray becomes three smaller sprays at different depths and turns, each joined to its existing attachment by fine round wood. This botanical detail is reconstructed within the original clump; the species, skeleton, trunk, height, crown dimensions and planting remain the records' own. The existing near mesh is retained beyond that short ring. Balanced and Light retain their geometry counts. Balanced woodland uses the existing half-size atlases and omits additional leaf-relief sampling; Full retains the larger sheets and relief. A small green-filtered backlight term uses the light already attenuated and shadowed by the renderer. The existing time-of-day skylight term is distributed toward the backlit face. These coefficients are artistic approximations of a thin leaf, not measured species transmittances or an archival lighting reconstruction. Capable devices reuse the existing leaf colour sheet for subtle bump relief; a weak device or Light omits that extra sampling. Bark, fruit, solid flowers and bare winter branches retain their existing materials and receive no leaf transmission.
+ **Evidence:** species, crown dimensions, colour, season, placement and confidence remain the existing records' claims. No new historical assertion or external asset is introduced. The atlases retain their current photographic and procedural provenance in assets/LICENSES.md.
+ **How to resolve:** measured leaf scattering and a calibrated, licensed surface-normal source could replace the artistic coefficients and albedo-derived relief. The present approximation must remain bounded by sun, shadow and time of day.
+ **Ticket:** T-3747.
+diff --git a/chicago/4d/docs/STATUS.md b/chicago/4d/docs/STATUS.md
+index 339ec31e77..5f8be4f3bb 100644
+--- a/chicago/4d/docs/STATUS.md
++++ b/chicago/4d/docs/STATUS.md
+@@ -1,11 +1,12 @@
+ ## T-3747 — Layered close foliage and shadowed leaf light (25 November 2026)
+ 
+ The shared grown-tree path now has a Full close level within 14 m. Its large sprays become
+-three smaller sprays at different depths and angles, sharing a fine round supporting shoot
+-to the existing attachment. The original near mesh remains beyond that short ring. The
++three smaller sprays at different depths and angles, sharing a fine round shoot that tapers
++from the existing attachment to one tip. The original near mesh remains beyond that short ring. The
+ existing instancing, culling, hysteresis, dissolve, shadows and species skeletons still apply.
+-Balanced and Light retain their geometry counts; Light keeps its reduced texture sizes and
+-omits additional leaf-relief sampling. Bare winter templates remain unchanged.
++Balanced and Light retain their geometry counts. Woodland at Balanced uses the existing
++half-size atlases and omits additional leaf-relief sampling, as Light already does. Full
++retains the larger sheets and relief. Bare winter templates remain unchanged.
+ 
+ Rounded spray normals and a common thin-leaf light patch cover woodland and street trees,
+ yard shrubs, vines and bank thickets. Direct transmission uses the renderer's already
+@@ -36,7 +37,9 @@ The focused browser test checks shadowed backlight, a wood mask, night, sky and
+ composition on both shader variants. Seven species/habits also retain their tree dimensions,
+ coarse templates and bare templates while adding Full close detail. The tree-gallery
+ diagnostic and fixed-camera published-scene captures retain their source versions and costs;
+-final local gate, mapped smoke and CI receipts belong to the merging PR. Cloud software
++final local gate, mapped smoke and CI receipts belong to the merging PR. Scripted moving-frame
++readings also suppress unmeasured raster drawing during tier preparation; their measured
++loops, limits, verification, live mode and explicit rendering stay unchanged. Cloud software
+ rendering is not evidence of an integrated GPU's or a high-end GPU's FPS.
+ 
+ ## T-3709 — the 1835 phone's js heap back to 100 MB (20 November 2026)
+diff --git a/chicago/4d/renderers/web/js/tree-model.js b/chicago/4d/renderers/web/js/tree-model.js
+index 28c45bf021..8318f1aeeb 100644
+--- a/chicago/4d/renderers/web/js/tree-model.js
++++ b/chicago/4d/renderers/web/js/tree-model.js
+@@ -1558,7 +1558,9 @@ function tube(buf, b, sides, barkTile, tint, flexOf) {
+       const c = a + sides + 1;
+       const d = b2 + sides + 1;
+       buf.tri(a, b2, c);
+-      buf.tri(b2, d, c);
++      // A fine supporting shoot ends at one point: one face per side.
++      // Other branches keep both faces and their existing geometry counts.
++      if (!(b.pointTip && i === n - 2 && B.r === 0)) buf.tri(b2, d, c);
+     }
+   }
+ }
+@@ -1674,7 +1676,7 @@ function card(buf, at, dir, size, tile, colour, outward, flex, rnd, facing = nul
+   const k = 0.62;
+   const shoot = add(mul(t, h * 0.48), add(mul(side, w * 0.18), mul(cardN, w * 0.14)));
+   const tip = add(at, shoot);
+-  const twig = { pts: [at, tip], rad: [Math.min(0.008, size * 0.006), Math.min(0.003, size * 0.002)] };
++  const twig = { pts: [at, tip], rad: [Math.min(0.008, size * 0.006), 0], pointTip: true };
+   tube(buf.sprays.wood, twig, 3, buf.sprays.barkTile, buf.sprays.tint,
+     (p) => p === at ? buf.sprays.flexOf(p) : flex + 0.15 * 0.18);
+   for (const [along, turn] of [[0.12, -0.38], [0.55, 0.31], [1, -0.12]]) {
+diff --git a/chicago/4d/renderers/web/js/trees.js b/chicago/4d/renderers/web/js/trees.js
+index dea7a4f80c..d33dad3271 100644
+--- a/chicago/4d/renderers/web/js/trees.js
++++ b/chicago/4d/renderers/web/js/trees.js
+@@ -4557,7 +4557,10 @@ export async function createTrees({
+   // the bank thickets and the dooryard shrubs, so a phone keeps it from its
+   // second level down, as the parkway elms did (T-2158, PR 773): a quarter of
+   // its memory.
+-  if ((lowSpec || level === 'light') && surfaceAtlas.mipmaps?.length > 1) {
++  // Balanced keeps the same trees and meshes, using the existing smaller
++  // atlases and inexpensive leaf shader to leave room on shared-memory GPUs.
++  const reducedTextures = lowSpec || level !== 'full';
++  if (reducedTextures && surfaceAtlas.mipmaps?.length > 1) {
+     surfaceAtlas.mipmaps = surfaceAtlas.mipmaps.slice(1);
+     surfaceAtlas.image = surfaceAtlas.mipmaps[0];
+   }
+@@ -4649,7 +4652,7 @@ export async function createTrees({
+   stats.timberChunks = chunks.length;
+   stats.foliageSprays = chunks.reduce((t, b) => t + b.sprays, 0);
+   stats.foliageRepresentation = 'species-alpha-sprays';
+-  stats.surfaceAtlasSize = 2048;
++  stats.surfaceAtlasSize = surfaceAtlas.image.width;
+   for (const b of chunks) stats.heads += b.heads;
+   // Static thicket/vine triangles are also read only by the GPU. Full keeps
+   // their recorded plants, cached bounds and shader controls, rather than a
+@@ -4666,7 +4669,7 @@ export async function createTrees({
+   if (grown.count) {
+     grownMats = await createGrownTreeMaterials({
+       assetBase: resolveBases().assetBase, uWind, confidence, patchWind: patchTreeWind,
+-      lowSpec: lowSpec || level === 'light', alphaCutoff: TREE_ALPHA_CUTOFF, problems,
++      lowSpec: reducedTextures, alphaCutoff: TREE_ALPHA_CUTOFF, problems,
+     });
+     disposables.push(grownMats);
+     forest = await grown.build({ ...grownMats, checkpoint });
+diff --git a/chicago/4d/tools/measure_walk_frames.mjs b/chicago/4d/tools/measure_walk_frames.mjs
+index a4f379e29b..cdcd9d38ef 100644
+--- a/chicago/4d/tools/measure_walk_frames.mjs
++++ b/chicago/4d/tools/measure_walk_frames.mjs
+@@ -1,7 +1,7 @@
+ /**
+  * WHAT A FRAME COSTS WHILE THE VISITOR IS MOVING — T-2096.
+  *
+- *   node tools/measure_walk_frames.mjs [--only desktop|mobile] [--tiers full,balanced,light]
++ *   node tools/measure_walk_frames.mjs [--only desktop|mobile] [--tiers full,balanced,light] [--root mirror]
+  *                                      [--moves walk,turn,flight] [--year 1835]
+  *                                      [--throttle 4] [--source] [--json f]
+  *                                      [--sync] [--verify] [--gate] [--xray]
+@@ -282,9 +282,8 @@ const TYPES = {
+   '.svg': 'image/svg+xml', '.wasm': 'application/wasm', '.md': 'text/markdown',
+   '.webp': 'image/webp', '.ktx2': 'image/ktx2',
+ };
+-const ROOT = wantSource
+-  ? path.resolve(HERE, '..')
+-  : path.resolve(HERE, '../../../site/4d');
++const ROOT = argAt('--root') ? path.resolve(argAt('--root'))
++  : wantSource ? path.resolve(HERE, '..') : path.resolve(HERE, '../../../site/4d');
+ const ENTRY = wantSource ? '/renderers/web/index.html' : '/walk/';
+ if (!wantSource && !fs.existsSync(path.join(ROOT, 'walk', 'index.html'))) {
+   console.error(`no published mirror at ${ROOT} — run tools/publish.sh first`);
+@@ -332,7 +331,14 @@ async function driveMove({ move, tier, render, profile, sync, verify, xray, swar
+   }
+   // A tier change REPLACES the flora and trees rigs (main.js applyDetail), so
+   // the hooks are wrapped on the objects that exist once it has settled.
+-  await a.setDetail(tier);
++  // Scripted readings skip raster drawing, including this unmeasured setup.
++  // Otherwise each cooperative rebuild yield redraws the old Full town on
++  // SwiftShader, exhausting the job before Balanced's first measured frame.
++  // Keep camera transforms current; --render and live readings retain draws.
++  const prepareDraw = a.renderer.render;
++  if (!render) a.renderer.render = (scene, camera) => camera?.updateMatrixWorld?.();
++  try { await a.setDetail(tier); }
++  finally { a.renderer.render = prepareDraw; }
+   if (xray) {
+     a.setConfidenceView(true);
+     a.confidence.setGrade('inferred', { mode: 'ghost', opacity: 0.5 });
