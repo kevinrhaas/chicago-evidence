@@ -1,0 +1,45 @@
+import fs from 'node:fs';
+import http from 'node:http';
+import path from 'node:path';
+import {execFileSync} from 'node:child_process';
+import {createRequire} from 'node:module';
+import assert from 'node:assert/strict';
+const require=createRequire(import.meta.url),{chromium}=require('playwright');
+const root='/workspace/work/vegetation-published-m1-448bee-ui-diagnostic';
+const app='/workspace/work/better-trees-integration/chicago/4d';
+const output='/workspace/work/vegetation-ui-row-fixture-regression.json';
+const current=fs.readFileSync(app+'/tools/smoke_renderer.mjs','utf8');
+const begin=current.indexOf('  const holdHumanResources =');const end=current.indexOf('  const enterTown =',begin);assert(begin>0&&end>begin);
+const helper=current.slice(begin,end);
+const original=execFileSync('git',['show','448bee20179e3928af936bc002c4a2f7b66f7391:chicago/4d/tools/smoke_renderer.mjs'],{cwd:app,encoding:'utf8',maxBuffer:8*1024*1024});
+const oldBegin=original.indexOf('      const townHeld =');const oldEnd=original.indexOf('      // What each top-level layer',oldBegin);assert(oldBegin>0&&oldEnd>oldBegin);
+const legacy=original.slice(oldBegin,oldEnd);
+const types={'.html':'text/html','.js':'text/javascript','.json':'application/json','.css':'text/css','.glb':'model/gltf-binary','.wasm':'application/wasm','.webp':'image/webp','.ktx2':'image/ktx2','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg'};
+const server=http.createServer((req,res)=>{let f=path.join(root,decodeURIComponent(req.url.split('?')[0]));try{if(fs.statSync(f).isDirectory())f=path.join(f,'index.html');res.writeHead(200,{'Content-Type':types[path.extname(f)]||'application/octet-stream','Cache-Control':'no-store'});fs.createReadStream(f).pipe(res);}catch{res.writeHead(404);res.end();}});
+await new Promise(r=>server.listen(0,'127.0.0.1',r));
+const browser=await chromium.launch({executablePath:process.env.PW_EXECUTABLE,args:['--no-sandbox','--enable-unsafe-swiftshader','--disable-dev-shm-usage']});
+const result={root,source_head:'448bee20179e3928af936bc002c4a2f7b66f7391',errors:[],rows:[],note:'ActualhelperextractedfromcurrenttrackedSmoke. ThisROWprobeWARMSTintandGhostasoriginalT2648requires,thenassertsexactprogramANDgeometryequalityandpeoplevisibility. Earliercontrolledretirementprobequalifiesoverlayonly; itdidnotwarmrowGhostandrecordeditsfirstcompile82to119,notarowpass. NoUIpixel/fullsmoke/memory/framegateclaim.'};
+const save=()=>fs.writeFileSync(output,JSON.stringify(result,null,2));
+try{
+ const page=await browser.newPage({viewport:{width:1280,height:800},deviceScaleFactor:1});page.setDefaultTimeout(120000);page.on('pageerror',e=>{result.errors.push(String(e));console.log('pageerror',String(e));});
+ const actual=new Function('page',helper+';return {holdHumanResources,releaseHumanResources};')(page);
+ const old=new Function('page',legacy+';return {townHeld,townLetGo};')(page);
+ console.log('Booting real1280x800 published448bee, CI keep-geometry, for controlled retirement');
+ await page.addInitScript(()=>{window.__MODULE_BASE='/walk/js/';});
+ await page.goto(`http://127.0.0.1:${server.address().port}/walk/?year=1835&keep-geometry=1`,{waitUntil:'domcontentloaded'});
+ await page.waitForFunction(()=>__chicago4d?.ready||__chicago4d?.error,null,{timeout:400000,polling:500});
+ await page.evaluate(()=>{const a=__chicago4d;if(a.error)throw Error(JSON.stringify(a.error));window.__fixtureDraw=a.renderer.render;a.renderer.render=(s,c)=>c?.updateMatrixWorld?.();});
+ await page.waitForFunction(()=>__chicago4d.welcome?.state==='welcome',null,{timeout:120000,polling:250});
+ await page.evaluate(()=>{const a=__chicago4d;a.welcome.enter('spawn');document.exitPointerLock?.();document.getElementById('control-help-gotit')?.click();a.renderer.setAnimationLoop(null);a.setAnimationHold(true);a.renderer.render=window.__fixtureDraw;});
+ console.log('Settling real actor preparations through actual new helper');await actual.holdHumanResources();await actual.releaseHumanResources();
+ await page.evaluate(async()=>{const a=__chicago4d;await a.navigator.select('confidence');window.__fixtureTHREE=await import('/walk/vendor/three-0.185.1/three.module.js');});
+ await page.evaluate(()=>{const a=__chicago4d;a.setAnimationHold(true);document.querySelector('#navigator .nav-preset[data-preset="bygrade"]').click();if(document.getElementById('cm-controls-reconstructed')?.hidden)document.getElementById('cm-look-reconstructed').click();});
+ // Match the actual T-2648 setup: Tint and Ghost have already been drawn.
+ await page.evaluate(()=>{const s=document.getElementById('cm-opacity-reconstructed');document.querySelector('#cm-controls-reconstructed .nav-look[data-look="tint"]').click();s.value='100';s.dispatchEvent(new Event('input',{bubbles:true}));s.dispatchEvent(new Event('change',{bubbles:true}));});
+ await actual.holdHumanResources();await actual.releaseHumanResources();
+ await page.evaluate(()=>{const s=document.getElementById('cm-opacity-reconstructed');document.querySelector('#cm-controls-reconstructed .nav-look[data-look="ghost"]').click();s.value='40';s.dispatchEvent(new Event('input',{bubbles:true}));s.dispatchEvent(new Event('change',{bubbles:true}));});
+ await actual.holdHumanResources();await actual.releaseHumanResources();
+ await actual.holdHumanResources();
+ const row=await page.evaluate(()=>{const a=__chicago4d;const shown=a.humans.group.visible;const before=a.stats();const slider=document.getElementById('cm-opacity-reconstructed');for(const v of [80,60,40,20,0]){slider.value=String(v);slider.dispatchEvent(new Event('input',{bubbles:true}));}slider.dispatchEvent(new Event('change',{bubbles:true}));for(const set of ['garden','ember','medal'])document.querySelector(`#cm-controls-reconstructed .nav-swatch[data-set="${set}"]`).click();for(const look of ['tint','ghost'])document.querySelector(`#cm-controls-reconstructed .nav-look[data-look="${look}"]`).click();a.step();const after=a.stats();return{name:'actual-new-row-fixture-keeps-people-visible',peopleVisible:shown,programs:[before.programs,after.programs],geometries:[before.geometries,after.geometries]};});await actual.releaseHumanResources();result.rows.push(row);save();console.log(JSON.stringify(row));assert.equal(row.peopleVisible,true);assert.equal(row.geometries[0],row.geometries[1]);assert.equal(row.programs[0],row.programs[1]);
+ result.complete=true;save();console.log('Actual warmed-row fixture passes strict program AND geometry equality with people visible');
+}catch(e){result.error=String(e.stack||e);save();console.error(e);process.exitCode=1;}finally{await browser.close();server.close();}
