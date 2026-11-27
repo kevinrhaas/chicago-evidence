@@ -1,0 +1,9 @@
+# First repaired-source host has no stock desktop calibration
+
+The actual job140423973283, run45974866322 attempt1, received Intel Xeon Platinum8370C/four-core hardware. Its stock calibration has mobile limits only. It stopped at the premeasurement hardware check, before the one-file shader override, browser installation, publication or timing. The verified400-byte CPU-only artifact contains calibrated-host.json alone; there is no frame or source-override report. The full raw log remains. This is neither a passing timing result nor a failed timing measurement of the repair.
+
+One bounded eligibility-only retry was accepted: attempt2/job140445490944. Source/workflow6e10ba01dd12eead6e23d60418ebd4b9d217a6fb, exact shader hash, all samples, raster, geometry, population and stock limits are unchanged. The earlier actual1605 EPYC Light failure stays active until a genuinely repaired current source is qualified on calibrated hardware. No unchanged timing retry is performed after a real repaired-source timing failure.
+
+Only obsolete owned1605 CI work is retired to free scarce capacity. At the retirement check, desktop6-10 had already completed successfully and was retained; desktop11-12/14-15 was still unfinished and was cancelled. Completed desktop1-4, standalone5, phoneall15, desktop13 and other original workflows remain historical outcomes. No partial old assertion is reused. The corrected source continues its entirely fresh full local gate and will require all10fresh final workflows, including6complete published smoke bodies, before merging. The original clothing performance assertion passed unchanged; its parent section reached590seconds and was correctly divided into bounded32-way parts without dropping any step.
+
+No merge, calibrated pass or completed whole-gate claim is made by this folder. No heap snapshot is included.
