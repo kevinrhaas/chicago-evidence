@@ -1,0 +1,13 @@
+# Current seasonal source: complete Native before app authorship
+
+The entire current T-3748/T-3760 source is candidate tree `48f1bb2124e3f95e9262baf10b87ce1c020722e5`, app tree `1a71391e7f5e4a116a99114de82daf72b1da9acd`, based on actual Core `3bdf2349cf29f374833d015e91b84dab6611d636`. All34 owned hashes and the complete source patch are retained; reversing it recovers the entire Core base. No seasonal app commit has been authored at this checkpoint.
+
+All1441 declared Native steps passed on this exact complete working source before authorship, with required readers/base and serial clothing-drape execution. The saved21:09:59 qualification selects eight independently completed GitHub parts and local9/16 (509.6s under its590s bound), covering every one of32 residues exactly once. The local run had no concurrent GPU/native work and preserves identical before/after head, index tree, originDev and source hashes. The full raw log, exact positive93-step footer, start/exit receipts and timings are retained.
+
+The additional remote9/16 then also passed. All nine GitHub matrix partitions have now passed, with their raw positive footers and source-before/source-after receipts independently revalidated. It is retained as an additional result; it is not double-counted in the saved mixed-origin coverage. The diagnostic workflow's final bookkeeping aggregate may still be queued in this snapshot; it contributes no test steps. This is not a claim about a future authored PR's required CI.
+
+The source verifier checks the entire candidate index, every owned hash, no unstaged changes, patch/manifest/helper bindings, actual workflow head, declared step count, clothing ordinal313 and the complete partition plan. Job metadata, ZIPs/digests, raw Native logs and exact expected step counts bind each independent result to this source. No older-source Native result is substituted.
+
+[Both actual EPYC7763/four-core revalidations](../light-fix-seasonal-calibrated/) passed all original Full/Balanced/Light desktop limits. Light5606.8 and5646.0ms is below7000ms, against the earlier candidate's7314.6ms miss; no geometry, density, raster, sample count or limit changed. The previous failed candidate remains retained.
+
+Actual current published season/detail images are in [the working-source evidence](../light-fix-seasonal-working-source/), with further all-year/view captures continuing. The actual Core Dev merge, byte-preserving integration, two ticket commits, final committed preflight, new group PR and fresh authored-head required CI/published smoke/frame-memory checks remain required. This folder claims neither a seasonal Dev merge nor hardware FPS.
