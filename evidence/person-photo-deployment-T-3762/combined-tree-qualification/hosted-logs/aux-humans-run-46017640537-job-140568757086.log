@@ -1,0 +1,854 @@
+﻿2026-11-27T15:24:20.3010439Z Current runner version: '2.338.2'
+2026-11-27T15:24:20.3038019Z ##[group]Runner Image Provisioner
+2026-11-27T15:24:20.3038820Z Hosted Compute Agent
+2026-11-27T15:24:20.3039478Z Version: 20261111.635
+2026-11-27T15:24:20.3040115Z Commit: b8a594ea514ff44cadb5342986c68b1eac6e22ed
+2026-11-27T15:24:20.3040891Z Build Date: 2026-11-11T01:49:01Z
+2026-11-27T15:24:20.3041562Z Worker ID: {6bb3ed26-acf4-468e-a9d2-c8925839a24e}
+2026-11-27T15:24:20.3042237Z Region: us-east-1
+2026-11-27T15:24:20.3042806Z Cloud: AWS
+2026-11-27T15:24:20.3043289Z ##[endgroup]
+2026-11-27T15:24:20.3044885Z ##[group]Operating System
+2026-11-27T15:24:20.3045804Z Ubuntu
+2026-11-27T15:24:20.3046310Z 24.04.5
+2026-11-27T15:24:20.3046802Z LTS
+2026-11-27T15:24:20.3047274Z ##[endgroup]
+2026-11-27T15:24:20.3047872Z ##[group]Runner Image
+2026-11-27T15:24:20.3048444Z Image: ubuntu-24.04
+2026-11-27T15:24:20.3048927Z Version: 20261122.23.1
+2026-11-27T15:24:20.3050211Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261122.23/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-27T15:24:20.3051748Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261122.23
+2026-11-27T15:24:20.3052711Z ##[endgroup]
+2026-11-27T15:24:20.3053809Z ##[group]GITHUB_TOKEN Permissions
+2026-11-27T15:24:20.3056466Z Contents: read
+2026-11-27T15:24:20.3057137Z Metadata: read
+2026-11-27T15:24:20.3057689Z ##[endgroup]
+2026-11-27T15:24:20.3059866Z Secret source: Actions
+2026-11-27T15:24:20.3060772Z Cache mode: write
+2026-11-27T15:24:20.3061547Z Prepare workflow directory
+2026-11-27T15:24:20.3400980Z Prepare all required actions
+2026-11-27T15:24:20.3453911Z Getting action download info
+2026-11-27T15:24:20.4790117Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-11-27T15:24:21.4187567Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+2026-11-27T15:24:21.5758102Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+2026-11-27T15:24:21.7724881Z Download action repository 'actions/cache@v4' (SHA:0057852bfaa89a56745cba8c7296529d2fc39830)
+2026-11-27T15:24:22.0803113Z Complete job name: humans
+2026-11-27T15:24:22.1382031Z ##[group]Run python3 - <<'PY'
+2026-11-27T15:24:22.1382533Z [36;1mpython3 - <<'PY'[0m
+2026-11-27T15:24:22.1382879Z [36;1mimport os,re[0m
+2026-11-27T15:24:22.1383166Z [36;1msource=os.environ['SOURCE_REF'][0m
+2026-11-27T15:24:22.1383555Z [36;1mclothing=os.environ['CLOTHING_ENABLED']=='true'[0m
+2026-11-27T15:24:22.1383941Z [36;1mclothing_source=os.environ['CLOTHING_SOURCE'][0m
+2026-11-27T15:24:22.1384504Z [36;1mclothing_manifest=os.environ['CLOTHING_MANIFEST'][0m
+2026-11-27T15:24:22.1384829Z [36;1mif clothing:[0m
+2026-11-27T15:24:22.1385668Z [36;1m    if any(os.environ[k]=='true' for k in ('DRESS_ENABLED','TEAMSTERS_ENABLED','SEATED_ENABLED','STILLS_ENABLED','PRAIRIE_ENABLED')) or source or os.environ['LIBRARY_SOURCE_RUN']:[0m
+2026-11-27T15:24:22.1386468Z [36;1m        raise SystemExit('T1789 capture must run separately from every existing study/stills mode')[0m
+2026-11-27T15:24:22.1387208Z [36;1m    if not re.fullmatch(r'[0-9a-f]{40}',clothing_source) or not re.fullmatch(r'[0-9a-f]{64}',clothing_manifest):[0m
+2026-11-27T15:24:22.1387784Z [36;1m        raise SystemExit('T1789 capture requires immutable source and manifest pins')[0m
+2026-11-27T15:24:22.1388229Z [36;1melif clothing_source or clothing_manifest:[0m
+2026-11-27T15:24:22.1388658Z [36;1m    raise SystemExit('T1789 capture fields require the explicit capture flag')[0m
+2026-11-27T15:24:22.1389060Z [36;1mdress=os.environ['DRESS_ENABLED']=='true'[0m
+2026-11-27T15:24:22.1389724Z [36;1mif os.environ['PRAIRIE_ENABLED']=='true' and (clothing or dress or os.environ['TEAMSTERS_ENABLED']=='true' or os.environ['SEATED_ENABLED']=='true' or os.environ['STILLS_ENABLED']=='true'):[0m
+2026-11-27T15:24:22.1390512Z [36;1m    raise SystemExit('The Prairie children build must run separately from other authoring studies')[0m
+2026-11-27T15:24:22.1391123Z [36;1mif dress:[0m
+2026-11-27T15:24:22.1391488Z [36;1m    if os.environ['TEAMSTERS_ENABLED']=='true' or os.environ['SEATED_ENABLED']=='true':[0m
+2026-11-27T15:24:22.1392015Z [36;1m        raise SystemExit('The dress study must run separately from teamster/seated studies')[0m
+2026-11-27T15:24:22.1392629Z [36;1m    if not re.fullmatch(r'[0-9a-f]{40}',source) or source!='1cbb1817508593562f99ed378b6932368b5699b9':[0m
+2026-11-27T15:24:22.1393189Z [36;1m        raise SystemExit('Dress source_ref must equal the reviewed immutable source SHA')[0m
+2026-11-27T15:24:22.1393624Z [36;1melif source:[0m
+2026-11-27T15:24:22.1393970Z [36;1m    raise SystemExit('source_ref applies only to the opt-in dress study')[0m
+2026-11-27T15:24:22.1394391Z [36;1mwith open(os.environ['GITHUB_OUTPUT'],'a') as output:[0m
+2026-11-27T15:24:22.1394793Z [36;1m    output.write('source_sha='+source+'\n')[0m
+2026-11-27T15:24:22.1395188Z [36;1m    output.write('clothing_source_sha='+clothing_source+'\n')[0m
+2026-11-27T15:24:22.1395712Z [36;1mPY[0m
+2026-11-27T15:24:22.4471539Z shell: /usr/bin/bash -e {0}
+2026-11-27T15:24:22.4472169Z env:
+2026-11-27T15:24:22.4472542Z   DRESS_ENABLED: false
+2026-11-27T15:24:22.4472851Z   TEAMSTERS_ENABLED: false
+2026-11-27T15:24:22.4473134Z   SEATED_ENABLED: false
+2026-11-27T15:24:22.4473418Z   SOURCE_REF: 
+2026-11-27T15:24:22.4473686Z   CLOTHING_ENABLED: false
+2026-11-27T15:24:22.4473956Z   CLOTHING_SOURCE: 
+2026-11-27T15:24:22.4474236Z   CLOTHING_MANIFEST: 
+2026-11-27T15:24:22.4474498Z   STILLS_ENABLED: false
+2026-11-27T15:24:22.4474757Z   LIBRARY_SOURCE_RUN: 
+2026-11-27T15:24:22.4475067Z   PRAIRIE_ENABLED: false
+2026-11-27T15:24:22.4475598Z ##[endgroup]
+2026-11-27T15:24:22.4904546Z ##[group]Run actions/checkout@v4
+2026-11-27T15:24:22.4904932Z with:
+2026-11-27T15:24:22.4905474Z   repository: kevinrhaas/chicago
+2026-11-27T15:24:22.4907636Z   token: ***
+2026-11-27T15:24:22.4907871Z   ssh-strict: true
+2026-11-27T15:24:22.4908141Z   ssh-user: git
+2026-11-27T15:24:22.4908400Z   persist-credentials: true
+2026-11-27T15:24:22.4908801Z   clean: true
+2026-11-27T15:24:22.4909062Z   sparse-checkout-cone-mode: true
+2026-11-27T15:24:22.4909334Z   fetch-depth: 1
+2026-11-27T15:24:22.4909602Z   fetch-tags: false
+2026-11-27T15:24:22.4909852Z   show-progress: true
+2026-11-27T15:24:22.4910118Z   lfs: false
+2026-11-27T15:24:22.4910365Z   submodules: false
+2026-11-27T15:24:22.4910622Z   set-safe-directory: true
+2026-11-27T15:24:22.4910911Z   allow-unsafe-pr-checkout: false
+2026-11-27T15:24:22.4911185Z ##[endgroup]
+2026-11-27T15:24:24.7126276Z Syncing repository: kevinrhaas/chicago
+2026-11-27T15:24:24.7127470Z ##[group]Getting Git version info
+2026-11-27T15:24:24.7127940Z Working directory is '/home/runner/work/chicago/chicago'
+2026-11-27T15:24:24.7128432Z [command]/usr/bin/git version
+2026-11-27T15:24:24.8544850Z git version 2.56.1
+2026-11-27T15:24:24.8559249Z ##[endgroup]
+2026-11-27T15:24:24.8572809Z Temporarily overriding HOME='/home/runner/work/_temp/0cf7421a-9ee5-4627-af88-ff528f7aa954' before making global git config changes
+2026-11-27T15:24:24.8573840Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-27T15:24:24.8577468Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/chicago/chicago
+2026-11-27T15:24:24.8629454Z Deleting the contents of '/home/runner/work/chicago/chicago'
+2026-11-27T15:24:24.8632123Z ##[group]Initializing the repository
+2026-11-27T15:24:24.8635700Z [command]/usr/bin/git init /home/runner/work/chicago/chicago
+2026-11-27T15:24:24.9102432Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-27T15:24:24.9103188Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-27T15:24:24.9103690Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-27T15:24:24.9104225Z hint: call:
+2026-11-27T15:24:24.9104484Z hint:
+2026-11-27T15:24:24.9104774Z hint: 	git config --global init.defaultBranch <name>
+2026-11-27T15:24:24.9105054Z hint:
+2026-11-27T15:24:24.9105897Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-27T15:24:24.9106442Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-27T15:24:24.9106801Z hint:
+2026-11-27T15:24:24.9107018Z hint: 	git branch -m <name>
+2026-11-27T15:24:24.9107275Z hint:
+2026-11-27T15:24:24.9107587Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-27T15:24:24.9117692Z Initialized empty Git repository in /home/runner/work/chicago/chicago/.git/
+2026-11-27T15:24:24.9128935Z [command]/usr/bin/git remote add origin https://github.com/kevinrhaas/chicago
+2026-11-27T15:24:24.9178104Z ##[endgroup]
+2026-11-27T15:24:24.9178535Z ##[group]Disabling automatic garbage collection
+2026-11-27T15:24:24.9181131Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-27T15:24:24.9204505Z ##[endgroup]
+2026-11-27T15:24:24.9205013Z ##[group]Setting up auth
+2026-11-27T15:24:24.9210186Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-27T15:24:24.9239128Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-27T15:24:25.2328044Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-27T15:24:25.2357843Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-27T15:24:25.2502822Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-27T15:24:25.2525748Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-27T15:24:25.2670179Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-27T15:24:25.2694683Z ##[endgroup]
+2026-11-27T15:24:25.2695906Z ##[group]Fetching the repository
+2026-11-27T15:24:25.2706933Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +33c56433b2df6d23aefefb060f139f16beb4d99c:refs/remotes/origin/validation/t3762-photo-f084f57a5e78
+2026-11-27T15:26:26.1958750Z From https://github.com/kevinrhaas/chicago
+2026-11-27T15:26:26.1959483Z  * [new ref]           33c56433b2df6d23aefefb060f139f16beb4d99c -> origin/validation/t3762-photo-f084f57a5e78
+2026-11-27T15:26:26.1968864Z ##[endgroup]
+2026-11-27T15:26:26.1969471Z ##[group]Determining the checkout info
+2026-11-27T15:26:26.1970036Z ##[endgroup]
+2026-11-27T15:26:26.1970395Z [command]/usr/bin/git sparse-checkout disable
+2026-11-27T15:26:26.2034731Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-27T15:26:26.2054928Z ##[group]Checking out the ref
+2026-11-27T15:26:26.2066022Z [command]/usr/bin/git checkout --progress --force -B validation/t3762-photo-f084f57a5e78 refs/remotes/origin/validation/t3762-photo-f084f57a5e78
+2026-11-27T15:26:27.6000288Z Updating files:   1% (424/27845)
+2026-11-27T15:26:28.2479392Z Updating files:   2% (557/27845)
+2026-11-27T15:26:28.2633552Z Updating files:   2% (815/27845)
+2026-11-27T15:26:28.6787101Z Updating files:   3% (836/27845)
+2026-11-27T15:26:28.7325620Z Updating files:   4% (1114/27845)
+2026-11-27T15:26:29.2448916Z Updating files:   5% (1393/27845)
+2026-11-27T15:26:29.2957299Z Updating files:   5% (1656/27845)
+2026-11-27T15:26:30.2291175Z Updating files:   6% (1671/27845)
+2026-11-27T15:26:31.2296003Z Updating files:   6% (1758/27845)
+2026-11-27T15:26:31.4074736Z Updating files:   6% (1864/27845)
+2026-11-27T15:26:31.5498949Z Updating files:   7% (1950/27845)
+2026-11-27T15:26:31.5951815Z Updating files:   8% (2228/27845)
+2026-11-27T15:26:32.0472371Z Updating files:   9% (2507/27845)
+2026-11-27T15:26:32.2135202Z Updating files:  10% (2785/27845)
+2026-11-27T15:26:32.2278142Z Updating files:  11% (3063/27845)
+2026-11-27T15:26:32.2814216Z Updating files:  11% (3098/27845)
+2026-11-27T15:26:32.4511096Z Updating files:  12% (3342/27845)
+2026-11-27T15:26:32.9239299Z Updating files:  13% (3620/27845)
+2026-11-27T15:26:33.2240883Z Updating files:  14% (3899/27845)
+2026-11-27T15:26:33.2275736Z Updating files:  15% (4177/27845)
+2026-11-27T15:26:33.2549950Z Updating files:  15% (4234/27845)
+2026-11-27T15:26:33.5124761Z Updating files:  16% (4456/27845)
+2026-11-27T15:26:33.5211490Z Updating files:  17% (4734/27845)
+2026-11-27T15:26:33.7153460Z Updating files:  18% (5013/27845)
+2026-11-27T15:26:33.7238618Z Updating files:  19% (5291/27845)
+2026-11-27T15:26:33.7432972Z Updating files:  20% (5569/27845)
+2026-11-27T15:26:33.7465847Z Updating files:  21% (5848/27845)
+2026-11-27T15:26:33.7505081Z Updating files:  22% (6126/27845)
+2026-11-27T15:26:33.7544490Z Updating files:  23% (6405/27845)
+2026-11-27T15:26:33.8018779Z Updating files:  24% (6683/27845)
+2026-11-27T15:26:33.8266231Z Updating files:  25% (6962/27845)
+2026-11-27T15:26:33.8921943Z Updating files:  26% (7240/27845)
+2026-11-27T15:26:33.9980428Z Updating files:  27% (7519/27845)
+2026-11-27T15:26:34.0121545Z Updating files:  28% (7797/27845)
+2026-11-27T15:26:34.1338923Z Updating files:  29% (8076/27845)
+2026-11-27T15:26:34.2255890Z Updating files:  30% (8354/27845)
+2026-11-27T15:26:34.2277891Z Updating files:  31% (8632/27845)
+2026-11-27T15:26:34.3323275Z Updating files:  31% (8646/27845)
+2026-11-27T15:26:34.3484843Z Updating files:  32% (8911/27845)
+2026-11-27T15:26:34.3702594Z Updating files:  33% (9189/27845)
+2026-11-27T15:26:34.3986452Z Updating files:  34% (9468/27845)
+2026-11-27T15:26:34.4193679Z Updating files:  35% (9746/27845)
+2026-11-27T15:26:34.4471211Z Updating files:  36% (10025/27845)
+2026-11-27T15:26:34.4565676Z Updating files:  37% (10303/27845)
+2026-11-27T15:26:34.4702290Z Updating files:  38% (10582/27845)
+2026-11-27T15:26:34.4981822Z Updating files:  39% (10860/27845)
+2026-11-27T15:26:34.5126935Z Updating files:  40% (11138/27845)
+2026-11-27T15:26:34.5189316Z Updating files:  41% (11417/27845)
+2026-11-27T15:26:34.5338504Z Updating files:  42% (11695/27845)
+2026-11-27T15:26:34.5654873Z Updating files:  43% (11974/27845)
+2026-11-27T15:26:34.5805700Z Updating files:  44% (12252/27845)
+2026-11-27T15:26:34.6292441Z Updating files:  45% (12531/27845)
+2026-11-27T15:26:34.6572475Z Updating files:  46% (12809/27845)
+2026-11-27T15:26:34.6883965Z Updating files:  47% (13088/27845)
+2026-11-27T15:26:34.7063584Z Updating files:  48% (13366/27845)
+2026-11-27T15:26:34.7244146Z Updating files:  49% (13645/27845)
+2026-11-27T15:26:34.7547578Z Updating files:  50% (13923/27845)
+2026-11-27T15:26:34.7769044Z Updating files:  51% (14201/27845)
+2026-11-27T15:26:34.9200360Z Updating files:  52% (14480/27845)
+2026-11-27T15:26:35.0968929Z Updating files:  53% (14758/27845)
+2026-11-27T15:26:35.1031496Z Updating files:  54% (15037/27845)
+2026-11-27T15:26:35.1083927Z Updating files:  55% (15315/27845)
+2026-11-27T15:26:35.1307530Z Updating files:  56% (15594/27845)
+2026-11-27T15:26:35.1456279Z Updating files:  57% (15872/27845)
+2026-11-27T15:26:35.1700497Z Updating files:  58% (16151/27845)
+2026-11-27T15:26:35.1877288Z Updating files:  59% (16429/27845)
+2026-11-27T15:26:35.2392270Z Updating files:  60% (16707/27845)
+2026-11-27T15:26:35.2936483Z Updating files:  60% (16907/27845)
+2026-11-27T15:26:35.4318722Z Updating files:  61% (16986/27845)
+2026-11-27T15:26:35.5154068Z Updating files:  62% (17264/27845)
+2026-11-27T15:26:35.8998848Z Updating files:  63% (17543/27845)
+2026-11-27T15:26:36.2278978Z Updating files:  64% (17821/27845)
+2026-11-27T15:26:36.3430623Z Updating files:  64% (17983/27845)
+2026-11-27T15:26:36.9453100Z Updating files:  65% (18100/27845)
+2026-11-27T15:26:37.2300153Z Updating files:  66% (18378/27845)
+2026-11-27T15:26:37.5747117Z Updating files:  66% (18495/27845)
+2026-11-27T15:26:38.0211280Z Updating files:  67% (18657/27845)
+2026-11-27T15:26:38.2300625Z Updating files:  68% (18935/27845)
+2026-11-27T15:26:38.9772666Z Updating files:  68% (19048/27845)
+2026-11-27T15:26:39.2303688Z Updating files:  69% (19214/27845)
+2026-11-27T15:26:39.3316472Z Updating files:  69% (19334/27845)
+2026-11-27T15:26:39.5320864Z Updating files:  70% (19492/27845)
+2026-11-27T15:26:39.5651160Z Updating files:  71% (19770/27845)
+2026-11-27T15:26:39.6610346Z Updating files:  72% (20049/27845)
+2026-11-27T15:26:39.7532003Z Updating files:  73% (20327/27845)
+2026-11-27T15:26:39.8639866Z Updating files:  74% (20606/27845)
+2026-11-27T15:26:39.9490239Z Updating files:  75% (20884/27845)
+2026-11-27T15:26:40.0216554Z Updating files:  76% (21163/27845)
+2026-11-27T15:26:40.1442914Z Updating files:  77% (21441/27845)
+2026-11-27T15:26:40.2283024Z Updating files:  78% (21720/27845)
+2026-11-27T15:26:40.2615675Z Updating files:  78% (21954/27845)
+2026-11-27T15:26:40.6035463Z Updating files:  79% (21998/27845)
+2026-11-27T15:26:40.7201197Z Updating files:  80% (22276/27845)
+2026-11-27T15:26:40.8256825Z Updating files:  81% (22555/27845)
+2026-11-27T15:26:41.1815171Z Updating files:  82% (22833/27845)
+2026-11-27T15:26:41.2276744Z Updating files:  83% (23112/27845)
+2026-11-27T15:26:41.3581918Z Updating files:  84% (23390/27845)
+2026-11-27T15:26:41.8899562Z Updating files:  85% (23669/27845)
+2026-11-27T15:26:41.9259797Z Updating files:  86% (23947/27845)
+2026-11-27T15:26:42.2306320Z Updating files:  87% (24226/27845)
+2026-11-27T15:26:42.3027114Z Updating files:  87% (24477/27845)
+2026-11-27T15:26:42.3472197Z Updating files:  88% (24504/27845)
+2026-11-27T15:26:42.3849076Z Updating files:  89% (24783/27845)
+2026-11-27T15:26:42.4083865Z Updating files:  90% (25061/27845)
+2026-11-27T15:26:42.4570770Z Updating files:  91% (25339/27845)
+2026-11-27T15:26:42.4748787Z Updating files:  92% (25618/27845)
+2026-11-27T15:26:42.4942769Z Updating files:  93% (25896/27845)
+2026-11-27T15:26:42.8261911Z Updating files:  94% (26175/27845)
+2026-11-27T15:26:43.2470172Z Updating files:  95% (26453/27845)
+2026-11-27T15:26:43.4763453Z Updating files:  95% (26651/27845)
+2026-11-27T15:26:44.2303606Z Updating files:  96% (26732/27845)
+2026-11-27T15:26:44.5340549Z Updating files:  96% (26867/27845)
+2026-11-27T15:26:44.9652360Z Updating files:  97% (27010/27845)
+2026-11-27T15:26:45.2433270Z Updating files:  98% (27289/27845)
+2026-11-27T15:26:46.2724488Z Updating files:  98% (27394/27845)
+2026-11-27T15:26:47.2441561Z Updating files:  98% (27466/27845)
+2026-11-27T15:26:47.5580396Z Updating files:  98% (27505/27845)
+2026-11-27T15:26:48.2341128Z Updating files:  99% (27567/27845)
+2026-11-27T15:26:48.3788542Z Updating files:  99% (27829/27845)
+2026-11-27T15:26:48.3789133Z Updating files: 100% (27845/27845)
+2026-11-27T15:26:48.3789413Z Updating files: 100% (27845/27845), done.
+2026-11-27T15:26:48.4364157Z Switched to a new branch 'validation/t3762-photo-f084f57a5e78'
+2026-11-27T15:26:48.4365084Z branch 'validation/t3762-photo-f084f57a5e78' set up to track 'origin/validation/t3762-photo-f084f57a5e78'.
+2026-11-27T15:26:48.4722144Z ##[endgroup]
+2026-11-27T15:26:48.4769933Z [command]/usr/bin/git log -1 --format=%H
+2026-11-27T15:26:48.4788641Z 33c56433b2df6d23aefefb060f139f16beb4d99c
+2026-11-27T15:26:48.5283767Z ##[group]Run actions/setup-python@v5
+2026-11-27T15:26:48.5284053Z with:
+2026-11-27T15:26:48.5284279Z   python-version: 3.11
+2026-11-27T15:26:48.5284505Z   check-latest: false
+2026-11-27T15:26:48.5286559Z   token: ***
+2026-11-27T15:26:48.5286768Z   update-environment: true
+2026-11-27T15:26:48.5287037Z   allow-prereleases: false
+2026-11-27T15:26:48.5287282Z   freethreaded: false
+2026-11-27T15:26:48.5287506Z ##[endgroup]
+2026-11-27T15:26:48.6339706Z ##[group]Installed versions
+2026-11-27T15:26:48.8659562Z (node:2211) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-27T15:26:48.8660521Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-27T15:26:48.8661016Z Successfully set up CPython (3.11.18)
+2026-11-27T15:26:48.8661690Z ##[endgroup]
+2026-11-27T15:26:48.8838927Z ##[group]Run actions/setup-node@v4
+2026-11-27T15:26:48.8839190Z with:
+2026-11-27T15:26:48.8839407Z   node-version: 22
+2026-11-27T15:26:48.8839790Z   always-auth: false
+2026-11-27T15:26:48.8840040Z   check-latest: false
+2026-11-27T15:26:48.8841864Z   token: ***
+2026-11-27T15:26:48.8842105Z env:
+2026-11-27T15:26:48.8842368Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-27T15:26:48.8842740Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib/pkgconfig
+2026-11-27T15:26:48.8843130Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-27T15:26:48.8843464Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-27T15:26:48.8843777Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-27T15:26:48.8844129Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib
+2026-11-27T15:26:48.8844419Z ##[endgroup]
+2026-11-27T15:26:49.0687122Z Found in cache @ /opt/hostedtoolcache/node/22.23.5/x64
+2026-11-27T15:26:49.0696794Z (node:2220) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-27T15:26:49.0697729Z ##[group]Environment details
+2026-11-27T15:26:49.0698283Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-27T15:26:52.4489364Z node: v22.23.5
+2026-11-27T15:26:52.4489916Z npm: 10.9.9
+2026-11-27T15:26:52.4490158Z yarn: 1.22.22
+2026-11-27T15:26:52.4490874Z ##[endgroup]
+2026-11-27T15:26:52.4682235Z ##[group]Run pip install --quiet jsonschema
+2026-11-27T15:26:52.4682618Z [36;1mpip install --quiet jsonschema[0m
+2026-11-27T15:26:52.5018798Z shell: /usr/bin/bash -e {0}
+2026-11-27T15:26:52.5019195Z env:
+2026-11-27T15:26:52.5019479Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-27T15:26:52.5019866Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib/pkgconfig
+2026-11-27T15:26:52.5020279Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-27T15:26:52.5020635Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-27T15:26:52.5021001Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-27T15:26:52.5021363Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib
+2026-11-27T15:26:52.5021662Z ##[endgroup]
+2026-11-27T15:26:57.3935646Z ##[group]Run # shellcheck disable=SC1091
+2026-11-27T15:26:57.3936004Z [36;1m# shellcheck disable=SC1091[0m
+2026-11-27T15:26:57.3936313Z [36;1msource chicago/4d/generators/blender.pin[0m
+2026-11-27T15:26:57.3936700Z [36;1mecho "version=$BLENDER_VERSION" >> "$GITHUB_OUTPUT"[0m
+2026-11-27T15:26:57.3961410Z shell: /usr/bin/bash -e {0}
+2026-11-27T15:26:57.3961693Z env:
+2026-11-27T15:26:57.3961954Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-27T15:26:57.3962384Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib/pkgconfig
+2026-11-27T15:26:57.3962760Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-27T15:26:57.3963134Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-27T15:26:57.3963473Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-27T15:26:57.3963815Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib
+2026-11-27T15:26:57.3964149Z ##[endgroup]
+2026-11-27T15:26:57.4064262Z ##[group]Run actions/cache@v4
+2026-11-27T15:26:57.4064567Z with:
+2026-11-27T15:26:57.4064800Z   path: /opt/blender-dl
+2026-11-27T15:26:57.4065040Z   key: blender-4.5.3
+2026-11-27T15:26:57.4065979Z   enableCrossOsArchive: false
+2026-11-27T15:26:57.4066276Z   fail-on-cache-miss: false
+2026-11-27T15:26:57.4066541Z   lookup-only: false
+2026-11-27T15:26:57.4066790Z   save-always: false
+2026-11-27T15:26:57.4067021Z env:
+2026-11-27T15:26:57.4067347Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-27T15:26:57.4067754Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib/pkgconfig
+2026-11-27T15:26:57.4068137Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-27T15:26:57.4068496Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-27T15:26:57.4068838Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-27T15:26:57.4069210Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib
+2026-11-27T15:26:57.4069722Z ##[endgroup]
+2026-11-27T15:26:57.4892617Z (node:2277) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-27T15:26:57.4893338Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-27T15:26:57.5716167Z Cache hit for: blender-4.5.3
+2026-11-27T15:26:57.5789900Z (node:2277) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-27T15:26:58.6257066Z Received 251658240 of 839089334 (30.0%), 239.5 MBs/sec
+2026-11-27T15:26:59.6251926Z Received 536870912 of 839089334 (64.0%), 255.9 MBs/sec
+2026-11-27T15:27:00.6257265Z Received 805306368 of 839089334 (96.0%), 255.8 MBs/sec
+2026-11-27T15:27:00.7545083Z Received 839089334 of 839089334 (100.0%), 255.6 MBs/sec
+2026-11-27T15:27:00.7547324Z Cache Size: ~800 MB (839089334 B)
+2026-11-27T15:27:00.7672712Z [command]/usr/bin/tar -xf /home/runner/work/_temp/b0da6b7d-33e2-428e-8595-08763999c3dd/cache.tzst -P -C /home/runner/work/chicago/chicago --use-compress-program unzstd
+2026-11-27T15:27:02.6518930Z Cache restored successfully
+2026-11-27T15:27:03.1086858Z Cache restored from key: blender-4.5.3
+2026-11-27T15:27:03.1190507Z ##[group]Run ./tools/human_export.sh --verify
+2026-11-27T15:27:03.1190879Z [36;1m./tools/human_export.sh --verify[0m
+2026-11-27T15:27:03.1215130Z shell: /usr/bin/bash -e {0}
+2026-11-27T15:27:03.1215554Z env:
+2026-11-27T15:27:03.1215933Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-27T15:27:03.1216343Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib/pkgconfig
+2026-11-27T15:27:03.1216903Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-27T15:27:03.1217254Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-27T15:27:03.1217608Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-27T15:27:03.1218008Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib
+2026-11-27T15:27:03.1218318Z   BLENDER_CACHE: /opt/blender-dl
+2026-11-27T15:27:03.1218573Z ##[endgroup]
+2026-11-27T15:27:03.3743739Z Blender 4.5.3 LTS
+2026-11-27T15:27:03.3801533Z == master: tools/human_fixture_blend.py
+2026-11-27T15:27:03.8809730Z wrote /tmp/humanexport.i5ymY8/c4d_fixture.blend
+2026-11-27T15:27:03.8810557Z == export: tools/human_export.py
+2026-11-27T15:27:05.2704634Z wrote c4d_fixture.lod0.glb
+2026-11-27T15:27:05.2705397Z wrote c4d_fixture.lod1.glb
+2026-11-27T15:27:05.2705766Z wrote c4d_fixture.lod2.glb
+2026-11-27T15:27:05.2706094Z wrote c4d_fixture.lod3.glb
+2026-11-27T15:27:11.8033781Z c4d_fixture.lod0.glb (238.76 KB) → c4d_fixture.lod0.glb (110.82 KB)
+2026-11-27T15:27:12.3633749Z c4d_fixture.lod1.glb (169.53 KB) → c4d_fixture.lod1.glb (100 KB)
+2026-11-27T15:27:12.9153627Z c4d_fixture.lod2.glb (97.24 KB) → c4d_fixture.lod2.glb (75.35 KB)
+2026-11-27T15:27:13.4202621Z c4d_fixture.lod3.glb (92.36 KB) → c4d_fixture.lod3.glb (74.24 KB)
+2026-11-27T15:27:13.4203551Z == gate: tools/human_contract.py --glb
+2026-11-27T15:27:13.4648891Z 8 human GLB(s), 0 instance record(s) checked; OK
+2026-11-27T15:27:13.4695957Z == reproduction: the rebuilt bytes against the committed ones
+2026-11-27T15:27:13.4759172Z    all 8 files reproduce byte for byte
+2026-11-27T15:27:13.4808658Z ##[group]Run set -euo pipefail
+2026-11-27T15:27:13.4809103Z [36;1mset -euo pipefail[0m
+2026-11-27T15:27:13.4809499Z [36;1mdocker run --rm --init --ipc=host \[0m
+2026-11-27T15:27:13.4809891Z [36;1m  --user pwuser \[0m
+2026-11-27T15:27:13.4810351Z [36;1m  --mount "type=bind,src=$GITHUB_WORKSPACE,dst=$GITHUB_WORKSPACE,readonly" \[0m
+2026-11-27T15:27:13.4810884Z [36;1m  --workdir "$GITHUB_WORKSPACE/chicago/4d" \[0m
+2026-11-27T15:27:13.4811468Z [36;1m  mcr.microsoft.com/playwright@sha256:42f02d323c310069b4d54c94bd91a608966a486c3492c48ae0b1cea747ec5ca2 \[0m
+2026-11-27T15:27:13.4812128Z [36;1m  bash -euo pipefail -c '[0m
+2026-11-27T15:27:13.4812757Z [36;1m    pw_private="$(mktemp -d /tmp/chicago-human-playwright.XXXXXX)"[0m
+2026-11-27T15:27:13.4813236Z [36;1m    pw_prefix="$pw_private/npm"[0m
+2026-11-27T15:27:13.4813630Z [36;1m    pw_cache="$pw_private/cache"[0m
+2026-11-27T15:27:13.4814277Z [36;1m    npm install --global --prefix "$pw_prefix" --cache "$pw_cache" playwright@1.56.1[0m
+2026-11-27T15:27:13.4814878Z [36;1m    export NODE_PATH="$(npm root --global --prefix "$pw_prefix")"[0m
+2026-11-27T15:27:13.4815619Z [36;1m    node tools/human_fixture.mjs[0m
+2026-11-27T15:27:13.4816010Z [36;1m    node tools/human_actor.mjs[0m
+2026-11-27T15:27:13.4816362Z [36;1m  '[0m
+2026-11-27T15:27:13.4849100Z shell: /usr/bin/bash -e {0}
+2026-11-27T15:27:13.4849847Z env:
+2026-11-27T15:27:13.4850271Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-27T15:27:13.4850859Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib/pkgconfig
+2026-11-27T15:27:13.4851456Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-27T15:27:13.4852000Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-27T15:27:13.4852509Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-27T15:27:13.4853014Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib
+2026-11-27T15:27:13.4853451Z ##[endgroup]
+2026-11-27T15:27:15.1675798Z Unable to find image 'mcr.microsoft.com/playwright@sha256:42f02d323c310069b4d54c94bd91a608966a486c3492c48ae0b1cea747ec5ca2' locally
+2026-11-27T15:27:15.3027681Z mcr.microsoft.com/playwright@sha256:42f02d323c310069b4d54c94bd91a608966a486c3492c48ae0b1cea747ec5ca2: Pulling from playwright
+2026-11-27T15:27:15.3041820Z cf57d2112d89: Pulling fs layer
+2026-11-27T15:27:15.3042202Z e1de47aaed0a: Pulling fs layer
+2026-11-27T15:27:15.3042566Z 495d3111de8d: Pulling fs layer
+2026-11-27T15:27:15.3043035Z 44acc34a5cf7: Pulling fs layer
+2026-11-27T15:27:15.3043354Z 44acc34a5cf7: Waiting
+2026-11-27T15:27:15.4086951Z 495d3111de8d: Verifying Checksum
+2026-11-27T15:27:15.4087686Z 495d3111de8d: Download complete
+2026-11-27T15:27:15.5422351Z cf57d2112d89: Verifying Checksum
+2026-11-27T15:27:15.5422878Z cf57d2112d89: Download complete
+2026-11-27T15:27:15.7813051Z e1de47aaed0a: Verifying Checksum
+2026-11-27T15:27:15.7813592Z e1de47aaed0a: Download complete
+2026-11-27T15:27:16.2559537Z cf57d2112d89: Pull complete
+2026-11-27T15:27:18.0142040Z 44acc34a5cf7: Verifying Checksum
+2026-11-27T15:27:18.0142648Z 44acc34a5cf7: Download complete
+2026-11-27T15:27:18.6282705Z e1de47aaed0a: Pull complete
+2026-11-27T15:27:18.6477888Z 495d3111de8d: Pull complete
+2026-11-27T15:27:28.4950323Z 44acc34a5cf7: Pull complete
+2026-11-27T15:27:28.4972801Z Digest: sha256:42f02d323c310069b4d54c94bd91a608966a486c3492c48ae0b1cea747ec5ca2
+2026-11-27T15:27:28.4987024Z Status: Downloaded newer image for mcr.microsoft.com/playwright@sha256:42f02d323c310069b4d54c94bd91a608966a486c3492c48ae0b1cea747ec5ca2
+2026-11-27T15:27:34.7165689Z 
+2026-11-27T15:27:34.7167111Z added 2 packages in 1s
+2026-11-27T15:27:34.7176875Z npm notice
+2026-11-27T15:27:34.7177295Z npm notice New major version of npm available! 10.9.3 -> 12.2.3
+2026-11-27T15:27:34.7177848Z npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+2026-11-27T15:27:34.7178374Z npm notice To update run: npm install -g npm@12.2.3
+2026-11-27T15:27:34.7178666Z npm notice
+2026-11-27T15:47:59.8657813Z ok   assets/humans/anonymous_working_driver_1904.lod0.glb: 8447.8 KB, 40973 tris, 9 draws, 56 joints, 3 morphs, load 196.8/199 ms, frame 0.3/0.5 ms
+2026-11-27T15:47:59.8739751Z ok   assets/humans/anonymous_working_driver_1904.lod1.glb: 7818.4 KB, 24951 tris, 9 draws, 56 joints, 3 morphs, load 208.2/203 ms, frame 0.3/0.3 ms
+2026-11-27T15:47:59.8809350Z ok   assets/humans/anonymous_working_driver_1904.lod2.glb: 7287.5 KB, 12348 tris, 9 draws, 56 joints, 0 morphs, load 205.1/190.1 ms, frame 0.2/0.2 ms
+2026-11-27T15:47:59.8891774Z ok   assets/humans/anonymous_working_driver_1904.lod3.glb: 7380.2 KB, 13635 tris, 9 draws, 56 joints, 0 morphs, load 260.9/281.6 ms, frame 0.1/0.1 ms
+2026-11-27T15:47:59.8986729Z ok   assets/humans/bardwell_otis_1835.lod0.glb: 8484.6 KB, 41555 tris, 9 draws, 56 joints, 3 morphs, load 210.9/219.6 ms, frame 0.2/0.2 ms
+2026-11-27T15:47:59.9187739Z ok   assets/humans/bardwell_otis_1835.lod1.glb: 7846.1 KB, 25301 tris, 9 draws, 56 joints, 3 morphs, load 126.6/135.3 ms, frame 0.2/0.1 ms
+2026-11-27T15:47:59.9255911Z ok   assets/humans/bardwell_otis_1835.lod2.glb: 7306.7 KB, 12509 tris, 9 draws, 56 joints, 0 morphs, load 216.7/197 ms, frame 0.1/0.1 ms
+2026-11-27T15:47:59.9323357Z ok   assets/humans/bardwell_otis_1835.lod3.glb: 7395.5 KB, 13679 tris, 9 draws, 56 joints, 0 morphs, load 135.8/213.7 ms, frame 0.1/0.1 ms
+2026-11-27T15:47:59.9419448Z ok   assets/humans/billings_august_1904_stable_helper.lod0.glb: 8785.9 KB, 43486 tris, 11 draws, 56 joints, 3 morphs, load 190/159.1 ms, frame 0.2/0.2 ms
+2026-11-27T15:47:59.9605871Z ok   assets/humans/billings_august_1904_stable_helper.lod1.glb: 8013.5 KB, 26458 tris, 11 draws, 56 joints, 3 morphs, load 212.7/257.4 ms, frame 0.2/0.1 ms
+2026-11-27T15:47:59.9685821Z ok   assets/humans/billings_august_1904_stable_helper.lod2.glb: 7364.8 KB, 13049 tris, 11 draws, 56 joints, 0 morphs, load 212.9/206 ms, frame 0.1/0.1 ms
+2026-11-27T15:47:59.9750223Z ok   assets/humans/billings_august_1904_stable_helper.lod3.glb: 7080.5 KB, 6329 tris, 11 draws, 56 joints, 0 morphs, load 192/198.2 ms, frame 0.1/0.1 ms
+2026-11-27T15:47:59.9813823Z ok   assets/humans/c4d_fixture.lod0.glb: 233.2 KB, 3668 tris, 5 draws, 56 joints, 3 morphs, load 12.3/8.3 ms, frame 0.1/0.1 ms
+2026-11-27T15:47:59.9817377Z ok   assets/humans/c4d_fixture.lod1.glb: 165.6 KB, 2012 tris, 5 draws, 56 joints, 3 morphs, load 25.9/28.5 ms, frame 0.1/0.2 ms
+2026-11-27T15:47:59.9858665Z ok   assets/humans/c4d_fixture.lod2.glb: 95.0 KB, 468 tris, 5 draws, 56 joints, 0 morphs, load 9.5/11.5 ms, frame 0.1/0.1 ms
+2026-11-27T15:47:59.9875064Z ok   assets/humans/c4d_fixture.lod3.glb: 90.2 KB, 316 tris, 5 draws, 56 joints, 0 morphs, load 10.9/10 ms, frame 0.1/0.1 ms
+2026-11-27T15:47:59.9885166Z ok   assets/humans/child_boy_1812.lod0.glb: 8681.9 KB, 41299 tris, 11 draws, 56 joints, 3 morphs, load 189.2/182.7 ms, frame 0.2/0.2 ms
+2026-11-27T15:47:59.9987137Z ok   assets/humans/child_boy_1812.lod1.glb: 7951.1 KB, 25148 tris, 11 draws, 56 joints, 3 morphs, load 153.2/227.2 ms, frame 0.2/0.1 ms
+2026-11-27T15:48:00.0059269Z ok   assets/humans/child_boy_1812.lod2.glb: 7339.0 KB, 12435 tris, 11 draws, 56 joints, 0 morphs, load 189.5/212.8 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.0124669Z ok   assets/humans/child_boy_1812.lod3.glb: 7077.0 KB, 6066 tris, 11 draws, 56 joints, 0 morphs, load 189.8/163.5 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.0187407Z ok   assets/humans/child_boy_1904.lod0.glb: 8631.9 KB, 40615 tris, 11 draws, 56 joints, 3 morphs, load 143.5/144.4 ms, frame 0.2/0.2 ms
+2026-11-27T15:48:00.0262360Z ok   assets/humans/child_boy_1904.lod1.glb: 7910.7 KB, 24736 tris, 11 draws, 56 joints, 3 morphs, load 187.4/136 ms, frame 0.2/0.1 ms
+2026-11-27T15:48:00.0416181Z ok   assets/humans/child_boy_1904.lod2.glb: 7314.4 KB, 12245 tris, 11 draws, 56 joints, 0 morphs, load 179.8/172.2 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.0482369Z ok   assets/humans/child_boy_1904.lod3.glb: 7065.7 KB, 5981 tris, 11 draws, 56 joints, 0 morphs, load 176/176.2 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:00.0548006Z ok   assets/humans/child_girl_1812.lod0.glb: 8271.5 KB, 37050 tris, 10 draws, 56 joints, 3 morphs, load 191.8/181.8 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.0621894Z ok   assets/humans/child_girl_1812.lod1.glb: 7668.4 KB, 22597 tris, 10 draws, 56 joints, 3 morphs, load 129.8/136.9 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.0696287Z ok   assets/humans/child_girl_1812.lod2.glb: 7118.1 KB, 11248 tris, 10 draws, 56 joints, 0 morphs, load 138.8/136.6 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.0851046Z ok   assets/humans/child_girl_1812.lod3.glb: 6882.1 KB, 5556 tris, 10 draws, 56 joints, 0 morphs, load 175.2/134.4 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.0911356Z ok   assets/humans/child_girl_1904.lod0.glb: 8432.8 KB, 39908 tris, 10 draws, 56 joints, 3 morphs, load 161/153.3 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.0982990Z ok   assets/humans/child_girl_1904.lod1.glb: 7748.5 KB, 24313 tris, 10 draws, 56 joints, 3 morphs, load 155.1/135.2 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.1052911Z ok   assets/humans/child_girl_1904.lod2.glb: 7166.4 KB, 12046 tris, 10 draws, 56 joints, 0 morphs, load 205.9/187.9 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.1119628Z ok   assets/humans/child_girl_1904.lod3.glb: 6905.6 KB, 5898 tris, 10 draws, 56 joints, 0 morphs, load 204.8/218.5 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.1273156Z ok   assets/humans/child_toddler_1812.lod0.glb: 8351.0 KB, 35484 tris, 8 draws, 56 joints, 3 morphs, load 199.8/220.3 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.1350119Z ok   assets/humans/child_toddler_1812.lod1.glb: 7774.6 KB, 21659 tris, 8 draws, 56 joints, 3 morphs, load 137.8/125.3 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.1448563Z ok   assets/humans/child_toddler_1812.lod2.glb: 7260.9 KB, 10808 tris, 8 draws, 56 joints, 0 morphs, load 214.3/197.6 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.1576387Z ok   assets/humans/child_toddler_1812.lod3.glb: 7041.7 KB, 5369 tris, 8 draws, 56 joints, 0 morphs, load 129.3/130.8 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.1642641Z ok   assets/humans/child_toddler_1904.lod0.glb: 8593.4 KB, 39675 tris, 10 draws, 56 joints, 3 morphs, load 205.5/206.8 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.1744236Z ok   assets/humans/child_toddler_1904.lod1.glb: 7915.7 KB, 24171 tris, 10 draws, 56 joints, 3 morphs, load 220.8/197.9 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.1841160Z ok   assets/humans/child_toddler_1904.lod2.glb: 7335.9 KB, 11980 tris, 10 draws, 56 joints, 0 morphs, load 162.6/189.7 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:00.1930771Z ok   assets/humans/child_toddler_1904.lod3.glb: 7078.3 KB, 5870 tris, 10 draws, 56 joints, 0 morphs, load 206.7/173.5 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.2098616Z ok   assets/humans/engage_1812.lod0.glb: 8575.0 KB, 41661 tris, 11 draws, 56 joints, 3 morphs, load 199.1/198.4 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.2175168Z ok   assets/humans/engage_1812.lod1.glb: 7887.1 KB, 25362 tris, 11 draws, 56 joints, 3 morphs, load 189.5/202.9 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:00.2241839Z ok   assets/humans/engage_1812.lod2.glb: 7297.0 KB, 12538 tris, 11 draws, 56 joints, 0 morphs, load 197.9/199.2 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.2301810Z ok   assets/humans/engage_1812.lod3.glb: 7054.2 KB, 6107 tris, 11 draws, 56 joints, 0 morphs, load 166.1/184.9 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.2368005Z ok   assets/humans/flynn_mary_1835_dress_study.lod0.glb: 8543.0 KB, 40170 tris, 10 draws, 56 joints, 3 morphs, load 182.7/192.2 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.2529991Z ok   assets/humans/flynn_mary_1835_dress_study.lod1.glb: 7903.0 KB, 24615 tris, 10 draws, 56 joints, 3 morphs, load 194.9/158 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.2599665Z ok   assets/humans/flynn_mary_1835_dress_study.lod2.glb: 7340.1 KB, 12381 tris, 10 draws, 56 joints, 0 morphs, load 135.1/142.4 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.2665603Z ok   assets/humans/flynn_mary_1835_dress_study.lod3.glb: 7095.1 KB, 6247 tris, 10 draws, 56 joints, 0 morphs, load 184.3/224 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.2729869Z ok   assets/humans/glessner_frances_m_1904.lod0.glb: 10376.7 KB, 49918 tris, 14 draws, 56 joints, 3 morphs, load 160.1/241.2 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:00.2822826Z ok   assets/humans/glessner_frances_m_1904.lod1.glb: 9596.1 KB, 31668 tris, 14 draws, 56 joints, 3 morphs, load 217.2/207.8 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.3016962Z ok   assets/humans/glessner_frances_m_1904.lod2.glb: 8903.0 KB, 17284 tris, 14 draws, 56 joints, 0 morphs, load 155.5/139.2 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:00.3140523Z ok   assets/humans/glessner_frances_m_1904.lod3.glb: 8601.5 KB, 10071 tris, 14 draws, 56 joints, 0 morphs, load 205.1/220 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.3176595Z ok   assets/humans/glessner_john_j_1904.lod0.glb: 8302.1 KB, 48229 tris, 14 draws, 56 joints, 3 morphs, load 123.2/168.9 ms, frame 0.2/0.1 ms
+2026-11-27T15:48:00.3261027Z ok   assets/humans/glessner_john_j_1904.lod1.glb: 7439.0 KB, 29301 tris, 14 draws, 56 joints, 3 morphs, load 142/138.6 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:00.3422993Z ok   assets/humans/glessner_john_j_1904.lod2.glb: 6711.2 KB, 14373 tris, 14 draws, 56 joints, 0 morphs, load 128.7/159.6 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:00.3486138Z ok   assets/humans/glessner_john_j_1904.lod3.glb: 6377.5 KB, 6893 tris, 14 draws, 56 joints, 0 morphs, load 204.8/199.4 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:00.3546573Z ok   assets/humans/lady_1812.lod0.glb: 8476.2 KB, 41078 tris, 11 draws, 56 joints, 3 morphs, load 156.5/184.2 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.3624654Z ok   assets/humans/lady_1812.lod1.glb: 7767.2 KB, 25013 tris, 11 draws, 56 joints, 3 morphs, load 121.2/135.1 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.3717994Z ok   assets/humans/lady_1812.lod2.glb: 7158.0 KB, 12377 tris, 11 draws, 56 joints, 0 morphs, load 174.3/143.5 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.3894947Z ok   assets/humans/lady_1812.lod3.glb: 6898.7 KB, 6037 tris, 11 draws, 56 joints, 0 morphs, load 185/183 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.3955927Z ok   assets/humans/mahoney_patrick_1835.lod0.glb: 8974.8 KB, 46212 tris, 12 draws, 56 joints, 3 morphs, load 211.3/227.1 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.4036943Z ok   assets/humans/mahoney_patrick_1835.lod1.glb: 8118.0 KB, 28094 tris, 12 draws, 56 joints, 3 morphs, load 182.8/211.1 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:00.4106967Z ok   assets/humans/mahoney_patrick_1835.lod2.glb: 7413.6 KB, 13811 tris, 12 draws, 56 joints, 0 morphs, load 204.8/183.5 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.4172550Z ok   assets/humans/mahoney_patrick_1835.lod3.glb: 7099.3 KB, 6652 tris, 12 draws, 56 joints, 0 morphs, load 193.8/192.1 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.4316038Z ok   assets/humans/nelson_charles_1904_coachman.lod0.glb: 8880.6 KB, 51106 tris, 14 draws, 56 joints, 3 morphs, load 228.6/186.1 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.4393234Z ok   assets/humans/nelson_charles_1904_coachman.lod1.glb: 7793.5 KB, 31028 tris, 14 draws, 56 joints, 3 morphs, load 215/209.8 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.4457710Z ok   assets/humans/nelson_charles_1904_coachman.lod2.glb: 6698.5 KB, 15179 tris, 14 draws, 56 joints, 0 morphs, load 217.1/168.4 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.4519057Z ok   assets/humans/nelson_charles_1904_coachman.lod3.glb: 6377.1 KB, 7237 tris, 14 draws, 56 joints, 0 morphs, load 202.4/193.1 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.4573410Z ok   assets/humans/nelson_christine_1904_errand.lod0.glb: 10151.3 KB, 46118 tris, 15 draws, 56 joints, 3 morphs, load 229.2/247.3 ms, frame 0.2/0.1 ms
+2026-11-27T15:48:00.4751131Z ok   assets/humans/nelson_christine_1904_errand.lod1.glb: 9451.5 KB, 29387 tris, 15 draws, 56 joints, 3 morphs, load 176.4/143.9 ms, frame 0.2/0.1 ms
+2026-11-27T15:48:00.4827045Z ok   assets/humans/nelson_christine_1904_errand.lod2.glb: 8848.1 KB, 16217 tris, 15 draws, 56 joints, 0 morphs, load 171.6/135.3 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.4905055Z ok   assets/humans/nelson_christine_1904_errand.lod3.glb: 8585.2 KB, 9617 tris, 15 draws, 56 joints, 0 morphs, load 173.3/144.6 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.4985108Z ok   assets/humans/officer_first_infantry_1812.lod0.glb: 8922.4 KB, 44879 tris, 24 draws, 56 joints, 3 morphs, load 213.9/201.7 ms, frame 0.2/0.2 ms
+2026-11-27T15:48:00.5160949Z ok   assets/humans/officer_first_infantry_1812.lod1.glb: 8114.9 KB, 27287 tris, 24 draws, 56 joints, 3 morphs, load 135.1/178.1 ms, frame 0.2/0.2 ms
+2026-11-27T15:48:00.5233746Z ok   assets/humans/officer_first_infantry_1812.lod2.glb: 7411.8 KB, 13425 tris, 24 draws, 56 joints, 0 morphs, load 134.3/186.2 ms, frame 0.2/0.2 ms
+2026-11-27T15:48:00.5302934Z ok   assets/humans/officer_first_infantry_1812.lod3.glb: 7108.1 KB, 6479 tris, 24 draws, 56 joints, 0 morphs, load 191.9/210.5 ms, frame 0.2/0.2 ms
+2026-11-27T15:48:00.5366926Z ok   assets/humans/officer_first_infantry_1812_lieutenant.lod0.glb: 8920.7 KB, 44809 tris, 24 draws, 56 joints, 3 morphs, load 206.4/175 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:00.5448224Z ok   assets/humans/officer_first_infantry_1812_lieutenant.lod1.glb: 8113.9 KB, 27246 tris, 24 draws, 56 joints, 3 morphs, load 144.6/132.6 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:00.5623602Z ok   assets/humans/officer_first_infantry_1812_lieutenant.lod2.glb: 7411.5 KB, 13403 tris, 24 draws, 56 joints, 0 morphs, load 206.5/202.5 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:00.5695674Z ok   assets/humans/officer_first_infantry_1812_lieutenant.lod3.glb: 7108.3 KB, 6475 tris, 24 draws, 56 joints, 0 morphs, load 203.5/192.2 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:00.5759634Z ok   assets/humans/peck_philip_1835.lod0.glb: 8980.5 KB, 46323 tris, 17 draws, 56 joints, 3 morphs, load 145.1/180.2 ms, frame 0.2/0.1 ms
+2026-11-27T15:48:00.5834070Z ok   assets/humans/peck_philip_1835.lod1.glb: 8149.2 KB, 28159 tris, 17 draws, 56 joints, 3 morphs, load 211.7/234.2 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.5905929Z ok   assets/humans/peck_philip_1835.lod2.glb: 7439.7 KB, 13836 tris, 17 draws, 56 joints, 0 morphs, load 199.7/179.2 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.6054359Z ok   assets/humans/peck_philip_1835.lod3.glb: 7109.8 KB, 6665 tris, 17 draws, 56 joints, 0 morphs, load 143.3/127.7 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.6117445Z ok   assets/humans/potawatomi_boy_1812.lod0.glb: 8497.1 KB, 38813 tris, 9 draws, 56 joints, 3 morphs, load 174.1/149.2 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.6190000Z ok   assets/humans/potawatomi_boy_1812.lod1.glb: 7844.9 KB, 23655 tris, 9 draws, 56 joints, 3 morphs, load 129.8/125.9 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.6259547Z ok   assets/humans/potawatomi_boy_1812.lod2.glb: 7288.9 KB, 11740 tris, 9 draws, 56 joints, 0 morphs, load 132.2/207.1 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.6326739Z ok   assets/humans/potawatomi_boy_1812.lod3.glb: 7052.1 KB, 5768 tris, 9 draws, 56 joints, 0 morphs, load 148/186.9 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.6473521Z ok   assets/humans/potawatomi_girl_1812.lod0.glb: 8378.3 KB, 39496 tris, 11 draws, 56 joints, 3 morphs, load 140.6/143.1 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.6551834Z ok   assets/humans/potawatomi_girl_1812.lod1.glb: 7717.0 KB, 24064 tris, 11 draws, 56 joints, 3 morphs, load 129.5/136.3 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.6616957Z ok   assets/humans/potawatomi_girl_1812.lod2.glb: 7142.7 KB, 11928 tris, 11 draws, 56 joints, 0 morphs, load 189.2/187.4 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.6681198Z ok   assets/humans/potawatomi_girl_1812.lod3.glb: 6898.2 KB, 5848 tris, 11 draws, 56 joints, 0 morphs, load 200.8/198.7 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.6740263Z ok   assets/humans/potawatomi_man_1812.lod0.glb: 8863.8 KB, 44047 tris, 18 draws, 56 joints, 3 morphs, load 132.9/132.7 ms, frame 0.2/0.1 ms
+2026-11-27T15:48:00.6904929Z ok   assets/humans/potawatomi_man_1812.lod1.glb: 8065.6 KB, 26791 tris, 18 draws, 56 joints, 3 morphs, load 130.5/171.8 ms, frame 0.2/0.1 ms
+2026-11-27T15:48:00.6973562Z ok   assets/humans/potawatomi_man_1812.lod2.glb: 7376.0 KB, 13198 tris, 18 draws, 56 joints, 0 morphs, load 231/139 ms, frame 0.2/0.1 ms
+2026-11-27T15:48:00.7142993Z ok   assets/humans/potawatomi_man_1812.lod3.glb: 7091.8 KB, 6392 tris, 18 draws, 56 joints, 0 morphs, load 208/193.6 ms, frame 0.2/0.1 ms
+2026-11-27T15:48:00.7205599Z ok   assets/humans/potawatomi_woman_1812.lod0.glb: 8690.8 KB, 44115 tris, 13 draws, 56 joints, 3 morphs, load 186.4/149.9 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.7309768Z ok   assets/humans/potawatomi_woman_1812.lod1.glb: 7911.2 KB, 26837 tris, 13 draws, 56 joints, 3 morphs, load 208.7/149.4 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.7406256Z ok   assets/humans/potawatomi_woman_1812.lod2.glb: 7233.1 KB, 13222 tris, 13 draws, 56 joints, 0 morphs, load 180.7/139.6 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.7493469Z ok   assets/humans/potawatomi_woman_1812.lod3.glb: 6928.8 KB, 6402 tris, 13 draws, 56 joints, 0 morphs, load 132.6/148.6 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:00.7658272Z ok   assets/humans/private_first_infantry_1812.lod0.glb: 8981.9 KB, 44914 tris, 18 draws, 56 joints, 3 morphs, load 165.6/168.4 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:00.7743205Z ok   assets/humans/private_first_infantry_1812.lod1.glb: 8147.0 KB, 27310 tris, 18 draws, 56 joints, 3 morphs, load 145.3/169.8 ms, frame 0.2/0.2 ms
+2026-11-27T15:48:00.7816791Z ok   assets/humans/private_first_infantry_1812.lod2.glb: 7428.5 KB, 13442 tris, 18 draws, 56 joints, 0 morphs, load 138.3/149.1 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.7884287Z ok   assets/humans/private_first_infantry_1812.lod3.glb: 7108.5 KB, 6489 tris, 18 draws, 56 joints, 0 morphs, load 149.7/143.1 ms, frame 0.2/0.1 ms
+2026-11-27T15:48:00.7953689Z ok   assets/humans/reynolds_mary_1904_maid.lod0.glb: 10345.5 KB, 48332 tris, 16 draws, 56 joints, 3 morphs, load 168.4/174.3 ms, frame 0.2/0.1 ms
+2026-11-27T15:48:00.8157666Z ok   assets/humans/reynolds_mary_1904_maid.lod1.glb: 9584.5 KB, 30712 tris, 16 draws, 56 joints, 3 morphs, load 240.6/220.3 ms, frame 0.2/0.1 ms
+2026-11-27T15:48:00.8250193Z ok   assets/humans/reynolds_mary_1904_maid.lod2.glb: 8908.3 KB, 16837 tris, 16 draws, 56 joints, 0 morphs, load 187.2/147.1 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.8330932Z ok   assets/humans/reynolds_mary_1904_maid.lod3.glb: 8606.4 KB, 9883 tris, 16 draws, 56 joints, 0 morphs, load 164.1/181.9 ms, frame 0.2/0.1 ms
+2026-11-27T15:48:00.8404614Z ok   assets/humans/ryan_kate_1904_cook.lod0.glb: 10205.3 KB, 47457 tris, 15 draws, 56 joints, 3 morphs, load 221/151.5 ms, frame 0.2/0.1 ms
+2026-11-27T15:48:00.8578370Z ok   assets/humans/ryan_kate_1904_cook.lod1.glb: 9510.9 KB, 30191 tris, 15 draws, 56 joints, 3 morphs, load 171.5/141.3 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.8659566Z ok   assets/humans/ryan_kate_1904_cook.lod2.glb: 8876.8 KB, 16591 tris, 15 draws, 56 joints, 0 morphs, load 189.7/228.4 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.8737634Z ok   assets/humans/ryan_kate_1904_cook.lod3.glb: 8595.6 KB, 9775 tris, 15 draws, 56 joints, 0 morphs, load 186.5/187.3 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.8816795Z ok   assets/humans/settler_1812.lod0.glb: 8763.7 KB, 44317 tris, 11 draws, 56 joints, 3 morphs, load 195.9/155.8 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:00.8975517Z ok   assets/humans/settler_1812.lod1.glb: 7990.6 KB, 26956 tris, 11 draws, 56 joints, 3 morphs, load 150.2/141.8 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.9042256Z ok   assets/humans/settler_1812.lod2.glb: 7343.8 KB, 13281 tris, 11 draws, 56 joints, 0 morphs, load 205.3/138.7 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.9108479Z ok   assets/humans/settler_1812.lod3.glb: 7071.8 KB, 6428 tris, 11 draws, 56 joints, 0 morphs, load 207.3/129.6 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.9169878Z ok   assets/humans/surgeons_mate_first_infantry_1812.lod0.glb: 8882.3 KB, 44235 tris, 22 draws, 56 joints, 3 morphs, load 150.2/139 ms, frame 0.2/0.2 ms
+2026-11-27T15:48:00.9246016Z ok   assets/humans/surgeons_mate_first_infantry_1812.lod1.glb: 8089.0 KB, 26902 tris, 22 draws, 56 joints, 3 morphs, load 225.4/224.1 ms, frame 0.2/0.1 ms
+2026-11-27T15:48:00.9404914Z ok   assets/humans/surgeons_mate_first_infantry_1812.lod2.glb: 7398.3 KB, 13244 tris, 22 draws, 56 joints, 0 morphs, load 140.4/138.4 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.9471336Z ok   assets/humans/surgeons_mate_first_infantry_1812.lod3.glb: 7101.2 KB, 6408 tris, 22 draws, 56 joints, 0 morphs, load 151.5/199.7 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.9537096Z ok   assets/humans/teen_boy_1904.lod0.glb: 8660.1 KB, 41583 tris, 11 draws, 56 joints, 3 morphs, load 173/195.4 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.9622639Z ok   assets/humans/teen_boy_1904.lod1.glb: 7925.5 KB, 25317 tris, 11 draws, 56 joints, 3 morphs, load 188.3/210.3 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.9775989Z ok   assets/humans/teen_boy_1904.lod2.glb: 7316.8 KB, 12516 tris, 11 draws, 56 joints, 0 morphs, load 131.3/124.7 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.9839028Z ok   assets/humans/teen_boy_1904.lod3.glb: 7064.5 KB, 6098 tris, 11 draws, 56 joints, 0 morphs, load 216.5/201.6 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.9900733Z ok   assets/humans/teen_girl_1904.lod0.glb: 8414.7 KB, 39577 tris, 10 draws, 56 joints, 3 morphs, load 165.6/151 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:00.9980865Z ok   assets/humans/teen_girl_1904.lod1.glb: 7733.3 KB, 24113 tris, 10 draws, 56 joints, 3 morphs, load 215.5/137.7 ms, frame 0.2/0.1 ms
+2026-11-27T15:48:01.0070938Z ok   assets/humans/teen_girl_1904.lod2.glb: 7158.2 KB, 11954 tris, 10 draws, 56 joints, 0 morphs, load 242/131 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.0237474Z ok   assets/humans/teen_girl_1904.lod3.glb: 6898.4 KB, 5858 tris, 10 draws, 56 joints, 0 morphs, load 120.1/131.2 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.0297722Z ok   assets/humans/trader_1812.lod0.glb: 9000.1 KB, 46383 tris, 20 draws, 56 joints, 3 morphs, load 210.9/151.5 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:01.0377104Z ok   assets/humans/trader_1812.lod1.glb: 8148.0 KB, 28188 tris, 20 draws, 56 joints, 3 morphs, load 149.6/148.7 ms, frame 0.2/0.2 ms
+2026-11-27T15:48:01.0449845Z ok   assets/humans/trader_1812.lod2.glb: 7439.0 KB, 13852 tris, 20 draws, 56 joints, 0 morphs, load 210.1/206.2 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:01.0518954Z ok   assets/humans/trader_1812.lod3.glb: 7112.3 KB, 6669 tris, 20 draws, 56 joints, 0 morphs, load 201.9/206.1 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:01.0670109Z ok   assets/humans/williamson_mattie_1904_cook_study.lod0.glb: 10170.6 KB, 45062 tris, 12 draws, 56 joints, 3 morphs, load 249.2/213.2 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:01.0758452Z ok   assets/humans/williamson_mattie_1904_cook_study.lod1.glb: 9470.3 KB, 28757 tris, 12 draws, 56 joints, 3 morphs, load 168.5/156.8 ms, frame 0.2/0.1 ms
+2026-11-27T15:48:01.0838090Z ok   assets/humans/williamson_mattie_1904_cook_study.lod2.glb: 8849.3 KB, 15925 tris, 12 draws, 56 joints, 0 morphs, load 190.8/154.2 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.0922468Z ok   assets/humans/williamson_mattie_1904_cook_study.lod3.glb: 8574.7 KB, 9491 tris, 12 draws, 56 joints, 0 morphs, load 216.8/192.9 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.1092108Z ok   assets/humans/woman_country_1812.lod0.glb: 8621.9 KB, 43244 tris, 13 draws, 56 joints, 3 morphs, load 151.5/168.2 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.1159797Z ok   assets/humans/woman_country_1812.lod1.glb: 7869.0 KB, 26311 tris, 13 draws, 56 joints, 3 morphs, load 202.5/215.8 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:01.1222987Z ok   assets/humans/woman_country_1812.lod2.glb: 7204.1 KB, 12979 tris, 13 draws, 56 joints, 0 morphs, load 173.5/183.7 ms, frame 0.2/0.1 ms
+2026-11-27T15:48:01.1293218Z ok   assets/humans/woman_country_1812.lod3.glb: 6915.0 KB, 6300 tris, 13 draws, 56 joints, 0 morphs, load 185.8/206.8 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.1358742Z ok   assets/humans/woman_working_1812.lod0.glb: 8632.9 KB, 43514 tris, 13 draws, 56 joints, 3 morphs, load 147.8/167.1 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:01.1546154Z ok   assets/humans/woman_working_1812.lod1.glb: 7876.1 KB, 26472 tris, 13 draws, 56 joints, 3 morphs, load 136.6/160.8 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.1617398Z ok   assets/humans/woman_working_1812.lod2.glb: 7207.7 KB, 13055 tris, 13 draws, 56 joints, 0 morphs, load 140.6/146.9 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.1681561Z ok   assets/humans/woman_working_1812.lod3.glb: 6916.7 KB, 6333 tris, 13 draws, 56 joints, 0 morphs, load 122.6/148.2 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.1740236Z ok   assets/humans/web/anonymous_working_driver_1904.lod0.glb: 4353.7 KB, 40973 tris, 9 draws, 56 joints, 3 morphs, load 126/123.2 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.1779654Z ok   assets/humans/web/anonymous_working_driver_1904.lod1.glb: 1531.2 KB, 24951 tris, 9 draws, 56 joints, 3 morphs, load 42.3/75.4 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.1796624Z ok   assets/humans/web/anonymous_working_driver_1904.lod2.glb: 606.2 KB, 12348 tris, 9 draws, 56 joints, 0 morphs, load 36.8/51.3 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.1804305Z ok   assets/humans/web/anonymous_working_driver_1904.lod3.glb: 538.6 KB, 13635 tris, 9 draws, 56 joints, 0 morphs, load 36.4/38 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.1811132Z ok   assets/humans/web/bardwell_otis_1835.lod0.glb: 4373.1 KB, 41555 tris, 9 draws, 56 joints, 3 morphs, load 134.5/182.2 ms, frame 0.2/0.1 ms
+2026-11-27T15:48:01.1943397Z ok   assets/humans/web/bardwell_otis_1835.lod1.glb: 1547.9 KB, 25301 tris, 9 draws, 56 joints, 3 morphs, load 81.9/45.2 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.1959841Z ok   assets/humans/web/bardwell_otis_1835.lod2.glb: 621.1 KB, 12509 tris, 9 draws, 56 joints, 0 morphs, load 45.2/34.9 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.1968332Z ok   assets/humans/web/bardwell_otis_1835.lod3.glb: 551.4 KB, 13679 tris, 9 draws, 56 joints, 0 morphs, load 29.9/26.8 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.1976325Z ok   assets/humans/web/billings_august_1904_stable_helper.lod0.glb: 4409.4 KB, 43486 tris, 11 draws, 56 joints, 3 morphs, load 103.3/100.1 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.2016110Z ok   assets/humans/web/billings_august_1904_stable_helper.lod1.glb: 1569.7 KB, 26458 tris, 11 draws, 56 joints, 3 morphs, load 40.5/38.3 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.2040467Z ok   assets/humans/web/billings_august_1904_stable_helper.lod2.glb: 617.9 KB, 13049 tris, 11 draws, 56 joints, 0 morphs, load 31.6/32.6 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:01.2047395Z ok   assets/humans/web/billings_august_1904_stable_helper.lod3.glb: 297.8 KB, 6329 tris, 11 draws, 56 joints, 0 morphs, load 14.8/36.4 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.2051700Z ok   assets/humans/web/c4d_fixture.lod0.glb: 108.2 KB, 3668 tris, 5 draws, 56 joints, 3 morphs, load 28.1/30.7 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.2053845Z ok   assets/humans/web/c4d_fixture.lod1.glb: 97.7 KB, 2012 tris, 5 draws, 56 joints, 3 morphs, load 15.8/14.9 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.2056569Z ok   assets/humans/web/c4d_fixture.lod2.glb: 73.6 KB, 468 tris, 5 draws, 56 joints, 0 morphs, load 32.3/26.1 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.2059087Z ok   assets/humans/web/c4d_fixture.lod3.glb: 72.5 KB, 316 tris, 5 draws, 56 joints, 0 morphs, load 14.5/14.1 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.2061141Z ok   assets/humans/web/child_boy_1812.lod0.glb: 4391.7 KB, 41299 tris, 11 draws, 56 joints, 3 morphs, load 154.4/143.3 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:01.2097894Z ok   assets/humans/web/child_boy_1812.lod1.glb: 1558.9 KB, 25148 tris, 11 draws, 56 joints, 3 morphs, load 45.9/70 ms, frame 0.2/0.1 ms
+2026-11-27T15:48:01.2113430Z ok   assets/humans/web/child_boy_1812.lod2.glb: 614.5 KB, 12435 tris, 11 draws, 56 joints, 0 morphs, load 32.7/42.4 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.2121201Z ok   assets/humans/web/child_boy_1812.lod3.glb: 300.6 KB, 6066 tris, 11 draws, 56 joints, 0 morphs, load 14.2/17.3 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:01.2124909Z ok   assets/humans/web/child_boy_1904.lod0.glb: 4376.9 KB, 40615 tris, 11 draws, 56 joints, 3 morphs, load 129.2/96 ms, frame 0.2/0.1 ms
+2026-11-27T15:48:01.2167381Z ok   assets/humans/web/child_boy_1904.lod1.glb: 1542.0 KB, 24736 tris, 11 draws, 56 joints, 3 morphs, load 64.8/40.6 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.2181929Z ok   assets/humans/web/child_boy_1904.lod2.glb: 603.8 KB, 12245 tris, 11 draws, 56 joints, 0 morphs, load 37.8/42.8 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:01.2189505Z ok   assets/humans/web/child_boy_1904.lod3.glb: 295.3 KB, 5981 tris, 11 draws, 56 joints, 0 morphs, load 19.8/22.4 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.2193833Z ok   assets/humans/web/child_girl_1812.lod0.glb: 4187.9 KB, 37050 tris, 10 draws, 56 joints, 3 morphs, load 92.8/112.9 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.2229394Z ok   assets/humans/web/child_girl_1812.lod1.glb: 1487.6 KB, 22597 tris, 10 draws, 56 joints, 3 morphs, load 63.4/44.2 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.2244208Z ok   assets/humans/web/child_girl_1812.lod2.glb: 587.7 KB, 11248 tris, 10 draws, 56 joints, 0 morphs, load 34.5/30 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.2254808Z ok   assets/humans/web/child_girl_1812.lod3.glb: 287.3 KB, 5556 tris, 10 draws, 56 joints, 0 morphs, load 15/18.9 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.2259914Z ok   assets/humans/web/child_girl_1904.lod0.glb: 4227.7 KB, 39908 tris, 10 draws, 56 joints, 3 morphs, load 97.5/106.2 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.2392481Z ok   assets/humans/web/child_girl_1904.lod1.glb: 1507.5 KB, 24313 tris, 10 draws, 56 joints, 3 morphs, load 51.3/40.5 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.2408082Z ok   assets/humans/web/child_girl_1904.lod2.glb: 599.0 KB, 12046 tris, 10 draws, 56 joints, 0 morphs, load 29.4/37.6 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.2414279Z ok   assets/humans/web/child_girl_1904.lod3.glb: 293.2 KB, 5898 tris, 10 draws, 56 joints, 0 morphs, load 21.7/21.7 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.2419122Z ok   assets/humans/web/child_toddler_1812.lod0.glb: 4295.3 KB, 35484 tris, 8 draws, 56 joints, 3 morphs, load 127.2/94.3 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.2457795Z ok   assets/humans/web/child_toddler_1812.lod1.glb: 1497.6 KB, 21659 tris, 8 draws, 56 joints, 3 morphs, load 48.4/38.1 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.2470800Z ok   assets/humans/web/child_toddler_1812.lod2.glb: 580.3 KB, 10808 tris, 8 draws, 56 joints, 0 morphs, load 40/32.8 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.2479910Z ok   assets/humans/web/child_toddler_1812.lod3.glb: 280.4 KB, 5369 tris, 8 draws, 56 joints, 0 morphs, load 19.7/34.9 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.2484415Z ok   assets/humans/web/child_toddler_1904.lod0.glb: 4364.9 KB, 39675 tris, 10 draws, 56 joints, 3 morphs, load 123/111 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.2525984Z ok   assets/humans/web/child_toddler_1904.lod1.glb: 1545.0 KB, 24171 tris, 10 draws, 56 joints, 3 morphs, load 42.4/39.3 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:01.2542757Z ok   assets/humans/web/child_toddler_1904.lod2.glb: 609.3 KB, 11980 tris, 10 draws, 56 joints, 0 morphs, load 58.8/41.3 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.2550172Z ok   assets/humans/web/child_toddler_1904.lod3.glb: 298.2 KB, 5870 tris, 10 draws, 56 joints, 0 morphs, load 23.8/19.1 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.2554736Z ok   assets/humans/web/engage_1812.lod0.glb: 4358.8 KB, 41661 tris, 11 draws, 56 joints, 3 morphs, load 101.5/100 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.2598259Z ok   assets/humans/web/engage_1812.lod1.glb: 1537.6 KB, 25362 tris, 11 draws, 56 joints, 3 morphs, load 58.9/38.8 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.2615981Z ok   assets/humans/web/engage_1812.lod2.glb: 599.8 KB, 12538 tris, 11 draws, 56 joints, 0 morphs, load 36.4/43.4 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.2625877Z ok   assets/humans/web/engage_1812.lod3.glb: 290.4 KB, 6107 tris, 11 draws, 56 joints, 0 morphs, load 18.2/29 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.2630700Z ok   assets/humans/web/flynn_mary_1835_dress_study.lod0.glb: 4358.6 KB, 40170 tris, 10 draws, 56 joints, 3 morphs, load 105.6/108.2 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.2677814Z ok   assets/humans/web/flynn_mary_1835_dress_study.lod1.glb: 1543.1 KB, 24615 tris, 10 draws, 56 joints, 3 morphs, load 65.5/42 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.2695158Z ok   assets/humans/web/flynn_mary_1835_dress_study.lod2.glb: 620.6 KB, 12381 tris, 10 draws, 56 joints, 0 morphs, load 37.6/31.3 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.2702708Z ok   assets/humans/web/flynn_mary_1835_dress_study.lod3.glb: 312.9 KB, 6247 tris, 10 draws, 56 joints, 0 morphs, load 17.3/22.1 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.2708084Z ok   assets/humans/web/glessner_frances_m_1904.lod0.glb: 6963.9 KB, 49918 tris, 14 draws, 56 joints, 3 morphs, load 168.4/159.2 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:01.2883073Z ok   assets/humans/web/glessner_frances_m_1904.lod1.glb: 2303.5 KB, 31668 tris, 14 draws, 56 joints, 3 morphs, load 51.3/74.9 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.2912159Z ok   assets/humans/web/glessner_frances_m_1904.lod2.glb: 828.7 KB, 17284 tris, 14 draws, 56 joints, 0 morphs, load 48.4/27.4 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.2922553Z ok   assets/humans/web/glessner_frances_m_1904.lod3.glb: 384.9 KB, 10071 tris, 14 draws, 56 joints, 0 morphs, load 27.1/20.9 ms, frame 0.2/0.2 ms
+2026-11-27T15:48:01.2928410Z ok   assets/humans/web/glessner_john_j_1904.lod0.glb: 4525.7 KB, 48229 tris, 14 draws, 56 joints, 3 morphs, load 122.4/131.1 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:01.2966980Z ok   assets/humans/web/glessner_john_j_1904.lod1.glb: 1646.4 KB, 29301 tris, 14 draws, 56 joints, 3 morphs, load 87.3/57.9 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.2983376Z ok   assets/humans/web/glessner_john_j_1904.lod2.glb: 657.9 KB, 14373 tris, 14 draws, 56 joints, 0 morphs, load 21.2/34.2 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.2997942Z ok   assets/humans/web/glessner_john_j_1904.lod3.glb: 320.4 KB, 6893 tris, 14 draws, 56 joints, 0 morphs, load 30.8/18.5 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.3051399Z ok   assets/humans/web/lady_1812.lod0.glb: 4229.8 KB, 41078 tris, 11 draws, 56 joints, 3 morphs, load 119.8/126.9 ms, frame 0.2/0.1 ms
+2026-11-27T15:48:01.3156788Z ok   assets/humans/web/lady_1812.lod1.glb: 1511.5 KB, 25013 tris, 11 draws, 56 joints, 3 morphs, load 61.9/51.9 ms, frame 0.2/0.1 ms
+2026-11-27T15:48:01.3176999Z ok   assets/humans/web/lady_1812.lod2.glb: 598.6 KB, 12377 tris, 11 draws, 56 joints, 0 morphs, load 48.7/35.5 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:01.3184591Z ok   assets/humans/web/lady_1812.lod3.glb: 293.9 KB, 6037 tris, 11 draws, 56 joints, 0 morphs, load 39.1/32.1 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.3189257Z ok   assets/humans/web/mahoney_patrick_1835.lod0.glb: 4466.9 KB, 46212 tris, 12 draws, 56 joints, 3 morphs, load 172.9/140 ms, frame 0.2/0.1 ms
+2026-11-27T15:48:01.3243915Z ok   assets/humans/web/mahoney_patrick_1835.lod1.glb: 1606.6 KB, 28094 tris, 12 draws, 56 joints, 3 morphs, load 46.3/41.6 ms, frame 0.2/0.1 ms
+2026-11-27T15:48:01.3268011Z ok   assets/humans/web/mahoney_patrick_1835.lod2.glb: 637.9 KB, 13811 tris, 12 draws, 56 joints, 0 morphs, load 48.1/28.1 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.3277097Z ok   assets/humans/web/mahoney_patrick_1835.lod3.glb: 308.3 KB, 6652 tris, 12 draws, 56 joints, 0 morphs, load 36.9/20.2 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.3282497Z ok   assets/humans/web/nelson_charles_1904_coachman.lod0.glb: 4561.1 KB, 51106 tris, 14 draws, 56 joints, 3 morphs, load 121.6/126.9 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:01.3337721Z ok   assets/humans/web/nelson_charles_1904_coachman.lod1.glb: 1673.9 KB, 31028 tris, 14 draws, 56 joints, 3 morphs, load 48.2/75.4 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.3358760Z ok   assets/humans/web/nelson_charles_1904_coachman.lod2.glb: 651.9 KB, 15179 tris, 14 draws, 56 joints, 0 morphs, load 35.4/28.9 ms, frame 0.2/0.1 ms
+2026-11-27T15:48:01.3368862Z ok   assets/humans/web/nelson_charles_1904_coachman.lod3.glb: 320.8 KB, 7237 tris, 14 draws, 56 joints, 0 morphs, load 35/20.8 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:01.3375817Z ok   assets/humans/web/nelson_christine_1904_errand.lod0.glb: 6908.0 KB, 46118 tris, 15 draws, 56 joints, 3 morphs, load 155.7/150 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.3469856Z ok   assets/humans/web/nelson_christine_1904_errand.lod1.glb: 2261.4 KB, 29387 tris, 15 draws, 56 joints, 3 morphs, load 57/63.9 ms, frame 0.2/0.2 ms
+2026-11-27T15:48:01.3503049Z ok   assets/humans/web/nelson_christine_1904_errand.lod2.glb: 812.9 KB, 16217 tris, 15 draws, 56 joints, 0 morphs, load 62.7/59.7 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:01.3515701Z ok   assets/humans/web/nelson_christine_1904_errand.lod3.glb: 382.5 KB, 9617 tris, 15 draws, 56 joints, 0 morphs, load 26.6/24.9 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.3522584Z ok   assets/humans/web/officer_first_infantry_1812.lod0.glb: 4485.5 KB, 44879 tris, 24 draws, 56 joints, 3 morphs, load 166.3/112 ms, frame 0.2/0.2 ms
+2026-11-27T15:48:01.3655609Z ok   assets/humans/web/officer_first_infantry_1812.lod1.glb: 1643.2 KB, 27287 tris, 24 draws, 56 joints, 3 morphs, load 54.9/60.5 ms, frame 0.2/0.2 ms
+2026-11-27T15:48:01.3672750Z ok   assets/humans/web/officer_first_infantry_1812.lod2.glb: 680.9 KB, 13425 tris, 24 draws, 56 joints, 0 morphs, load 31/40.3 ms, frame 0.2/0.2 ms
+2026-11-27T15:48:01.3680898Z ok   assets/humans/web/officer_first_infantry_1812.lod3.glb: 357.7 KB, 6479 tris, 24 draws, 56 joints, 0 morphs, load 38.8/24.7 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.3684799Z ok   assets/humans/web/officer_first_infantry_1812_lieutenant.lod0.glb: 4485.7 KB, 44809 tris, 24 draws, 56 joints, 3 morphs, load 99.1/112 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:01.3727564Z ok   assets/humans/web/officer_first_infantry_1812_lieutenant.lod1.glb: 1643.5 KB, 27246 tris, 24 draws, 56 joints, 3 morphs, load 37/54.4 ms, frame 0.2/0.2 ms
+2026-11-27T15:48:01.3745203Z ok   assets/humans/web/officer_first_infantry_1812_lieutenant.lod2.glb: 681.3 KB, 13403 tris, 24 draws, 56 joints, 0 morphs, load 40.3/57.1 ms, frame 0.2/0.3 ms
+2026-11-27T15:48:01.3752146Z ok   assets/humans/web/officer_first_infantry_1812_lieutenant.lod3.glb: 358.2 KB, 6475 tris, 24 draws, 56 joints, 0 morphs, load 22.5/27.5 ms, frame 0.2/0.2 ms
+2026-11-27T15:48:01.3757912Z ok   assets/humans/web/peck_philip_1835.lod0.glb: 4481.4 KB, 46323 tris, 17 draws, 56 joints, 3 morphs, load 108.1/99.9 ms, frame 0.2/0.2 ms
+2026-11-27T15:48:01.3802735Z ok   assets/humans/web/peck_philip_1835.lod1.glb: 1632.5 KB, 28159 tris, 17 draws, 56 joints, 3 morphs, load 65.5/74.8 ms, frame 0.2/0.2 ms
+2026-11-27T15:48:01.3824941Z ok   assets/humans/web/peck_philip_1835.lod2.glb: 663.4 KB, 13836 tris, 17 draws, 56 joints, 0 morphs, load 57/34.5 ms, frame 0.2/0.2 ms
+2026-11-27T15:48:01.3832746Z ok   assets/humans/web/peck_philip_1835.lod3.glb: 329.9 KB, 6665 tris, 17 draws, 56 joints, 0 morphs, load 33.6/21.5 ms, frame 0.2/0.2 ms
+2026-11-27T15:48:01.3837938Z ok   assets/humans/web/potawatomi_boy_1812.lod0.glb: 4329.0 KB, 38813 tris, 9 draws, 56 joints, 3 morphs, load 166.4/104.8 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.3877421Z ok   assets/humans/web/potawatomi_boy_1812.lod1.glb: 1514.6 KB, 23655 tris, 9 draws, 56 joints, 3 morphs, load 36/40.5 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.3892111Z ok   assets/humans/web/potawatomi_boy_1812.lod2.glb: 588.5 KB, 11740 tris, 9 draws, 56 joints, 0 morphs, load 48.7/42.1 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.3898988Z ok   assets/humans/web/potawatomi_boy_1812.lod3.glb: 284.3 KB, 5768 tris, 9 draws, 56 joints, 0 morphs, load 31.4/24.7 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.3903054Z ok   assets/humans/web/potawatomi_girl_1812.lod0.glb: 4220.7 KB, 39496 tris, 11 draws, 56 joints, 3 morphs, load 137.4/103.3 ms, frame 0.2/0.2 ms
+2026-11-27T15:48:01.3940183Z ok   assets/humans/web/potawatomi_girl_1812.lod1.glb: 1505.2 KB, 24064 tris, 11 draws, 56 joints, 3 morphs, load 45.6/50.4 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.3956581Z ok   assets/humans/web/potawatomi_girl_1812.lod2.glb: 598.1 KB, 11928 tris, 11 draws, 56 joints, 0 morphs, load 31/24.5 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.3964330Z ok   assets/humans/web/potawatomi_girl_1812.lod3.glb: 296.4 KB, 5848 tris, 11 draws, 56 joints, 0 morphs, load 21.4/28.2 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.3968707Z ok   assets/humans/web/potawatomi_man_1812.lod0.glb: 4447.8 KB, 44047 tris, 18 draws, 56 joints, 3 morphs, load 117.1/106.8 ms, frame 0.2/0.2 ms
+2026-11-27T15:48:01.4109405Z ok   assets/humans/web/potawatomi_man_1812.lod1.glb: 1612.6 KB, 26791 tris, 18 draws, 56 joints, 3 morphs, load 46.6/58 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:01.4129761Z ok   assets/humans/web/potawatomi_man_1812.lod2.glb: 651.9 KB, 13198 tris, 18 draws, 56 joints, 0 morphs, load 59.7/28.3 ms, frame 0.2/0.1 ms
+2026-11-27T15:48:01.4143795Z ok   assets/humans/web/potawatomi_man_1812.lod3.glb: 329.0 KB, 6392 tris, 18 draws, 56 joints, 0 morphs, load 27.5/14.1 ms, frame 0.2/0.1 ms
+2026-11-27T15:48:01.4148309Z ok   assets/humans/web/potawatomi_woman_1812.lod0.glb: 4299.2 KB, 44115 tris, 13 draws, 56 joints, 3 morphs, load 120.8/91.3 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.4187206Z ok   assets/humans/web/potawatomi_woman_1812.lod1.glb: 1561.6 KB, 26837 tris, 13 draws, 56 joints, 3 morphs, load 74.2/52.2 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:01.4206629Z ok   assets/humans/web/potawatomi_woman_1812.lod2.glb: 629.3 KB, 13222 tris, 13 draws, 56 joints, 0 morphs, load 38.2/35.9 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.4213432Z ok   assets/humans/web/potawatomi_woman_1812.lod3.glb: 311.9 KB, 6402 tris, 13 draws, 56 joints, 0 morphs, load 24/26.3 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.4217636Z ok   assets/humans/web/private_first_infantry_1812.lod0.glb: 4482.1 KB, 44914 tris, 18 draws, 56 joints, 3 morphs, load 98.9/163.7 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.4255530Z ok   assets/humans/web/private_first_infantry_1812.lod1.glb: 1633.6 KB, 27310 tris, 18 draws, 56 joints, 3 morphs, load 43.3/45 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.4272776Z ok   assets/humans/web/private_first_infantry_1812.lod2.glb: 664.5 KB, 13442 tris, 18 draws, 56 joints, 0 morphs, load 45.1/42.3 ms, frame 0.2/0.1 ms
+2026-11-27T15:48:01.4280571Z ok   assets/humans/web/private_first_infantry_1812.lod3.glb: 333.6 KB, 6489 tris, 18 draws, 56 joints, 0 morphs, load 34.1/19.1 ms, frame 0.2/0.1 ms
+2026-11-27T15:48:01.4285849Z ok   assets/humans/web/reynolds_mary_1904_maid.lod0.glb: 6968.1 KB, 48332 tris, 16 draws, 56 joints, 3 morphs, load 184.6/146.3 ms, frame 0.2/0.1 ms
+2026-11-27T15:48:01.4350798Z ok   assets/humans/web/reynolds_mary_1904_maid.lod1.glb: 2299.4 KB, 30712 tris, 16 draws, 56 joints, 3 morphs, load 75.7/87.7 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.4372567Z ok   assets/humans/web/reynolds_mary_1904_maid.lod2.glb: 836.2 KB, 16837 tris, 16 draws, 56 joints, 0 morphs, load 79.4/30.2 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.4382129Z ok   assets/humans/web/reynolds_mary_1904_maid.lod3.glb: 392.9 KB, 9883 tris, 16 draws, 56 joints, 0 morphs, load 43.6/31.3 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.4386944Z ok   assets/humans/web/ryan_kate_1904_cook.lod0.glb: 6924.2 KB, 47457 tris, 15 draws, 56 joints, 3 morphs, load 234.9/191.6 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:01.4533307Z ok   assets/humans/web/ryan_kate_1904_cook.lod1.glb: 2269.2 KB, 30191 tris, 15 draws, 56 joints, 3 morphs, load 69.3/79.1 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:01.4554522Z ok   assets/humans/web/ryan_kate_1904_cook.lod2.glb: 822.4 KB, 16591 tris, 15 draws, 56 joints, 0 morphs, load 54.4/32.3 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.4563673Z ok   assets/humans/web/ryan_kate_1904_cook.lod3.glb: 385.7 KB, 9775 tris, 15 draws, 56 joints, 0 morphs, load 26.7/43.8 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.4569341Z ok   assets/humans/web/settler_1812.lod0.glb: 4409.9 KB, 44317 tris, 11 draws, 56 joints, 3 morphs, load 123.5/131.3 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.4610137Z ok   assets/humans/web/settler_1812.lod1.glb: 1567.9 KB, 26956 tris, 11 draws, 56 joints, 3 morphs, load 44.7/55.7 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:01.4627442Z ok   assets/humans/web/settler_1812.lod2.glb: 613.3 KB, 13281 tris, 11 draws, 56 joints, 0 morphs, load 56.4/37.6 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.4634590Z ok   assets/humans/web/settler_1812.lod3.glb: 295.6 KB, 6428 tris, 11 draws, 56 joints, 0 morphs, load 14.1/19.4 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.4640340Z ok   assets/humans/web/surgeons_mate_first_infantry_1812.lod0.glb: 4468.3 KB, 44235 tris, 22 draws, 56 joints, 3 morphs, load 146.5/110.7 ms, frame 0.2/0.2 ms
+2026-11-27T15:48:01.4679512Z ok   assets/humans/web/surgeons_mate_first_infantry_1812.lod1.glb: 1629.3 KB, 26902 tris, 22 draws, 56 joints, 3 morphs, load 74.9/55.6 ms, frame 0.2/0.2 ms
+2026-11-27T15:48:01.4696309Z ok   assets/humans/web/surgeons_mate_first_infantry_1812.lod2.glb: 670.3 KB, 13244 tris, 22 draws, 56 joints, 0 morphs, load 33.5/43.2 ms, frame 0.2/0.2 ms
+2026-11-27T15:48:01.4704535Z ok   assets/humans/web/surgeons_mate_first_infantry_1812.lod3.glb: 348.8 KB, 6408 tris, 22 draws, 56 joints, 0 morphs, load 22.2/27.7 ms, frame 0.2/0.2 ms
+2026-11-27T15:48:01.4709200Z ok   assets/humans/web/teen_boy_1904.lod0.glb: 4382.7 KB, 41583 tris, 11 draws, 56 joints, 3 morphs, load 107.5/127 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.4748805Z ok   assets/humans/web/teen_boy_1904.lod1.glb: 1545.7 KB, 25317 tris, 11 draws, 56 joints, 3 morphs, load 59.7/41.8 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.4851164Z ok   assets/humans/web/teen_boy_1904.lod2.glb: 606.8 KB, 12516 tris, 11 draws, 56 joints, 0 morphs, load 29.7/35.7 ms, frame 0.2/0.1 ms
+2026-11-27T15:48:01.4859340Z ok   assets/humans/web/teen_boy_1904.lod3.glb: 296.7 KB, 6098 tris, 11 draws, 56 joints, 0 morphs, load 41.5/18.2 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.4864566Z ok   assets/humans/web/teen_girl_1904.lod0.glb: 4220.0 KB, 39577 tris, 10 draws, 56 joints, 3 morphs, load 99.7/124.4 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.4901272Z ok   assets/humans/web/teen_girl_1904.lod1.glb: 1500.4 KB, 24113 tris, 10 draws, 56 joints, 3 morphs, load 50.6/34.4 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.4919027Z ok   assets/humans/web/teen_girl_1904.lod2.glb: 595.8 KB, 11954 tris, 10 draws, 56 joints, 0 morphs, load 31.9/38.6 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.4925723Z ok   assets/humans/web/teen_girl_1904.lod3.glb: 290.0 KB, 5858 tris, 10 draws, 56 joints, 0 morphs, load 18.1/14.9 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.4929867Z ok   assets/humans/web/trader_1812.lod0.glb: 4495.5 KB, 46383 tris, 20 draws, 56 joints, 3 morphs, load 110.7/115.5 ms, frame 0.2/0.1 ms
+2026-11-27T15:48:01.4973322Z ok   assets/humans/web/trader_1812.lod1.glb: 1641.8 KB, 28188 tris, 20 draws, 56 joints, 3 morphs, load 68.5/39.8 ms, frame 0.2/0.2 ms
+2026-11-27T15:48:01.4990914Z ok   assets/humans/web/trader_1812.lod2.glb: 672.4 KB, 13852 tris, 20 draws, 56 joints, 0 morphs, load 50.5/30.6 ms, frame 0.2/0.2 ms
+2026-11-27T15:48:01.5001578Z ok   assets/humans/web/trader_1812.lod3.glb: 341.6 KB, 6669 tris, 20 draws, 56 joints, 0 morphs, load 36/18.1 ms, frame 0.2/0.2 ms
+2026-11-27T15:48:01.5045735Z ok   assets/humans/web/williamson_mattie_1904_cook_study.lod0.glb: 6908.7 KB, 45062 tris, 12 draws, 56 joints, 3 morphs, load 175.8/158.7 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.5144778Z ok   assets/humans/web/williamson_mattie_1904_cook_study.lod1.glb: 2251.2 KB, 28757 tris, 12 draws, 56 joints, 3 morphs, load 62.5/65.3 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.5165746Z ok   assets/humans/web/williamson_mattie_1904_cook_study.lod2.glb: 801.1 KB, 15925 tris, 12 draws, 56 joints, 0 morphs, load 40.6/52.6 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.5174843Z ok   assets/humans/web/williamson_mattie_1904_cook_study.lod3.glb: 365.3 KB, 9491 tris, 12 draws, 56 joints, 0 morphs, load 24.9/30.3 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:01.5179229Z ok   assets/humans/web/woman_country_1812.lod0.glb: 4272.9 KB, 43244 tris, 13 draws, 56 joints, 3 morphs, load 125.1/135.2 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.5216590Z ok   assets/humans/web/woman_country_1812.lod1.glb: 1547.4 KB, 26311 tris, 13 draws, 56 joints, 3 morphs, load 38.1/54.9 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:01.5232874Z ok   assets/humans/web/woman_country_1812.lod2.glb: 620.3 KB, 12979 tris, 13 draws, 56 joints, 0 morphs, load 79.2/39.9 ms, frame 0.2/0.1 ms
+2026-11-27T15:48:01.5241916Z ok   assets/humans/web/woman_country_1812.lod3.glb: 306.8 KB, 6300 tris, 13 draws, 56 joints, 0 morphs, load 25.5/31.7 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.5246714Z ok   assets/humans/web/woman_working_1812.lod0.glb: 4275.5 KB, 43514 tris, 13 draws, 56 joints, 3 morphs, load 140.4/95.1 ms, frame 0.1/0.2 ms
+2026-11-27T15:48:01.5285868Z ok   assets/humans/web/woman_working_1812.lod1.glb: 1550.5 KB, 26472 tris, 13 draws, 56 joints, 3 morphs, load 39.2/57.2 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.5302872Z ok   assets/humans/web/woman_working_1812.lod2.glb: 622.0 KB, 13055 tris, 13 draws, 56 joints, 0 morphs, load 28.7/47.1 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.5309876Z ok   assets/humans/web/woman_working_1812.lod3.glb: 307.5 KB, 6333 tris, 13 draws, 56 joints, 0 morphs, load 23/22.9 ms, frame 0.1/0.1 ms
+2026-11-27T15:48:01.5427057Z 288 human GLB(s) opened at 1280x800 and 390x780; OK
+2026-11-27T15:48:35.8317060Z ok   desktop: the person record resolves from sidecars/1835/people.json
+2026-11-27T15:48:35.8317992Z ok   desktop: chooseHumanLod: bands by distance, clamped to the tier, -1 beyond DRAW_M
+2026-11-27T15:48:35.8339186Z ok   desktop: chooseHumanLod: a figure on a band edge holds its LOD (hysteresis)
+2026-11-27T15:48:35.8341753Z ok   desktop: chooseHumanLod: policy fixed draws one LOD at every distance, within the tier
+2026-11-27T15:48:35.8342579Z ok   desktop: loads by person id at lod0 when near
+2026-11-27T15:48:35.8343047Z ok   desktop: a safe clone: one set of bones of its own, under the clone, the whole contract skeleton
+2026-11-27T15:48:35.8343572Z ok   desktop: the pick proxy stands the figure's measured height (1.70 m rest)
+2026-11-27T15:48:35.8344047Z ok   desktop: stands on the terrain: root at the heightfield, soles within 5 cm of it
+2026-11-27T15:48:35.8345140Z ok   desktop: heading: § 2 formula, 0 deg faces grid north (-z), 90 deg faces east (+x)
+2026-11-27T15:48:35.8345819Z ok   desktop: clip idle plays (the head turns)
+2026-11-27T15:48:35.8346325Z ok   desktop: a gesture plays once from the clip library and returns to idle
+2026-11-27T15:48:35.8346752Z ok   desktop: morphs: jawOpen applies on lod0
+2026-11-27T15:48:35.8347169Z ok   desktop: the near face is alive (a blink is driven inside FACE_M)
+2026-11-27T15:48:35.8348201Z ok   desktop: walk moves the root at its stated pace (the gait's own speed for the person, eased from a standstill, × 2 s; 1.0-1.5 m/s), feet on the ground the whole way
+2026-11-27T15:48:35.8348956Z ok   desktop: clip walk plays (the calf swings)
+2026-11-27T15:48:35.8349475Z ok   desktop: the route turns the corner: heading follows the second leg (east)
+2026-11-27T15:48:35.8350103Z ok   desktop: at 30 m: lod2, the clip carried across the swap, no shadow, the face still
+2026-11-27T15:48:35.8350809Z ok   desktop: a LOD with no face degrades cleanly: setExpression applies nothing and nothing throws
+2026-11-27T15:48:35.8351492Z ok   desktop: the LOD left behind is parked, not released (a swap back reuses it)
+2026-11-27T15:48:35.8352111Z ok   desktop: at 100 m: lod3, drawn, but the mixer is not advanced (beyond ANIMATE_M)
+2026-11-27T15:48:35.8352731Z ok   desktop: beyond DRAW_M: hidden, and no per-frame work (re-examined on a timer)
+2026-11-27T15:48:35.8353275Z ok   desktop: beyond DRAW_M, every parked level is released
+2026-11-27T15:48:35.8353793Z ok   desktop: coming back near returns it to lod0, face and shadow on
+2026-11-27T15:48:35.8354265Z ok   desktop: detail tier light: lod2 even at 4 m
+2026-11-27T15:48:35.8354679Z ok   desktop: detail tier balanced: lod1 at 4 m
+2026-11-27T15:48:35.8355250Z ok   desktop: pick down the crosshair finds the person, and select opens their resident card
+2026-11-27T15:48:35.8356184Z ok   desktop: approach fires once inside radius_m (and opens the card), leave once outside
+2026-11-27T15:48:35.8356819Z ok   desktop: aimed at the building, the figure layer answers nothing and the building is hit
+2026-11-27T15:48:35.8357531Z ok   desktop: dispose: geometries and textures back to the baseline, every asset released, the group empty
+2026-11-27T15:48:35.8358292Z ok   desktop: the building GLB is untouched by the figures' disposal and still draws
+2026-11-27T15:48:35.8358856Z ok   desktop: a scene that does not list `humans`: nothing fetched, nobody drawn
+2026-11-27T15:48:35.8359398Z ok   desktop: a withheld record is kept and draws nothing
+2026-11-27T15:48:35.8359980Z ok   desktop: L1 in force: a record asking to be shown is refused, with the reason
+2026-11-27T15:48:35.8360526Z ok   desktop: a record whose person is not in the directory is refused
+2026-11-27T15:48:35.8361110Z ok   desktop: current owner policy renders a flagged person while preserving review metadata
+2026-11-27T15:48:35.8361948Z ok   desktop: a person review flag cannot be dropped by an instance
+2026-11-27T15:48:35.8362452Z ok   desktop: one person stands in a scene once
+2026-11-27T15:48:35.8363060Z ok   desktop: no human GLB is asked for by an unlisted scene or a withheld or refused record
+2026-11-27T15:48:35.8363739Z ok   desktop: with the portable path enabled, the same record stands and loads its figure
+2026-11-27T15:48:35.8364384Z ok   desktop: anonymous profile may be reused by separate instances without a shared resident identity
+2026-11-27T15:48:35.8365047Z ok   desktop: anonymous selection opens a reconstructed role card and never a resident card
+2026-11-27T15:48:35.8366331Z ok   desktop: role card explicitly denies historical identification and supplies no person links
+2026-11-27T15:48:35.8367081Z ok   desktop: anonymous duplicate instance ID is refused even though profiles may repeat
+2026-11-27T15:48:35.8367789Z ok   desktop: anonymous date-ineligible profile is refused before loading a figure
+2026-11-27T15:48:35.8368471Z ok   desktop: anonymous asset without period-qualified wardrobe acceptance is refused
+2026-11-27T15:48:35.8368977Z ok   desktop: anonymous roles cannot request resident cards
+2026-11-27T15:48:35.8369530Z ok   desktop: anonymous use requires a documented no-suitable-person fallback
+2026-11-27T15:48:35.8370132Z ok   desktop: 47 actor checks ran in 34.0 s; one near figure, update + render, median 0.5 ms
+2026-11-27T15:49:03.2946761Z ok   mobile: the person record resolves from sidecars/1835/people.json
+2026-11-27T15:49:03.2966428Z ok   mobile: chooseHumanLod: bands by distance, clamped to the tier, -1 beyond DRAW_M
+2026-11-27T15:49:03.2976912Z ok   mobile: chooseHumanLod: a figure on a band edge holds its LOD (hysteresis)
+2026-11-27T15:49:03.2977816Z ok   mobile: chooseHumanLod: policy fixed draws one LOD at every distance, within the tier
+2026-11-27T15:49:03.2978451Z ok   mobile: loads by person id at lod0 when near
+2026-11-27T15:49:03.2979157Z ok   mobile: a safe clone: one set of bones of its own, under the clone, the whole contract skeleton
+2026-11-27T15:49:03.2979926Z ok   mobile: the pick proxy stands the figure's measured height (1.70 m rest)
+2026-11-27T15:49:03.2980636Z ok   mobile: stands on the terrain: root at the heightfield, soles within 5 cm of it
+2026-11-27T15:49:03.2981705Z ok   mobile: heading: § 2 formula, 0 deg faces grid north (-z), 90 deg faces east (+x)
+2026-11-27T15:49:03.2982282Z ok   mobile: clip idle plays (the head turns)
+2026-11-27T15:49:03.2982854Z ok   mobile: a gesture plays once from the clip library and returns to idle
+2026-11-27T15:49:03.2983401Z ok   mobile: morphs: jawOpen applies on lod0
+2026-11-27T15:49:03.2983949Z ok   mobile: the near face is alive (a blink is driven inside FACE_M)
+2026-11-27T15:49:03.2985381Z ok   mobile: walk moves the root at its stated pace (the gait's own speed for the person, eased from a standstill, × 2 s; 1.0-1.5 m/s), feet on the ground the whole way
+2026-11-27T15:49:03.2986192Z ok   mobile: clip walk plays (the calf swings)
+2026-11-27T15:49:03.2986773Z ok   mobile: the route turns the corner: heading follows the second leg (east)
+2026-11-27T15:49:03.2987638Z ok   mobile: at 30 m: lod2, the clip carried across the swap, no shadow, the face still
+2026-11-27T15:49:03.2988443Z ok   mobile: a LOD with no face degrades cleanly: setExpression applies nothing and nothing throws
+2026-11-27T15:49:03.2989192Z ok   mobile: the LOD left behind is parked, not released (a swap back reuses it)
+2026-11-27T15:49:03.2989899Z ok   mobile: at 100 m: lod3, drawn, but the mixer is not advanced (beyond ANIMATE_M)
+2026-11-27T15:49:03.2990566Z ok   mobile: beyond DRAW_M: hidden, and no per-frame work (re-examined on a timer)
+2026-11-27T15:49:03.2991137Z ok   mobile: beyond DRAW_M, every parked level is released
+2026-11-27T15:49:03.2991662Z ok   mobile: coming back near returns it to lod0, face and shadow on
+2026-11-27T15:49:03.2992156Z ok   mobile: detail tier light: lod2 even at 4 m
+2026-11-27T15:49:03.2992572Z ok   mobile: detail tier balanced: lod1 at 4 m
+2026-11-27T15:49:03.2993485Z ok   mobile: pick down the crosshair finds the person, and select opens their resident card
+2026-11-27T15:49:03.2994223Z ok   mobile: approach fires once inside radius_m (and opens the card), leave once outside
+2026-11-27T15:49:03.2994953Z ok   mobile: aimed at the building, the figure layer answers nothing and the building is hit
+2026-11-27T15:49:03.2996085Z ok   mobile: dispose: geometries and textures back to the baseline, every asset released, the group empty
+2026-11-27T15:49:03.2996848Z ok   mobile: the building GLB is untouched by the figures' disposal and still draws
+2026-11-27T15:49:03.2997491Z ok   mobile: a scene that does not list `humans`: nothing fetched, nobody drawn
+2026-11-27T15:49:03.2998144Z ok   mobile: a withheld record is kept and draws nothing
+2026-11-27T15:49:03.2998703Z ok   mobile: L1 in force: a record asking to be shown is refused, with the reason
+2026-11-27T15:49:03.2999295Z ok   mobile: a record whose person is not in the directory is refused
+2026-11-27T15:49:03.2999969Z ok   mobile: current owner policy renders a flagged person while preserving review metadata
+2026-11-27T15:49:03.3000612Z ok   mobile: a person review flag cannot be dropped by an instance
+2026-11-27T15:49:03.3001073Z ok   mobile: one person stands in a scene once
+2026-11-27T15:49:03.3001640Z ok   mobile: no human GLB is asked for by an unlisted scene or a withheld or refused record
+2026-11-27T15:49:03.3002365Z ok   mobile: with the portable path enabled, the same record stands and loads its figure
+2026-11-27T15:49:03.3003133Z ok   mobile: anonymous profile may be reused by separate instances without a shared resident identity
+2026-11-27T15:49:03.3003934Z ok   mobile: anonymous selection opens a reconstructed role card and never a resident card
+2026-11-27T15:49:03.3004713Z ok   mobile: role card explicitly denies historical identification and supplies no person links
+2026-11-27T15:49:03.3005628Z ok   mobile: anonymous duplicate instance ID is refused even though profiles may repeat
+2026-11-27T15:49:03.3006352Z ok   mobile: anonymous date-ineligible profile is refused before loading a figure
+2026-11-27T15:49:03.3007044Z ok   mobile: anonymous asset without period-qualified wardrobe acceptance is refused
+2026-11-27T15:49:03.3007628Z ok   mobile: anonymous roles cannot request resident cards
+2026-11-27T15:49:03.3008189Z ok   mobile: anonymous use requires a documented no-suitable-person fallback
+2026-11-27T15:49:03.3008864Z ok   mobile: 47 actor checks ran in 24.9 s; one near figure, update + render, median 0.4 ms
+2026-11-27T15:49:05.1346219Z 
+2026-11-27T15:49:05.1346680Z human actor: OK
+2026-11-27T15:49:05.2140732Z Post job cleanup.
+2026-11-27T15:49:05.3001437Z Cache hit occurred on the primary key blender-4.5.3, not saving cache.
+2026-11-27T15:49:05.3002386Z (node:3070) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-27T15:49:05.3003125Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-27T15:49:05.3090786Z Post job cleanup.
+2026-11-27T15:49:05.4033144Z (node:3078) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-27T15:49:05.4033720Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-27T15:49:05.4153584Z Post job cleanup.
+2026-11-27T15:49:05.5082336Z (node:3086) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-27T15:49:05.5083273Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-27T15:49:05.5209005Z Post job cleanup.
+2026-11-27T15:49:05.5846484Z [command]/usr/bin/git version
+2026-11-27T15:49:05.5874925Z git version 2.56.1
+2026-11-27T15:49:05.5898767Z Temporarily overriding HOME='/home/runner/work/_temp/07511099-c4d2-4a67-8a75-78545171566d' before making global git config changes
+2026-11-27T15:49:05.5899605Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-27T15:49:05.5902201Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/chicago/chicago
+2026-11-27T15:49:05.5931745Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-27T15:49:05.5956097Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-27T15:49:05.6227046Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-27T15:49:05.6244880Z http.https://github.com/.extraheader
+2026-11-27T15:49:05.6251355Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-27T15:49:05.6275172Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-27T15:49:05.6457576Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-27T15:49:05.6479742Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-27T15:49:05.6768702Z Evaluate and set job outputs
+2026-11-27T15:49:05.6773737Z Cleaning up orphan processes
+2026-11-27T15:49:05.7076525Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/cache@v4, actions/checkout@v4, actions/setup-node@v4, actions/setup-python@v5. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+
