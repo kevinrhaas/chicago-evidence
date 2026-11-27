@@ -47,3 +47,12 @@ Both daughters’ actual People cards deliver their 480×640 period portraits at
 The initial c9b desktop stage 13 reported 155 passed, three failed, zero page errors: the first release-note read saw no entries while the later returning-visitor reload rendered the feed. `release-note-smoke-repair/` contains that transcript and the correction: the existing draw-hold helper covers only the DOM/storage feed checks, is reacquired after reload, and restores rendering in `finally`. Every assertion, readiness timeout and hit test is retained. The 15-part map and 35 smoke-input partition self-tests pass. Client renderer/data/assets tree hashes are identical before/after; only the test harness changes. The corrected local desktop stage 13 passes all 158 assertions with zero page errors (48m28s under SwiftShader). Hosted desktop and mobile stage 13 also each pass 158 assertions with zero page errors, on c728. Their decoded transcripts are in `hosted-current/`.
 
 Qualification snapshot, 2026-11-27 00:55 UTC: six of eight hosted gate parts pass, as do portable humans and the 32-check phone upload-release guard. The remaining gate parts and 28 published viewport/stage legs are queued or running. The first moving-frame attempt reached Full and Balanced measurements without an assertion failure but hit the job's 40-minute limit; its transcript is retained and that job alone is being retried. Final CI and dev-delivery receipts remain pending.
+
+## Actual app captures
+
+The owner's 2026-11-27 request asks to see the characters in the app. These four PNGs are direct canvas captures from the published 1904 town, outside house_1616_prairie, using its actual scene, lighting, garments and actor renderer. Find brought both sisters outside; their walks were paused and the camera was framed for review. The local mirror's client is byte-identical to c728. Balanced detail uses LOD 1; both actual actor person IDs and their applied photo IDs are checked in `in-app/identity-checks.json`. `page-errors.json` contains zero page errors. The single resident detail page is recorded with each view. These are local review-build captures, not a claim that the dev rollout has completed.
+
+- [Dorothy — face](in-app/dorothy-in-app-face.png)
+- [Alice May — face](in-app/alice-in-app-face.png)
+- [Dorothy in front, Alice behind, at their house](in-app/dorothy-in-app-whole.png)
+- [Alice May — full figure](in-app/alice-in-app-whole.png)
