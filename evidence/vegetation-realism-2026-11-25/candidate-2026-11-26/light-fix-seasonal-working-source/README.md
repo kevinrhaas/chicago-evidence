@@ -1,0 +1,15 @@
+# Seasonal vegetation: current Light source fix and four-season images
+
+This is the entire staged 34-path T-3748/T-3760 working source on Core `3bdf2349cf29f374833d015e91b84dab6611d636`, before either seasonal app commit. Candidate tree `48f1bb2124e3f95e9262baf10b87ce1c020722e5`; app tree `1a71391e7f5e4a116a99114de82daf72b1da9acd`. The full patch, every owned hash and a reverse proof recover the complete Core source.
+
+Light applies a single-scatter direct reflection and diffuse convolution of the actual sky/ground to rough nonmetal MeshStandard materials. It preserves the thin-leaf wrapper, cutouts, wind, texture maps, direct shadows, geometry, planting density and shadow reach. Smooth materials, metals and physical glass are excluded. Full and Balanced retain the original physical shader programs; unit checks compare the shader source and verify both leaf-hook orders, tier restoration, Confidence composition and material disposal/reuse. This is a declared artistic Light approximation, not physically exact light transport.
+
+Actual published 1871 desktop Light browser runs completed for spring, summer, fall and winter, plus night and Confidence mode. Both complete logs, source/ref snapshots, observations and paired JPEGs are retained. Every pair has identical geometry/calls and zero browser errors. Spring has sparse first foliage, summer a full crown, autumn turned leaves and winter bare branches. The probe is current reconstructed context tree `tree1871_9715`, about164m from Water Tower; it is not a wider Tower-ground or citywide crown-clearance proof. All3543 context records use the grown renderer, with zero portable context crown meshes. No planting data is removed.
+
+The before view substitutes only the former seasonal main/confidence modules, with the same current assets/data; all seasonal and1871 handoff features remain. Images contain moving foliage and are qualitative comparisons, not pixel-equality tests. Local software-rendered frame readings are diagnostic, not hardware FPS or calibrated acceptance.
+
+## Still pending at publication
+
+Fresh complete Native and exact failed-profile calibration are queued/running for this exact source. No seasonal app commit, seasonal PR or Dev merge is claimed. The former candidate's EPYC7763/4 Light result7314.6ms above7000ms remains retained in [the prior hold](../reading-fix-seasonal-calibrated-hold/); another CPU's pass does not resolve it. A private same-machine controlled probe supports this source change, but cannot qualify the real failed CPU. All actual readings, including negative and unsupported allocations, remain part of the record.
+
+Other years/viewports/tiers, flora/grounds images, final authored-head preflight, required CI, complete both-viewport published smoke and the frame/memory grid remain required. This folder does not relabel earlier-source browser or performance evidence as a new execution. Core PR2358 must actually merge before the seasonal group integrates. No production promotion or diagnostic workflow merge is authorized by this evidence.
