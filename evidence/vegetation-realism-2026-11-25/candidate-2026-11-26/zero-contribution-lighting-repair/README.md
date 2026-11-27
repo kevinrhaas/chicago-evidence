@@ -1,0 +1,15 @@
+# Pixel-identical zero-contribution leaf lighting repair
+
+The previous actual1605 calibrated EPYC7763/four-core Light failure remains retained in the sibling current-calibrated-and-seasonal-failures folder. No unchanged timing retry, limit increase, geometry/density cut, raster suppression or sample reduction is used.
+
+The candidate skips the physical direct-light function for exactly-zero incident light and for base normals facing away from the light. The latter still receive the existing shadowed leaf transmission. Clearcoat retains the original physical call because its separate normal may face the light. The sky term remains outside the direct-light wrapper. Program cache keys distinguish the changed shader.
+
+A stock local Light town_backyard A–B–A diagnostic measured7216.0 /6783.9 /7080.4ms. Both original controls are slower than the candidate by6.0% and4.2%, respectively. All three full1280×800 captures are pixel-identical, with1012277triangles and3574drawcalls on every reading. All64controlled actualWebGL cases are also pixel-identical: both lighting variants; leaf/wood masks; standard/clearcoat materials; front, back, grazing and occluded illumination; zero light, sky and point attenuation. The existing application browser checks for shadowed lighting, seven species' dimensions/coarse/bare templates, close-detail batches and dissolves pass unchanged.
+
+These are bounded local diagnostics on the reported Intel8573C/five-core machine, not a calibrated EPYC verdict or hardware FPS claim. The original timing helper, sample count2, warmup0, throttle4, viewport, assets/data, scene geometry, population and raster settings remain. The archive is independent of active publication. Only one private leaf shader differs between A and B.
+
+Actual inspected DevC53 adds the already-identical canonical jaunt repair and its official changelog fold. An ordinary rebase preserved every previous29owned file hash. The working repair then changes only the leaf shader and honest STATUS paragraph. A completely fresh local Native is running on this actualDev base plus all28feature paths before any authored repair amendment. Its eventual complete result, final committed-head preflight and fresh exact-head CI remain separate requirements.
+
+The owner-visible auxiliaryPR2382 probes the genuinely changed one-file shader override after real CPU eligibility. Workflow6e10ba01dd12eead6e23d60418ebd4b9d217a6fb checks out original1605 and verifies both original and replacement shader SHA256s before applying exactly one tracked-file diff. Its schema setup, canonical publisher, stock limits and full/balanced/light desktop gate remain. The initial workflow guard was corrected to allow its own generated host receipt; that superseded probe was retired before any timing. Duplicate workflow-only Native jobs are retired by exact owned branch/head/path, while real core validation remains mandatory. This temporary workflow must never merge.
+
+No calibrated or full-gate success is claimed here. No heap snapshot is included.

@@ -1,0 +1,50 @@
+diff --git a/chicago/4d/docs/STATUS.md b/chicago/4d/docs/STATUS.md
+index 73c49f294e..d480edb81a 100644
+--- a/chicago/4d/docs/STATUS.md
++++ b/chicago/4d/docs/STATUS.md
+@@ -1,5 +1,14 @@
+ ## T-3747 — Layered close foliage and shadowed leaf light (25 November 2026)
+ 
++The leaf shader skips direct-light evaluation only when the incident light is exactly
++zero or the base surface faces away. Backlighting still runs for the latter; clearcoat
++keeps its independent normal evaluation. Both lighting variants, masks, shadows, sky,
++point attenuation and clearcoat match the original pixels in 64 actual WebGL cases.
++A stock local Light A–B–A timing comparison was 7,216 / 6,784 / 7,080 ms, with identical
++full-scene screenshots and unchanged geometry, resolution, samples and ceilings. Those
++local timings do not waive the retained calibrated EPYC Light failure. A current-source
++calibrated pass and all final gates remain required before the Dev merge.
++
+ The 1904 seasonal capture audit caught a seated-driver metadata read through the released
+ human parser. Transport now reads the same source scene extras retained by GLTFLoader on
+ the first scene's userData, preserving its identity/date/vehicle checks. The regression
+diff --git a/chicago/4d/renderers/web/js/leaf-light.js b/chicago/4d/renderers/web/js/leaf-light.js
+index 552e50ba9b..e51537e5d4 100644
+--- a/chicago/4d/renderers/web/js/leaf-light.js
++++ b/chicago/4d/renderers/web/js/leaf-light.js
+@@ -24,8 +24,18 @@ export function patchLeafLight(material, { mask = '1.0', lowSpec = false } = {})
+ void chiLeafDirect(const in IncidentLight light, const in vec3 position,
+     const in vec3 normal, const in vec3 viewDir, const in vec3 clearcoatNormal,
+     const in PhysicalMaterial material, inout ReflectedLight reflectedLight) {
++  // Shadowed and inactive lights contribute exactly zero, including transmission.
++  if (all(equal(light.color, vec3(0.0)))) return;
++  float chiCos = dot(normal, light.direction);
++#ifdef USE_CLEARCOAT
++  // The clearcoat normal may face the light while the base normal faces away.
+   RE_Direct_Physical(light, position, normal, viewDir, clearcoatNormal, material, reflectedLight);
+-  float chiBack = max(-dot(normal, light.direction), 0.0);
++#else
++  if (chiCos > 0.0) {
++    RE_Direct_Physical(light, position, normal, viewDir, clearcoatNormal, material, reflectedLight);
++  }
++#endif
++  float chiBack = max(-chiCos, 0.0);
+   ${lowSpec ? 'float chiTransmit = 0.16;' : `
+   float chiForward = max(dot(viewDir, -light.direction), 0.0);
+   float chiTransmit = 0.08 + 0.20 * chiForward * chiForward;`}
+@@ -46,5 +56,5 @@ float chiLeafFill = 1.0;
+ reflectedLight.indirectDiffuse += diffuseColor.rgb * (uLeafSky * chiLeafFill * (${mask}));
+ `);
+   };
+-  material.customProgramCacheKey = () => `${key}|leaf-light-3747-${mask}-${lowSpec}`;
++  material.customProgramCacheKey = () => `${key}|leaf-light-3747-zero-light-${mask}-${lowSpec}`;
+ }
