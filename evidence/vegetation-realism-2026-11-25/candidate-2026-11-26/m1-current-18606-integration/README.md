@@ -1,0 +1,9 @@
+# Current core integration and inherited jaunt repair
+
+PR #2358 candidate `1605dcbd4b58bedf98084a16d4b32d95a59bd20e` on inspected Dev `18606dcba1357bdb5d2b6e4bb6fbf556b1ce5fa6`.
+
+The original whole local Native gate passed on all 28 frozen authored feature paths before the authored commit. The original 16 logs and all32 positive residue qualification remain in sibling `m1-final-driver-metadata-integration`. This is ordinary subsequent upstream integration, not a claim of a fresh whole local gate on the later base. Every authored runtime, test, fixture and tooling code byte remains identical. Complete incoming clothing, coach houses, the Tucker/Smith building, actor entrances/inside data and upstream deletions remain. Canonical owners compose metadata, both ledger histories and the exact own registration delta, with a reverse proof back to byte-identical current upstream.
+
+PR #2379 left a stale generated1904 jaunt. Its initial check failure is retained here. The unmodified compiler runs independently on current feature inputs and exact upstream Git text inputs; all108 output bytes agree. The single additional changed sidecar is consequently an upstream-derived output repair. The original28 authored feature paths have no new feature-code exception. Fourteen architecture/metadata owners pass on this integration; the two cloth/fabric checks were already green and reuse only explicitly proven unchanged scopes. Final committed-head PR preflight passed.
+
+All seven fresh exact-head CI workflows, including whole Native, both published viewport crawls and standard frame/memory, remain required. The calibrated EPYC desktop Light7213.1ms reading above7000ms remains open; the subsequent uncalibrated Intel repeat did not clear it. No source, assertion, sample count, ceiling, scene density or measured raster reduction was made to pass timing. No heap snapshot is included. This folder alone does not authorize merging.
