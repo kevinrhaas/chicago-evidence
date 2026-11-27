@@ -1,0 +1,9 @@
+# Existing wind contract: preserved failure and exact identifier repair
+
+The preceding frozen seasonal Native stopped at part11/16. Its unchanged T3586 source-wiring assertion required `chiTownGust(chiInst)`, while the new shared position/normal calculation used the same instance translation under the name `chiNormalInst`. The receipt, every attempted part, the serial timeout and its two successful subdivisions remain here. The old gate is incomplete; its successful parts do not establish whole-gate qualification and are not reused for the corrected source.
+
+The repair changes exactly three occurrences of that local GLSL name to `chiInst`. Every expression, uniform, buffer, geometry, asset, renderer setting and test assertion stays identical. The before bytes and exact feature patch are retained. The original wind test and seasonal CPU contracts pass unchanged. A new real-WebGL flora test compiles both CPU and fetch-backed shaders, verifies wind parity at times0/2.3/9 with pixel delta0, and checks folded leaves, cards and seasonal withholding.
+
+All29 other owned files and the complete tracked base remain unchanged. The sibling18606 memory readings and seasonal images were sampled on their original source and are not new measurements of this corrected source. Their scope is carried only under the exact identifier equivalence proof, supplemented by the new real shader test. Source IDs and raw readings remain unmodified.
+
+A completely new whole local Native is required on the corrected30-path working tree before either ticket commit. It has a separate receipt/context/label; this folder claims no result for it. The later actual-Dev integration, canonical metadata/source checks, committed-head preflight, all fresh final CI, full published viewport crawls and standard performance grid remain required. No app merge or hardware FPS claim is made. No heap is included.

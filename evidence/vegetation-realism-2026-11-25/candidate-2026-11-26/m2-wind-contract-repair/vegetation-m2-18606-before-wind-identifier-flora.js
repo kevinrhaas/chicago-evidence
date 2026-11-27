@@ -1,0 +1,9071 @@
+/**
+ * flora.js — the sward you stand in.
+ *
+ * The walkthrough's ground was a painted plane. This module puts the July 1835
+ * lake-plain prairie on top of it: chest-high layered vegetation that hides the
+ * ground a few metres from the camera and falls off into a green sea.
+ *
+ * It invents no plant. Which community is where (`extent`), what grows in it
+ * (`species`), how tall it is ON 1 JULY (`height_m`), how much ground it covers
+ * (`abundance`), its leaf colour and whether it flowers at all (`july`) all come
+ * from `data/flora/`. A missing manifest draws NOTHING and says so; there is no
+ * fallback community, because an invented prairie looks exactly like a
+ * researched one and that is the failure this project exists to avoid
+ * (AGENTS.md rule 2).
+ *
+ * THE JULY GATE, enforced here as well as in the data. A flower head is drawn
+ * if and only if the record carries a `july.inflorescence` AND its phenology is
+ * not `vegetative` or `budding`. Big bluestem, Indian grass and switchgrass are
+ * vegetative in mid-July, and the dossier calls 2 m "turkey-foot" seed heads in
+ * July "the single most common historical-reconstruction error". Keying the
+ * head off the record makes that error impossible to draw: no code path puts an
+ * inflorescence on a plant whose record has none. A record that contradicts
+ * itself is a defect, not a licence, and it is reported.
+ *
+ * THREE LAYERS, because a prairie seen from inside it is three problems:
+ *
+ *   NEAR  to ~8 m   blade geometry. The layer the eye reads as plants, and the
+ *                   one that has to hide the ground — at eye height the nearest
+ *                   ground in frame is 3.4 m away.
+ *   MID   to ~27 m  a blade is a third of a pixel at 20 m. Clump cards turned
+ *                   to the camera: silhouette and colour, all that survives.
+ *   FAR   beyond the instanced plants, the terrain material's procedural
+ *                   prairie texture carries the unresolved colour. There is
+ *                   deliberately no second horizontal vegetation surface:
+ *                   one at plant-top height reads as elevated ground, hides
+ *                   building bases, and leaves the visitor walking underneath
+ *                   it at banks. Detailed plants remain rooted on the terrain.
+ *
+ * Placement is a deterministic world lattice: a plant's position, species,
+ * height and colour are a hash of its cell, so re-centring on a walking camera
+ * regenerates the same plants and nothing swims underfoot. Only the ring edge
+ * changes; T-2035 carries the same close slots outward and fades distant coverage.
+ *
+ * Procedural per AGENTS.md and the publish budget: no image asset, no binary,
+ * a bounded handful of draw calls. Every material carries `_CONFIDENCE` as a per-INSTANCE
+ * attribute, so the confidence view grades each plant by its species' evidence.
+ */
+
+import * as THREE from 'three';
+import { onDaylight } from './time-of-day.js';
+import { GUST_GLSL, uGustClock } from './wind-gust.js';
+import { seasonUniforms } from './season.js';
+// The shrub archetype's LAYOUT, in a module that imports nothing, so
+// `tools/measure_spray_grain.mjs` can measure the grain without a browser and
+// without a second copy of the corner arithmetic. See K57.
+import { SHRUB_GRAIN, shrubLayout } from './shrub-grain.js';
+// T-2125: where a community's edge is asked, so the edges blend and wander.
+import { ZONE_BLEND_MAX_M } from './zone-blend.js';
+import { zoneFinder, heldGround, groundZones, waterDistance, ZONE_UNASKED } from './flora-zones.js';
+import { GROUND_WET, GROUND_FLOOR, GROUND_TRODDEN, GROUND_KEEP, GROUND_TRACK, GROUND_UNASKED, VERGE_CELL_M,
+  VERGE_KEEP_SHARE, vergeBand, footprintCircles, circleGrid, onFloor, groundAnswers, trackHeld } from './flora-ground.js';
+import { vergeRecords } from './street-verge.js';
+import { FIELD_TABLE_TURF, FIELD_TABLE_CEILING, slotPoint } from './jobs/zone-kernel.js';
+import { foliageAtlas, foliageFamily } from './foliage-atlas.js';
+// T-2085: which community is short turf, and the box its extent can reach.
+import { isTurfCommunity, extentBounds } from './turf-tile.js';
+import { runJob, jobsOnWorkers, holdOnWorker } from './jobs/pool.js';
+// T-2698: the near deal's field as a world-anchored tile a shader can sample;
+// T-2707: the tile kept a strip at a time, its strips asked of the pool.
+import { FIELD_SPEC, FIELD_FLAGS, FIELD_GLSL, fieldOrigin, buildField, sampleField,
+  FIELD_UNASKED, fieldKeeper } from './near-field.js';
+// T-2706: the near deal's species and placement as GLSL, and its slot codes.
+import { NEAR_DEAL, DEAL_GLSL, dealTable } from './flora-gpu-deal.js';
+// T-2716: the near ring drawn from the shader — the lattice walk and the deal
+// pass that writes the tufts' instances, and the tuft's fetch of them.
+import { LATTICE_GLSL, latticeUniforms } from './flora-gpu-lattice.js';
+import { nearPassShaders, nearSlotsMax, nearTarget, NEAR_FETCH_GLSL, NEAR_STREAM_DRAWS,
+  NEAR_RING_GLSL } from './flora-gpu-near.js';
+// T-2894: the mid ring's cards on the GPU's deal, against a kept tile of its own.
+import { midPassShaders, midFieldSpec, MID_TARGET_WIDTH } from './flora-gpu-mid.js';
+// T-2895: the forbs, rosettes and shrubs on the GPU's deal, against the mid tile.
+import { forbPassShaders } from './flora-gpu-forb.js';
+import { FAR_DEAL, FAR_UNASKED, FAR_LATTICE_PAD_M, farFieldSpec, farSlotSpec, farSlotReach, farSlotBytes,
+  farPassShaders, FAR_SLOT_GLSL }
+  from './flora-gpu-far.js';
+// T-2968: the far shrubs on the GPU's deal, a part of the far pass's carry job.
+import { farShrubPassShaders, farShrubWalks, farShrubTexels, FARSHRUB_ASK } from './flora-gpu-farshrub.js';
+import { carryPassShaders } from './flora-gpu-carry.js';
+import { latticeSlots } from './jobs/lattice-kernel.js';
+
+/** docs/PROVENANCE.md's three levels, as the shader reads them. */
+const LEVEL = { attested: 0.0, inferred: 0.5, reconstructed: 1.0 };
+
+/**
+ * July midday light ON A LEAF, which is not the same problem as light on a wall.
+ *
+ * A sward lit only by reflection cannot be brighter than its own albedo, and a
+ * green leaf's albedo is about 0.14 in the green channel: under any exposure
+ * that keeps a whitewashed wall white, a purely reflective prairie tops out at
+ * about half grey and stays there. Measured against the bar that is exactly the
+ * failure — round 1 put ZERO pixels over luminance 180 in the near five metres
+ * where the July photographs put 15.0% (Woodworth) and 4.0% even in the October
+ * negative control, and its p99 was 132 against the photographs' 252.
+ *
+ * The missing physics is that a grass blade is a thin membrane. It TRANSMITS:
+ * roughly a fifth of the light that lands on it comes out the other side, and
+ * it comes out FORWARD-SCATTERED, so the lobe leaving the far face is several
+ * times brighter than an isotropic one. That is why a backlit blade out-glows
+ * every front-lit blade around it, and it is what makes the photographs' white
+ * tail. The transmitted light is filtered by chlorophyll on the way through,
+ * which is why the tail is GREEN and not a white blowout. On top of that the
+ * cuticle is a waxy film with a narrow specular lobe, which supplies the
+ * glints, and the sky passes through the blade as well, which is what keeps
+ * the shaded face off black now that it is no longer given a fake sunward
+ * normal.
+ *
+ * These are render tuning, not evidence — no source records the transmittance
+ * of Chicago cordgrass. They are recorded as such in docs/LIBERTIES.md.
+ */
+const LEAF = {
+  /**
+   * Multiple scattering inside the canopy, on the front-lit path. A green
+   * photon that enters a sward is scattered rather than absorbed and bounces
+   * from leaf to leaf until it escapes, so a CANOPY is far brighter and far
+   * more saturated in the green band than any single leaf in it, while red and
+   * blue are absorbed on the first hit. A single-scattering Lambert model
+   * cannot exceed one leaf's albedo — 0.14 in green — and that ceiling is
+   * exactly the flat top the structure critic measured. In the Woodworth
+   * photograph the pixels over luminance 180 are not glints: they are ordinary
+   * sunlit leaf FACES at (219, 233, 172), 95% of them green-dominant.
+   */
+  scatter: 0.34,
+  /** Effective transmittance x forward-lobe gain, green channel. */
+  transmit: 0.74,
+  /** Sharpness of the forward lobe, on a (0.5 + 0.5 cos) remap: a 70-degree
+   *  sun is overhead, not behind, so a raw cos^n lobe would never fire. */
+  forward: 3.2,
+  /** What chlorophyll passes, relative to the leaf's own hue. Green through,
+   *  red partly, blue absorbed. */
+  tint: [0.66, 1.0, 0.42],
+  /** Skylight through the blade. Small, and it is the shaded face's floor. */
+  skyTransmit: 0.05,
+  /** The cuticle. A narrow lobe and a Fresnel edge, at a dielectric F0. */
+  gloss: 38.0,
+  specular: 0.85,
+  f0: 0.035,
+};
+
+/**
+ * Where the sun is if the scene graph has no directional light to ask. 1 July,
+ * 41.85 N, local noon — the same instant world.js computes from the scene
+ * record. It is only a fallback: `sunFromScene` prefers the light the scene
+ * actually built, so the sward and the buildings are lit by one sun.
+ */
+const SUN_FALLBACK = {
+  elevationDeg: 70.6,
+  azimuthDeg: 180,
+  /** 0xfff2dc x 3.0 and 0xa8c4e0 x 2.4, linear — world.js's own values. */
+  colour: [3.0, 2.66, 2.17],
+  sky: [0.40, 0.55, 0.75],
+};
+
+/**
+ * Render tuning: how many polygons we spend and where, not evidence. A tuft
+ * instance is not a plant but a BUNDLE of shoots standing for the fraction of a
+ * square metre the matrix covers — the records give cover fractions and no
+ * source gives stem counts. The records set the mix; `tuftsPerM2` sets the
+ * geometry spent on it, tuned to the one thing a photograph can settle: at eye
+ * height the ground is invisible. LIBERTIES L32.
+ */
+const TUNE = {
+  /**
+   * `spreadOuter` / `spreadInner` — T-0093. THE NEAR/MID HANDOVER IS A DENSITY
+   * RAMP, NOT A COVERAGE ONE, and these two flags are the whole of the change.
+   *
+   * A layer whose boundary carries one of these hands its ground over the way
+   * `far` does: the band stops being an alpha the screen door resolves and
+   * becomes a per-slot SPREAD of the boundary itself, so a plant is drawn whole
+   * or not at all and what changes across the band is HOW MANY. See
+   * `ringsFor` and `slotRing` for the arithmetic, and `handoverRank` for the
+   * world-anchored draw that decides where in the band a given slot crosses.
+   *
+   * The expected ground cover across the band is UNCHANGED — the fraction of
+   * slots drawn at `d` is exactly the alpha the ramp used to write, so the
+   * tuning below still means what it meant. What is gone is the stipple.
+   *
+   * `mid.band` and `forb.band` are deliberately NOT spread, and T-0187 is why
+   * it stays that way rather than why it was never tried. Those are the OUTER
+   * edges, and an outer edge is the one the sward's reach is read off: a
+   * boundary handed over by density is drawn out to the depth at which the
+   * thinning still leaves a plant standing in a given bearing, which is a
+   * SAMPLE and not a radius. Simulated slot by slot on the published mirror,
+   * against every mid instance's own ring and the smoke's own 16 bearing bins:
+   * a spread of the full band takes the mean drawn reach from 26.81 m to
+   * 25.42 m at `full` — which the boundary check survives — and from 11.89 m
+   * to 9.64 m at `light`, where the bar stands at 11.60 m and only 0.29 m of
+   * it was unspent. Even a one-metre spread lands at 11.48 m there. The reach
+   * a coverage ramp reports is bought by plants at two per cent coverage that
+   * a visitor cannot see, so no representation that draws a plant whole or not
+   * at all can match it on a ring that small (T-0209).
+   *
+   * So the outer edges keep their ramp, and what T-0187 fixes is the ramp's
+   * WIDTH: it must not begin inside the verge. See `LOW` and `MID`.
+   *
+   * T-0225 — THE HALF OF THAT ARGUMENT THAT WAS THE INSTRUMENT'S, and it is
+   * repaired now rather than restated. Every figure above was read at
+   * `fadeAt > 0.02`, which the 4x4 screen door renders as nothing at all for
+   * two instance phases in three, so the reach a coverage ramp "reports" was
+   * very nearly the radius the placer stopped at: measured with
+   * `tools/measure_sward_reach.mjs`, the placed boundary and the 2 % reading
+   * are 0.54 m apart at `full` and 0.56 m at `light`. The gate now reads the
+   * boundary at 1/16 — the screen door's own quantum, below which "drawn" is a
+   * property of the dither phase and not of the coverage — and carries the
+   * `band x 1/16` that costs, so a density handover is no longer compared
+   * against a statistic only a coverage ramp can produce.
+   *
+   * What that does NOT do is settle whether these edges should be spread. The
+   * bar is off the scale now; the measurement of what a spread costs was taken
+   * against the old statistic and has to be retaken. T-0277 is that work.
+   *
+   * T-0277 — RETAKEN, AND THE RAMP STAYS. `tools/simulate_outer_spread.mjs`
+   * deals every placed mid and forb slot the rank `slotRing` would give it,
+   * bins the gate's own 16 bearings from the gate's own station, and prints the
+   * drawn boundary under both representations. It agrees with
+   * `measure_sward_reach.mjs` to the centimetre on today's reading, which is
+   * what makes the other column worth reading.
+   *
+   *   mid ring, `full`   today 25.00 min / 26.61 mean against bars 21.76 /
+   *                      24.46; fully spread 22.58 / 25.36 against 22.20 /
+   *                      24.90 — CLEARS, by 0.38 m and 0.46 m.
+   *   mid ring, `light`  today 10.32 / 11.96 against 9.50 / 11.50; fully
+   *                      spread 8.56 / 11.23 against 9.60 / 11.60 — OVER on
+   *                      both, by 1.04 m and 0.37 m. Three quarters of the
+   *                      band is over too (11.57); half clears at 11.75.
+   *   forb ring, `full`  today 23.52 / 24.74 against 20.89 / 23.59; fully
+   *                      spread 16.41 / 21.73 against 21.20 / 23.90 — OVER,
+   *                      and over from a quarter of the band upwards.
+   *
+   * THE BAR RISES WHEN THE BAND IS SPREAD, and that is half the answer.
+   * `ringsFor` replaces a spread layer's `band` with `HARD`, so the `band/16`
+   * a reading at the screen door's quantum sits inside the placed boundary —
+   * 0.44 m at `full`, 0.10 m at `light` — simply vanishes. A spread has to
+   * clear a HIGHER bar with a SHORTER reach.
+   *
+   * THE OTHER HALF IS SAMPLING DENSITY, and it is a better reason than the one
+   * T-0187 gave. A density handover's drawn boundary is the furthest slot that
+   * survives its OWN rank, so it is a sample and its expectation falls with the
+   * number of slots in the bin. The desktop cone holds 642 mid slots — forty to
+   * a 3.75-degree bin, and one of forty draws a low enough rank to stand near
+   * the boundary. The `light` cone holds 132, about eight to a bin, and eight
+   * draws do not reach it. At `light` the mid ring is as sparse as the forb
+   * ring is at `full`, which is exactly the case
+   * `tools/measure_sward_reach.mjs` already refuses to read a boundary off.
+   *
+   * AND IT CANNOT BE TAKEN ONE EDGE AT A TIME. `full` would carry a mid spread;
+   * it will not carry a forb one. But the forb ring ends within a metre of the
+   * mid ring on purpose — see `rebuildForbs` — so the two boundaries land on
+   * the same screen row, and spreading only the grass would leave the flowers
+   * dithering along the line the grass had just stopped drawing. That is the
+   * stipple this ticket set out to remove, drawn by half as many plants and
+   * against a step. A split decision is worse than either whole one.
+   *
+   * So both outer edges keep their ramp, on a measurement rather than on a
+   * superseded one. Reopening this means changing what is measured, not the
+   * bar: a sward dense enough at `light` for eight plants a bin to become
+   * forty, or a forb layer that does not have to share the mid ring's boundary.
+   */
+  near: { radius: 7.6, cell: 0.74, perCell: 4, tuftsPerM2: 7.30, band: 2.2,
+    spreadOuter: true },
+  // The full-detail edge needs more world-anchored variation: the published
+  // 1280x800, DPR-1 view stayed below a four-pixel spread at both 3 and 3.5 m.
+  // Light and balanced keep their explicit overrides.
+  mid: { inner: 4.5, radius: 27.0, cell: 1.55, perCell: 4, band: 7.0, innerBand: 3.0, fringe: 4.0,
+    spreadInner: true },
+  forb: { radius: 26.0, cell: 3.4, perCell: 4, band: 5.0, fringe: 3.0 },
+  /**
+   * THE FAR BAND — T-0086, and the ONE rule it is built around.
+   *
+   * The owner, 2026-08-18: the sward "does not look right … you can see them
+   * fade in when in long distance view … would be nice if you could see them in
+   * the distance blurred faintly further out." Past the mid ring nothing at all
+   * was drawn: the meadow ended at a radius and the ground beyond it carried
+   * the prairie albedo's colour and no plants.
+   *
+   * **It is drawn with the mid ring's own clump card, not with a sheet.** A
+   * solid far-field vegetation mesh was shipped here once and reverted, because
+   * it hid foundations and plant roots while the visitor walked on the real
+   * heightfield below it. Every far card is a ROOTED instance standing on
+   * `terrain.surfaceHeight` at a station `station()` allows — the same building
+   * footprints, the same travelled track, the same waterline — so there is no
+   * second land surface to walk under and nothing stands where a plant may not.
+   *
+   * **And it fades by DENSITY, not by the screen-door dither**, which is the
+   * other half of the report. A ramp in coverage resolved by a 4x4 Bayer matrix
+   * is invisible at arm's length and a band of dots at fifty metres seen down a
+   * shallow view, because distance compresses the whole ramp into a few screen
+   * rows: at 60 m the mid ring's 7 m band is nine pixels tall. So a far card is
+   * drawn whole or not at all, and what changes with distance is how MANY of
+   * them there are — `keepAt` against a world-anchored per-slot rank. A
+   * stochastic density ramp has no edge in it to dither.
+   *
+   * `inner`/`innerRamp` hand over to the detailed rings the same way: the band
+   * thins to nothing as the walker closes on it, so a 3 m aggregate card is
+   * never met at arm's length and never pops out of a hard inner circle.
+   */
+  far: {
+    columns: 9,
+    // TWO BANDS, and the reason is that one lattice cannot do this. A single
+    // world-uniform spacing that is right at twenty-five metres is a thousand
+    // cards at a hundred and fifty, and one that is right at a hundred and
+    // fifty leaves a hole where the detailed rings hand over. So the near band
+    // is a fine lattice of small clumps and the deep band a coarse lattice of
+    // wide ones, each carrying its own ramps, and they overlap across forty to
+    // sixty metres where each is thinning into the other.
+    bands: [
+      { inner: 16.0, innerRamp: 10.0, radius: 62.0, ramp: 30.0, cell: 3.4, perCell: 1, keep: 0.80, wide: [1.5, 2.6], lift: 1.14 },
+      { inner: 44.0, innerRamp: 24.0, radius: 175.0, ramp: 92.0, cell: 9.5, perCell: 1, keep: 0.74, wide: [2.6, 4.6], lift: 1.20 },
+      // T-2783 — THE MID RING. The near carry's tufts end at the mid ring's
+      // edge (31 m here) and past it the two bands above were one card in eleven
+      // square metres and then one in ninety, standing apart on the plain like
+      // tussocks on a lawn: the tufts' end read as a line and the plain as paint.
+      // This band fills the ground between with narrower cards on a finer
+      // lattice, thinning in over the near carry's own fade and out past the
+      // first band, so the sward recedes rather than stops. Same set, same
+      // material, same archetype — no draw call. Its cards hang no flower
+      // (`heads: false`): the two bands above already carry the bloom to its
+      // pixel reach, and the head caps are spent elsewhere.
+      { inner: 22.0, innerRamp: 12.0, radius: 88.0, ramp: 36.0, cell: 2.3, perCell: 1, keep: 0.86, wide: [1.0, 1.9], lift: 1.06, heads: false },
+    ],
+    // How wide a flower must still be, in pixels of the smaller gate viewport,
+    // for the far band to draw it — see `farHeadReach`. ONE pixel is the honest
+    // bar for the tier that is asked to draw everything; the rungs below it buy
+    // their headroom by asking a mark to be bigger before it is worth a head,
+    // which is the same shape as `light`'s furniture reach and `balanced`'s
+    // (T-0241) and not a different kind of concession. The reach falls linearly
+    // and the heads inside it quadratically, so 2.0 draws a quarter of them.
+    minPx: 1.0,
+  },
+  /**
+   * THE FAR SHRUBS — T-2014. The owner, 2026-10-03, walking Kinzie toward Clark:
+   * "the plants appear to still pop up from nowhere, you have a pixely fade in
+   * … render them small and far away and keep rendering them into better
+   * quality and larger when they are close … a MUCH longer field of vision for
+   * the plants to see them down the road and in the distance."
+   *
+   * The far band above carries the grass and the forbs to 175 m; nothing
+   * carried the SHRUBS, which stood only on the forb ring and were screen-doored
+   * in over its last five metres at 26 m. So a bush came out of empty ground at
+   * a constant row of the frame on every step.
+   *
+   * This is the same SLOT, not a second planting. The far pass walks the shrub
+   * pass's own lattice — its cell, its salt, its deal and its per-slot generator
+   * — so the far bush at a slot is the near bush's own position, species,
+   * height, width, yaw and colour, drawn with `FAR_SHRUB_GRAIN`'s 48 triangles
+   * instead of 136. It is drawn whole (no dither) and hidden by a HARD inner
+   * edge at the radius where that slot's detailed bush is fully drawn, so over
+   * the forb ring's dither band the stipple shows the coarse bush through its
+   * holes rather than the sky, and closer in only the detailed one is drawn.
+   *
+   * `radius`/`ramp`: thinned by a world-anchored rank over the last `ramp`
+   * metres, as the far band is, so the edge is a density and not a circle.
+   * `step`: rebuilt only after this much walking, because the lattice is a
+   * hundred metres deep and re-dealing it every 0.6 m would be most of a frame.
+   * The hard inner edge is evaluated per frame in the shader, and the lattice
+   * reaches `step` inside it, so a lagging rebuild never leaves a hole.
+   */
+  farShrub: { radius: 140.0, ramp: 45.0, step: 4.0 },
+  /** Hard caps. The palette's `budget` is advisory; this is the ceiling.
+   *
+   *  `head` is the average of the NINE head archetypes' ceilings and not any one
+   *  of them — T-0214 split it by measured demand, so the nine sum to nine times
+   *  this number and each gets `head x HEAD_SHARE[kind]`. Halving `head` at a
+   *  detail tier still halves every archetype with it. */
+  // The pitched aerial sees the complete disc instead of a horizontal cone.
+  // Reserve twice the old head allocation; placement density is unchanged.
+  // T-2035's nadir prairie sweep exhausted ray/raydroop/pompom otherwise.
+  // T-2783: `far` now holds the mid ring's band as well: about 1,030 cards on
+  // the open plain at the south-branch stand (2026-10-19), against 270 for the
+  // two outer bands alone, which the old 420 was sized for.
+  cap: { near: 2400, mid: 4400, forb: 900, head: 1640, far: 1400, farShrub: 3200 },
+  wind: { speedNear: 1.35, sway: 0.085, waveM: 9.0 },
+  /**
+   * Rebuild the lattice when the camera has moved this far. It is also the
+   * margin the fade ring is inset by (`ringsFor`), so it is the width of the
+   * annulus of already-placed, wholly-undrawn plants that stands between the
+   * lattice edge and the first plant with any coverage in it. 1.2 m was the
+   * figure while the fade was frozen between rebuilds; halved now that the
+   * inset is what it buys, because a metre of the near ring is a lot of it.
+   * (Since T-0093 the annulus is wider than the step on a spread boundary: a
+   * near slot's own outer radius can sit a whole band inside the nominal one,
+   * and that only ever adds margin.)
+   */
+  step: { near: 0.6, mid: 3.0, forb: 3.0 },
+  // T-2085 / T-2122 — SHORT TURF IS DRAWN BY THE GROUND, NOT BY PLANTS. On a
+  // community `isTurfCommunity` selects (the settled town: a 0.05-0.20 m
+  // sward) no near tuft, mid card, far card or carry is drawn — the terrain
+  // paints the turf's texture there. T-2085 kept the near tufts and the weeds on
+  // a ring of their own to 7.6 m; the owner, 2026-10-05, found them popping up
+  // around the walker in town, so T-2122 drops the tufts and stands the weeds
+  // only along kept lot lines, on the ordinary forb ring (see the passes).
+  // Which species grow, in what share, is untouched.
+};
+
+/**
+ * The lattice is world-anchored and rebuilt only every `step` metres walked;
+ * the fade ramp is evaluated per FRAME, in the vertex shader, against where the
+ * camera actually is. Those two rates are what the pop was made of, and they
+ * are reconciled here rather than in either of them.
+ *
+ * A ring returned as `[outer, band, inner, innerBand]` — the four numbers the
+ * shader reads out of `aChiRing` — is inset from the lattice that carries it by
+ * `step` at BOTH edges, so a plant is always already placed, at coverage zero,
+ * before the distance at which it is worth drawing at all. Without the inset a
+ * plant outside the lattice at one rebuild is up to `step` inside the fade ring
+ * by the next, and arrives at `step / band` of the ramp in a single frame: 55%
+ * for the near ring as it stood, which is the "grass and flowers appear out of
+ * the ground as you walk towards them" the owner reported. That was the FIRST
+ * of his two reports; T-0035 is the second, and the answer to it is that the
+ * ramp no longer touches the geometry at all (see `heightOf`).
+ *
+ * The outer edge is bought by moving the fade IN — growing the lattice instead
+ * would cost a 34% wider near annulus of instances against 6% of triangle
+ * headroom. The inner edge is bought by moving the lattice OUT, because the
+ * inner annulus of the mid ring is 1.3% of its area and free, and because
+ * moving that fade outward would thin the near/mid crossover where the change
+ * of representation is supposed to be invisible.
+ *
+ * `fringe` is the outermost ring's own correction, and it is a different
+ * problem from the pop. A ring is a CIRCLE about the walker, so on flat ground
+ * its outer edge maps to a constant screen ROW — measured at row 450, razor
+ * straight across all 1280 columns, which is ROADMAP § S6a item 3. Each slot
+ * therefore carries its own outer radius, `fade[0] + fringeOf(e, n)`, drawn
+ * from a world-anchored field rather than from the camera: the boundary is
+ * ragged, it is ragged in the same places whichever way the walker faces, and
+ * it is a stochastic density ramp rather than an edge with a wobble in it.
+ */
+function ringsFor(layer, step) {
+  const inner = layer.inner ?? 0;
+  const fringe = layer.fringe ?? 0;
+  const innerBand = layer.innerBand ?? 0;
+  // T-0093. A boundary marked `spreadOuter`/`spreadInner` in TUNE is handed
+  // over by DENSITY: the band moves out of the ring the shader ramps and into
+  // `spread`, where `slotRing` deals it to the slots one at a time. What the
+  // shader is left holding is a STEP — `HARD` is small enough that `chiFade`
+  // lands on 0 or 1 for every plant on the layer, so the fragment program's own
+  // guard (`vChiFade < 1.0`) never enters the Bayer branch and there is no
+  // screen door to see. It is `FAR_RING`'s trick, on a ring that still has an
+  // edge in it.
+  const spread = {
+    outer: layer.spreadOuter ? layer.band : 0,
+    inner: layer.spreadInner ? innerBand : 0,
+  };
+  return {
+    // The lattice has to reach the furthest a slot's own boundary can stand,
+    // plus the step, or the outermost slots of the fringe would be placed for
+    // the first time already carrying height.
+    lattice: { outer: layer.radius + fringe, inner: Math.max(0, inner - step) },
+    // The NOMINAL ring: the outer radius no slot's own boundary stands beyond
+    // (a spread only ever moves it IN) and the inner radius none stands within
+    // (a spread only ever moves it OUT). Both bounds are what keeps the lattice
+    // inset — the gate reads them, and a spread that pushed the other way would
+    // put a plant outside its own lattice.
+    fade: [layer.radius - step, spread.outer ? HARD : layer.band,
+      inner, spread.inner ? HARD : innerBand],
+    spread,
+    fringe,
+  };
+}
+
+/**
+ * A band narrow enough that the ramp across it is a STEP, so `chiFade` is 0 or
+ * 1 and the dither branch is skipped.
+ *
+ * A micron, and the figure is measured rather than picked. At 0.1 mm — the old
+ * floor in `fadeOf` and in the GLSL, and what `FAR_RING` still carries because
+ * an outer radius of 1e9 is never within a millimetre of anything — a slot
+ * whose own boundary happens to fall inside the band as the camera passes it
+ * IS drawn at a partial coverage, for one frame, once in about fifty stands:
+ * `partial = slots x HARD / band`, simulated at 40 000 slots and confirmed at
+ * 1-3. That plant is invisible either way; what it is not is ZERO, and the
+ * assertion T-0093 wants to be able to make is that no plant on this boundary
+ * is EVER caught mid-ramp. A micron buys that with two orders of magnitude to
+ * spare — and world positions are float32 out at 800 m, where the spacing is
+ * already ~60 microns, so the difference the shader computes cannot land inside
+ * it at all.
+ */
+const HARD = 1e-6;
+
+/**
+ * Where in a handover this slot crosses, in `[0, 1)`, from where it stands and
+ * nothing else — `farRank`'s rule and `farRank`'s quantisation, on its own
+ * salts. Two consequences, and both are the point: a plant crosses the boundary
+ * at ITS OWN radius rather than the whole band crossing together, and it makes
+ * the same decision from every camera, so nothing swims as the walker turns.
+ *
+ * Quantised to 1/8 m, which is finer than any lattice this module scatters on
+ * — the near ring's is 0.37 m between slots — so one slot keeps one rank across
+ * every rebuild.
+ */
+const HANDOVER_SALT = [0x3d5a9e77, 0x6f2c5b13];
+function handoverRank(e, n, which) {
+  return unitHash(Math.round(e * 8), Math.round(n * 8), HANDOVER_SALT[which]);
+}
+
+/** The world grid the ragged boundary lobes on, in metres. At 27 m in a
+ *  1280-wide frame a metre is about 69 px, so 4 m lobes put five or six of them
+ *  across the view — few enough to read as terrain rather than as noise, many
+ *  enough that no one of them is a straight line. */
+const LOBE_M = 4.0;
+
+function unitHash(a, b, salt) {
+  return hash3(a, b, salt) / 4294967296;
+}
+
+/** Value noise on the `LOBE_M` grid, in [0, 1] and continuous across cell
+ *  edges — a grid of independent cells would trade one straight line for a
+ *  field of short ones. */
+function lobeNoise(e, n) {
+  const ce = Math.floor(e / LOBE_M);
+  const cn = Math.floor(n / LOBE_M);
+  const te = e / LOBE_M - ce;
+  const tn = n / LOBE_M - cn;
+  const se = te * te * (3 - 2 * te);
+  const sn = tn * tn * (3 - 2 * tn);
+  const a = unitHash(ce, cn, 0x7f4a7c15);
+  const b = unitHash(ce + 1, cn, 0x7f4a7c15);
+  const c = unitHash(ce, cn + 1, 0x7f4a7c15);
+  const d = unitHash(ce + 1, cn + 1, 0x7f4a7c15);
+  return (a + (b - a) * se) * (1 - sn) + (c + (d - c) * se) * sn;
+}
+
+/**
+ * How far this slot's own outer boundary stands beyond the layer's nominal one,
+ * in metres, in `[-amp, +amp]`. A function of WORLD position only: two slots a
+ * metre apart get nearly the same answer and the same slot gets the same answer
+ * from every camera, which is what stops the ragged edge from swimming as the
+ * walker moves.
+ *
+ * Two scales, because either alone still draws a line. The lobes carry the
+ * shape; the per-slot dither turns each lobe's own edge into a thinning of the
+ * sward rather than the end of it.
+ */
+function fringeOf(e, n, amp) {
+  if (!amp) return 0;
+  // T-1766: the retired swale had supplied screen-row variation that this
+  // field should carry itself. Give the world-anchored lobes 1.5x contrast
+  // about their midpoint, bounded to the same range. This keeps the lattice,
+  // fringe amplitude and primitive geometry unchanged; the symmetric mapping
+  // sharpens both inward and outward lobes rather than shrinking the ring.
+  const lobe = Math.max(0, Math.min(1, 0.5 + 1.5 * (lobeNoise(e, n) - 0.5)));
+  const dither = unitHash(Math.round(e * 64), Math.round(n * 64), 0x2f1b3c59);
+  return amp * (2 * (0.7 * lobe + 0.3 * dither) - 1);
+}
+
+/**
+ * Heads used to be gated at 35% of their plant's fade — a step in the middle of
+ * a ramp, and the most conspicuous pop in the field, because a flower is the
+ * brightest thing in it. Their own ring reaches zero exactly where the plant's
+ * ramp passes 0.35, so the same heads are drawn as before and the cap sees the
+ * same pressure; only the step is gone.
+ *
+ * On a SPREAD boundary (T-0093) the band is `HARD` and this collapses to "the
+ * head's ring is its plant's ring, a hair inside it" — which is the invariant
+ * R-BUG7 wants stated rather than a coincidence: a head can only be drawn where
+ * its own plant is, because its ring is derived from that plant's. The forb
+ * ring is still a coverage ramp and still gets the 35% the comment above
+ * describes.
+ */
+const HEAD_FADE_AT = 0.35;
+function headRingAt(fade, out) {
+  out[0] = fade[0] - HEAD_FADE_AT * fade[1];
+  out[1] = (1 - HEAD_FADE_AT) * fade[1];
+  out[2] = fade[2];
+  out[3] = fade[3];
+  return out;
+}
+function headRingOf(fade) {
+  return headRingAt(fade, [0, 0, 0, 0]);
+}
+
+/** A layer ring with this slot's own fringe on its outer radius, written into a
+ *  scratch array — `push` copies the four numbers out of it immediately, so one
+ *  buffer per rebuild loop is enough and a per-slot allocation would be a
+ *  million-a-second one. */
+function ringAt(base, off, out) {
+  out[0] = base[0] + off;
+  out[1] = base[1];
+  out[2] = base[2];
+  out[3] = base[3];
+  return out;
+}
+
+/**
+ * THIS SLOT'S OWN RING — T-0093. `ringAt` plus the handover: where the layer
+ * spreads a boundary rather than ramping across it (`ringsFor`), the slot's own
+ * boundary is moved off the nominal one by its world-anchored share of the band.
+ *
+ * The outer spread moves the boundary IN and the inner spread moves it OUT, both
+ * by at most the band, so a slot's ring is always inside the layer's nominal one
+ * and the lattice inset the pop-in gate measures still holds for every plant on
+ * it. `off` is the fringe, already computed by the caller because the caller
+ * needs it for its own reach test.
+ */
+function slotRing(ring, e, n, off, out) {
+  out[0] = ring.fade[0] + off
+    - (ring.spread.outer ? ring.spread.outer * handoverRank(e, n, 0) : 0);
+  out[1] = ring.fade[1];
+  out[2] = ring.fade[2]
+    + (ring.spread.inner ? ring.spread.inner * handoverRank(e, n, 1) : 0);
+  out[3] = ring.fade[3];
+  return out;
+}
+
+/** The ramp the vertex shader applies, in JS, so the two cannot disagree about
+ *  where a plant starts to be drawn. Kept identical to the GLSL in
+ *  `plantMaterial`. Since T-0035 the ramp is COVERAGE, not height: it is the
+ *  alpha the screen-door dither resolves, and `heightOf` below is the whole of
+ *  what it does to the geometry. Since T-0093 the near ring's outer boundary
+ *  and the mid ring's inner one are spread per slot instead, so on those two
+ *  edges this function only ever returns 0 or 1 and nothing is dithered at all;
+ *  the arithmetic is unchanged because a step is a ramp with a `HARD` band. */
+function fadeOf(ring, d) {
+  // The floor is `HARD` and not 1e-4, so a hard ring really is a step here as
+  // well as in the GLSL — see `HARD`. It only ever guards the division.
+  const outer = clamp01((ring[0] - d) / Math.max(ring[1], HARD));
+  const inner = ring[3] > 0 ? clamp01((d - ring[2]) / ring[3]) : 1;
+  return outer * inner;
+}
+
+/**
+ * The ring a reader is asking about: the layer's own, or THIS INSTANCE'S.
+ *
+ * Since T-0093 both boundaries can be spread per slot, so a caller that knows
+ * only the outer radius can no longer be answered exactly about a layer whose
+ * INNER edge is the spread one. It may pass the whole four-number `aChiRing` it
+ * read off the instance and get the drawing back; a bare number is still read as
+ * an outer radius, which is what every caller before this passed and is exact
+ * for every layer whose inner edge is not spread.
+ */
+function slotOf(ring, outer) {
+  if (outer === undefined) return ring.fade;
+  if (Array.isArray(outer) || ArrayBuffer.isView(outer)) return outer;
+  return [outer, ring.fade[1], ring.fade[2], ring.fade[3]];
+}
+
+/**
+ * How much of its own recorded height a plant on this ring is DRAWN at, in JS,
+ * for the same reason `fadeOf` is here: the gates read the drawing back and
+ * must not have to guess at the vertex program.
+ *
+ * It is `0` or `1` and nothing between, and that IS the fix for T-0035 — the
+ * owner's "the flowers grow up out of the ground as you approach" was the ramp
+ * driving `transformed *= chiFade`. Keep this in step with the GLSL: it is what
+ * `tools/measure_head_support.mjs` and the smoke's R-BUG7 gate scale a plant's
+ * top and a stalk's foot by, so a height ramp reintroduced without changing
+ * this line puts those gates back to measuring a drawing that no longer exists.
+ */
+function heightOf(ring, d) {
+  return fadeOf(ring, d) > 0 ? 1 : 0;
+}
+
+/**
+ * THE FAR BAND'S RAMP — what fraction of its lattice slots carry a card at `d`
+ * metres from the walker. T-0086.
+ *
+ * Zero at both ends and flat in the middle, and the ends are the whole point.
+ * The outer one is the recession: over `ramp` metres of ground the band thins
+ * from `keep` to nothing, so the meadow runs out instead of stopping, and it
+ * does it without a coverage ramp for the screen-door dither to quantise into a
+ * band of dots. The inner one is the handover: a card that stands for several
+ * metres of sward has no business being met at arm's length, so the band thins
+ * back to nothing over `innerRamp` as the walker closes on it and the detailed
+ * rings — which reach past it — carry the ground from there in.
+ *
+ * A slot's own rank is a function of WORLD position (`farRank`), so a card
+ * appears and disappears at ITS OWN radius rather than every card in a ring
+ * doing it together, and it makes the same decision from every camera.
+ */
+function rankCoverage(a, b, c, d, width) {
+  // Both ramps are affine in a slot's uniform rank. Break at every clamp;
+  // Simpson integration is exact on the resulting quadratic pieces.
+  const cuts = [0, 1, a / b, (a - width) / b, c / d, (c - width) / d]
+    .filter(Number.isFinite).filter(x => x >= 0 && x <= 1).sort((x, y) => x - y);
+  const at = u => clamp01((a - b * u) / width) * clamp01((c - d * u) / width);
+  let sum = 0;
+  for (let i = 1; i < cuts.length; i++) {
+    const lo = cuts[i - 1], hi = cuts[i];
+    sum += (hi - lo) * (at(lo) + 4 * at((lo + hi) / 2) + at(hi)) / 6;
+  }
+  return sum;
+}
+function farKeepAt(d, band) {
+  const feather = Math.min(8, band.innerRamp, band.ramp);
+  return band.keep * rankCoverage(band.radius - d, band.ramp,
+    d - band.inner, band.innerRamp, feather);
+}
+
+/** The two bands' combined reach at `d`, which is the number a measurement
+ *  wants: zero inside the detailed rings, zero past the deep band, and never
+ *  zero in between — a hole there is the bald ring this whole band exists to
+ *  close. */
+function farCoverAt(d, t) {
+  return t.bands.reduce((a, b) => a + farKeepAt(d, b), 0);
+}
+
+/** This slot's place in the queue for a card, in [0, 1), from where it stands
+ *  and nothing else — quantised to 1/8 m, which is finer than any lattice this
+ *  module scatters on, so one slot keeps one rank across every rebuild. */
+function farRank(e, n, band) {
+  return unitHash(Math.round(e * 8), Math.round(n * 8), 0x1b9f31c7 ^ (band * 0x9e3779b9));
+}
+
+/** T-2014. The far shrubs' thinning toward their own outer radius, and the
+ *  slot's world-anchored place in it — `farKeepAt` and `farRank`, one stratum
+ *  over. No inner ramp: the handover is the slot's own hard edge. */
+function farShrubKeepAt(d, fs) {
+  const feather = Math.min(12, fs.ramp / 2);
+  return rankCoverage(fs.radius - fs.step - d, fs.ramp, feather, 0, feather);
+}
+function farShrubRank(e, n) {
+  return unitHash(Math.round(e * 8), Math.round(n * 8), 0x6d2b79f5);
+}
+
+/** Legacy unbounded ring, also the initial scratch value for proxies. This is
+ *  the ring that says so: an outer radius nothing can reach, and a band wide
+ *  enough that `chiFade` lands on 1 and the fragment shader's guard skips the
+ *  dither branch entirely. */
+const FAR_RING = [1e9, 1e-4, 0, 0];
+
+/**
+ * THE FAR BLOOM — T-0209, and the bar it answers is a PIXEL, not a radius.
+ *
+ * A flower head was drawn nowhere past 23.65 m, because the head ring hangs off
+ * the forb ring and the forb ring ends where the far band begins. So the sward
+ * was carried to 175 m and the bloom to 23.65, and T-0034 measured what that
+ * costs: the bloom covers 1.8 % of the ground the sward covers, and the other
+ * 98 % of a July prairie is grass-coloured whatever its records say is
+ * flowering on it.
+ *
+ * THE CONVERSION T-0209 ASKS FOR, and the reason it is a distance. The flora
+ * records give bloom IN PLAN — `density_per_ha` x `size_m`, 0.027-0.219 % of
+ * the ground on the mesic prairie — and a frame reads bloom IN SCREEN SPACE at
+ * a near-horizontal pose. Tint the far card by the plan figure and nothing
+ * happens: run the records through an opaque-canopy model, where each element's
+ * share of the drawn wall is its share of the community's silhouette-area
+ * density, and the mesic prairie's bloom comes out at **0.05 % of the far
+ * card** (`tools/measure_far_bloom.mjs`). A colour blended at five parts in ten
+ * thousand is not a colour, and one blended at anything larger is invented.
+ *
+ * A HEAD IS NOT AN AREA, THOUGH — it is a saturated MARK, and a mark is
+ * visible while it still covers a pixel. That is the honest conversion, and it
+ * is per-record rather than per-community: the camera is 62 degrees vertical
+ * (`main.js`), so the gate's two viewports carry 780/1.0821 = 721 and
+ * 800/1.0821 = 739 pixels per radian. A head of `size_m` therefore falls under
+ * one pixel at `size_m * 721` metres — the PHONE sets the bar, because mobile
+ * is a release gate. The mesic prairie's median head is 0.07 m, so the bloom
+ * can honestly be carried to about FIFTY metres and no further; a 0.10 m
+ * compass-plant head reaches 72 m and a 0.0275 m purple-prairie-clover thimble
+ * only 20 m, which is why the reach is the record's own and not a constant.
+ *
+ * Past that reach the bloom is genuinely under the pixel grid and the far
+ * card's honest tint is the 0.05 % above. That is the number this parcel
+ * records rather than a licence to paint one.
+ */
+const FAR_HEAD_PX_PER_RAD = 721;
+/** How far a head of this record's own size stays a mark `minPx` wide. */
+function farHeadReach(sp, minPx) {
+  return mid(sp.head.size) * FAR_HEAD_PX_PER_RAD / minPx;
+}
+/** The ring a far head is drawn on: its own reach, faded over the last eighth
+ *  of it so the bloom thins out rather than ending on a circle. */
+function farHeadRing(sp, minPx, out) {
+  const r = farHeadReach(sp, minPx);
+  out[0] = r; out[1] = r * 0.125; out[2] = 0; out[3] = 0;
+  return out;
+}
+
+/** Nearer than this, plants go all the way round whatever the cone says. */
+const CONE_KEEP_M = 3.5;
+/** Cosine of the cone half-angle, and the yaw change that forces a rebuild. */
+const CONE_COS = Math.cos(62 * Math.PI / 180);
+const CONE_YAW_STEP = 0.20;
+/**
+ * T-2106. The longest a spread near rebuild may stay in flight, in wall-clock
+ * milliseconds, before it is finished in one frame. At 60 Hz that is fifteen
+ * frames, more than any pass is paced over; it is there for a slow renderer —
+ * SwiftShader at five frames a second — where a reader waiting a couple of
+ * frames after a move has to find one whole lattice, as it always did.
+ */
+const SPREAD_MAX_MS = 250;
+/**
+ * T-2683. A JUMP — a snap turn, an arrival — leaves no margin to spread a pass
+ * over, so it used to be dealt in the one frame that needed it: 136 ms at the
+ * walk's right turn on the throttled phone profile. It is dealt over a few
+ * frames instead, with the old lattice drawn until it lands, at the slice that
+ * puts the last whole pass's cost over `JUMP_FRAMES` and never more than
+ * `JUMP_SLICE_MS` a frame — well under the 50 ms a long task starts at.
+ * SPREAD_MAX_MS still finishes one a slow renderer cannot land in time.
+ */
+const JUMP_FRAMES = 6;
+const JUMP_SLICE_MS = 30;
+
+/** Conservative camera azimuth, quantized outward in five-degree buckets.
+ * A level-camera cone misses ground exposed by a downward flight view; using
+ * an exact continuously changing angle instead would re-deal on every frame. */
+function placementCone(camera, forward) {
+  const fl = Math.hypot(forward.x, forward.z);
+  // Census/export callers may supply a position-and-direction camera without
+  // a projection. Preserve their established horizontal census window.
+  if (!Number.isFinite(camera.fov) || !Number.isFinite(camera.aspect)) {
+    return { fe: fl > 1e-6 ? forward.x / fl : 0,
+      fn: fl > 1e-6 ? -forward.z / fl : 1, cos: CONE_COS };
+  }
+  const vertical = Math.tan(camera.fov * Math.PI / 360);
+  const projected = fl * fl - forward.y * forward.y * vertical * vertical;
+  const half = projected <= 0 ? Math.PI : Math.min(Math.PI,
+    Math.max(Math.acos(CONE_COS),
+      Math.atan2(vertical * camera.aspect, Math.sqrt(projected)) + CONE_YAW_STEP));
+  const bucket = Math.ceil(half / (Math.PI / 36)) * Math.PI / 36;
+  return { fe: fl > 1e-6 ? forward.x / fl : 0,
+    fn: fl > 1e-6 ? -forward.z / fl : 1, cos: Math.cos(bucket) };
+}
+
+/** Everything gets halved on a phone; mobile 390x780 is a release gate. */
+const LOW = {
+  // A phone is not a small desktop: the mobile pass draws a 585x1170 buffer,
+  // MORE pixels than the desktop one, on a fraction of the fill rate. So the
+  // sward is not scaled down here, it is a shallower field — tight near and
+  // mid rings, with the terrain's prairie texture carrying the far field.
+  near: { radius: 4.6, tuftsPerM2: 4.6 },
+  // The fringe scales with the ring it ragged-edges: it is about an eighth of
+  // the radius at every setting, so the boundary reads the same way on a phone
+  // as on a desktop rather than being a fixed number of metres on a ring half
+  // the size.
+  //
+  // T-0187 — AND SO DOES THE OUTER BAND, which it did not, and that was the
+  // whole of the defect. `band` was left at TUNE's 7.0 m and 5.0 m on rings cut
+  // from 27 m to 13 m, so a ramp sized for the far middle distance came to sit
+  // across the middle of the phone's field: the mid ring's ran from 5.4 m and
+  // the forb ring's from 7.4 m, both inside the verge, and every plant on them
+  // was written through the 4x4 screen door. Measured on the published mirror
+  // at 390x780: 15.4 % of the frame screen-doored inside 9 m at the open
+  // prairie stand, off 179 mid cards and 35 forbs caught mid-ramp, 81 and 14
+  // of them inside the verge.
+  //
+  // The width here is the widest that keeps the WHOLE ramp outside the verge —
+  // `radius - step - fringe - 9.0`, the last term being the nine metres
+  // tools/measure_near_verge.mjs calls the ground a walker looks at — which is
+  // 1.8 m on this ring, taken at 1.6 for margin. It happens to equal the
+  // fringe, and that is a fair statement of what is left: the sward's edge
+  // thins over no more ground than it is ragged by.
+  mid: { inner: 3.0, radius: 13.0, fringe: 1.6, band: 1.6 },
+  // T-2035: keep the light forb transition below 0.45 coverage per 0.75 m
+  // flight sample, while its nearest possible partial coverage stays beyond
+  // the solid nine-metre verge (13 - 0.6 - 1.6 - 1.75 = 9.05 m).
+  forb: { radius: 13.0, fringe: 1.6, band: 1.75 },
+  // ...and the far band is where the phone gains most, because thirteen metres
+  // is where its detailed rings stop. It is also where it can least afford
+  // geometry, so the band is shallower, coarser and smaller-carded than the
+  // desktop's rather than the same band drawn thinly.
+  far: {
+    columns: 7,
+    bands: [
+      { inner: 9.5, innerRamp: 6.5, radius: 40.0, ramp: 20.0, cell: 3.9, perCell: 1, keep: 0.74, wide: [1.4, 2.3], lift: 1.14 },
+      { inner: 30.0, innerRamp: 16.0, radius: 120.0, ramp: 64.0, cell: 11.0, perCell: 1, keep: 0.70, wide: [2.4, 4.2], lift: 1.20 },
+      // T-2783's mid ring, the phone's: the coarsest and shallowest of the three
+      // tiers, over the ground between its 14.6 m rings and its first band.
+      { inner: 12.0, innerRamp: 7.0, radius: 44.0, ramp: 18.0, cell: 3.8, perCell: 1, keep: 0.70, wide: [1.0, 1.8], lift: 1.06, heads: false },
+    ],
+    // NULL, and it is a tier decision rather than a big number chosen to make a
+    // reach vanish. `light` is where the DRAW-CALL floor binds — 80 calls,
+    // restored by T-0147 and already breached at 83 on an unmodified `dev`
+    // (T-0248) — and a head archetype the far band lights up where the near
+    // rings had none is a new draw call, not just more triangles. So the phone
+    // tier carries the sward to its far band and the bloom no further, the same
+    // way it culls furniture at 350 m and the rungs above it do not.
+    minPx: null,
+  },
+  // T-2014. Shallower on the phone, as its far band is: the sward's own far
+  // band stops at 120 m here and the shrubs stop well inside it.
+  farShrub: { radius: 70.0, ramp: 24.0 },
+  cap: { near: 600, mid: 900, forb: 260, head: 480, far: 380, farShrub: 900 },
+};
+
+/**
+ * The middle setting. It has to be a real tune rather than a scale factor on
+ * TUNE's caps, because at full detail the CAPS ARE NOT WHAT BINDS — the ring
+ * radii are. Scaling the caps alone was measured at 8 177 triangles off 461 112,
+ * which is a setting that says "fewer plants" and does essentially nothing.
+ * What costs geometry is the mid ring's area: 27 m against LOW's 13 m is over
+ * four times the ground. So this sits between the two, and every number here is
+ * a RENDERING radius or ceiling. The species mix, the July states and the rules
+ * about where a plant may stand are untouched, because those are evidence.
+ */
+const MID = {
+  near: { radius: 6.2, tuftsPerM2: 6.4 },
+  // T-0187, the same correction as LOW's and it binds less tightly here. The
+  // proportionate band — 7.0 x 18/27 and 5.0 x 17.5/26 — is 4.7 m and 3.4 m,
+  // and both already clear the verge on these rings (the widths that would
+  // reach it are 6.2 m and 5.7 m), so this setting takes the proportion rather
+  // than the clearance. Left at TUNE's 7.0 m the mid ramp began at 8.2 m here,
+  // which is inside the verge too: the defect was never only the phone's.
+  mid: { inner: 4.0, radius: 18.0, fringe: 2.2, band: 4.7 },
+  forb: { radius: 17.5, fringe: 2.2, band: 3.4 },
+  far: {
+    columns: 8,
+    bands: [
+      { inner: 13.0, innerRamp: 8.5, radius: 52.0, ramp: 26.0, cell: 3.6, perCell: 1, keep: 0.78, wide: [1.5, 2.5], lift: 1.14 },
+      { inner: 38.0, innerRamp: 20.0, radius: 150.0, ramp: 80.0, cell: 10.0, perCell: 1, keep: 0.72, wide: [2.5, 4.4], lift: 1.20 },
+      // T-2783's mid ring at the middle setting: between TUNE's and the phone's.
+      { inner: 16.0, innerRamp: 9.0, radius: 64.0, ramp: 26.0, cell: 3.0, perCell: 1, keep: 0.80, wide: [1.0, 1.9], lift: 1.06, heads: false },
+    ],
+    minPx: 2.0,
+  },
+  farShrub: { radius: 105.0, ramp: 35.0 },
+  cap: { near: 1500, mid: 2700, forb: 580, head: 1040, far: 800, farShrub: 2000 },
+};
+
+/** The closed `form` list, split by how it is drawn. */
+const GRAMINOID_FORMS = new Set([
+  'grass_fine', 'grass_arching', 'grass_clump', 'sedge_tussock', 'rush_culm',
+  'cattail', 'mat_prostrate',
+]);
+const FORB_FORMS = new Set([
+  'forb_spike', 'forb_umbel', 'forb_daisy', 'forb_pompom', 'forb_globe',
+  'forb_basal_scape', 'shrub_low', 'scape_leafless',
+]);
+/** Roles this module draws. `tree` and `thicket` belong to trees.js. */
+const OUR_ROLES = new Set(['matrix', 'forb', 'emergent', 'shrub_low', 'ground']);
+
+/**
+ * Head archetype per RECORDED INFLORESCENCE SHAPE — `july.inflorescence.shape`,
+ * against `index.json`'s published 26-value `inflorescence_shapes` vocabulary.
+ *
+ * Round 1 picked the geometry off `form` instead, an eight-value field about
+ * the whole PLANT, and never read `inflorescence.shape` anywhere in the repo.
+ * All 154 rows fill the shape field correctly, so that was 26 values of
+ * researched morphology thrown away at the last step: Liatris's dense button
+ * spike and Culver's root's candelabra spire came out as the same mesh in two
+ * colours, and every `forb_umbel` — 47% of the wet prairie's forb population —
+ * came out as one flat horizontal disc seen 11 degrees off the horizontal,
+ * which is three pixels at five metres.
+ *
+ * The map is exhaustive over the published vocabulary and `compileZones`
+ * checks that it stays so: a shape this renderer cannot draw is REPORTED and
+ * draws nothing, rather than being quietly substituted, which is the whole
+ * point of keying off the record in the first place.
+ *
+ * Each row carries four things the record cannot:
+ *
+ *   kind   which archetype mesh draws it.
+ *   count  how many inflorescences one plant carries in mid-July. The records
+ *          give the density of PLANTS and the size of ONE inflorescence and
+ *          nothing about multiplicity, so this is a liberty either way and the
+ *          honest thing is to key it to the architecture and say so
+ *          (docs/LIBERTIES.md L35). A mountain mint is a mass of corymbs and a
+ *          prairie dock a branched scape of ray heads, while Culver's root's
+ *          candelabra IS the whole inflorescence and there is exactly one.
+ *   tilt   radians off vertical, per instance. A corymb is FLAT-TOPPED and at
+ *          1.68 m eye height a head at 0.7 m is seen eleven degrees above the
+ *          horizontal, so a tilt near zero is a head that is not there.
+ *          `umbel_nodding` is past 90 degrees, which is what nodding means.
+ *   band   how far DOWN the plant the non-terminal heads are carried, as a
+ *          fraction of its height. Axillary clusters run up the whole stem;
+ *          a terminal spike does not.
+ */
+const HEAD_OF_SHAPE = {
+  // Wands and columns.
+  spike: { kind: 'spike', count: [1, 4], tilt: [0.00, 0.24], band: 0.16 },
+  one_sided_spike: { kind: 'spike', count: [1, 2], tilt: [0.06, 0.34], band: 0.10 },
+  raceme: { kind: 'spike', count: [1, 4], tilt: [0.05, 0.36], band: 0.18 },
+  head_thimble: { kind: 'spike', count: [3, 10], tilt: [0.00, 0.28], band: 0.30 },
+  // Flowers in the leaf AXILS, all the way up the stem — not a terminal head.
+  cluster_axillary: { kind: 'spike', count: [8, 22], tilt: [0.60, 1.35], band: 0.66 },
+  panicle_dense: { kind: 'spike', count: [1, 4], tilt: [0.00, 0.32], band: 0.16 },
+  spadix_brown: { kind: 'spike', count: [1, 1], tilt: [0.00, 0.10], band: 0.04 },
+  capsule_green: { kind: 'spike', count: [1, 3], tilt: [0.10, 0.50], band: 0.18 },
+  // Culver's root: a terminal spire with lateral spires off its shoulder.
+  spire_candelabra: { kind: 'spire', count: [1, 3], tilt: [0.00, 0.16], band: 0.08 },
+  // Bluejoint, wild rice, wood nettle: an airy diffuse cloud, not a wand.
+  panicle_open: { kind: 'panicle', count: [1, 2], tilt: [0.05, 0.42], band: 0.10 },
+  // Composites, held up and out on branches.
+  head_ray: { kind: 'ray', count: [5, 17], tilt: [0.25, 0.85], band: 0.38 },
+  head_ray_drooping: { kind: 'raydroop', count: [5, 15], tilt: [0.20, 0.72], band: 0.36 },
+  // Balls and buttons. A berry cluster, a burr, a hazel husk and a wild plum
+  // all read as a small dense sphere at these sizes.
+  head_pompom: { kind: 'pompom', count: [3, 11], tilt: [0.00, 0.40], band: 0.30 },
+  head_globe: { kind: 'pompom', count: [3, 12], tilt: [0.00, 0.42], band: 0.32 },
+  head_button: { kind: 'pompom', count: [2, 8], tilt: [0.00, 0.48], band: 0.28 },
+  burr_spherical: { kind: 'pompom', count: [2, 8], tilt: [0.00, 0.48], band: 0.26 },
+  berry_cluster: { kind: 'pompom', count: [3, 11], tilt: [0.10, 0.62], band: 0.36 },
+  cherry: { kind: 'pompom', count: [3, 12], tilt: [0.10, 0.72], band: 0.38 },
+  nut_husk: { kind: 'pompom', count: [2, 7], tilt: [0.10, 0.62], band: 0.32 },
+  cluster_terminal: { kind: 'pompom', count: [1, 4], tilt: [0.15, 0.66], band: 0.12 },
+  // Umbels: a DOME, never a plate.
+  umbel_domed: { kind: 'dome', count: [3, 10], tilt: [0.05, 0.48], band: 0.34 },
+  umbel_nodding: { kind: 'dome', count: [1, 4], tilt: [1.70, 2.45], band: 0.14 },
+  bulbil_umbel: { kind: 'dome', count: [1, 2], tilt: [0.05, 0.35], band: 0.06 },
+  // Flat-topped clusters, drawn as a tilted disc with a per-instance tilt.
+  corymb_flat: { kind: 'corymb', count: [6, 20], tilt: [0.44, 0.74], band: 0.42 },
+  umbel_flat: { kind: 'corymb', count: [4, 14], tilt: [0.40, 0.70], band: 0.34 },
+  // Umbellets on rays from one point — the Queen-Anne's-lace architecture.
+  umbel_compound: { kind: 'compound', count: [4, 14], tilt: [0.10, 0.46], band: 0.32 },
+};
+
+/**
+ * T-0214 — HOW THE ONE HEAD BUDGET IS SPLIT NINE WAYS, and why it is not split
+ * evenly.
+ *
+ * Nine inflorescence archetypes are nine InstancedMeshes, and each carries its
+ * own ceiling. Until this ticket that ceiling was `tune.cap.head` NINE TIMES:
+ * the same number for the umbel that half a forest flowers with and for the
+ * spire two records in the whole town carry. `maybeHead` stops pushing the
+ * moment a set is full — it now says so through `skip`, but it still stops — so
+ * a set at its ceiling loses the rest of that plant's inflorescences, silently
+ * and mid-plant.
+ *
+ * TWO SETS WERE LOSING THEM. Measured by `tools/measure_bloom_headroom.mjs`
+ * standing in every community at four bearings, plus its three named stands —
+ * ASKED FOR against a 820 ceiling, at each set's own worst pose:
+ *
+ *     dome     1,202  z06_dense_forest facing 90    REFUSED 382
+ *     spike      852  z10_settled_town facing 90    REFUSED  32
+ *     pompom     804  z06_dense_forest facing 90
+ *     raydroop   734  z02_mesic_prairie
+ *     corymb     533  z10_settled_town facing 270
+ *     ray        248  z02_mesic_prairie
+ *     compound   160  z10_settled_town facing 270
+ *     panicle     23  z01_wet_prairie facing 90
+ *     spire       21  z10_settled_town facing 270
+ *
+ * **That is 4,577 against a 7,380-instance budget, so the shortfall is an
+ * ALLOCATION and not a budget.** And 4,577 is already a bound no frame draws:
+ * it sums every set's own worst pose, and those poses are in five different
+ * communities. Two sets were full while seven stood a fifth spent.
+ *
+ * RE-MEASURED THE SAME DAY, after T-0209 carried the bloom out past the near
+ * ring to 119.9 m, and the numbers in `HEAD_DEMAND` below are that second
+ * reading. More reach is more heads: the total asked for goes 4,577 to 5,090,
+ * `corymb` alone from 533 to 724, and the shares are sized on the new figures
+ * rather than left standing on the old ones. This is what the last paragraph
+ * means by re-measurable, on the first day it mattered.
+ *
+ * SO THE SHARE IS SIZED ON THE DEMAND, AND THE TOTAL DOES NOT MOVE. Each set
+ * gets `tune.cap.head x HEAD_SHARE[kind]`, and the shares average exactly one —
+ * so nine times `cap.head` is still the head budget at every detail tier, and a
+ * tier that halves `cap.head` halves every share with it. Nothing here raises a
+ * ceiling; it stops nine identical ceilings from being nine wrong ones.
+ *
+ * THE FLOOR is the third column of the arithmetic and it is `compound`'s own
+ * measured demand. A share cut to a set's measured worst pose alone would give
+ * `spire` twenty-one instances, and twenty-one is a ceiling one new flowering
+ * record walks through — the demand figures are a reading of the flora records
+ * as they stand today, not a property of the archetype. So no set is dealt off
+ * less than the smallest genuinely-used set, which is what makes the four small
+ * sets robust to a record being added rather than to a re-measurement.
+ *
+ * WHAT IT COSTS THE FRAME. The refusals are worth 12,640 triangles if every one
+ * of them were drawn in one frame, and no frame draws them: a head is only ever
+ * drawn inside the head ring, so `dome`'s 382 are only in the frame of a visitor
+ * standing IN the dense forest, and `spike`'s 32 (416 triangles) only of one
+ * standing in the settled town. None of T-0135's five gate stands stands in the
+ * dense forest, and measured against `dev` the whole parcel moves four of the
+ * five by nothing at all and the fifth — the open aerial — by 1,638 triangles
+ * against 510,602 of headroom.
+ *
+ * THE DEMAND FIGURES ARE A MEASUREMENT AND ARE RE-MEASURABLE. Re-run
+ * `node tools/measure_bloom_headroom.mjs` — its §2a is this table — and if a set
+ * is at its cap there, the allocation is stale and this is where it is fixed.
+ */
+const HEAD_DEMAND = {
+  dome: 1235,
+  spike: 923,
+  raydroop: 848,
+  pompom: 804,
+  corymb: 724,
+  ray: 308,
+  compound: 190,
+  spire: 35,
+  panicle: 23,
+};
+/** No archetype is dealt off less than the smallest genuinely-used set — see
+ *  THE FLOOR above. It is `compound`'s own measured demand and not a round
+ *  number chosen to look like one. */
+const HEAD_DEMAND_FLOOR = HEAD_DEMAND.compound;
+/**
+ * The share of `cap.head` each archetype is given, normalised so the nine
+ * average exactly 1. That normalisation is the promise: whatever
+ * `tune.cap.head` is at a detail tier, the nine sets still sum to nine times
+ * it, so this file cannot quietly buy instances by re-weighting them.
+ */
+const HEAD_SHARE = (() => {
+  const kinds = Object.keys(HEAD_DEMAND);
+  const weight = Object.fromEntries(kinds.map(
+    (k) => [k, Math.max(HEAD_DEMAND[k], HEAD_DEMAND_FLOOR)]));
+  const total = kinds.reduce((a, k) => a + weight[k], 0);
+  return Object.fromEntries(kinds.map(
+    (k) => [k, (weight[k] / total) * kinds.length]));
+})();
+
+/** How each graminoid form deforms the one canonical tuft: `arch` is how far
+ *  the tips fall away (cordgrass fountain vs bulrush culm), `spread` scales the
+ *  clump's width against its height when no `width_m` is recorded. */
+const GRASS_SHAPE = {
+  grass_fine: { arch: 0.30, spread: 0.42 },
+  grass_arching: { arch: 0.46, spread: 0.60 },
+  grass_clump: { arch: 0.22, spread: 0.40 },
+  sedge_tussock: { arch: 0.52, spread: 0.55 },
+  rush_culm: { arch: 0.05, spread: 0.20 },
+  cattail: { arch: 0.16, spread: 0.34 },
+  mat_prostrate: { arch: 0.80, spread: 1.10 },
+};
+
+/* -------------------------------------------------------------------------- */
+/* the module                                                                  */
+/* -------------------------------------------------------------------------- */
+
+/** No street corridors: a layer built without streets.js. It holds no records,
+ *  so a worker answers its slots' bands as the page would — outside them all. */
+const NO_VERGE = Object.assign(() => null, { records: [] });
+
+/**
+ * @param {object} o  dataBase (data/ root) · terrain (createTerrain's return) ·
+ *   footprints (nothing grows through a wall) · growthBlocked (a narrow dated
+ *   travelway clears plants, without clearing its whole legal corridor) ·
+ *   verge (T-2094: where in an opened street's corridor a point stands, so a
+ *   turf community's tall plants give way there — see `trodden`) ·
+ *   confidence (every material is patched into it) · problems (the shared
+ *   collector) · lowSpec (touch/mobile) · forbSeat (T-2086: where a forb
+ *   slot stands — null where it is, false nowhere, [e, n] re-seated)
+ */
+export async function createFlora({
+  checkpoint = () => null,
+  dataBase, terrain, footprints = [], growthBlocked = () => false, growthEdges = null,
+  growthPatch = null, verge = NO_VERGE, forbSeat = () => null,
+  confidence = null, problems = [], lowSpec = false, detail = 'full', sceneId = null,
+  renderer = null, placementRender = null,
+} = {}) {
+  const group = new THREE.Group();
+  group.name = 'flora';
+  const disposables = [];
+  const stats = {
+    instances: 0, drawCalls: 0, triangles: 0, zones: 0, species: 0,
+    unimplementedForms: [], unimplementedShapes: [], unzonedLandFraction: 0, rebuilds: 0,
+    // ROADMAP K49(a). The DRAWN population of the sward, per community and per
+    // list: what each species' recorded abundance asks for against how many
+    // slots it actually got in the frame the visitor is looking at. K48 built
+    // this for the woody stems and found a species that was recorded, weighted,
+    // banded, gated — and absent. Nothing had ever counted the sward, which is
+    // 118 of this project's 154 plant records.
+    draws: [],
+    // ROADMAP K49(a). Which of those lists deal their slots off numbers that
+    // are not in the same unit — see `auditAbundance`.
+    abundance: null,
+  };
+
+  const dataset = await loadFlora(dataBase, problems, sceneId);
+  if (!dataset) return inertRig(group, stats);
+
+  // `lowSpec` is the device guess and still means the lightest tune; an
+  // explicit visitor choice arrives as `detail` and outranks it.
+  const quality = lowSpec && detail === 'full' ? 'light' : detail;
+  const tune = mergeTune(quality);
+  const botanicalSegments = quality === 'light' ? 1 : quality === 'balanced' ? 2 : 3;
+  const zones = compileZones(dataset, terrain, problems, stats);
+  if (!zones.length) {
+    problems.push('flora: the manifest named no usable zone — nothing is planted');
+    return inertRig(group, stats);
+  }
+  stats.zones = zones.length;
+
+  stats.abundance = auditAbundance(zones);
+
+  /**
+   * ROADMAP K49(a) — THE DRAWN CENSUS OF THE SWARD.
+   *
+   * One row per (community, list), reset on every rebuild: the sward is dealt
+   * from scratch each time the lattice re-centres, so this counts the
+   * population of the frame in front of the visitor rather than a total
+   * accumulated over a walk. It counts SLOTS DEALT — `stats.capped` is the
+   * separate question of whether a set then had room for them.
+   *
+   * `expected` is computed against the subset the slot was actually drawn from,
+   * not against the whole list: a species that may not stand over water is not
+   * owed the wet slots, and scoring it against them would report a shortfall
+   * every time the visitor stood at the river.
+   */
+  const censusIndex = new Map();
+  for (const z of zones) {
+    for (const [list, key] of [['matrix', 'graminoids'], ['forb', 'forbs'], ['shrub', 'shrubs']]) {
+      const items = z[key];
+      if (!items.length) continue;
+      const row = {
+        community: z.id, list, drawn: 0, drySlots: 0, wetSlots: 0,
+        /** ROADMAP K49(e) / T-0018 — THE SAME CENSUS ONE STEP EARLIER.
+         *  `drawn` counts the slots that survived `station()` and
+         *  `crowdsTheWalker()`; `dealt` counts the slots the deal handed a
+         *  species to before either filter got a vote, and the two rejection
+         *  counters say which filter took the difference. Nothing here changes
+         *  what is drawn — it is the population `deviation` is measured over,
+         *  which until now could only be seen after the filtering. */
+        dealt: 0, dryDealt: 0, wetDealt: 0, rejStation: 0, rejWalker: 0,
+        species: items.map((s) => ({
+          id: s.id, unit: s.unit, share: s.weight, stems: s.stems, expected: 0, drawn: 0,
+          /** ROADMAP K49(e) / T-0018 — this species' half of the same pair. */
+          dealt: 0, expectedDealt: 0,
+          /** ROADMAP K54. The clump this species' record gives, and the ground
+           *  cover that density implies — `stems × π(width/2)²`, which for a
+           *  cover-recorded species is its own recorded `cover_fraction` back
+           *  again. It is here so a census can ask the question K54 asks: not
+           *  only whether the head count is faithful, but whether the GROUND
+           *  the sample covers is. */
+          width: s.width ? mid(s.width) : null,
+          cover: coverOf(s),
+        })),
+      };
+      const byId = new Map(row.species.map((s) => [s.id, s]));
+      // The shares the two subsets renormalise to, which is what `pick` walks.
+      const shares = items.map((s) => ({
+        row: byId.get(s.id),
+        dry: z.dry[key].items.includes(s) && z.dry[key].total > 0 ? s.weight / z.dry[key].total : 0,
+        wet: z.wet[key].items.includes(s) && z.wet[key].total > 0 ? s.weight / z.wet[key].total : 0,
+      }));
+      censusIndex.set(`${z.id}:${list}`, { row, byId, shares });
+      // The placer reaches the census row THROUGH THE ZONE it already has in
+      // hand. The lookup used to rebuild `${z.id}:${list}` and hit the Map once
+      // per drawn slot; T-0018 asks the same question of every DEALT slot,
+      // which is a bigger population, and paying a string allocation for each
+      // of them in the rebuild loop is not a measurement, it is a cost.
+      (z.census ??= {})[list] = censusIndex.get(`${z.id}:${list}`);
+      stats.draws.push(row);
+    }
+  }
+  /** A slot the deal handed a species to, counted before `station()` and
+   *  `crowdsTheWalker()` are asked. ROADMAP K49(e) / T-0018. */
+  const countDealt = (c, sp, wet) => {
+    if (!c) return;
+    c.row.dealt++;
+    if (wet) c.row.wetDealt++; else c.row.dryDealt++;
+    const s = c.byId.get(sp.id);
+    if (s) s.dealt++;
+  };
+  const countDraw = (c, sp, wet) => {
+    if (!c) return;
+    c.row.drawn++;
+    if (wet) c.row.wetSlots++; else c.row.drySlots++;
+    const s = c.byId.get(sp.id);
+    if (s) s.drawn++;
+  };
+  /** T-2774: bumped by every `openCensus`, so a read-back that lands after a
+   *  later pass has reset the census does not count into that pass's. */
+  let censusGen = 0;
+  const openCensus = () => {
+    censusGen++;
+    for (const { row } of censusIndex.values()) {
+      row.drawn = 0;
+      row.drySlots = 0;
+      row.wetSlots = 0;
+      row.dealt = 0;
+      row.dryDealt = 0;
+      row.wetDealt = 0;
+      row.rejStation = 0;
+      row.rejWalker = 0;
+      for (const s of row.species) { s.drawn = 0; s.expected = 0; s.dealt = 0; s.expectedDealt = 0; }
+    }
+  };
+  const closeCensus = () => {
+    for (const { row, shares } of censusIndex.values()) {
+      for (const s of shares) {
+        s.row.expected = s.dry * row.drySlots + s.wet * row.wetSlots;
+        // The same share against the DEALT population: what the layer's
+        // disagreement with its own target would have been had nothing been
+        // filtered out. ROADMAP K49(e) / T-0018.
+        s.row.expectedDealt = s.dry * row.dryDealt + s.wet * row.wetDealt;
+      }
+    }
+  };
+
+  const water = await waterField(terrain, checkpoint);
+  const blocks = circleGrid(footprintCircles(footprints));
+  const finder = zoneFinder(zones, terrain, water);
+  // T-2695: one worker of the job pool holds the finder's ground, so the slots of
+  // a spread pass's lattice walk are asked their community there as soon as they
+  // come home (jobs/zone-kernel.js). A slot whose answer is not home by the time
+  // the deal reaches it is asked here, as before.
+  const ground = jobsOnWorkers() ? heldGround(zones, terrain, water, finder) : null;
+  const groundKey = ground ? `flora-ground-${++groundSerial}` : null;
+  // T-2696: and the rest of a slot's ground with it — its floors and its streets'
+  // corridors, which with the heightfield it already holds answer water, floor,
+  // verge and height there too (flora-ground.js). A `verge` that brings no
+  // records cannot be asked on a worker, so its slots are asked here.
+  if (ground && verge.records) {
+    ground.floors = footprints.map((f) => f.pts);
+    ground.streets = vergeRecords(verge.records);
+  }
+  // T-2896: and the streets' half of `growthBlocked` — the travelled track,
+  // streets.js `blocksGrowth`, which the page passes as `growthEdges` — by the
+  // same arithmetic over the same records (street-verge.js `trackAt`), so a
+  // held slot asks the page only `growthPatch`, the yards, the ground strip and
+  // the worked bank. `growthBlocked` is the two together (main.js); the
+  // profile read the streets' half as the largest flora entry of a move.
+  const trackOnWorker = !!(ground?.streets && growthEdges !== null && growthPatch !== null
+    && trackHeld(ground));
+  const groundWorker = ground ? holdOnWorker('holdGround', { key: groundKey, ground }) : null;
+  if (ground) {
+    stats.groundBytes = ground.hf.data.byteLength + ground.water.toWater.byteLength
+      + ground.water.toLand.byteLength
+      + (ground.blend ? ground.blend.mark.byteLength + ground.blend.dist.byteLength : 0);
+  }
+  /** The slot's community: the worker's answer if the walk brought one. */
+  const zoneOf = (e, n, z) => {
+    if (z === undefined || z === ZONE_UNASKED) return finder(e, n);
+    finder.remember(e, n, z);
+    return zones[z - 1] ?? null;
+  };
+  stats.unzonedLandFraction = await auditCoverage(terrain, finder, checkpoint);
+  stats.turf = await handTurfToGround(zones, finder, water, terrain, problems, checkpoint);
+  // T-2783: and the far sward's colour, over the whole heightfield.
+  stats.farSward = await handFarSwardToGround(zones, finder, water, terrain, tune, problems,
+    checkpoint);
+  if (stats.unzonedLandFraction >= 0.999) {
+    // Not a tolerance: records exist, ground exists, and NOTHING matches — the
+    // layer would draw an empty prairie while looking healthy. Any fraction
+    // short of that is a real mosaic and is reported through stats.
+    problems.push('flora: no point on the modelled ground matches any zone extent — '
+      + 'the sward is empty. Check data/flora/index.json extents against the heightfield.');
+  }
+
+  // ---- materials --------------------------------------------------------- //
+
+  const uniforms = {
+    uChiTime: { value: 0 },
+    uChiWind: { value: new THREE.Vector2(0.82, 0.57) },
+    uChiSway: { value: TUNE.wind.sway },
+    uChiWaveK: { value: (Math.PI * 2) / TUNE.wind.waveM },
+    // World space, pointing AT the sun. Filled from the scene's own light on
+    // the first update; the fallback is the same instant world.js computes.
+    uChiSun: { value: sunDirFallback() },
+    uChiSunCol: { value: new THREE.Vector3(...SUN_FALLBACK.colour) },
+    uChiSky: { value: new THREE.Vector3(...SUN_FALLBACK.sky) },
+  };
+  /** Resolved once, from the scene graph, at the first update. */
+  let sunFound = false;
+  // T-3331: a new hour moves the sun, its colour and the fill; find them again.
+  onDaylight(() => { sunFound = false; });
+
+  // One procedural atlas for every understory family; no network texture or
+  // extra draw call. Alpha is clipped before lighting and still writes depth.
+  const foliage = foliageAtlas();
+  uniforms.uChiFoliage = { value: foliage };
+  disposables.push(foliage);
+  const bladeMat = plantMaterial({ uniforms, billboard: false });
+  const cardMat = plantMaterial({ uniforms, billboard: true, membrane: 0.30 });
+  // Camera-facing clump cards retain both sides in one transparent ghost draw.
+  // Volumetric blade/head materials keep their existing two-pass policy.
+  cardMat.forceSinglePass = true;
+  // Heads share the blade program deliberately. Under the software rasteriser
+  // every extra shader program is seconds of compile time on the first frame,
+  // and a flower head's own sway works out at four millimetres.
+  const headMat = bladeMat;
+  for (const m of [bladeMat, cardMat]) {
+    confidence?.patch(m);
+    disposables.push(m);
+  }
+
+  // ---- the layers -------------------------------------------------------- //
+
+  const nearTuft = () => tuftGeometry(9, quality === 'light' ? 2 : 4);
+  // T-2716. The near ring's tufts are drawn from the shader wherever the page
+  // can render the deal pass's float targets (WebGL2 with float colour
+  // buffers); the CPU walk then deals into a sink that only counts, for the
+  // census and the heads. Without a renderer — a tool building flora in a page
+  // of its own — the CPU set draws them as it always has.
+  const gpuNearOn = renderer?.capabilities?.isWebGL2 !== false
+    && !!renderer?.extensions?.has?.('EXT_color_buffer_float');
+  const nearSet = gpuNearOn ? nearSink('flora-near', nearTuft)
+    : instSet('flora-near', nearTuft(), bladeMat, tune.cap.near);
+  const midSet = instSet('flora-mid', cardGeometry(7), cardMat, tune.cap.mid);
+  const forbSet = instSet('flora-forb', forbGeometry(botanicalSegments), bladeMat, tune.cap.forb);
+  // A basal-scape plant is not a stem with leaves up it. Prairie dock and
+  // compass plant are a 40 cm ROSETTE of huge paddle leaves at the ground with
+  // a nearly naked flowering scape two or three metres over it — the dossier
+  // names the rosette explicitly and it is the plant's whole diagnosis. Drawn
+  // with the generic forb it became a leafy giant that filled the foreground.
+  const rosetteSet = instSet('flora-rosette', rosetteGeometry(botanicalSegments), bladeMat,
+    Math.max(48, Math.round(tune.cap.forb * 0.80)));
+  // ...and a shrub is not a stem with leaves up it either (K53). Twenty-one
+  // records across eight zones carry `form: 'shrub_low'` — hazel, elder,
+  // dogwood, buttonbush, the lakeshore's sand cherry and the black-oak grubs —
+  // and every one of them was drawn with the forb above, which is one wand of
+  // four leaves however wide the record says the clump is. The wet woods' own
+  // dossier calls hazel the most common shrub-layer plant there was and says
+  // under-rendering it is the specific mistake to avoid; it was a wand.
+  const shrubSet = instSet('flora-shrub', shrubGeometry(SHRUB_GRAIN, 'flora-shrub', 1, botanicalSegments), bladeMat, tune.cap.forb);
+  // One instanced set per ARCHETYPE, so the geometry a species gets is the
+  // shape its record names. The flat horizontal plate is gone; nothing draws
+  // one, because at 1.68 m eye height a corymb at 0.7 m is seen 11 degrees off
+  // the horizontal and a flat disc is three pixels of nothing.
+  const headCap = (kind) => Math.round(tune.cap.head * HEAD_SHARE[kind]);
+  const heads = {
+    spike: instSet('flora-head-spike', spikeGeometry(), headMat, headCap('spike')),
+    spire: instSet('flora-head-spire', spireGeometry(), headMat, headCap('spire')),
+    panicle: instSet('flora-head-panicle', panicleGeometry(), headMat, headCap('panicle')),
+    ray: instSet('flora-head-ray', rayGeometry(false), headMat, headCap('ray')),
+    raydroop: instSet('flora-head-raydroop', rayGeometry(true), headMat, headCap('raydroop')),
+    pompom: instSet('flora-head-pompom', pompomGeometry(), headMat, headCap('pompom')),
+    dome: instSet('flora-head-dome', domeGeometry(), headMat, headCap('dome')),
+    corymb: instSet('flora-head-corymb', corymbGeometry(), headMat, headCap('corymb')),
+    compound: instSet('flora-head-compound', compoundGeometry(), headMat, headCap('compound')),
+  };
+  // T-0086. The far band, on the mid ring's own material and its own archetype:
+  // one more instanced set, one more draw call, no new shader program. Nine
+  // columns rather than seven because this card stands further off and for more
+  // ground — a silhouette read at fifty metres wants more tops in it, and two
+  // extra triangles is what they cost.
+  const farSet = instSet('flora-far', cardGeometry(tune.far.columns), cardMat, tune.cap.far);
+  // T-2014. The shrubs past the forb ring, on the shrub's own material — one
+  // more draw call and no new shader program. See `TUNE.farShrub`.
+  const farShrubSet = instSet('flora-shrub-far', farShrubGeometry(), bladeMat,
+    tune.cap.farShrub);
+  // T-2035. Persistent, rooted versions of the SAME near and mid slots.
+  // The close representation refines a clump already present in the scene.
+  // Reuse placement RNGs, not a second population or a raised canopy sheet.
+  const nearCarry = instSet('flora-near-carry', tuftGeometry(9, quality === 'light' ? 1 : 2),
+    bladeMat, quality === 'light' ? 12000 : quality === 'balanced' ? 22000 : 40000);
+  const midCarry = instSet('flora-mid-carry', cardGeometry(7, [0, 3, 6]), cardMat,
+    quality === 'light' ? 16000 : quality === 'balanced' ? 24000 : 32000);
+  const sets = [nearSet, midSet, forbSet, rosetteSet, shrubSet, farSet, farShrubSet,
+    nearCarry, midCarry,
+    ...Object.values(heads)];
+  for (const s of sets) {
+    if (!s.mesh.isObject3D) continue;
+    group.add(s.mesh);
+    disposables.push(s.mesh.geometry);
+  }
+
+  // ---- placement --------------------------------------------------------- //
+
+  const centres = { near: null, yaw: null, farShrub: null, farShrubYaw: null, coneCos: null, aerial: null, pitch: null, eyeY: null,
+    last: null, lastYaw: null };
+
+  const waterY = terrain.heightfield?.meta?.water_surface_m ?? 0;
+
+  // The lattice each layer is scattered on, and the ring the shader fades it
+  // over — the second strictly inside the first by `step`. See `ringsFor`.
+  const step = tune.step.near;
+  /** Scratch buffers for the per-slot rings. See `ringAt`. */
+  const _ring = [0, 0, 0, 0];
+  const _headRing = [0, 0, 0, 0];
+  const rings = {};
+  for (const layer of ['near', 'mid', 'forb']) {
+    rings[layer] = ringsFor(tune[layer], step);
+    rings[layer].head = headRingOf(rings[layer].fade);
+  }
+  /**
+   * T-2035's carries, as `rebuildCarry` walks them: the near and mid lattices'
+   * own slots (their salts, the `'strata'` draw) past the detailed ring's
+   * handover, out to the mid ring's edge (near) and the far band's first edge
+   * (mid), each with its own ragged edge (`carryFringe`) and the far shrubs'
+   * step as its margin. T-2896: one table, which the CPU walk and the GPU's
+   * deal (flora-gpu-carry.js) both read.
+   */
+  const carryMargin = tune.farShrub.step;
+  /** T-2014: the far shrubs' lattice's inner radius — the nearest any slot's
+   *  own handover can stand, less the rebuild step: the hard edge is per
+   *  frame, so the lattice reaches in past it by as far as the walker can go
+   *  before the next rebuild. T-2968: one function, which the CPU walk and the
+   *  GPU's deal both read. */
+  function farShrubInner() {
+    const f = rings.forb;
+    return Math.max(0, f.fade[0] - f.fade[1] - f.fringe - tune.farShrub.step);
+  }
+  const carryWalks = [['near', nearCarry, 0x51ed27], ['mid', midCarry, 0x9e3779]]
+    .map(([kind, target, salt]) => {
+      const original = rings[kind];
+      const layer = tune[kind];
+      const radius = kind === 'near' ? tune.mid.radius + tune.mid.fringe : tune.far.bands[0].radius;
+      const inner = kind === 'mid' ? 0 : Math.max(0, original.fade[0] - original.fade[1]
+        - original.spread.outer - original.fringe - carryMargin);
+      const carryFringe = Math.min(3, original.fringe);
+      return { kind, target, original, radius, carryFringe,
+        band: Math.min(radius - 9.5, kind === 'near' ? 9 : 20),
+        walk: { cell: layer.cell, perCell: layer.perCell, radius: radius + carryFringe + carryMargin,
+          inner, salt, draw: 'strata' } };
+    });
+  /** Which ring each rooted set is drawn on. A rosette is a forb. */
+  const ringOfSet = {
+    'flora-near': rings.near, 'flora-mid': rings.mid,
+    'flora-forb': rings.forb, 'flora-rosette': rings.forb, 'flora-shrub': rings.forb,
+  };
+
+  /**
+   * T-2716 — THE NEAR RING DRAWN FROM THE SHADER (flora-gpu-near.js). At every
+   * near placement the deal pass writes each lattice slot's instance into four
+   * float targets — the lattice walk, the deal and the slot's own ring all in
+   * GLSL, off the kept field tile — and the tuft mesh draws one instance per
+   * slot from them. What the CPU still does for the near ring is the uniforms
+   * below, keeping the tile, and — since T-2774, which retired the CPU near
+   * walk the heads hung off — reaping the deal pass's read-back for the heads
+   * and the census (`reap`).
+   *
+   * `flora-near` is still in the group for every reader that asks for it by
+   * name: an InstancedMesh that is never drawn, whose instances are READ BACK
+   * from the deal pass's targets the first time anything asks for its `count`
+   * after a pass — so the smoke's root, ring and cover gates read what the GPU
+   * drew, not a CPU deal standing in for it. The drawn mesh is
+   * `flora-near-gpu`, a plain mesh, so nothing that walks the InstancedMeshes
+   * counts it twice.
+   */
+  const gpuNear = gpuNearOn ? makeGpuNear() : null;
+  /** T-2774. Whether this frame's caller reads the buffers straight after (no
+   *  budget: `step()`, the boot, `settle`), so the near read-back is taken in
+   *  the frame; and whether a near pass is dealing into the sets now, so a
+   *  read-back that lands then leaves its heads to that pass's commit. */
+  let nearSync = true;
+  /** T-2966. The same for the far pass's carries: a caller with no budget
+   *  gets them dealt, read back and reaped in the frame; every other caller's
+   *  read-back stays behind its fence, and a pass that has to land before it
+   *  comes home leaves the reap to the carries' tail (`carryPass`). */
+  let farSync = true;
+  /**
+   * T-2966. Which of a pass's GPU-dealt rings the GPU dealt, as the pass
+   * decided it: the near pass's mid ring (with its forbs, rosettes and shrubs,
+   * `midCovers` at its start) and the far pass's carries (`carryCovers`, or the
+   * CPU's walk when the kept carry tile stopped covering while it waited). Set
+   * by each pass's generator and booked on its log entry (`onGpu`; a NEXT the
+   * carries' tail later walks on the CPU sets it false there). The two deals differ by the kept tile's own class (T-2698: the
+   * texel centre's community, water or floor is not the slot's, about one slot
+   * in 400), and which one a pass takes is the tile's timing: a re-centre that
+   * lands after a pass started serves the pass after it. So a tool that deals a
+   * landed pass again in one frame to compare the two plant for plant
+   * (`measure_walk_frames.mjs --verify`) deals it on the same side
+   * (`dealOnCpu`), or it compares the tile's class and not the spreading.
+   */
+  const dealtOnGpu = { near: null, far: null };
+  /** T-2966. A tool's re-deal of a pass whose rings the CPU walked: while set,
+   *  every pass walks them on the CPU (`api.dealOnCpu`). */
+  let dealOnCpu = false;
+  let nearDealing = false;
+  /** T-2894. Bumped whenever a pass deals the mid ring on the CPU (its kept
+   *  tile not home), so a GPU read-back of an earlier placement that lands
+   *  meanwhile leaves the mid cards to that pass. */
+  let midGen = 0;
+  /** T-2967. And bumped whenever a pass deals the far band on the CPU (its kept
+   *  far tile not home), so a GPU far reap of an earlier placement that lands
+   *  meanwhile leaves the far cards to that pass. */
+  let farGen = 0;
+  /** T-2774. Each head set as the pass left it, before the near ring's heads. */
+  const headMarks = {};
+  /**
+   * T-2774. Append the near ring's heads — the last reap's, from the GPU's
+   * deal — to the head sets after the pass's own (forbs, shrubs, the far
+   * band). They used to be pushed first, by the CPU near walk, so where a set
+   * fills it is now a near head that waits rather than a forb's; no set fills
+   * at the critic anchors (`stats.capped`).
+   */
+  function hangNearHeads() {
+    if (!gpuNear) return;
+    for (const k in heads) {
+      const set = heads[k];
+      headMarks[k] = set.mark();
+      // T-2895: the forb ring's heads first, then the near ring's, so where a
+      // set fills it is still a near head that waits. T-2967: and before
+      // both the far band's, which a pass that walks it used to push before
+      // anything else, so a full set refuses the heads it always refused.
+      for (const rows of [gpuNear.farHeads[k].rows, gpuNear.forbHeads[k].rows, gpuNear.heads[k].rows]) {
+        for (let i = 0; i < rows.length; i += 2) {
+          set.ring(rows[i]);
+          set.push(...rows[i + 1]);
+        }
+      }
+    }
+  }
+  /**
+   * T-2774. A set of head recorders, one per head kind: `maybeHead` is handed
+   * these in place of the head sets, and each records the pushes it is asked
+   * for (the ring with each), which `hangNearHeads` replays into the real sets
+   * after a pass's own heads. A recorder never refuses, so the demand a full
+   * set counts on replay is the whole of what was asked.
+   */
+  function headRecorders() {
+    const out = {};
+    for (const k in heads) {
+      const rows = [];
+      let ringNow = null;
+      out[k] = { rows,
+        reset() { rows.length = 0; },
+        ring(r) { ringNow = r.slice(); },
+        push(...args) { rows.push(ringNow, args); return true; },
+        skip() {},
+      };
+    }
+    return out;
+  }
+  /** T-2895. Where a pass whose forbs the CPU walks records their heads (the
+   *  GPU near ring hangs them after the mark, with the reap's): handed over to
+   *  `gpuNear` when the pass lands, so one dropped half-way leaves the last. */
+  const forbHeadsCpu = gpuNearOn ? headRecorders() : null;
+  /** T-2967. Where a pass whose far band the CPU walks records its heads, on
+   *  the same terms: handed over (`takeFarHeads`) when the pass lands. */
+  const farHeadsCpu = gpuNearOn ? headRecorders() : null;
+  /** T-2774. A read-back reaped: its heads go up now unless a pass is dealing
+   *  (it hangs them when it commits), and a census it counted is closed again.
+   *  The set figures (`tally`) are redone only for a read taken in the frame,
+   *  whose caller reads them straight after; one that lands between frames
+   *  leaves them to the next pass's — the profile read that tally at 147 ms
+   *  over the phone profile's moves, for figures only the tools read. */
+  function nearReaped(counted, sync) {
+    if (counted) closeCensus();
+    if (nearDealing) return;
+    for (const k in heads) {
+      if (!headMarks[k]) continue;
+      heads[k].rewind(headMarks[k]);
+    }
+    hangNearHeads();
+    for (const k in heads) heads[k].commit();
+    if (sync) tally();
+  }
+  function makeGpuNear() {
+    const walk = { cell: tune.near.cell, perCell: tune.near.perCell, radius: rings.near.lattice.outer,
+      inner: rings.near.lattice.inner, salt: 0x51ed27, draw: 'strata' };
+    const max = nearSlotsMax(walk);
+    const { width: W, height: H } = nearTarget(max);
+    const rt = new THREE.WebGLRenderTarget(W, H, { count: 4, type: THREE.FloatType,
+      format: THREE.RGBAFormat, minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter,
+      depthBuffer: false, generateMipmaps: false });
+    const table = dealTable(zones);
+    const tab = new THREE.DataTexture(table.data, table.width, table.height, THREE.RGBAFormat,
+      THREE.FloatType);
+    tab.internalFormat = 'RGBA32F';
+    const nearest = (t) => {
+      t.minFilter = t.magFilter = THREE.NearestFilter;
+      t.generateMipmaps = false; t.flipY = false; t.needsUpdate = true;
+      return t;
+    };
+    nearest(tab);
+    const pass = {
+      uTarget: { value: new THREE.Vector2(W, H) },
+      uFieldClass: { value: null }, uFieldHeight: { value: null },
+      uFieldOrigin: { value: new THREE.Vector2() }, uFieldTexel: { value: FIELD_SPEC.texel },
+      uFieldSize: { value: FIELD_SPEC.size }, uFieldWrap: { value: [0, 0] },
+      uLatGrid: { value: [0, 0, 0, 0] }, uLatDeal: { value: [0, 0, 0, 0] }, uLatMode: { value: 0 },
+      uLatRing: { value: new THREE.Vector4() }, uLatCell: { value: new THREE.Vector2() },
+      uDealTable: { value: tab }, uDealLayout: { value: [table.width, table.itemBase] },
+      uDealCam: { value: new THREE.Vector2() }, uDealEye: { value: new THREE.Vector3() },
+      uNearFade: { value: new THREE.Vector4(...rings.near.fade) },
+      uNearSpread: { value: new THREE.Vector2(rings.near.spread.outer, rings.near.spread.inner) },
+      uNearSalt: { value: [...HANDOVER_SALT] },
+    };
+    const passMat = new THREE.RawShaderMaterial({ glslVersion: THREE.GLSL3, uniforms: pass,
+      ...nearPassShaders({ lattice: LATTICE_GLSL, field: FIELD_GLSL, deal: DEAL_GLSL }) });
+    const passGeo = new THREE.BufferGeometry();
+    passGeo.setAttribute('position', new THREE.BufferAttribute(new Uint8Array(max * 3), 3));
+    const points = new THREE.Points(passGeo, passMat);
+    points.frustumCulled = false;
+    const passScene = new THREE.Scene();
+    passScene.add(points);
+    const passCam = new THREE.Camera();
+    // The pass is PLACEMENT, not a frame, so it is drawn with the renderer's own
+    // `render` as the page took it at creation (`placementRender`): a harness
+    // that swaps `renderer.render` out to hold the frames (the smoke's
+    // `holdDraws`) or to time them (`measure_walk_frames.mjs`) neither skips the
+    // deal nor counts it as a draw. Skipped, the targets kept the last pose's
+    // tufts under this pose's heads — or none at all.
+    const renderPass = placementRender ?? renderer.render.bind(renderer);
+
+    // T-2894 — THE MID CARDS ON THE GPU'S DEAL (flora-gpu-mid.js). The mid
+    // ring's lattice is dealt by a second point pass, against the MID FIELD —
+    // a tile of its own, the near tile's texel over the mid ring's reach — into
+    // one float target that `read` takes with the near ring's and `reapMid`
+    // turns into the `flora-mid` cards. Only where the job pool keeps that tile
+    // a strip at a time: without workers it would be built on the main thread,
+    // and the CPU mid walk deals as it always has.
+    const midWalk = { cell: tune.mid.cell, perCell: tune.mid.perCell, radius: rings.mid.lattice.outer,
+      inner: rings.mid.lattice.inner, salt: 0x9e3779, draw: 'strata' };
+    // T-2895: the forb ring's two walks (`rebuildForbs`), dealt in the same
+    // render against the same tile: the forb lattice and the shrub stratum's.
+    const forbWalk = { cell: tune.forb.cell, perCell: tune.forb.perCell, radius: rings.forb.lattice.outer,
+      inner: rings.forb.lattice.inner, salt: 0x2545f9, draw: 'lattice' };
+    const shrubWalk = { ...forbWalk, salt: 0x7b5c1d, draw: 'wild' };
+    const midOn = !!groundKey;
+    // The tile's reach is the wider of the two rings' — the mid ring's at every
+    // tier today (see flora-gpu-forb.js), so the spec is T-2894's own.
+    const fieldReach = Math.max(midWalk.radius, forbWalk.radius);
+    const midSpec = midFieldSpec(fieldReach);
+    const MW = MID_TARGET_WIDTH;
+    const midMax = midOn ? nearSlotsMax(midWalk) : 1;
+    const forbMax = midOn ? nearSlotsMax(forbWalk) : 1;
+    // The mid slots' rows, then the forb walk's and the shrub walk's, each
+    // starting on a row of its own (`uSlot0`, set per placement to just past
+    // the walk before it).
+    // T-2967: and then the far band's three lattices, each on rows of its own.
+    const farOn = midOn;
+    const farBands = farOn ? tune.far.bands.map((band, i) => {
+      const walk = { cell: band.cell, perCell: band.perCell, radius: band.radius + step + FAR_LATTICE_PAD_M,
+        inner: Math.max(0, band.inner - step - FAR_LATTICE_PAD_M), salt: farSalt(i), draw: 'lattice' };
+      return { band, i, walk, max: nearSlotsMax(walk) };
+    }) : [];
+    const MH = Math.max(1, Math.ceil(midMax / MW)) + 2 * Math.max(1, Math.ceil(forbMax / MW))
+      + farBands.reduce((a, b) => a + Math.max(1, Math.ceil(b.max / MW)), 0);
+    const midRt = new THREE.WebGLRenderTarget(MW, MH, { type: THREE.FloatType,
+      format: THREE.RGBAFormat, minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter,
+      depthBuffer: false, generateMipmaps: false });
+    const midPass = {
+      uTarget: { value: new THREE.Vector2(MW, MH) },
+      uFieldClass: { value: null }, uFieldHeight: { value: null },
+      uFieldOrigin: { value: new THREE.Vector2() }, uFieldTexel: { value: midSpec.texel },
+      uFieldSize: { value: midSpec.size }, uFieldWrap: { value: [0, 0] },
+      uLatGrid: { value: [0, 0, 0, 0] }, uLatDeal: { value: [0, 0, 0, 0] }, uLatMode: { value: 0 },
+      uLatRing: { value: new THREE.Vector4() }, uLatCell: { value: new THREE.Vector2() },
+      uDealTable: { value: tab }, uDealLayout: { value: [table.width, table.itemBase] },
+    };
+    const midMat = new THREE.RawShaderMaterial({ glslVersion: THREE.GLSL3, uniforms: midPass,
+      ...midPassShaders({ lattice: LATTICE_GLSL, field: FIELD_GLSL, deal: DEAL_GLSL, ring: NEAR_RING_GLSL }) });
+    const midGeo = new THREE.BufferGeometry();
+    midGeo.setAttribute('position', new THREE.BufferAttribute(new Uint8Array(midMax * 3), 3));
+    const midPoints = new THREE.Points(midGeo, midMat);
+    midPoints.frustumCulled = false;
+    const midScene = new THREE.Scene();
+    midScene.add(midPoints);
+    // T-2895: the forb and shrub walks' points, in the same scene — so the mid
+    // deal pass's one render draws them into the same target, off the same tile
+    // and its textures (the field's uniforms are the mid pass's own objects),
+    // and the one read-back that takes the mid slots takes theirs. One program
+    // for the two: they differ only in their uniforms.
+    const forbShaders = forbPassShaders({ lattice: LATTICE_GLSL, field: FIELD_GLSL, deal: DEAL_GLSL,
+      ring: NEAR_RING_GLSL });
+    const forbDraws = [[forbWalk, 0], [shrubWalk, 1]].map(([w, shrub]) => {
+      const u = {
+        uTarget: midPass.uTarget, uSlot0: { value: 0 }, uShrub: { value: shrub },
+        uFieldClass: midPass.uFieldClass, uFieldHeight: midPass.uFieldHeight,
+        uFieldOrigin: midPass.uFieldOrigin, uFieldTexel: midPass.uFieldTexel,
+        uFieldSize: midPass.uFieldSize, uFieldWrap: midPass.uFieldWrap,
+        uLatGrid: { value: [0, 0, 0, 0] }, uLatDeal: { value: [0, 0, 0, 0] }, uLatMode: { value: 0 },
+        uLatRing: { value: new THREE.Vector4() }, uLatCell: { value: new THREE.Vector2() },
+        uDealTable: midPass.uDealTable, uDealLayout: midPass.uDealLayout,
+        uForbLayout: { value: [table.forbBase, table.forbItemBase] },
+      };
+      const mat = new THREE.RawShaderMaterial({ glslVersion: THREE.GLSL3, uniforms: u, ...forbShaders });
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(new Uint8Array(forbMax * 3), 3));
+      const points = new THREE.Points(geo, mat);
+      points.frustumCulled = false;
+      midScene.add(points);
+      return { walk: w, shrub: !!shrub, u, mat, geo, points };
+    });
+    // T-2967 — THE FAR BAND ON THE GPU'S DEAL (flora-gpu-far.js). The far band's
+    // three lattices, dealt in the same render, each against its own SLOT FIELD
+    // — one texel per lattice slot, holding the pool's answer at the slot's
+    // own point (`makeSlotField`) — into the rows after the forb walks, and
+    // reaped by `farRun` a slice at a time between frames.
+    const farFields = farBands.map((fb) => makeSlotField(fb.walk));
+    const farShaders = farOn ? farPassShaders({ lattice: LATTICE_GLSL, field: FIELD_GLSL, deal: DEAL_GLSL,
+      ring: NEAR_RING_GLSL }) : null;
+    const farDraws = farBands.map((fb) => {
+      const { band } = fb;
+      const u = {
+        uTarget: midPass.uTarget, uSlot0: { value: 0 }, ...farFields[fb.i].uniforms,
+        // FIELD_GLSL's, which the shader declares and does not read.
+        uFieldClass: midPass.uFieldClass, uFieldHeight: midPass.uFieldHeight,
+        uFieldOrigin: midPass.uFieldOrigin, uFieldTexel: midPass.uFieldTexel,
+        uFieldSize: midPass.uFieldSize, uFieldWrap: midPass.uFieldWrap,
+        uLatGrid: { value: [0, 0, 0, 0] }, uLatDeal: { value: [0, 0, 0, 0] }, uLatMode: { value: 0 },
+        uLatRing: { value: new THREE.Vector4() }, uLatCell: { value: new THREE.Vector2() },
+        uDealTable: midPass.uDealTable, uDealLayout: midPass.uDealLayout,
+        uForbLayout: { value: [table.forbBase, table.forbItemBase] }, uFarBase: { value: table.farBase },
+        uFarBand: { value: new THREE.Vector4(band.radius, band.ramp, band.inner, band.innerRamp) },
+        uFarKeep: { value: new THREE.Vector2(band.keep, step) },
+        uFarSalt: { value: (0x1b9f31c7 ^ (fb.i * 0x9e3779b9)) >>> 0 },
+        uFarCam: { value: new THREE.Vector2() }, uFarCone: { value: new THREE.Vector4(0, 0, -2, 0) },
+      };
+      const mat = new THREE.RawShaderMaterial({ glslVersion: THREE.GLSL3, uniforms: u, ...farShaders });
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(new Uint8Array(fb.max * 3), 3));
+      geo.setDrawRange(0, 0);
+      const points = new THREE.Points(geo, mat);
+      points.frustumCulled = false;
+      midScene.add(points);
+      return { ...fb, u, mat, geo, points };
+    });
+    // T-2896 — THE CARRIES ON THE GPU'S DEAL (flora-gpu-carry.js). The far
+    // pass's two carry walks, dealt against the CARRY FIELD — a kept tile of
+    // their own, the mid field's texel grid over the mid carry's reach — into
+    // one target, the near carry's slots and then the mid carry's, read back
+    // and reaped in slot order by `reapCarry`. Where the mid field is (the job
+    // pool keeps the tile), and only a pass the tile wholly covers.
+    const carryOn = midOn;
+    const carryReach = Math.max(...carryWalks.map((c) => c.walk.radius));
+    const carrySpec = midFieldSpec(carryReach);
+    const carryMax = carryWalks.map((c) => (carryOn ? nearSlotsMax(c.walk) : 1));
+    // T-2968: the far shrubs' walks (flora-gpu-farshrub.js): `page` is
+    // `scatter`'s, which the reap holds a slot to; `gpu` the shader's and its
+    // slot field's, a hair wider. Their words take the rows after the carries.
+    const fsWalks = farShrubWalks({ cell: tune.forb.cell, perCell: tune.forb.perCell,
+      radius: tune.farShrub.radius, inner: farShrubInner() });
+    const fsOn = carryOn;
+    const fsMax = fsOn ? nearSlotsMax(fsWalks.gpu) : 1;
+    const fsRoom = farShrubTexels(fsMax, MW);
+    const CH = carryMax.reduce((a, m) => a + Math.max(1, Math.ceil(m / MW)), 0) + (fsOn ? fsRoom.rows : 0);
+    const carryRt = new THREE.WebGLRenderTarget(MW, CH, { type: THREE.FloatType,
+      format: THREE.RGBAFormat, minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter,
+      depthBuffer: false, generateMipmaps: false });
+    const carryField = {
+      uFieldClass: { value: null }, uFieldHeight: { value: null },
+      uFieldOrigin: { value: new THREE.Vector2() }, uFieldTexel: { value: carrySpec.texel },
+      uFieldSize: { value: carrySpec.size }, uFieldWrap: { value: [0, 0] },
+    };
+    const carryTarget = { value: new THREE.Vector2(MW, CH) };
+    const carryShaders = carryPassShaders({ lattice: LATTICE_GLSL, field: FIELD_GLSL, deal: DEAL_GLSL,
+      ring: NEAR_RING_GLSL });
+    const carryScene = new THREE.Scene();
+    const carryDraws = carryWalks.map((cw, i) => {
+      const u = {
+        uTarget: carryTarget, uSlot0: { value: 0 }, ...carryField,
+        uLatGrid: { value: [0, 0, 0, 0] }, uLatDeal: { value: [0, 0, 0, 0] }, uLatMode: { value: 0 },
+        uLatRing: { value: new THREE.Vector4() }, uLatCell: { value: new THREE.Vector2() },
+        uDealTable: midPass.uDealTable, uDealLayout: midPass.uDealLayout,
+      };
+      const mat = new THREE.RawShaderMaterial({ glslVersion: THREE.GLSL3, uniforms: u, ...carryShaders });
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(new Uint8Array(carryMax[i] * 3), 3));
+      const points = new THREE.Points(geo, mat);
+      points.frustumCulled = false;
+      carryScene.add(points);
+      return { cw, u, mat, geo, max: carryMax[i] };
+    });
+    // T-2968 — THE FAR SHRUBS ON THE GPU'S DEAL (flora-gpu-farshrub.js). One
+    // more point draw in the carry scene, against the far shrubs' own SLOT
+    // FIELD (T-2967's `makeSlotField`: one texel per slot, the pool's answer
+    // at the slot's own point), into the rows after the carries: so the carry
+    // job's one render, fence, read-back and reap take them, and a far pass
+    // that must land leaves them to the carries' tail with the carries.
+    const fsField = fsOn ? makeSlotField(fsWalks.gpu) : null;
+    /** T-2968: a tool's switch (`nearDraw.setFarShrubOnGpu`): false walks the
+     *  far shrubs on the CPU at every far pass, as before this slice. */
+    let fsGpu = true;
+    let fsU = null, fsGeo = null;
+    if (fsOn) {
+      fsU = {
+        uTarget: carryTarget, uSlot0: { value: 0 }, uSlots: { value: 0 }, ...carryField,
+        ...fsField.uniforms,
+        uLatGrid: { value: [0, 0, 0, 0] }, uLatDeal: { value: [0, 0, 0, 0] }, uLatMode: { value: 0 },
+        uLatRing: { value: new THREE.Vector4() }, uLatCell: { value: new THREE.Vector2() },
+        uDealTable: midPass.uDealTable, uDealLayout: midPass.uDealLayout,
+        uForbLayout: { value: [table.forbBase, table.forbItemBase] },
+      };
+      const fsMat = new THREE.RawShaderMaterial({ glslVersion: THREE.GLSL3, uniforms: fsU,
+        ...farShrubPassShaders({ lattice: LATTICE_GLSL, field: FIELD_GLSL, deal: DEAL_GLSL,
+          slot: FAR_SLOT_GLSL, unasked: FAR_UNASKED }) });
+      fsGeo = new THREE.BufferGeometry();
+      fsGeo.setAttribute('position', new THREE.BufferAttribute(new Uint8Array(fsRoom.texels * 3), 3));
+      fsGeo.setDrawRange(0, 0);
+      const points = new THREE.Points(fsGeo, fsMat);
+      points.frustumCulled = false;
+      carryScene.add(points);
+      disposables.push(fsMat, fsGeo, fsField.tex);
+    }
+    // T-2895: the deal passes' programs compiled as the rig is built, and not
+    // waited for: the driver links them while the page goes on, so the first
+    // pass that draws them — the first near pass whose mid ring is the GPU's,
+    // which after a tier change is a walking frame — does not stop on the link
+    // (`getProgramInfoLog`, three's first-use check). The phone profile read it
+    // there at 50-60 ms once the forb program joined the mid one.
+    try {
+      renderer.compile(passScene, passCam);
+      renderer.compile(midScene, passCam);
+      if (carryOn) renderer.compile(carryScene, passCam);
+    } catch { /* drawn as before: compiled on first use */ }
+    // T-2966: and their first use taken BEFORE the first carry deal, between
+    // frames. three's first use of a program asks the driver for its link
+    // status and uniforms (`onFirstUse`), and every such question waits for
+    // the GPU to finish whatever is queued ahead of it — on SwiftShader a
+    // carry deal is tens of ms of it. The gate read the first mid deal after
+    // a tier change at 48-57 ms in a walking frame where a carry deal was in
+    // flight (10 ms with none). So the carries stay the CPU's (`carryWarm`)
+    // until every deal program has linked (`compileAsync`, which asks without
+    // blocking) and has been used once here, with nothing of ours queued.
+    let carryWarm = !carryOn;
+    if (carryOn) {
+      const scenes = [passScene, midScene, carryScene];
+      const firstUse = () => {
+        for (const sc of scenes) {
+          sc.traverse((o) => {
+            if (!o.material) return;
+            try { renderer.properties.get(o.material).currentProgram?.getUniforms(); } catch { /* used when drawn */ }
+          });
+        }
+        carryWarm = true;
+      };
+      try {
+        Promise.all(scenes.map((sc) => renderer.compileAsync(sc, passCam))).then(firstUse, firstUse);
+      } catch { firstUse(); }
+    }
+
+    // The drawn tufts: the near set's own archetype, one instance per slot.
+    const source = nearTuft();
+    const tuftGeo = new THREE.InstancedBufferGeometry().copy(source);
+    source.dispose();
+    tuftGeo.instanceCount = 0;
+    const fetch = {
+      uNearI0: { value: rt.textures[0] }, uNearI1: { value: rt.textures[1] },
+      uNearI2: { value: rt.textures[2] }, uNearI3: { value: rt.textures[3] },
+      uNearW: { value: W },
+    };
+    const mat = plantMaterial({ uniforms, billboard: false,
+      gpuNear: { glsl: NEAR_FETCH_GLSL, uniforms: fetch } });
+    // The confidence channel arrives as a value the fetch read, not an attribute.
+    confidence?.patch(mat, { packed: { read: 'chiNearConf', declare: (v) => v } });
+    const mesh = new THREE.Mesh(tuftGeo, mat);
+    mesh.name = 'flora-near-gpu';
+    mesh.frustumCulled = false;
+    mesh.castShadow = false;
+    mesh.receiveShadow = false;
+    mesh.renderOrder = -3;
+    mesh.visible = false;
+    group.add(mesh);
+
+    // The record readers ask for by name, filled from the targets on demand.
+    const record = instSet('flora-near', nearTuft(), bladeMat, max);
+    record.mesh.visible = false;
+    record.mesh.raycast = () => {};
+    let gen = 0, readGen = -1, recordCount = 0;
+    Object.defineProperty(record.mesh, 'count', {
+      configurable: true,
+      get() { if (readGen !== gen) readBack(); return recordCount; },
+      set(v) { recordCount = v; },
+    });
+    group.add(record.mesh);
+    disposables.push(rt, tab, passMat, passGeo, tuftGeo, mat, record.mesh.geometry, midRt, midMat, midGeo,
+      ...forbDraws.flatMap((d) => [d.mat, d.geo]), ...farDraws.flatMap((d) => [d.mat, d.geo]),
+      carryRt, ...carryDraws.flatMap((d) => [d.mat, d.geo]), ...farFields.map((f) => f.tex),
+      { dispose() { for (const b of pbos) if (b) renderer.getContext().deleteBuffer(b); } });
+
+    let nf = null, keeper = null, uploaded = null, clsTex = null, hgtTex = null;
+    // T-2894: the mid field's keeper, the tile last uploaded and its textures.
+    let midKeeper = null, midUploaded = null, midCls = null, midHgt = null;
+    // T-2967: whether the far band may be dealt on the GPU (the tool's switch).
+    let farGpu = true;
+    // T-2896: the carry field's keeper, the tile last uploaded and its textures;
+    // the carry deal in flight (`carryDeal`) and its read-back's buffer and fence.
+    let carryKeeper = null, carryUploaded = null, carryCls = null, carryHgt = null;
+    let carryJob = null;
+    let count = 0, placed = false, lastE = null, lastN = null;
+    // T-2774: the last placement (its centre, cone, lattice and census), which
+    // the read-back reaps; and the newest read-back asked for, so a slower one
+    // that lands after it is dropped.
+    let at = null;
+    let reading = 0;
+    let waiting = false;
+    const stats = { passes: 0, passMs: 0, builds: 0, buildMs: 0, readBacks: 0, uploads: 0,
+      // T-2774: the read-backs the heads and the census are reaped from — asked
+      // without waiting (`reads`) or in the frame (`syncReads`), the main
+      // thread's ms asking them (in the frame), collecting the ones asked
+      // without waiting and reaping them (between frames, when the fence has
+      // signalled), and the ones a newer read made stale before they landed.
+      reads: 0, syncReads: 0, readMs: 0, collectMs: 0, reaps: 0, reapMs: 0, stale: 0, failed: 0,
+      // T-2894: the mid ring's deal passes and their ms, the mid field's
+      // uploads, the near passes whose mid ring the CPU walked because the kept
+      // mid tile did not cover it (`midCpu`) or that found it gone by the time
+      // they placed (`midMissed`), and the reaps' share and cards.
+      midPasses: 0, midPassMs: 0, midUploads: 0, midCpu: 0, midMissed: 0, midReaps: 0, midReapMs: 0,
+      midCards: 0,
+      // T-2895: the forb ring's reaps (forbs, rosettes and shrubs, dealt in the
+      // mid pass), their ms and plants, and the forb slots re-seated by a kept
+      // yard (`forbSeat`), whose station the page asks whole at the new foot.
+      forbReaps: 0, forbReapMs: 0, forbPlants: 0, forbSeated: 0,
+      // T-2967: the far band — the placements whose far band the GPU dealt
+      // (`farDeals`), the far field's uploads, the near passes whose far band
+      // the CPU walked because the kept far tile did not cover it (`farCpu`)
+      // or that found it gone by the time they placed (`farMissed`); the
+      // reaps landed, their main-thread ms and the slices they were spread
+      // over (and the longest), the reaps a newer one overtook before they
+      // began (`farSkipped`) or that a pass on the CPU made stale
+      // (`farStale`); the cards placed, the slots the page dealt whole (one
+      // the pool did not answer, or a draw on a deal threshold: `farAsked`), and the
+      // placed slots whose deal the doubles did not confirm (`farRedealt`).
+      farDeals: 0, farUploads: 0, farCpu: 0, farMissed: 0, farReaps: 0, farReapMs: 0,
+      farSlices: 0, farSliceMaxMs: 0, farSkipped: 0, farStale: 0, farCards: 0, farAsked: 0,
+      farRedealt: 0,
+      // T-2896: the far passes' carry deals and their ms (the carry field's
+      // uploads land inside them), the read-backs collected without waiting and
+      // the ones taken in the frame, the far passes whose carries the CPU walked
+      // because the kept carry tile did not cover them (`carryCpu`), and the
+      // reaps' ms and plants.
+      carryPasses: 0, carryPassMs: 0, carryUploads: 0, carryCollected: 0, carrySync: 0,
+      carryCpu: 0, carryReaps: 0, carryReapMs: 0, carryPlants: 0, carryKeepMs: 0,
+      carryKeepWorst: 0,
+      // T-2966: the carries left to their tail by a pass that had to land
+      // first (`carryTails`), the frames the tails ran over and their main
+      // thread ms (polling the fence and reaping, a slice a frame), the ones
+      // a CPU walk replaced before they landed, and the passes that found an
+      // earlier pass's tail still holding the buffer and waited their turn.
+      carryTails: 0, carryTailFrames: 0, carryTailMs: 0, carryTailDropped: 0, carryQueued: 0,
+      // T-2966: the NEXTs the kept tile no longer covered, walked on the CPU as
+      // the tail rather than dropped (they are in `carryCpu` too).
+      carryTailCpu: 0,
+      // T-2968: the far shrubs — the carry deals that dealt them too
+      // (`farShrubParts`), the far passes whose far shrubs the CPU walked
+      // (`farShrubCpu`: the slot field or the carries not on the GPU), their
+      // slot field's uploads, the reaps, their ms and bushes, the slots the
+      // page dealt whole (`farShrubAsked`: unanswered, outside the tile, or on
+      // a deal threshold) and the placed slots the doubles dealt otherwise.
+      farShrubParts: 0, farShrubCpu: 0, farShrubUploads: 0, farShrubReaps: 0, farShrubReapMs: 0,
+      farShrubBushes: 0, farShrubAsked: 0, farShrubRedealt: 0 };
+    const bufs = [0, 1, 2, 3].map(() => new Float32Array(W * H * 4));
+    // T-2774: the read-back's pixel-pack buffers, and where they land (`read`).
+    const pbos = [];
+    const landed = [0, 1, 2].map(() => new Float32Array(W * H * 4));
+    // T-2894: the mid target's, read in the frame and between frames.
+    const midBuf = new Float32Array(MW * MH * 4);
+    const midLanded = new Float32Array(MW * MH * 4);
+    // T-2967: the far band's rows of it, collected between frames into one of
+    // two buffers — one being reaped, the newest waiting behind it.
+    const farSlots = farBands.reduce((a, b) => a + Math.max(1, Math.ceil(b.max / MW)) * MW, 0);
+    const farBufs = farOn ? [new Float32Array(farSlots * 4), new Float32Array(farSlots * 4)] : [];
+    // T-2896: the carry target's, one buffer: a far pass reaps it before the
+    // next far pass deals.
+    const carryBuf = new Float32Array(carryOn ? MW * CH * 4 : 4);
+    const _rec = [0, 0, 0, 0];
+    const _slotRing = [0, 0, 0, 0];
+    const { items, forbItems } = table;
+
+    /**
+     * T-2774. The near ring's heads as the reap hangs them: `maybeHead` is
+     * handed these in place of the head sets, and each records the pushes it is
+     * asked for (the ring with each), which `hangNearHeads` replays into the
+     * real sets after a pass's own heads. A recorder never refuses, so the
+     * demand a full set counts on replay is the whole of what was asked.
+     */
+    const recorders = headRecorders();
+    /** T-2895. And the forb ring's heads, the last forb deal's — the reap's, or
+     *  a pass's whose forbs the CPU walked (`takeForbHeads`) — hung with them. */
+    const forbRecorders = headRecorders();
+    /** T-2967. And the far band's, the last far reap's or the last pass's that
+     *  walked it (`takeFarHeads`), hung before them; and the ones a far reap
+     *  in progress records, handed over when it lands. */
+    const farRecorders = headRecorders();
+    const farStageHeads = headRecorders();
+    /** T-2967. A far reap's cards, kept until the whole reap is in and then
+     *  put into the far set in one go: the set is never seen half-reaped, and
+     *  a reap a newer one overtakes leaves it as it was. It refuses past the
+     *  set's own cap as the set would, so a card refused is refused here
+     *  first and hangs no flower. */
+    const farStage = (() => {
+      const max = farSet.max;
+      const rings = new Float64Array(max * 4);
+      const args = new Float64Array(max * 11);
+      const ring4 = [0, 0, 0, 0];
+      let n = 0, want = 0, ringNow = ring4;
+      return {
+        get count() { return n; },
+        reset() { n = 0; want = 0; },
+        ring(r) { ringNow = r; },
+        skip(k) { want += k; },
+        push(...a) {
+          want++;
+          if (n >= max) return false;
+          for (let j = 0; j < 4; j++) rings[4 * n + j] = ringNow[j];
+          for (let j = 0; j < 11; j++) args[11 * n + j] = a[j];
+          n++;
+          return true;
+        },
+        into(set) {
+          set.reset();
+          for (let i = 0; i < n; i++) {
+            for (let j = 0; j < 4; j++) ring4[j] = rings[4 * i + j];
+            set.ring(ring4);
+            const o = 11 * i;
+            set.push(args[o], args[o + 1], args[o + 2], args[o + 3], args[o + 4], args[o + 5], args[o + 6],
+              args[o + 7], args[o + 8], args[o + 9], args[o + 10]);
+          }
+          set.skip(want - n);
+          set.commit();
+        },
+      };
+    })();
+
+    function covers(tile, e, n, reach) {
+      const span = tile.texel * tile.size;
+      return e - reach >= tile.e0 && e + reach <= tile.e0 + span
+        && n - reach >= tile.n0 && n + reach <= tile.n0 + span;
+    }
+    function upload(tile) {
+      if (!clsTex) {
+        clsTex = nearest(new THREE.DataTexture(tile.cls, tile.size, tile.size, THREE.RGIntegerFormat,
+          THREE.UnsignedByteType));
+        clsTex.internalFormat = 'RG8UI';
+        hgtTex = nearest(new THREE.DataTexture(tile.height, tile.size, tile.size, THREE.RedFormat,
+          THREE.FloatType));
+        hgtTex.internalFormat = 'R32F';
+        pass.uFieldClass.value = clsTex;
+        pass.uFieldHeight.value = hgtTex;
+        disposables.push(clsTex, hgtTex);
+      } else {
+        clsTex.image.data = tile.cls;
+        hgtTex.image.data = tile.height;
+        clsTex.needsUpdate = true;
+        hgtTex.needsUpdate = true;
+      }
+      pass.uFieldOrigin.value.set(tile.e0, tile.n0);
+      pass.uFieldTexel.value = tile.texel;
+      pass.uFieldSize.value = tile.size;
+      pass.uFieldWrap.value = [tile.wi ?? 0, tile.wj ?? 0];
+      uploaded = tile;
+      stats.uploads++;
+    }
+    function dealPass() {
+      const t0 = performance.now();
+      const prev = renderer.getRenderTarget();
+      renderer.setRenderTarget(rt);
+      renderPass(passScene, passCam);
+      renderer.setRenderTarget(prev);
+      // The pass leaves the tile's RG8UI class texture on one of the first
+      // units, and a program that declares a float sampler it never sets reads
+      // unit 0: GL refuses that draw ("Mismatch between texture format and
+      // sampler type"). Put the empty texture back on the units the pass used.
+      const gl = renderer.getContext();
+      for (let k = 0; k < 3; k++) renderer.state.bindTexture(gl.TEXTURE_2D, null, gl.TEXTURE0 + k);
+      gen++;
+      mesh.visible = true;
+      stats.passes++;
+      stats.passMs += performance.now() - t0;
+    }
+    /** T-2894: the mid pass's two field textures, made once at the tile's size. */
+    function midTextures(cls, height, size) {
+      midCls = nearest(new THREE.DataTexture(cls, size, size, THREE.RGIntegerFormat,
+        THREE.UnsignedByteType));
+      midCls.internalFormat = 'RG8UI';
+      midHgt = nearest(new THREE.DataTexture(height, size, size, THREE.RedFormat,
+        THREE.FloatType));
+      midHgt.internalFormat = 'R32F';
+      midPass.uFieldClass.value = midCls;
+      midPass.uFieldHeight.value = midHgt;
+      disposables.push(midCls, midHgt);
+    }
+    /** T-2894: the mid field's tile, into the mid pass's own two textures. */
+    function uploadMid(tile) {
+      if (!midCls) midTextures(tile.cls, tile.height, tile.size);
+      else {
+        midCls.image.data = tile.cls;
+        midHgt.image.data = tile.height;
+        midCls.needsUpdate = true;
+        midHgt.needsUpdate = true;
+      }
+      midPass.uFieldOrigin.value.set(tile.e0, tile.n0);
+      midPass.uFieldTexel.value = tile.texel;
+      midPass.uFieldSize.value = tile.size;
+      midPass.uFieldWrap.value = [tile.wi ?? 0, tile.wj ?? 0];
+      midUploaded = tile;
+      stats.midUploads++;
+    }
+    /**
+     * T-2967 — A SLOT FIELD for one lattice walk (flora-gpu-far.js): kept by the
+     * pool a strip at a time (`nf.keeper` with `slot`, jobs/zone-kernel.js
+     * `slotPoint`), one texel per slot, and only its class uploaded (RG8UI) —
+     * the deal reads no height. `uniforms` are FAR_SLOT_GLSL's four; `covers`
+     * whether the uploaded tile holds every cell the walk visits round (e, n).
+     * T-2968's far shrubs build theirs with `gpuNear.slotField(walk)`.
+     */
+    function makeSlotField(walk) {
+      const spec = farSlotSpec(walk);
+      const reach = farSlotReach(walk);
+      const uniforms = { uFarClass: { value: null }, uFarIdx0: { value: [0, 0] },
+        uFarSize: { value: spec.size }, uFarWrap: { value: [0, 0] } };
+      // Made at the tile's size now (every tile of the keeper is `spec.size`
+      // a side), so the build's warm draw (`warmMid`) binds a real integer
+      // texture; a landed tile only swaps its data in.
+      const tex = nearest(new THREE.DataTexture(new Uint8Array(spec.size * spec.size * 2), spec.size,
+        spec.size, THREE.RGIntegerFormat, THREE.UnsignedByteType));
+      tex.internalFormat = 'RG8UI';
+      tex.needsUpdate = true;
+      uniforms.uFarClass.value = tex;
+      const sf = { spec, reach, uniforms, tex, keeper: null, tile: null, uploads: 0, bytes: farSlotBytes(spec),
+        bind(field) {
+          sf.keeper = field.keeper({ spec, page: false, unasked: FAR_UNASKED,
+            slot: { salt: walk.salt, cell: walk.cell, sub: spec.sub, wild: walk.draw === 'wild' } });
+        },
+        /** Follow the walker; upload a tile that has landed. True when it did. */
+        keep(e, n) {
+          const t = sf.keeper?.update(e, n);
+          if (!t || t === sf.tile) return false;
+          tex.image.data = t.cls;
+          tex.needsUpdate = true;
+          uniforms.uFarIdx0.value = [Math.round(t.e0 / t.texel), Math.round(t.n0 / t.texel)];
+          uniforms.uFarSize.value = t.size;
+          uniforms.uFarWrap.value = [t.wi ?? 0, t.wj ?? 0];
+          sf.tile = t;
+          sf.uploads++;
+          return true;
+        },
+        covers(e, n) { return !!(sf.tile && covers(sf.tile, e, n, reach)); },
+      };
+      return sf;
+    }
+    /** T-2894: the mid ring's deal pass, as `dealPass` draws the near one's. */
+    function midDealPass() {
+      const t0 = performance.now();
+      const prev = renderer.getRenderTarget();
+      renderer.setRenderTarget(midRt);
+      renderPass(midScene, passCam);
+      renderer.setRenderTarget(prev);
+      const gl = renderer.getContext();
+      for (let k = 0; k < 3; k++) renderer.state.bindTexture(gl.TEXTURE_2D, null, gl.TEXTURE0 + k);
+      stats.midPasses++;
+      stats.midPassMs += performance.now() - t0;
+    }
+    /** T-2896: the carry field's tile, into the carry pass's own textures. */
+    function uploadCarry(tile) {
+      if (!carryCls) {
+        carryCls = nearest(new THREE.DataTexture(tile.cls, tile.size, tile.size, THREE.RGIntegerFormat,
+          THREE.UnsignedByteType));
+        carryCls.internalFormat = 'RG8UI';
+        carryHgt = nearest(new THREE.DataTexture(tile.height, tile.size, tile.size, THREE.RedFormat,
+          THREE.FloatType));
+        carryHgt.internalFormat = 'R32F';
+        carryField.uFieldClass.value = carryCls;
+        carryField.uFieldHeight.value = carryHgt;
+        disposables.push(carryCls, carryHgt);
+      } else {
+        carryCls.image.data = tile.cls;
+        carryHgt.image.data = tile.height;
+        carryCls.needsUpdate = true;
+        carryHgt.needsUpdate = true;
+      }
+      carryField.uFieldOrigin.value.set(tile.e0, tile.n0);
+      carryField.uFieldTexel.value = tile.texel;
+      carryField.uFieldSize.value = tile.size;
+      carryField.uFieldWrap.value = [tile.wi ?? 0, tile.wj ?? 0];
+      carryUploaded = tile;
+      stats.carryUploads++;
+    }
+
+    /**
+     * T-2896: the far pass's carries dealt at (camE, camN) — both walks in one
+     * render — and their read-back: in the frame when `sync`, else into a
+     * pixel-pack buffer behind a fence that `ready` polls (the far pass's
+     * generator asks it each frame it resumes, as it asks a walk on the pool).
+     * `take` reads it in the frame now, for a resumption that may not wait.
+     * Returns the job the pass reaps (`reap`).
+     */
+    function carryDeal(camE, camN, sync, shrubs = false) {
+      const t0 = performance.now();
+      const gl = renderer.getContext();
+      if (carryJob?.fence) gl.deleteSync(carryJob.fence);
+      const parts = [];
+      let slot0 = 0;
+      for (const d of carryDraws) {
+        const l = latticeUniforms({ camE, camN, ...d.cw.walk });
+        d.u.uLatGrid.value = l.grid;
+        d.u.uLatDeal.value = l.deal;
+        d.u.uLatMode.value = l.mode;
+        d.u.uLatRing.value.set(...l.ring);
+        d.u.uLatCell.value.set(...l.cell);
+        d.u.uSlot0.value = slot0;
+        const c = Math.min(l.count, d.max);
+        d.geo.setDrawRange(0, c);
+        parts.push({ cw: d.cw, grid: l.grid, count: c, slot0 });
+        slot0 += Math.ceil(c / MW) * MW;
+      }
+      // T-2968: the far shrubs, where this pose left them to the job — dealt
+      // here where their slot field covers the pose, else walked by the reap.
+      let fsPart = null;
+      if (shrubs && fsOn) {
+        if (fsGpu && fsField.covers(camE, camN)) {
+          const l = latticeUniforms({ camE, camN, ...fsWalks.gpu });
+          fsU.uLatGrid.value = l.grid;
+          fsU.uLatDeal.value = l.deal;
+          fsU.uLatMode.value = l.mode;
+          fsU.uLatRing.value.set(...l.ring);
+          fsU.uLatCell.value.set(...l.cell);
+          const c = Math.min(l.count, fsMax);
+          const room = farShrubTexels(c, MW);
+          fsU.uSlots.value = c;
+          fsU.uSlot0.value = slot0;
+          fsGeo.setDrawRange(0, room.texels);
+          fsPart = { grid: l.grid, count: c, slot0 };
+          slot0 += room.rows * MW;
+          stats.farShrubParts++;
+        } else fsPart = 'walk';
+      } else fsGeo?.setDrawRange(0, 0);
+      const rows = Math.max(1, Math.ceil(slot0 / MW));
+      const prev = renderer.getRenderTarget();
+      renderer.setRenderTarget(carryRt);
+      renderPass(carryScene, passCam);
+      renderer.setRenderTarget(prev);
+      for (let k = 0; k < 3; k++) renderer.state.bindTexture(gl.TEXTURE_2D, null, gl.TEXTURE0 + k);
+      const job = { parts, rows, shrubs: fsPart, fence: null, landed: false,
+        ready() {
+          if (this.landed) return true;
+          if (carryJob !== this || !this.fence) return false; // `take` deals it again
+          const got = gl.clientWaitSync(this.fence, 0, 0);
+          if (got === gl.TIMEOUT_EXPIRED) return false;
+          gl.deleteSync(this.fence);
+          this.fence = null;
+          if (got === gl.WAIT_FAILED) { this.take(); return true; }
+          gl.bindBuffer(gl.PIXEL_PACK_BUFFER, pbos[4]);
+          gl.getBufferSubData(gl.PIXEL_PACK_BUFFER, 0, carryBuf, 0, MW * rows * 4);
+          gl.bindBuffer(gl.PIXEL_PACK_BUFFER, null);
+          stats.carryCollected++;
+          this.landed = true;
+          return true;
+        },
+        take() {
+          if (this.landed) return;
+          // A later far pass has dealt since (this one was dropped and is being
+          // drained): deal this one again, in the frame.
+          // T-2968: with its far shrubs as it asked for them, and their part
+          // where that deal put it (the slot field may have moved since).
+          if (carryJob !== this) {
+            this.shrubs = carryDeal(camE, camN, true, this.shrubs !== null).shrubs;
+            carryJob = this; this.landed = true; return;
+          }
+          if (this.fence) { gl.deleteSync(this.fence); this.fence = null; }
+          renderer.readRenderTargetPixels(carryRt, 0, 0, MW, rows, carryBuf);
+          stats.carrySync++;
+          this.landed = true;
+        },
+        reap: (e, n, cone) => reapCarry(job, e, n, cone),
+      };
+      carryJob = job;
+      if (sync) job.take();
+      else {
+        renderer.state.bindFramebuffer(gl.FRAMEBUFFER, renderer.properties.get(carryRt).__webglFramebuffer);
+        if (!pbos[4]) {
+          pbos[4] = gl.createBuffer();
+          gl.bindBuffer(gl.PIXEL_PACK_BUFFER, pbos[4]);
+          gl.bufferData(gl.PIXEL_PACK_BUFFER, MW * CH * 16, gl.STREAM_READ);
+        }
+        gl.bindBuffer(gl.PIXEL_PACK_BUFFER, pbos[4]);
+        gl.readBuffer(gl.COLOR_ATTACHMENT0);
+        gl.readPixels(0, 0, MW, rows, gl.RGBA, gl.FLOAT, 0);
+        gl.bindBuffer(gl.PIXEL_PACK_BUFFER, null);
+        const cur = renderer.getRenderTarget();
+        renderer.state.bindFramebuffer(gl.FRAMEBUFFER,
+          cur ? renderer.properties.get(cur).__webglFramebuffer : null);
+        job.fence = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
+        gl.flush();
+      }
+      stats.carryPasses++;
+      stats.carryPassMs += performance.now() - t0;
+      return job;
+    }
+
+    /**
+     * T-2896 — THE CARRIES, OFF THE GPU'S DEAL. What `rebuildCarry`'s walk did
+     * per slot, in slot order, on the deal's word: the slot's own point in
+     * doubles from its cell and index (`scatter`'s arithmetic), held to the
+     * lattice's ring and the pass's view cone; the slot's own handover (the
+     * detailed ring's `slotRing`, its fringe included) and edge (the carry
+     * fringe); then the page's half of `station` — `growthBlocked`, and the
+     * woody band at the ground's own height — and the plant on the slot's own
+     * stream past the jitter's two draws, rooted where `station` roots it. A
+     * generator, so a spread far pass reaps it a slice at a time.
+     */
+    const _carryRing = [0, 0, 0, 0];
+    function* reapCarry(job, camE, camN, cone) {
+      const b = carryBuf;
+      stats.carryReaps++;
+      let t = performance.now();
+      for (const part of job.parts) {
+        const { kind, target, original, radius, band, carryFringe, walk: w } = part.cw;
+        const [c0, r0, cols, perCell] = part.grid;
+        const { cell, salt } = w;
+        const sub = Math.max(1, Math.round(Math.sqrt(perCell)));
+        const rr = w.radius * w.radius;
+        const ri = w.inner * w.inner;
+        target.reset();
+        for (let id = 0; id < part.count; id++) {
+          if ((id & 1023) === 1023) {
+            stats.carryReapMs += performance.now() - t;
+            yield { done: id, total: part.count };
+            t = performance.now();
+          }
+          const o = 4 * (part.slot0 + id);
+          const word = b[o + 3] | 0;
+          // Not kept, no community or no graminoids, short turf, or no deal:
+          // the walk returned for each of these wherever the slot stood. And
+          // the ground's half of `station` refused it: every test the walk
+          // made of a slot only drops it, so a refused one is passed over
+          // before its point is recomputed.
+          if ((word & 7) !== NEAR_DEAL.placed) continue;
+          const k = id % perCell;
+          const cellIdx = (id - k) / perCell;
+          const ci = cellIdx % cols;
+          const c = c0 + ci;
+          const r = r0 + (cellIdx - ci) / cols;
+          const rng = rngFrom(hash3(hash3(c, r, salt), k, 0x68bc21eb));
+          const je = rng(), jn = rng();
+          const e = (c + (k % sub + je) / sub) * cell;
+          const n = (r + (((k / sub) | 0) + jn) / sub) * cell;
+          const d2 = (e - camE) ** 2 + (n - camN) ** 2;
+          if (d2 > rr || d2 < ri) continue;
+          const d = Math.sqrt(d2);
+          if (cone && d > CONE_KEEP_M
+            && ((e - camE) * cone.fe + (n - camN) * cone.fn) < d * cone.cos - 2 * (cone.margin ?? 0)) continue;
+          if (cone?.planes && outsideFrustum(cone, e, n, d)) continue;
+          const off = fringeOf(e, n, original.fringe);
+          const detailRing = slotRing(original, e, n, off, _ring);
+          const handover = kind === 'mid' ? 0 : detailRing[0] - detailRing[1];
+          const edge = radius + fringeOf(e, n, carryFringe);
+          if (d < handover - carryMargin || d > edge + carryMargin) continue;
+          if (growthBlocked(e, n)) continue;
+          const { zone, sp } = items[(word >> 4) - 1];
+          const wet = (word & 8) !== 0;
+          const y = wet ? waterY : terrain.surfaceHeight(e, n);
+          if (!wet && woodyRefuses(zone, sp, e, n, y)) continue;
+          // `push` copies the ring out as it places, so one scratch serves.
+          _carryRing[0] = edge; _carryRing[1] = band; _carryRing[2] = handover;
+          _carryRing[3] = kind === 'mid' ? 0 : HARD;
+          target.ring(_carryRing);
+          if (kind === 'near') placeGraminoid(target, sp, e, y, n, rng);
+          else placeCard(target, sp, zone, e, y, n, rng);
+        }
+        target.commit();
+        stats.carryPlants += target.mesh.count;
+      }
+      stats.carryReapMs += performance.now() - t;
+      // T-2968: and the far shrubs this pose left to the job, after the
+      // carries and in the same generator: so a spread pass reaps them a
+      // slice at a time, and the carries' tail does on DRAIN.
+      if (job.shrubs === 'walk') {
+        stats.farShrubCpu++;
+        yield* walkFarShrubs(camE, camN, cone);
+      } else if (job.shrubs) yield* reapFarShrubs(job.shrubs, camE, camN, cone);
+    }
+
+    /**
+     * T-2968 — THE FAR SHRUBS, OFF THE GPU'S DEAL (flora-gpu-farshrub.js). What
+     * `walkFarShrubs` did per slot, in slot order, on the part's words (four to
+     * a texel from `slot0`): the slot's own point in doubles from its cell and
+     * index (the `'wild'` draw's full-cell jitter), held to `scatter`'s ring and
+     * the pass's view cone; its handover (the forb ring's fringe) and outer
+     * edge (its rank); the deal's draw in doubles, and the species dealt off it
+     * again; then the page's half of `station` — `growthBlocked`, and the
+     * woody band at the ground's own height — and `placeShrub` on the slot's
+     * own stream past the jitter's two draws. A slot the field could not
+     * answer, or on a deal threshold (`FARSHRUB_ASK`), or whose species the
+     * doubles deal otherwise, is dealt whole with the walk's own code.
+     */
+    const _fsRing = [0, 0, 0, HARD];
+    function* reapFarShrubs(part, camE, camN, cone) {
+      const b = carryBuf;
+      const base = 4 * part.slot0;
+      const [c0, r0, cols, perCell] = part.grid;
+      const { cell, salt, radius, inner } = fsWalks.page;
+      const rr = radius * radius;
+      const ri = inner * inner;
+      const f = rings.forb;
+      const fs = tune.farShrub;
+      const globalShift = hash3(salt, STRAT_SALT, 0x9e3779b9) / 4294967296;
+      stats.farShrubReaps++;
+      let t = performance.now();
+      farShrubSet.reset();
+      for (let id = 0; id < part.count; id++) {
+        if ((id & 1023) === 1023) {
+          stats.farShrubReapMs += performance.now() - t;
+          yield { done: id, total: part.count };
+          t = performance.now();
+        }
+        const word = b[base + id] | 0;
+        const code = word & 7;
+        // Not kept, no community or no shrubs in it, no deal, or the ground's
+        // half of `station` refused it at the slot: the walk placed nothing.
+        if (code !== NEAR_DEAL.placed && code !== FARSHRUB_ASK) continue;
+        const k = id % perCell;
+        const cellIdx = (id - k) / perCell;
+        const ci = cellIdx % cols;
+        const c = c0 + ci;
+        const r = r0 + (cellIdx - ci) / cols;
+        const rng = rngFrom(hash3(hash3(c, r, salt), k, 0x68bc21eb));
+        const je = rng(), jn = rng();
+        const e = (c + je) * cell;
+        const n = (r + jn) * cell;
+        const d2 = (e - camE) ** 2 + (n - camN) ** 2;
+        if (d2 > rr || d2 < ri) continue;
+        const d = Math.sqrt(d2);
+        if (cone && d > CONE_KEEP_M
+          && ((e - camE) * cone.fe + (n - camN) * cone.fn) < d * cone.cos - 2 * (cone.margin ?? 0)) continue;
+        if (cone?.planes && outsideFrustum(cone, e, n, d)) continue;
+        const off = fringeOf(e, n, f.fringe);
+        const handover = f.fade[0] + off - f.fade[1];
+        if (d < handover - fs.step) continue;
+        const outer = fs.radius - fs.step - fs.ramp * farShrubRank(e, n);
+        if (d > outer + fs.step) continue;
+        // `scatter`'s sparse draw, in doubles.
+        const u = frac(k / perCell + blockPhase(c, r, perCell, globalShift));
+        let zone = null, sp = null, wet = false, y;
+        if (code === NEAR_DEAL.placed) {
+          ({ zone, sp } = forbItems[(word >> 4) - 1]);
+          wet = (word & 8) !== 0;
+          if (dealt(wet ? zone.wet.shrubs : zone.dry.shrubs,
+            wet ? zone.shrubShareWet : zone.shrubShare, u) === sp) {
+            if (growthBlocked(e, n)) continue;
+            y = wet ? waterY : terrain.surfaceHeight(e, n);
+            if (!wet && woodyRefuses(zone, sp, e, n, y)) continue;
+          } else stats.farShrubRedealt++;
+        } else stats.farShrubAsked++;
+        if (y === undefined) {
+          zone = zoneOf(e, n);
+          if (!zone || !zone.shrubs.length) continue;
+          wet = wetAt(e, n);
+          sp = dealt(wet ? zone.wet.shrubs : zone.dry.shrubs,
+            wet ? zone.shrubShareWet : zone.shrubShare, u);
+          if (!sp) continue;
+          y = station(e, n, zone, sp, wet);
+          if (y === null) continue;
+        }
+        _fsRing[0] = outer;
+        _fsRing[1] = Math.min(12, fs.ramp / 2);
+        _fsRing[2] = handover;
+        farShrubSet.ring(_fsRing);
+        placeShrub(farShrubSet, sp, e, y, n, rng);
+      }
+      farShrubSet.commit();
+      stats.farShrubBushes += farShrubSet.mesh.count;
+      stats.farShrubReapMs += performance.now() - t;
+    }
+
+    /**
+     * T-2966 — THE CARRIES' TAIL. A spread far pass that runs out of margin is
+     * finished in one frame (`advance`, late), and so is a cheap pass the
+     * animation loop deals whole (`runPass`). Both used to take the carries'
+     * read-back in that frame and reap every slot of it there: CI's moving
+     * frames read the full turn's worst flora frame at 73.3 ms, every spike a
+     * drained pass (on SwiftShader the read-back taken in the frame waits for
+     * the deal itself, 15-85 ms at `full`, and the reap is 8-25 ms more).
+     *
+     * So a pass resumed with DRAIN — one that must land now — never takes the
+     * read-back and never reaps more than it already has: it lands its far
+     * shrubs, and its carries become the TAIL, which `carryTailStep` runs a
+     * slice a frame after it, polling the same fence and then reaping in slot
+     * order exactly as the pass would have. The carry sets keep the last whole
+     * carries until the tail commits them (a few frames: the read-back's
+     * latency, then the reap at the frame's slice). Nothing about which plants
+     * stand where changes — the deal, the read-back and the reap are the
+     * pass's own, only later.
+     *
+     * One carry target, one pack buffer, one `carryBuf`: a pass that starts
+     * while a tail still holds them does not deal (`carryStart`) and waits for
+     * the tail to land as it waits for a walk on the pool; one that must land
+     * while waiting leaves its pose as NEXT, dealt the moment the tail lands
+     * (a newer pass replaces a NEXT that was never dealt). A tail is never
+     * dropped for a newer GPU deal, so carries keep landing however long the
+     * read-backs take; only a CPU walk, which writes the carry sets itself,
+     * replaces it (`carryByCpu`). A pose the kept tile no longer covers when
+     * its turn comes is not dealt: a waiting pass walks its carries on the CPU
+     * (`carryPass` returns false), and so does a NEXT (below).
+     * A caller with no budget (`settle`, a tool's `step()`) finishes the tail
+     * in the frame.
+     *
+     * T-2966 — A LANDED PASS'S CARRIES ARE OWED UNTIL A NEWER PASS LANDS. The
+     * far shrubs of a pass that left a NEXT or a tail are already on screen, so
+     * its carries must follow them; only a NEWER pass that LANDS takes that
+     * debt over (`carryOwned`), because a pass still in flight may be dropped.
+     * The full turn read the last landed pass's carries as the pass BEFORE it
+     * (`verify far ... IS NOT`, both on the GPU): the pass had waited on a tail
+     * that landed in the frame's own `carryTailStep`, was then resumed with
+     * DRAIN, and left a NEXT behind no tail — and a NEXT was dealt only when a
+     * tail landed, so it never was, not even by `settle`. A pass that finds the
+     * target free on DRAIN now deals as the tail itself (`carryPass`), and a
+     * NEXT with no tail ahead of it is dealt by the next `carryTailStep`. And:
+     * a NEXT the kept tile no longer covers is walked on the CPU as the tail
+     * (`walkCarry`), never dropped; a starting pass no longer clears a NEXT —
+     * a pass that is itself in its carries (`carryBusy`: waiting on the target,
+     * or walking them) only defers it, and a dropped one hands it back
+     * (`carryDropped`); and a CPU walk that has to take the sets from a tail
+     * keeps the tail's pose as NEXT, dealt again if that walk is dropped.
+     */
+    let carryTail = null;
+    let carryNext = null;
+    /** T-2966: a far pass is in its carries now (waiting on the target, or
+     *  walking them on the CPU): a NEXT waits for it to land or be dropped. */
+    let carryBusy = false;
+    function carryCoversAt(e, n) {
+      return !!(carryWarm && carryKeeper && carryUploaded && covers(carryUploaded, e, n, carryReach));
+    }
+    /** The far pass's carry job: dealt now, unless a tail holds the target. */
+    function carryStart(camE, camN, shrubs = false) {
+      if (carryTail) return null;
+      return carryDeal(camE, camN, farSync, shrubs);
+    }
+    /** Wait for the tail to land, deal, wait for the read-back, reap — or, on
+     *  DRAIN, leave whatever is left to the tail (above). False if the kept
+     *  tile stopped covering the pass while it waited: the CPU walks it. */
+    function* carryPass(camE, camN, cone, job, shrubs = false) {
+      if (!job) stats.carryQueued++;
+      while (!job) {
+        carryBusy = true;
+        if (!carryTail) {
+          carryBusy = false;
+          if (!carryCoversAt(camE, camN)) return false;
+          job = carryDeal(camE, camN, farSync, shrubs);
+          break;
+        }
+        const r = yield WALK_WAIT;
+        if (r === MAY_WAIT) continue;
+        if (r === DRAIN) {
+          // This pass lands now, so its pose replaces an older NEXT. T-2966:
+          // and the tail it waited on may have landed since it yielded (the
+          // frame's own `carryTailStep` runs before the pass resumes): then
+          // nothing is ahead of it, and it deals now as the tail. A NEXT left
+          // with no tail used to wait for a tail that never came, so the pass
+          // landed with the carries of the pass before it.
+          carryBusy = false;
+          if (!carryTail && carryCoversAt(camE, camN)) {
+            toTail(carryDeal(camE, camN, farSync, shrubs), camE, camN, cone, null, shrubs);
+            return;
+          }
+          carryNext = { e: camE, n: camN, cone, shrubs, ms: 0, frames: 0, entry: null };
+          return;
+        }
+        carryTailStep(Infinity);
+      }
+      while (!job.ready()) {
+        const r = yield WALK_WAIT;
+        if (r === MAY_WAIT) continue;
+        if (r === DRAIN) { toTail(job, camE, camN, cone, null, shrubs); return; }
+        job.take();
+      }
+      const reap = job.reap(camE, camN, cone);
+      for (let s = reap.next(); !s.done; s = reap.next()) {
+        if ((yield s.value) === DRAIN) { toTail(job, camE, camN, cone, reap, shrubs); return; }
+      }
+      return true;
+    }
+    function toTail(job, e, n, cone, reap, shrubs = false) {
+      // T-2968: `shrubs`, whether its pose left its far shrubs to the job.
+      carryTail = { job, e, n, cone, reap, shrubs, ms: 0, frames: 0, entry: null, cpu: false };
+      stats.carryTails++;
+    }
+    /**
+     * One frame of the tail: poll its read-back, then reap for `slice` ms;
+     * `Infinity` takes the read-back now and reaps it whole (and a NEXT after
+     * it). Returns the main thread's ms.
+     */
+    function carryTailStep(slice) {
+      if (!carryTail && !(carryNext && !carryBusy)) return 0;
+      const t0 = performance.now();
+      const sync = slice === Infinity;
+      // A NEXT with no tail ahead of it: one a dropped pass handed back.
+      if (!carryTail) nextToTail(sync);
+      while (carryTail) {
+        const t = carryTail;
+        const s0 = performance.now();
+        if (!t.reap) {
+          if (sync) t.job.take();
+          else if (!t.job.ready()) { tailSpent(t, s0); break; }
+          t.reap = t.job.reap(t.e, t.n, t.cone);
+        }
+        let done = false;
+        do { done = t.reap.next().done; } while (!done && (sync || performance.now() - t0 < slice));
+        tailSpent(t, s0);
+        if (!done) break;
+        carryTail = null;
+        // The pose a pass left while this tail held the target: dealt now, and
+        // the tail in its turn — unless a pass is in its carries, which takes
+        // the target first (and the NEXT over, once it lands).
+        if (carryNext && !carryBusy) nextToTail(sync);
+        if (!sync) break;
+      }
+      return performance.now() - t0;
+    }
+    /** T-2966: the NEXT made the tail — dealt on the GPU where the kept tile
+     *  covers its pose, else walked on the CPU (`walkCarry`), its pass's log
+     *  entry told so. */
+    function nextToTail(sync) {
+      const x = carryNext;
+      carryNext = null;
+      const d0 = performance.now();
+      if (carryCoversAt(x.e, x.n)) {
+        toTail(carryDeal(x.e, x.n, sync, x.shrubs), x.e, x.n, x.cone, null, x.shrubs);
+      } else {
+        // T-2968: and its far shrubs with them, where it left them to the job.
+        toTail(null, x.e, x.n, x.cone, walkCarry(x.e, x.n, x.cone, x.shrubs), x.shrubs);
+        if (x.shrubs) stats.farShrubCpu++;
+        stats.carryCpu++;
+        stats.carryTailCpu++;
+        x.cpu = true;
+        if (x.entry) x.entry.onGpu = false;
+      }
+      Object.assign(carryTail, { ms: x.ms, frames: x.frames, entry: x.entry, cpu: !!x.cpu });
+      tailSpent(carryTail, d0);
+    }
+    /** A tail's ms go to the far pass it belongs to, once that has logged. */
+    function tailSpent(t, s0) {
+      const ms = performance.now() - s0;
+      t.frames++;
+      stats.carryTailFrames++;
+      stats.carryTailMs += ms;
+      if (t.entry) t.entry.ms += ms;
+      else t.ms += ms;
+    }
+
+    /**
+     * T-2969: the mid deal pass drawn once as the rig is built, one point a
+     * walk into its own target, off an empty tile of the mid field's size. The
+     * programs are compiled above, but a pass's FIRST draw still pays the rest
+     * of its first use — the target and the field textures allocated, the
+     * driver's draw state for this tier's target and buffers — and that was
+     * 36-44 ms at the light tier, the frame of the first near pass whose mid
+     * ring was the GPU's: a walking frame after every tier change (balanced's
+     * read 4 ms, light's differently sized target and slot buffers did not
+     * share it). It is paid here, in the tier change's own build. What it
+     * writes is nothing anyone reads: a real pass draws its own slots over it
+     * before any read-back of the target, and `place` sets every draw range.
+     */
+    function warmMid() {
+      const n = midSpec.size * midSpec.size;
+      midTextures(new Uint8Array(n * 2), new Float32Array(n), midSpec.size);
+      midGeo.setDrawRange(0, 1);
+      for (const fd of forbDraws) fd.geo.setDrawRange(0, 1);
+      // T-2967: and the far band's walks, off their slot fields' empty
+      // textures: the far program's first draw paid here too.
+      for (const fd of farDraws) { fd.geo.setDrawRange(0, 1); fd.points.visible = true; }
+      try {
+        const prev = renderer.getRenderTarget();
+        renderer.setRenderTarget(midRt);
+        renderPass(midScene, passCam);
+        renderer.setRenderTarget(prev);
+        const gl = renderer.getContext();
+        for (let k = 0; k < 3; k++) renderer.state.bindTexture(gl.TEXTURE_2D, null, gl.TEXTURE0 + k);
+      } catch { /* drawn as before: its first use pays */ }
+    }
+    if (midOn) warmMid();
+    function readBack() {
+      readGen = gen;
+      record.reset();
+      if (placed && uploaded && count > 0) {
+        const rows = Math.ceil(count / W);
+        for (let k = 0; k < 4; k++) {
+          renderer.readRenderTargetPixels(rt, 0, 0, W, rows, bufs[k], undefined, k);
+        }
+        const [b0, b1, b2, b3] = bufs;
+        for (let id = 0; id < count; id++) {
+          const o = 4 * id;
+          // T-2774: placed is the word's code (`nearWord`), not a flag.
+          if (((b0[o + 3] | 0) & 7) !== NEAR_DEAL.placed) continue;
+          _rec[0] = b3[o]; _rec[1] = b3[o + 1]; _rec[2] = b3[o + 2]; _rec[3] = b3[o + 3];
+          record.ring(_rec);
+          record.push(b0[o], b0[o + 1], -b0[o + 2], b1[o + 3], b1[o], b1[o + 1], b1[o + 2],
+            b2[o], b2[o + 1], b2[o + 2], b2[o + 3]);
+        }
+        stats.readBacks++;
+      }
+      record.commit();
+    }
+
+    /**
+     * T-2774 — THE HEADS AND THE CENSUS, OFF THE GPU'S OWN DEAL. The three
+     * targets a head needs (the root and word, the height, the slot's ring) are
+     * read back after a placement's deal pass, and `reap` walks them in slot
+     * order: what the retired CPU walk did per slot, on the GPU's answers.
+     *
+     * On the frame loop the read is asked WITHOUT waiting for it — a pixel-
+     * buffer copy and a fence, collected when the GPU has finished — because a
+     * read that waits stalls the page on everything the GPU still has queued,
+     * which on a phone can be the whole last frame. Until it lands the sets
+     * carry the last placement's heads, which stand where they stood (every
+     * slot is world-anchored) and differ from this one's only at the lattice's
+     * edge, past the heads' own ring. A caller that reads the buffers straight
+     * after (`step()`, `settle()`, the boot) reads in the frame instead.
+     */
+    function read(sync) {
+      if (!at || !uploaded || count <= 0) return;
+      const t0 = performance.now();
+      const rows = Math.ceil(count / W);
+      const rec = at;
+      const ticket = ++reading;
+      waiting = !sync;
+      // T-2895: and the forb and shrub walks' slots after them, where it dealt them.
+      const midEnd = rec.mid ? (rec.shrub ? rec.shrub.slot0 + rec.shrub.count : rec.mid.count) : 0;
+      // T-2967: and the far band's after those, unless its rows are already
+      // reaped (a strip landing re-reads a placement's targets, and the far
+      // band's are no different for it).
+      const far = rec.far && !rec.farTaken ? rec.far : null;
+      const farStart = far ? far[0].slot0 : 0;
+      const farEnd = far ? far[far.length - 1].slot0 + far[far.length - 1].count : 0;
+      const midRows = Math.ceil(Math.max(midEnd, farEnd) / MW);
+      if (sync) {
+        for (const k of [0, 1, 3]) renderer.readRenderTargetPixels(rt, 0, 0, W, rows, bufs[k], undefined, k);
+        if (midRows) renderer.readRenderTargetPixels(midRt, 0, 0, MW, midRows, midBuf);
+        stats.syncReads++;
+        stats.readMs += performance.now() - t0;
+        const census = reap(bufs[0], bufs[1], bufs[3], rec, midBuf);
+        // T-2967: a caller that reads the buffers straight after gets the far
+        // band reaped whole, now, before the heads are hung.
+        if (far) {
+          rec.farTaken = true;
+          farReapNow(midBuf, 0, rec);
+        }
+        nearReaped(census, true);
+        return;
+      }
+      // Not three's `readRenderTargetPixelsAsync`: it asks
+      // `getParameter(IMPLEMENTATION_COLOR_READ_TYPE)` of a float target before
+      // it reads, and that is a round trip that waits for the GPU — measured at
+      // 7.6 ms a read on the phone profile, the whole stall this avoids. The
+      // three targets go into this module's own pixel-pack buffers, behind a
+      // fence, and nothing here waits on either.
+      const gl = renderer.getContext();
+      renderer.state.bindFramebuffer(gl.FRAMEBUFFER, renderer.properties.get(rt).__webglFramebuffer);
+      for (let i = 0; i < 3; i++) {
+        if (!pbos[i]) {
+          pbos[i] = gl.createBuffer();
+          gl.bindBuffer(gl.PIXEL_PACK_BUFFER, pbos[i]);
+          gl.bufferData(gl.PIXEL_PACK_BUFFER, W * H * 16, gl.STREAM_READ);
+        }
+        gl.bindBuffer(gl.PIXEL_PACK_BUFFER, pbos[i]);
+        gl.readBuffer(gl.COLOR_ATTACHMENT0 + [0, 1, 3][i]);
+        gl.readPixels(0, 0, W, rows, gl.RGBA, gl.FLOAT, 0);
+      }
+      // T-2894: and the mid target, into a fourth buffer behind the same fence.
+      if (midRows) {
+        renderer.state.bindFramebuffer(gl.FRAMEBUFFER, renderer.properties.get(midRt).__webglFramebuffer);
+        if (!pbos[3]) {
+          pbos[3] = gl.createBuffer();
+          gl.bindBuffer(gl.PIXEL_PACK_BUFFER, pbos[3]);
+          gl.bufferData(gl.PIXEL_PACK_BUFFER, MW * MH * 16, gl.STREAM_READ);
+        }
+        gl.bindBuffer(gl.PIXEL_PACK_BUFFER, pbos[3]);
+        gl.readBuffer(gl.COLOR_ATTACHMENT0);
+        gl.readPixels(0, 0, MW, midRows, gl.RGBA, gl.FLOAT, 0);
+      }
+      gl.bindBuffer(gl.PIXEL_PACK_BUFFER, null);
+      const cur = renderer.getRenderTarget();
+      renderer.state.bindFramebuffer(gl.FRAMEBUFFER,
+        cur ? renderer.properties.get(cur).__webglFramebuffer : null);
+      const fence = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
+      gl.flush();
+      stats.reads++;
+      stats.readMs += performance.now() - t0;
+      const collect = () => {
+        if (ticket !== reading) { gl.deleteSync(fence); stats.stale++; return; }
+        const got = gl.clientWaitSync(fence, 0, 0);
+        if (got === gl.TIMEOUT_EXPIRED) { setTimeout(collect, 4); return; }
+        gl.deleteSync(fence);
+        waiting = false;
+        if (got === gl.WAIT_FAILED) { stats.failed++; return; }
+        const t1 = performance.now();
+        for (let i = 0; i < 3; i++) {
+          gl.bindBuffer(gl.PIXEL_PACK_BUFFER, pbos[i]);
+          gl.getBufferSubData(gl.PIXEL_PACK_BUFFER, 0, landed[i], 0, W * rows * 4);
+        }
+        // T-2967: the far band's rows into a buffer of their own, which its
+        // reap reads a slice at a time while later reads land behind it.
+        let farBuf = null;
+        if (midEnd) {
+          gl.bindBuffer(gl.PIXEL_PACK_BUFFER, pbos[3]);
+          gl.getBufferSubData(gl.PIXEL_PACK_BUFFER, 0, midLanded, 0, Math.ceil(midEnd / MW) * MW * 4);
+        }
+        if (far && !rec.farTaken && rec.farGen === farGen) {
+          farBuf = farReap.job?.buf === 0 ? 1 : 0;
+          gl.bindBuffer(gl.PIXEL_PACK_BUFFER, pbos[3]);
+          gl.getBufferSubData(gl.PIXEL_PACK_BUFFER, farStart * 16, farBufs[farBuf], 0, (farEnd - farStart) * 4);
+        }
+        gl.bindBuffer(gl.PIXEL_PACK_BUFFER, null);
+        stats.collectMs += performance.now() - t1;
+        nearReaped(reap(landed[0], landed[1], landed[2], rec, midLanded), false);
+        if (farBuf !== null) {
+          rec.farTaken = true;
+          farQueue({ b: farBufs[farBuf], base: farStart, rec, buf: farBuf });
+        }
+      };
+      setTimeout(collect, 4);
+    }
+
+    /** A slot's xorshift stream, rebuilt from its cell and index as `scatter`
+     *  seeds it, and moved past the draws its tuft took (NEAR_STREAM_DRAWS). */
+    function slotStream(rec, id) {
+      const [c0, r0, cols, perCell] = rec.grid;
+      const k = id % perCell;
+      const cellIdx = (id - k) / perCell;
+      const rng = rngFrom(hash3(hash3(c0 + cellIdx % cols, r0 + Math.floor(cellIdx / cols), walk.salt),
+        k, 0x68bc21eb));
+      for (let i = 0; i < NEAR_STREAM_DRAWS; i++) rng();
+      return rng;
+    }
+
+    /**
+     * One read-back, reaped: for every slot the deal pass dealt inside the
+     * placement's view cone — the cone the CPU walk was given, so the heads and
+     * the census cover what they covered (the GPU draws the whole ring) — the
+     * census counts it as `dealNearSlot` did, the sink counts a placed tuft,
+     * and a placed tuft of a flowering species is offered its head by
+     * `maybeHead`, off the height and the ring the GPU gave it, on the slot's
+     * own stream. The census is counted once per placement, and only while it
+     * is still the census open (a later pass has not reset it). Returns whether
+     * it counted it.
+     */
+    function reap(b0, b1, b3, rec, bm) {
+      const t0 = performance.now();
+      const { camE, camN, cone } = rec;
+      const census = !rec.counted && rec.census === censusGen;
+      rec.counted ||= census;
+      for (const k in recorders) recorders[k].reset();
+      nearSet.reset();
+      for (let id = 0; id < rec.count; id++) {
+        const o = 4 * id;
+        const w = b0[o + 3] | 0;
+        const code = w & 7;
+        if (code < NEAR_DEAL.station) continue;
+        const e = b0[o];
+        const n = -b0[o + 2];
+        const d = Math.hypot(e - camE, n - camN);
+        // `scatter`'s own slot test against the cone.
+        if (cone && d > CONE_KEEP_M
+          && ((e - camE) * cone.fe + (n - camN) * cone.fn) < d * cone.cos - 2 * (cone.margin ?? 0)) continue;
+        if (cone?.planes && outsideFrustum(cone, e, n, d)) continue;
+        const { zone, sp } = items[(w >> 4) - 1];
+        const wet = (w & 8) !== 0;
+        const c = census ? zone.census?.matrix : null;
+        countDealt(c, sp, wet);
+        if (code === NEAR_DEAL.station) { if (c) c.row.rejStation++; continue; }
+        if (code === NEAR_DEAL.walker) { if (c) c.row.rejWalker++; continue; }
+        countDraw(c, sp, wet);
+        nearSet.push();
+        const h = b1[o];
+        if (!sp.head || !(h > 0)) continue;
+        _slotRing[0] = b3[o]; _slotRing[1] = b3[o + 1]; _slotRing[2] = b3[o + 2]; _slotRing[3] = b3[o + 3];
+        const headRing = headRingAt(_slotRing, _headRing);
+        if (d <= headRing[0] + step) {
+          maybeHead(recorders, sp, e, b0[o + 1], n, slotStream(rec, id), h, headRing);
+        }
+      }
+      nearSet.commit();
+      // T-2894: and the mid cards, unless a pass has since dealt them on the CPU.
+      if (rec.mid && rec.midGen === midGen) reapMid(bm, rec, census);
+      // T-2895: and the forbs, rosettes and shrubs, on the same terms.
+      if (rec.forb && rec.midGen === midGen) reapForbs(bm, rec, census);
+      stats.reaps++;
+      stats.reapMs += performance.now() - t0;
+      return census;
+    }
+
+    /**
+     * T-2894 — THE MID CARDS, OFF THE GPU'S DEAL. What the CPU mid walk did
+     * per slot (`rebuildGround`), in slot order — which is `scatter`'s — on the
+     * deal pass's word: the slot's own point, recomputed in doubles from its
+     * cell and index as `scatter` computes it, held to the lattice's ring and
+     * the placement's view cone; the FRINGE (`fringeOf`: a slot past its own
+     * ragged edge is dropped before anything is counted); the matrix census as
+     * the walk counted it; and for a placed slot the INNER HANDOVER
+     * (`slotRing`) and its card (`placeCard`, on the slot's own stream past the
+     * jitter's two draws, rooted on the terrain or the water as `station`
+     * roots it), with the stand's tone the GPU read off the ground.
+     */
+    function reapMid(b, rec, census) {
+      const t0 = performance.now();
+      const { camE, camN, cone } = rec;
+      const [c0, r0, cols, perCell] = rec.mid.grid;
+      const { cell, salt } = midWalk;
+      const sub = Math.max(1, Math.round(Math.sqrt(perCell)));
+      const rr = midWalk.radius * midWalk.radius;
+      const ri = midWalk.inner * midWalk.inner;
+      const mid = rings.mid;
+      midSet.reset();
+      for (let id = 0; id < rec.mid.count; id++) {
+        const o = 4 * id;
+        const w = b[o + 3] | 0;
+        const code = w & 7;
+        // Not kept, or no community, short turf or no deal: the walk counted
+        // nothing for any of these wherever the slot stood, so they are passed
+        // over before its point is even recomputed.
+        if (code < NEAR_DEAL.station) continue;
+        const k = id % perCell;
+        const cellIdx = (id - k) / perCell;
+        const ci = cellIdx % cols;
+        const c = c0 + ci;
+        const r = r0 + (cellIdx - ci) / cols;
+        const rng = rngFrom(hash3(hash3(c, r, salt), k, 0x68bc21eb));
+        const je = rng(), jn = rng();
+        const e = (c + (k % sub + je) / sub) * cell;
+        const n = (r + (((k / sub) | 0) + jn) / sub) * cell;
+        const d2 = (e - camE) ** 2 + (n - camN) ** 2;
+        if (d2 > rr || d2 < ri) continue;
+        const d = Math.sqrt(d2);
+        if (cone && d > CONE_KEEP_M
+          && ((e - camE) * cone.fe + (n - camN) * cone.fn) < d * cone.cos - 2 * (cone.margin ?? 0)) continue;
+        if (cone?.planes && outsideFrustum(cone, e, n, d)) continue;
+        const off = fringeOf(e, n, mid.fringe);
+        if (d > mid.fade[0] + off + step) continue;
+        const { zone, sp } = items[(w >> 4) - 1];
+        const wet = (w & 8) !== 0;
+        const cz = census ? zone.census?.matrix : null;
+        countDealt(cz, sp, wet);
+        // `station`'s first question is the page's (the streets' track, the
+        // yards, the ground strip, the worked bank), which the mid field does
+        // not hold: asked here, at the slot, as the walk asked it.
+        if (code === NEAR_DEAL.station || growthBlocked(e, n)) { if (cz) cz.row.rejStation++; continue; }
+        countDraw(cz, sp, wet);
+        midSet.ring(slotRing(mid, e, n, off, _ring));
+        placeCard(midSet, sp, zone, e, wet ? waterY : terrain.surfaceHeight(e, n), n, rng, b[o + 1]);
+      }
+      midSet.commit();
+      stats.midReaps++;
+      stats.midCards += midSet.mesh.count;
+      stats.midReapMs += performance.now() - t0;
+    }
+
+    /**
+     * T-2895 — THE FORBS, ROSETTES AND SHRUBS, OFF THE GPU'S DEAL. What
+     * `rebuildForbs`'s two walks did per slot, the forb lattice's and then the
+     * shrub stratum's, in slot order, on the deal pass's word (flora-gpu-
+     * forb.js); their heads into the forb recorders, which `hangNearHeads`
+     * replays.
+     */
+    function reapForbs(b, rec, census) {
+      const t0 = performance.now();
+      forbSet.reset();
+      rosetteSet.reset();
+      shrubSet.reset();
+      for (const k in forbRecorders) forbRecorders[k].reset();
+      reapForbWalk(b, rec, rec.forb, forbWalk, false, census);
+      reapForbWalk(b, rec, rec.shrub, shrubWalk, true, census);
+      forbSet.commit();
+      rosetteSet.commit();
+      shrubSet.commit();
+      stats.forbReaps++;
+      stats.forbPlants += forbSet.mesh.count + rosetteSet.mesh.count + shrubSet.mesh.count;
+      stats.forbReapMs += performance.now() - t0;
+    }
+    /**
+     * One of the forb ring's walks, reaped: the slot's own point recomputed in
+     * doubles from its cell and index (`scatter`'s arithmetic, the `'wild'`
+     * draw's full-cell jitter for the shrubs), held to the lattice's ring and
+     * the placement's view cone; the FRINGE; the census as the walk counted
+     * it; and then the page's half of the deal. A forb slot is asked
+     * `forbSeat` (T-2086): turned out of a kept yard it stands empty, and
+     * re-seated in the strip beside the lot line it is asked `station` whole
+     * at its new foot, here, as the walk asked it — and on short turf only a
+     * re-seated one stands (T-2122). A slot where it is is asked what the
+     * GPU's tile does not hold: `growthBlocked`, and the woody band (T-1056)
+     * at the ground's own height. Then the walker's clearance, the plant on
+     * the slot's own stream past the jitter's two draws, and its heads.
+     */
+    function reapForbWalk(b, rec, part, w, shrub, census) {
+      const { camE, camN, cone } = rec;
+      const [c0, r0, cols, perCell] = part.grid;
+      const { cell, salt } = w;
+      const wild = w.draw === 'wild';
+      const sub = Math.max(1, Math.round(Math.sqrt(perCell)));
+      const rr = w.radius * w.radius;
+      const ri = w.inner * w.inner;
+      const f = rings.forb;
+      for (let id = 0; id < part.count; id++) {
+        const o = 4 * (part.slot0 + id);
+        const word = b[o + 3] | 0;
+        // No community, none of this stratum in it, or no deal: the walk
+        // counted nothing for any of these wherever the slot stood.
+        if ((word & 7) < NEAR_DEAL.station) continue;
+        const k = id % perCell;
+        const cellIdx = (id - k) / perCell;
+        const ci = cellIdx % cols;
+        const c = c0 + ci;
+        const r = r0 + (cellIdx - ci) / cols;
+        const rng = rngFrom(hash3(hash3(c, r, salt), k, 0x68bc21eb));
+        const je = rng(), jn = rng();
+        let e = (c + (wild ? je : (k % sub + je) / sub)) * cell;
+        let n = (r + (wild ? jn : (((k / sub) | 0) + jn) / sub)) * cell;
+        const d2 = (e - camE) ** 2 + (n - camN) ** 2;
+        if (d2 > rr || d2 < ri) continue;
+        let d = Math.sqrt(d2);
+        if (cone && d > CONE_KEEP_M
+          && ((e - camE) * cone.fe + (n - camN) * cone.fn) < d * cone.cos - 2 * (cone.margin ?? 0)) continue;
+        if (cone?.planes && outsideFrustum(cone, e, n, d)) continue;
+        const off = fringeOf(e, n, f.fringe);
+        if (d > f.fade[0] + off + step) continue;
+        const { zone, sp } = forbItems[(word >> 4) - 1];
+        const wet = (word & 8) !== 0;
+        const cz = census ? (shrub ? zone.census?.shrub : zone.census?.forb) : null;
+        countDealt(cz, sp, wet);
+        let y;
+        if (!shrub) {
+          const seat = forbSeat(e, n);
+          if (seat === false || (zone.turf && !seat)) { if (cz) cz.row.rejStation++; continue; }
+          if (seat) {
+            stats.forbSeated++;
+            e = seat[0]; n = seat[1];
+            d = Math.hypot(e - camE, n - camN);
+            if (d > f.fade[0] + off) { if (cz) cz.row.rejStation++; continue; }
+            // The walk's own station, whole: the new foot is no slot the tile
+            // dealt, and the water test stays the slot's, as the walk kept it.
+            y = station(e, n, zone, sp, wet);
+            if (y === null) { if (cz) cz.row.rejStation++; continue; }
+          }
+        }
+        if (y === undefined) {
+          if ((word & 7) === NEAR_DEAL.station || growthBlocked(e, n)) { if (cz) cz.row.rejStation++; continue; }
+          y = wet ? waterY : terrain.surfaceHeight(e, n);
+          if (!wet && woodyRefuses(zone, sp, e, n, y)) { if (cz) cz.row.rejStation++; continue; }
+        }
+        if (crowdsTheWalker(sp, d, cone?.planes ? cone.eyeY - y : 0)) { if (cz) cz.row.rejWalker++; continue; }
+        countDraw(cz, sp, wet);
+        const set = shrub ? shrubSet : sp.form === 'forb_basal_scape' ? rosetteSet : forbSet;
+        set.ring(ringAt(f.fade, off, _ring));
+        const h = shrub ? placeShrub(set, sp, e, y, n, rng) : placeForb(set, sp, e, y, n, rng);
+        if (h > 0 && d <= f.head[0] + off + step) {
+          maybeHead(forbRecorders, sp, e, y, n, rng, h, ringAt(f.head, off, _headRing));
+        }
+      }
+    }
+    /**
+     * T-2967 — THE FAR BAND, OFF THE GPU'S DEAL, A SLICE AT A TIME. What
+     * `rebuildFar` did per slot, in slot order (`scatter`'s, band by band), on
+     * the deal pass's word (flora-gpu-far.js): the slot's point recomputed in
+     * doubles from its cell and index, `scatter`'s own ring and cone tests on it,
+     * and then either the CPU's own `farSlot` whole — for a slot the shader
+     * answered `ask` (one the pool did not answer, or a draw within FAR_U_EPS
+     * of a threshold), or one
+     * whose species the deal's draw in doubles does not confirm — or, for a
+     * slot the GPU placed, what the far field cannot answer to the bit: the
+     * band's rank and the slot's own ring, `growthBlocked`, the ground's own
+     * height and the woody band; then the card and its flower, on the slot's
+     * own stream past the jitter's two draws. Into `farStage` and the staged
+     * head recorders, which become the far set and its heads only when the
+     * whole reap is in (`farLand`).
+     *
+     * Between frames it is spread over tasks of FAR_REAP_SLICE_MS (`farTick`),
+     * and never runs inside `flora.update`: T-2966 put its far pass's read-backs
+     * in the frame that drained it and read flora's worst moving frame over
+     * every tier's ceiling. One reap runs at a time and the newest waits behind
+     * it (`next`), so a walker who outpaces the reap still gets every other
+     * placement's far band, never none. A caller that reads the buffers
+     * straight after (`farReapNow`, `flush`) takes the whole reap in the frame.
+     */
+    const FAR_REAP_SLICE_MS = 3;
+    const farReap = { job: null, next: null, timer: 0 };
+    for (const fb of farBands) fb.globalShift = hash3(fb.walk.salt, STRAT_SALT, 0x9e3779b9) / 4294967296;
+    function farQueue(job) {
+      if (farReap.job) {
+        if (farReap.next) stats.farSkipped++;
+        farReap.next = job;
+      } else farReap.job = job;
+      if (!farReap.timer) farReap.timer = setTimeout(farTick, 0);
+    }
+    function farTick() {
+      farReap.timer = 0;
+      let job = farReap.job;
+      // Made stale by a pass that has since dealt the far band on the CPU.
+      while (job && job.rec.farGen !== farGen) {
+        stats.farStale++;
+        job = farReap.job = farReap.next;
+        farReap.next = null;
+      }
+      if (!job) return;
+      const t0 = performance.now();
+      // The landing (the far set filled from the stage, the heads hung again)
+      // takes a slice of its own when the deal's last slice has spent half
+      // the budget, so no slice is the deal's budget AND the landing.
+      const done = job.dealt || farRun(job, FAR_REAP_SLICE_MS);
+      if (done && !job.dealt && performance.now() - t0 > FAR_REAP_SLICE_MS / 2) job.dealt = true;
+      else if (done) {
+        farReap.job = farReap.next;
+        farReap.next = null;
+        farLand(job, false);
+      }
+      const ms = performance.now() - t0;
+      stats.farSlices++;
+      stats.farReapMs += ms;
+      if (ms > stats.farSliceMaxMs) stats.farSliceMaxMs = ms;
+      if (farReap.job) farReap.timer = setTimeout(farTick, 0);
+    }
+    /** The whole reap of `rec`'s far band from `b`, now (`read` in the frame). */
+    function farReapNow(b, base, rec) {
+      farReap.job = null;
+      farReap.next = null;
+      if (farReap.timer) { clearTimeout(farReap.timer); farReap.timer = 0; }
+      if (rec.farGen !== farGen) { stats.farStale++; return; }
+      const job = { b, base, rec, buf: -1 };
+      const t0 = performance.now();
+      farRun(job, Infinity);
+      farLand(job, true);
+      stats.farReapMs += performance.now() - t0;
+    }
+    /** Every reap still to land, now (`flush`). True if one landed. */
+    function farDrain() {
+      if (farReap.timer) { clearTimeout(farReap.timer); farReap.timer = 0; }
+      let landed = false;
+      while (farReap.job) {
+        const job = farReap.job;
+        farReap.job = farReap.next;
+        farReap.next = null;
+        if (job.rec.farGen !== farGen) { stats.farStale++; continue; }
+        const t0 = performance.now();
+        farRun(job, Infinity);
+        farLand(job, true);
+        stats.farReapMs += performance.now() - t0;
+        landed = true;
+      }
+      return landed;
+    }
+    /** A reap run to its end: its cards become the far set, its heads the far
+     *  recorders, and the heads are hung again unless a pass is dealing (it
+     *  hangs them when it commits) or the caller hangs them next (`sync`). */
+    function farLand(job, sync) {
+      farStage.into(farSet);
+      for (const k in farRecorders) {
+        const rows = farRecorders[k].rows;
+        rows.length = 0;
+        for (const x of farStageHeads[k].rows) rows.push(x);
+      }
+      stats.farReaps++;
+      stats.farCards += farSet.mesh.count;
+      if (!sync) nearReaped(false, false);
+    }
+    /** Deal `job`'s slots until its end (true) or until `budget` ms have gone. */
+    function farRun(job, budget) {
+      const t0 = performance.now();
+      if (!job.started) {
+        job.started = true;
+        job.part = 0;
+        job.id = 0;
+        farStage.reset();
+        for (const k in farStageHeads) farStageHeads[k].reset();
+      }
+      const { b, base, rec } = job;
+      const { camE, camN, cone } = rec;
+      for (; job.part < rec.far.length; job.part++, job.id = 0) {
+        const part = rec.far[job.part];
+        const fb = farBands[part.k];
+        const { band, i } = fb;
+        const { cell, perCell } = band;
+        const salt = fb.walk.salt;
+        const [c0, r0, cols] = part.grid;
+        const sub = Math.max(1, Math.round(Math.sqrt(perCell)));
+        // `scatter`'s own lattice, not the shader's padded one.
+        const radius = band.radius + step;
+        const innerR = Math.max(0, band.inner - step);
+        const rr = radius * radius;
+        const ri = innerR * innerR;
+        const cMin = Math.floor((camE - radius) / cell), cMax = Math.ceil((camE + radius) / cell);
+        const rMin = Math.floor((camN - radius) / cell), rMax = Math.ceil((camN + radius) / cell);
+        const halfDiag = cell * Math.SQRT1_2;
+        for (; job.id < part.count; job.id++) {
+          // The clock every eight slots: a slot dealt whole on the page
+          // (`farSlot`) is the dearest, and eight of them stay well inside
+          // a slice at the throttled phone profile.
+          if ((job.id & 7) === 0 && performance.now() - t0 > budget) return false;
+          const o = 4 * (part.slot0 - base + job.id);
+          const word = b[o + 3] | 0;
+          const code = word & 7;
+          if (code !== FAR_DEAL.placed && code !== FAR_DEAL.ask) continue;
+          const id = job.id;
+          const k = id % perCell;
+          const cellIdx = (id - k) / perCell;
+          const ci = cellIdx % cols;
+          const c = c0 + ci;
+          const r = r0 + (cellIdx - ci) / cols;
+          // `scatter`'s cell tests, where it skips a cell before hashing it.
+          if (c < cMin || c > cMax || r < rMin || r > rMax) continue;
+          const nx0 = c * cell - camE, nx1 = (c + 1) * cell - camE;
+          const ny0 = r * cell - camN, ny1 = (r + 1) * cell - camN;
+          const nx = nx0 > 0 ? nx0 : nx1 < 0 ? -nx1 : 0;
+          const ny = ny0 > 0 ? ny0 : ny1 < 0 ? -ny1 : 0;
+          if (nx * nx + ny * ny > rr) continue;
+          const fx = Math.max(Math.abs(nx0), Math.abs(nx1));
+          const fy = Math.max(Math.abs(ny0), Math.abs(ny1));
+          if (fx * fx + fy * fy < ri) continue;
+          if (cone) {
+            const ce = (c + 0.5) * cell - camE, cn = (r + 0.5) * cell - camN;
+            const cd = Math.hypot(ce, cn);
+            if (cd - halfDiag > CONE_KEEP_M) {
+              const low = cone.cos >= 0 ? (cd - halfDiag) * cone.cos : (cd + halfDiag) * cone.cos;
+              if (ce * cone.fe + cn * cone.fn + halfDiag
+                < low - 2 * (cone.margin ?? 0) - 1e-6) continue;
+            }
+          }
+          const rng = rngFrom(hash3(hash3(c, r, salt), k, 0x68bc21eb));
+          const je = rng(), jn = rng();
+          const e = (c + (k % sub + je) / sub) * cell;
+          const n = (r + (((k / sub) | 0) + jn) / sub) * cell;
+          const d2 = (e - camE) ** 2 + (n - camN) ** 2;
+          if (d2 > rr || d2 < ri) continue;
+          const d = Math.sqrt(d2);
+          if (cone && d > CONE_KEEP_M
+            && ((e - camE) * cone.fe + (n - camN) * cone.fn) < d * cone.cos - 2 * (cone.margin ?? 0)) continue;
+          if (cone?.planes && outsideFrustum(cone, e, n, d)) continue;
+          const u = frac(k / perCell + blockPhase(c, r, perCell, fb.globalShift));
+          if (code === FAR_DEAL.ask) {
+            stats.farAsked++;
+            farSlot(i, band, e, n, d, rng, u, undefined, farStage, farStageHeads);
+            continue;
+          }
+          const rank = farRank(e, n, i) / band.keep;
+          if (rank >= 1) continue;
+          const outer = band.radius - band.ramp * rank;
+          const inner = band.inner + band.innerRamp * rank;
+          const feather = Math.min(8, band.innerRamp, band.ramp);
+          if (d > outer + step || d < inner - step) continue;
+          const forb = (word & 16) !== 0;
+          const { zone, sp } = (forb ? forbItems : items)[(word >> 5) - 1];
+          const wet = (word & 8) !== 0;
+          // The deal's one draw in doubles: a float32 `u` the shader did not
+          // see near a threshold still has to give the species it gave.
+          if (forb !== (u >= (wet ? zone.farSplit.wet : zone.farSplit.dry)) || farDealt(zone, wet, u) !== sp) {
+            stats.farRedealt++;
+            farSlot(i, band, e, n, d, rng, u, undefined, farStage, farStageHeads);
+            continue;
+          }
+          // `station`'s questions the far field does not answer to the bit.
+          if (growthBlocked(e, n)) continue;
+          const y = wet ? waterY : terrain.surfaceHeight(e, n);
+          if (!wet && woodyRefuses(zone, sp, e, n, y)) continue;
+          farStage.ring([outer, feather, inner, feather]);
+          farPlace(band, sp, zone, forb, e, y, n, d, rng, outer, inner, feather, farStage, farStageHeads);
+        }
+      }
+      return true;
+    }
+    return {
+      mesh,
+      stats,
+      /** T-2774: the near ring's heads as the last reap hung them, by kind. */
+      heads: recorders,
+      /** T-2895: and the forb ring's, the last forb deal's. */
+      forbHeads: forbRecorders,
+      /** T-2967: and the far band's, the last far reap's or CPU walk's. */
+      farHeads: farRecorders,
+      /** T-2967: a pass whose far band the CPU walked hands its heads over here. */
+      takeFarHeads(from) {
+        for (const k in farRecorders) {
+          const rows = farRecorders[k].rows;
+          rows.length = 0;
+          for (const x of from[k].rows) rows.push(x);
+        }
+      },
+      /** T-2895: a pass whose forbs the CPU walked hands its heads over here. */
+      takeForbHeads(from) {
+        for (const k in forbRecorders) {
+          const rows = forbRecorders[k].rows;
+          rows.length = 0;
+          for (const x of from[k].rows) rows.push(x);
+        }
+      },
+      bind(field) {
+        nf = field;
+        keeper = nf.keeper();
+        // T-2894: the mid field, kept by the pool alone (see `reapMid`).
+        if (midOn) midKeeper = nf.keeper({ spec: midSpec, page: false });
+        // T-2967: the far band's slot fields, by the pool alone, and a texel
+        // the pool did not answer marked for the deal to hand back
+        // (`FAR_UNASKED`), never asked on the page.
+        for (const f of farFields) f.bind(nf);
+        // T-2896: and the carry field, the same way.
+        if (carryOn) carryKeeper = nf.keeper({ spec: carrySpec, page: false });
+        // T-2968: and the far shrubs' slot field.
+        fsField?.bind(nf);
+      },
+      /** The kept tile, home around (e, n) before the first deal. */
+      async prime(e, n) {
+        if (!keeper) return;
+        keeper.update(e, n);
+        // T-2894: the mid field starts on the pool now and is not waited for:
+        // until it is home the mid ring is the CPU's, as it always was.
+        midKeeper?.update(e, n);
+        for (const f of farFields) f.keeper?.update(e, n);
+        carryKeeper?.update(e, n);
+        fsField?.keeper?.update(e, n);
+        await keeper.settled();
+        this.keep(e, n, true);
+      },
+      /**
+       * Every frame: the keeper follows the walker. A tile that has landed is
+       * uploaded and the last placement dealt again on it if the tile it was
+       * dealt on did not cover it (the strip it adds holds slots the lagging
+       * tile could not), and read back again for its heads. When the kept
+       * tile does not cover the lattice it is built whole, now, if the walker
+       * JUMPED (more than a re-centre step in one frame: a teleport or a goTo,
+       * whose near pass deals in this frame too, so its heads need the tile)
+       * or if the caller reads the buffers straight after (`force`). Smooth motion that
+       * outruns the pool only empties the slots past the tile's edge until the
+       * strip lands.
+       */
+      keep(e, n, force) {
+        if (!keeper) return;
+        const jump = lastE === null || Math.hypot(e - lastE, n - lastN) > FIELD_SPEC.recentre;
+        lastE = e; lastN = n;
+        let tile = keeper.update(e, n);
+        if ((force || jump) && (!tile || !covers(tile, e, n, walk.radius + step))) {
+          const t0 = performance.now();
+          keeper.adopt(nf.build(e, n));
+          tile = keeper.tile;
+          stats.builds++;
+          stats.buildMs += performance.now() - t0;
+        }
+        // T-2894: the mid field follows the walker too, and is only uploaded:
+        // a placement it did not wholly cover was dealt by the CPU, so there
+        // is nothing to deal again when a strip lands.
+        if (midKeeper) {
+          const mt = midKeeper.update(e, n);
+          if (mt && mt !== midUploaded) uploadMid(mt);
+        }
+        // T-2967: and the far band's slot fields, on the same terms.
+        for (const f of farFields) if (f.keep(e, n)) stats.farUploads++;
+        // T-2968: and the far shrubs' slot field, which the far pass deals on too.
+        if (fsField?.keep(e, n)) stats.farShrubUploads++;
+        // T-2896: and the carry field, which the far pass deals on.
+        if (carryKeeper) {
+          const ct = carryKeeper.update(e, n);
+          if (ct && ct !== carryUploaded) uploadCarry(ct);
+          // The keeper's main-thread share (its strips' finishes and writes,
+          // which land between frames, when the pool's answers come home).
+          stats.carryKeepMs = carryKeeper.stats.mainMs;
+          stats.carryKeepWorst = Math.max(stats.carryKeepWorst, carryKeeper.stats.lastMs);
+        }
+        if (tile && tile !== uploaded) {
+          upload(tile);
+          // T-2774: only a placement the tile did not wholly cover is dealt
+          // again: a strip adds nothing to one it did, whose every slot stands
+          // on texels a re-centre keeps. T-2717 read the flight dealing the
+          // ring 9 times with no near pass at all; each is a read-back now.
+          if (placed && !at?.whole) {
+            dealPass();
+            read(force);
+          }
+        }
+      },
+      /**
+       * The near walk's centre and cone: the deal pass, and its read-back —
+       * in the frame when `sync`, else collected when the GPU has finished.
+       */
+      place(camE, camN, cone, sync, mid = false, far = false) {
+        const u = latticeUniforms({ camE, camN, ...walk });
+        pass.uLatGrid.value = u.grid;
+        pass.uLatDeal.value = u.deal;
+        pass.uLatMode.value = u.mode;
+        pass.uLatRing.value.set(...u.ring);
+        pass.uLatCell.value.set(...u.cell);
+        // Zero: the pass hands the deal world points (flora-gpu-near.js
+        // `flSlotWorld`), not offsets from the camera.
+        pass.uDealCam.value.set(0, 0);
+        pass.uDealEye.value.set(waterY, cone?.planes ? 1 : 0, cone?.eyeY ?? 0);
+        count = Math.min(u.count, max);
+        passGeo.setDrawRange(0, count);
+        tuftGeo.instanceCount = count;
+        placed = true;
+        at = { camE, camN, cone, grid: u.grid, count, census: censusGen, counted: false,
+          whole: !!uploaded && covers(uploaded, camE, camN, walk.radius), mid: null, forb: null,
+          shrub: null, midGen, far: null, farGen, farTaken: false };
+        // T-2967: the rows the shared render writes this time (a part it does
+        // not deal is drawn as nothing, so no stale slot lands in its rows).
+        let slot0 = 0;
+        // T-2894: the mid ring's deal, where this pass left it to the GPU
+        // (`midCovers` at its start) and the uploaded mid tile still covers it.
+        const midDeal = mid && uploaded && this.midCovers(camE, camN);
+        if (midDeal) {
+          const m = latticeUniforms({ camE, camN, ...midWalk });
+          midPass.uLatGrid.value = m.grid;
+          midPass.uLatDeal.value = m.deal;
+          midPass.uLatMode.value = m.mode;
+          midPass.uLatRing.value.set(...m.ring);
+          midPass.uLatCell.value.set(...m.cell);
+          const mc = Math.min(m.count, midMax);
+          midGeo.setDrawRange(0, mc);
+          at.mid = { grid: m.grid, count: mc };
+          // T-2895: the forb and shrub walks, into the rows after the mid
+          // slots, in the same render.
+          slot0 = Math.ceil(mc / MW) * MW;
+          for (const fd of forbDraws) {
+            const l = latticeUniforms({ camE, camN, ...fd.walk });
+            fd.u.uLatGrid.value = l.grid;
+            fd.u.uLatDeal.value = l.deal;
+            fd.u.uLatMode.value = l.mode;
+            fd.u.uLatRing.value.set(...l.ring);
+            fd.u.uLatCell.value.set(...l.cell);
+            fd.u.uSlot0.value = slot0;
+            const fc = Math.min(l.count, forbMax);
+            fd.geo.setDrawRange(0, fc);
+            at[fd.shrub ? 'shrub' : 'forb'] = { grid: l.grid, count: fc, slot0 };
+            slot0 += Math.ceil(fc / MW) * MW;
+          }
+        } else if (mid) stats.midMissed++;
+        // A part this render does not deal is not drawn at all (T-2967: the
+        // render may now deal the far band alone).
+        midPoints.visible = midDeal;
+        for (const fd of forbDraws) fd.points.visible = midDeal;
+        // T-2967: the far band's three lattices, where this pass left it to
+        // the GPU (`farCovers` at its start) and the far tile still covers it.
+        const farDeal = far && uploaded && this.farCovers(camE, camN);
+        if (farDeal) {
+          at.far = [];
+          for (const fd of farDraws) {
+            const l = latticeUniforms({ camE, camN, ...fd.walk });
+            fd.u.uLatGrid.value = l.grid;
+            fd.u.uLatDeal.value = l.deal;
+            fd.u.uLatMode.value = l.mode;
+            fd.u.uLatRing.value.set(...l.ring);
+            fd.u.uLatCell.value.set(...l.cell);
+            fd.u.uSlot0.value = slot0;
+            fd.u.uFarCam.value.set(camE, camN);
+            if (cone) fd.u.uFarCone.value.set(cone.fe, cone.fn, cone.cos, cone.margin ?? 0);
+            else fd.u.uFarCone.value.set(0, 0, -2, 0);
+            const fc = Math.min(l.count, fd.max);
+            fd.geo.setDrawRange(0, fc);
+            at.far.push({ k: at.far.length, grid: l.grid, count: fc, slot0 });
+            slot0 += Math.ceil(fc / MW) * MW;
+          }
+          stats.farDeals++;
+        } else if (far) stats.farMissed++;
+        for (const fd of farDraws) fd.points.visible = farDeal;
+        if (midDeal || farDeal) midDealPass();
+        if (uploaded) {
+          dealPass();
+          read(sync);
+        }
+      },
+      /**
+       * T-2894: whether a near pass at (e, n) can leave its mid ring to the
+       * GPU — the kept mid tile, uploaded, covers the mid lattice's whole
+       * square. Asked when the pass starts; `place` asks again when it ends.
+       * T-2895: and its forb ring with it, whose lattice it covers too.
+       */
+      midCovers(e, n) {
+        return !!(midKeeper && midUploaded && covers(midUploaded, e, n, fieldReach));
+      },
+      /** T-2894: a near pass whose mid ring the CPU walked. */
+      midByCpu() { if (midKeeper) stats.midCpu++; },
+      /**
+       * T-2967: whether a near pass at (e, n) can leave its far band to the GPU
+       * — every band's slot field, uploaded, holds every cell its lattice
+       * visits round (e, n).
+       */
+      farCovers(e, n) {
+        return !!(farFields.length && uploaded && farGpu && farFields.every((f) => f.covers(e, n)));
+      },
+      /** T-2967: a near pass whose far band the CPU walked. */
+      farByCpu() { if (farFields.length) stats.farCpu++; },
+      /** T-2967: a tool's switch (`nearDraw.setFarOnGpu`). */
+      setFarOnGpu(on) { farGpu = !!on; },
+      /**
+       * T-2967: the far band's slot fields, one a band (`makeSlotField`: its
+       * spec, FAR_SLOT_GLSL's four uniforms bound to the uploaded tile, the
+       * tile, the keeper, `covers(e, n)` and its bytes), and their bytes in all.
+       */
+      farField: farOn ? {
+        bands: farFields,
+        bytes: farFields.reduce((a, f) => ({ gpu: a.gpu + f.bytes.gpu, page: a.page + f.bytes.page,
+          texels: a.texels + f.bytes.texels }), { gpu: 0, page: 0, texels: 0 }),
+      } : null,
+      /** T-2967: a slot field for another lattice walk (T-2968's far shrubs):
+       *  bound once the near field is; its owner calls `keep(e, n)` a frame. */
+      slotField(walk) {
+        const f = makeSlotField(walk);
+        disposables.push(f.tex);
+        if (nf) f.bind(nf);
+        return f;
+      },
+      /** T-2896: whether a far pass at (e, n) can leave its carries to the GPU
+       *  — the kept carry tile, uploaded, covers both carry walks' squares.
+       *  T-2966: and the deal programs have had their first use (`carryWarm`). */
+      carryCovers: carryCoversAt,
+      /** T-2968: whether a far pass at (e, n) can leave its far shrubs to the
+       *  carry job — its carries are the GPU's, and the far shrubs' slot field,
+       *  uploaded, holds every cell their walk visits round (e, n). */
+      farShrubCovers(e, n) {
+        return !!(fsOn && fsGpu && carryCoversAt(e, n) && fsField.covers(e, n));
+      },
+      /** T-2968: a far pass whose far shrubs the CPU walked. */
+      farShrubByCpu() { if (fsOn) stats.farShrubCpu++; },
+      /** T-2968: a tool's switch (`nearDraw.setFarShrubOnGpu`). */
+      setFarShrubOnGpu(on) { fsGpu = !!on; },
+      /** T-2968: the far shrubs' slot field (its spec and bytes), or null. */
+      farShrubField: fsField,
+      carryStart,
+      carryPass,
+      carryTailStep,
+      /** T-2896: a far pass whose carries the CPU walked. T-2966: its walk
+       *  writes the carry sets itself, so a tail (and a NEXT) is replaced. */
+      carryByCpu() {
+        if (carryKeeper) stats.carryCpu++;
+        // T-2966: the walk takes the sets from a tail in hand, whose pose is
+        // kept as NEXT (an older one's, unless a NEXT is newer): this pass's
+        // landing drops it (`carryOwned`), and dropping this pass deals it.
+        if (carryTail) {
+          stats.carryTailDropped++;
+          const t = carryTail;
+          if (!carryNext) {
+            carryNext = { e: t.e, n: t.n, cone: t.cone, shrubs: t.shrubs, ms: t.ms, frames: t.frames,
+              entry: t.entry };
+          }
+          carryTail = null;
+        }
+        carryBusy = true;
+      },
+      /** T-2966: a far pass dropped in flight; a NEXT it deferred is dealt. */
+      carryDropped() { carryBusy = false; },
+      /** T-2966: a far pass's CPU walk has committed the carry sets. */
+      carryWalked() { carryBusy = false; },
+      /** T-2966: whether carries are still to land after their pass. */
+      carryInFlight() { return carryTail !== null || carryNext !== null; },
+      /** T-2966: the log entry of the far pass that just landed; a tail (or a
+       *  NEXT) it left books its ms there from now on. */
+      carryOwned(entry) {
+        carryBusy = false;
+        // T-2966: a NEXT an earlier landed pass left, never dealt: this pass's
+        // carries are in hand (reaped, a tail, a NEXT or walked) and newer.
+        if (carryNext?.entry) carryNext = null;
+        for (const t of [carryNext, carryTail]) {
+          if (t && !t.entry) {
+            t.entry = entry; entry.ms += t.ms; t.ms = 0;
+            if (t.cpu) entry.onGpu = false;
+            return;
+          }
+        }
+      },
+      /** T-2894: resolves when no kept tile has a re-centre in flight. */
+      async settled() {
+        await keeper?.settled();
+        await midKeeper?.settled();
+        await carryKeeper?.settled();
+        for (const f of farFields) await f.keeper?.settled();
+        await fsField?.keeper?.settled();
+      },
+      /** T-2896: the carry field's spec, or null where the CPU walks the carries. */
+      carrySpec: carryOn ? carrySpec : null,
+      /** T-2894: the mid field's spec, or null where the CPU deals the mid ring. */
+      midSpec: midOn ? midSpec : null,
+      /** T-2969: the kept tiles' keepers (their stats, and a tool's budget). */
+      // T-2966 (merged with T-2969): and the carry field's, kept the same way.
+      keepers() { return { near: keeper, mid: midKeeper, carry: carryKeeper }; },
+      /** T-2774: a read-back still on its way is taken now, in the frame. */
+      flush() {
+        if (waiting) read(true);
+        // T-2967: and a far reap still being dealt between frames, whole.
+        else if (farDrain()) nearReaped(false, true);
+      },
+      /** The kept tile's ground at (e, n) — what a drawn tuft roots on — or null. */
+      groundAt(e, n) {
+        const tile = keeper?.tile;
+        const got = tile ? sampleField(tile, e, n, [0, 0, 0]) : null;
+        return got ? got[2] : null;
+      },
+    };
+  }
+
+  /**
+   * T-2696 — the slot's ground as the worker answered it (flora-ground.js), or
+   * -1 when the deal must ask: no answer came home in time, the slot is off the
+   * measured grid, or (e, n) is not the slot `scatterOnPool` is dealing — a
+   * station asked anywhere else is always asked here.
+   */
+  function heldFlags(e, n) {
+    const h = HELD_SLOT;
+    if (!h.at || h.e !== e || h.n !== n) return -1;
+    const f = h.at.flags[h.i];
+    return f === GROUND_UNASKED ? -1 : f;
+  }
+  /** Whether the slot is under water, off its worker answer when there is one. */
+  function wetAt(e, n) {
+    const f = heldFlags(e, n);
+    return f < 0 ? water.isWater(e, n) : (f & GROUND_WET) !== 0;
+  }
+
+  /**
+   * T-2094 — A STREET'S VERGE IN TOWN IS CROPPED TO THE TOWN'S OWN TURF.
+   *
+   * Inside an opened street's corridor, a plant of a turf community taller than
+   * that community's own low layer (`turfCeiling`, the tallest of its matrix and
+   * ground species: Poa, plantain, knotweed and clover to 0.25 m today) has no
+   * station: not on the worked roadway, and not on the verge between it and the
+   * lot line, where hooves, wheels pulling out to pass and feet crop it. The
+   * number is the record's, not this module's, so a re-reading of the zone
+   * moves it with nothing here to edit.
+   *
+   * A FEW WEEDS ARE KEPT, where nothing treads: in the last VERGE_KEEP_M of the
+   * corridor at the lot line, or at the street edge of a plank walk that stands
+   * there, in patches one VERGE_CELL_M cell wide that a positional hash keeps at
+   * VERGE_KEEP_SHARE. Positional, so a re-centred lattice keeps the same tufts,
+   * and patchy, because a dock at a post base is a clump and not an even
+   * dusting. All three are reconstructed (L327, revised for T-2094).
+   */
+  function trodden(e, n, zone, species) {
+    if (!zone?.turfCeiling || !species?.height || species.height[1] <= zone.turfCeiling) return false;
+    // T-2696: the band, from the slot's worker answer when it brought one.
+    const f = heldFlags(e, n);
+    const band = f < 0 ? vergeBand(verge(e, n)) : f & (GROUND_TRODDEN | GROUND_KEEP);
+    if (!band) return false;
+    if (band === GROUND_TRODDEN) return true;
+    return hash3(Math.floor(e / VERGE_CELL_M), Math.floor(n / VERGE_CELL_M), 0x2094) / 4294967296
+      >= VERGE_KEEP_SHARE;
+  }
+
+  /** T-2698: a species no turf ceiling admits, so `trodden` answers for the
+   *  ground alone — the field's TRODDEN bit, read per species in the shader. */
+  const TALLEST = { height: [0, Infinity] };
+  const zoneIndex = new Map(zones.map((z, i) => [z, i]));
+
+  /** A community that stands in no water, for the plantable-ground question the
+   *  gate asks without naming a species. */
+  const NO_COMMUNITY = { standsInWater: false };
+
+  /** Ground the plant stands on, or null if it may not stand here. `wet` is the
+   *  caller's already-computed water test, since the placer asks it once per
+   *  lattice slot to choose which half of the community it may pick from. */
+  /** T-2715: whether `growthEdges` reaches a corner of the square of half-side
+   *  `half` centred on (e, n). See `nearField.atTexel`. */
+  function edgeCorners(e, n, half) {
+    if (growthEdges === null) return false;
+    return growthEdges(e - half, n - half) || growthEdges(e + half, n - half)
+      || growthEdges(e - half, n + half) || growthEdges(e + half, n + half);
+  }
+  /** `growthEdges` at the (w + 1) x (h + 1) texel corners from (e0, n0), row by
+   *  row northward, or null when there are none to ask. */
+  function edgeLattice(e0, n0, w, h, texel) {
+    if (growthEdges === null) return null;
+    const out = new Uint8Array((w + 1) * (h + 1));
+    for (let j = 0; j <= h; j++) {
+      for (let i = 0; i <= w; i++) out[j * (w + 1) + i] = growthEdges(e0 + i * texel, n0 + j * texel) ? 1 : 0;
+    }
+    return out;
+  }
+
+  /** T-2896: `growthBlocked` at a slot, its streets' half off the slot's
+   *  worker answer when there is one (`trackOnWorker`). */
+  function blockedAt(e, n) {
+    const f = trackOnWorker ? heldFlags(e, n) : -1;
+    if (f < 0) return growthBlocked(e, n);
+    return (f & GROUND_TRACK) !== 0 || growthPatch(e, n);
+  }
+
+  function station(e, n, zone, species, wet = wetAt(e, n)) {
+    if (blockedAt(e, n)) return null;
+    if (trodden(e, n, zone, species)) return null;
+    // THE FLOOR TEST COMES BEFORE THE WATER TEST, and the order is the bug it
+    // fixes. This block-list rejection used to sit below the `wet` early return,
+    // so it only ever governed DRY ground - and every deck standing over water
+    // (a wharf, a bridge) was invisible to it. An emergent bulrush is exactly as
+    // entitled to the riverbed under a dock as a bluestem is to the soil under a
+    // walk, and neither may come up through the planks. Owner-reported twice:
+    // reeds through the dock decks, sward through the sidewalks (T-0085/T-0124).
+    // T-2096: only the floors whose circle reaches this slot's cell are asked.
+    // The whole list was walked for every slot of every rebuild, and it was the
+    // largest single cost of a turn in place (tools/measure_walk_frames.mjs).
+    // T-2696: and a slot whose worker answer is home is not asked at all.
+    const f = heldFlags(e, n);
+    if (f < 0 ? onFloor(blocks, e, n) : f & GROUND_FLOOR) return null;
+    if (wet) {
+      // A water BUFFER is not permission for every member of that community to
+      // stand in the channel. Only records whose recorded `substrate` puts them
+      // in water may root there, and the corrected signed shore-distance field
+      // below keeps even those inside the eight-metre marsh edge rather than
+      // assigning distance zero to the entire river.
+      return zone.standsInWater && species?.substrate && species.substrate !== 'soil'
+        ? waterY : null;
+    }
+    // ...and the mirror of it, which is the half nothing enforced: a plant whose
+    // leaves FLOAT has no station on dry ground. `nuphar_advena` and
+    // `nymphaea_odorata` are 0.01-0.10 m tall, so the failure was quiet — pads at
+    // ankle height standing on the soil of the marsh edge rather than on water.
+    if (species?.substrate === 'open_water') return null;
+    const y = f < 0 ? terrain.surfaceHeight(e, n) : HELD_SLOT.at.y[HELD_SLOT.i];
+    // T-1056 — A WOODY PLANT HAS NO STATION ON GROUND THE LAKE STILL REWORKS,
+    // and which ground that is comes off the ZONE RECORD.
+    //
+    // Andreas excepts "the sandy hills near the lake" from the North Division
+    // timber, and the exception is to the HILLS. The sand bar across the mouth
+    // is the other landform in the same sentence's neighbourhood — a surface
+    // Fort Dearborn work parties trenched with hand tools and a February 1834
+    // storm breached — and until this it inherited z08's whole 8c dune scrub
+    // and z09's black-oak grubs, dealt on a uniform lattice over every square
+    // metre of two `kind: "everywhere"` boxes that happen to contain it.
+    //
+    // The bound is `woody_stratum` on the zone record, graded `inferred` with
+    // its reasoning, and NOT a constant here: its two ends are z09's recorded
+    // +7.6 ft ridge floor and the terrain spec's argued +4 ft bar crest. This
+    // function reads the record and interpolates; it does not know the numbers.
+    // `hash3` makes the draw positional rather than per-slot, so the scrub that
+    // survives stands in POCKETS on the ground that rises toward the band
+    // instead of as an even thinning over the whole bar — the terrain is what
+    // clusters it, and no length scale is invented here to do it.
+    if (woodyRefuses(zone, species, e, n, y)) return null;
+    return y;
+  }
+  /** T-1056's woody band, out of `station` (T-2895) so the forbs' reap asks it
+   *  alone, at the slot's own height, for the slots the GPU's deal placed. */
+  function woodyRefuses(zone, species, e, n, y) {
+    if (!(zone?.woody && zone.woody.roles.has(species?.role))) return false;
+    const [lo, hi] = zone.woody.establishes;
+    const t = smoothstep(lo, hi, y);
+    if (t <= 0) return true;
+    return t < 1 && hash3(Math.round(e * 4), Math.round(n * 4), 0x5ad8a1) / 4294967296 >= t;
+  }
+
+  // Flight can expose every azimuth, but not every plant in a whole disc.
+  // Cull against the actual 3D view with a conservative botanical sphere and
+  // the movement/turn margin. Walking keeps its established census window.
+  const maxPlantHeight = Math.max(...zones.flatMap(z => [...z.byId.values()]
+    .map(sp => sp.height[1]))) * 1.25;
+  function viewCone(camera, direction, eye) {
+    const cone = placementCone(camera, direction);
+    const baseY = terrain.surfaceHeight(eye.x, -eye.z);
+    if (camera.isPerspectiveCamera && eye.y - baseY > 5) {
+      camera.updateMatrixWorld();
+      const matrix = new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix,
+        camera.matrixWorldInverse);
+      cone.planes = new THREE.Frustum().setFromProjectionMatrix(matrix).planes;
+      cone.surface = (e, n) => Math.max(waterY, terrain.surfaceHeight(e, n));
+      cone.halfHeight = maxPlantHeight / 2;
+      cone.bodyRadius = Math.hypot(cone.halfHeight, 3);
+      cone.eyeY = eye.y;
+    }
+    return cone;
+  }
+
+  /**
+   * ONE NEAR SLOT'S DEAL (T-2706): the near ring's whole per-slot rule, out of
+   * `rebuildGround` so that `nearField.deal` asks the very same code the draw
+   * does, slot for slot, when `tools/measure_flora_gpu_deal.mjs` holds the
+   * shader's deal (`flora-gpu-deal.js`) to it. It places the tuft into `set`
+   * and returns the slot's ring, or null when the slot carries nothing;
+   * `_nearDealt` says which (`NEAR_DEAL`) and, when placed, the species, the
+   * ground and the height. `census` false leaves the drawn census alone, which
+   * is what a reading that is not a rebuild must do.
+   */
+  function dealNearSlot(e, n, r, rng, u, z, cone, set, census) {
+    const out = _nearDealt;
+    out.sp = null;
+    out.zone = null;
+    // This slot's own outer boundary. The near ring carries no fringe (its
+    // edge is never the one a visitor reads as a line — the mid ring's is),
+    // so the offset is zero and the whole of the move is the handover.
+    //
+    // A slot the handover has already carried past is PLACED ANYWAY, at
+    // coverage zero, and the mid ring's matching `return` is not copied
+    // here on purpose: every slot inside the lattice is still dealt a
+    // species and still counted by the drawn census, exactly as before, so
+    // this run moves no community's population and no cover figure. The
+    // vertex program collapses a plant outside its ring to a point, which
+    // is what it already did for the annulus between the fade and the
+    // lattice, so the frame pays nothing for them either.
+    const zone = zoneOf(e, n, z);
+    if (!zone || !zone.graminoids.length) { out.code = NEAR_DEAL.none; return null; }
+    // T-2122: no near tufts on short turf. The turf's texture is the
+    // ground there, and a 0.05-0.20 m sward drawn as blades only to the
+    // near ring was a band of plants growing up out of bare ground a few
+    // metres ahead on every step — the owner, 2026-10-05: "things
+    // constantly pop up". Returned before the deal, as the mid and far
+    // bands already do here, so no turf slot is counted as drawn.
+    if (zone.turf) { out.code = NEAR_DEAL.turf; return null; }
+    out.zone = zone;
+    const ring = slotRing(rings.near, e, n, 0, _ring);
+    // The community's own recorded matrix cover decides whether this slot
+    // carries a plant — the same rule the forb layer has always applied to
+    // its own recorded densities, on the field the matrix layer ignored.
+    // Cover and species come off the slot's ONE stratified draw (K49(d)):
+    // the rank-1 lattice the forb layer uses stripes a dense layer, so this
+    // one is a block permutation instead. See `stratum` and `dealt`.
+    const wet = wetAt(e, n);
+    out.wet = wet;
+    const sp = dealt(wet ? zone.wet.graminoids : zone.dry.graminoids,
+      zone.matrixShare, u);
+    if (!sp) { out.code = NEAR_DEAL.undealt; return null; }
+    const c = census ? zone.census?.matrix : null;
+    countDealt(c, sp, wet);
+    out.sp = sp;
+    const y = station(e, n, zone, sp, wet);
+    if (y === null) { if (c) c.row.rejStation++; out.code = NEAR_DEAL.station; return null; }
+    if (crowdsTheWalker(sp, r, cone?.planes ? cone.eyeY - y : 0)) {
+      if (c) c.row.rejWalker++;
+      out.code = NEAR_DEAL.walker;
+      return null;
+    }
+    countDraw(c, sp, wet);
+    set.ring(ring);
+    out.code = NEAR_DEAL.placed;
+    out.y = y;
+    out.h = placeGraminoid(set, sp, e, y, n, rng);
+    return ring;
+  }
+  const _nearDealt = { code: 0, zone: null, sp: null, y: 0, h: 0, wet: false };
+
+  function* rebuildGround(camE, camN, cone, midOnGpu = false) {
+    // T-2774: where the GPU deals the near ring, the sink holds the last reap's
+    // count until the next one lands, and there is no near walk below.
+    if (!gpuNear) nearSet.reset();
+    // T-2894: and where it deals the mid ring, the mid cards are the last
+    // reap's until this pass's lands (`reapMid`), and there is no mid walk.
+    if (!midOnGpu) {
+      midSet.reset();
+      midGen++;
+      gpuNear?.midByCpu();
+    }
+    for (const k in heads) heads[k].reset();
+
+    const near = rings.near;
+    const mid = rings.mid;
+    // NEAR: individual tufts, dense enough to close the ground.
+    //
+    // T-0093 — the ring is PER SLOT here now, where it used to be one ring for
+    // the whole set. The outer edge is a density handover (`slotRing`), so each
+    // tuft carries its own outer radius drawn from the band and is written
+    // solid up to it. The set-wide call is gone rather than left as a default:
+    // a slot that missed its own `ring()` would be drawn on the nominal one and
+    // would be the only stippled plant in the field.
+    //
+    // T-2774: only where the CPU draws the near ring. Where the GPU does, its
+    // deal pass is the whole of the near deal: the heads and the census are
+    // reaped from its read-back (`gpuNear` `reap`), on the GPU's own answers,
+    // so the 0.27 % of slots where the tile and this walk disagree (T-2715)
+    // carry neither a tuft nor a head nor a count that the frame does not.
+    if (!gpuNear) {
+      yield* scatter(camE, camN, tune.near.cell, tune.near.perCell,
+        near.lattice.outer, near.lattice.inner, 0x51ed27, 'strata', cone,
+        (e, n, r, rng, _cellSeed, u, z) => {
+          const ring = dealNearSlot(e, n, r, rng, u, z, cone, nearSet, true);
+          if (ring === null) return;
+          // The head is placed off the height the PLANT was actually given, and
+          // only if the plant was actually drawn. Round 1 drew the two from
+          // independent draws of the same range, so a 2.0 m cordgrass spike
+          // could stand over a 1.25 m tuft — which is the pair of flower heads
+          // the critic found floating unattached in the open sky.
+          //
+          // The head rides its PLANT'S ring now, not the layer's. On a spread
+          // boundary the layer's ring answers for no particular tuft, and a head
+          // hung on it would go on being drawn out to 7 m over a plant whose own
+          // handover had already taken it away at five — a flower in the sky with
+          // nothing under it, which is R-BUG7 rebuilt from the other end.
+          const { sp, y, h } = _nearDealt;
+          const headRing = headRingAt(ring, _headRing);
+          if (h > 0 && r <= headRing[0] + step) {
+            maybeHead(heads, sp, e, y, n, rng, h, headRing);
+          }
+        });
+    }
+
+    // MID: clump cards. The inner edge overlaps the near ring so the change of
+    // representation happens inside the field rather than at a visible circle.
+    // The OUTER edge is the one that was a visible circle — a constant world
+    // radius is a constant screen row on flat ground — so every slot carries
+    // its own, offset by a world-anchored fringe. The slots the fringe pushes
+    // out of reach are dropped here rather than pushed at zero height: the
+    // lattice grew by `fringe` to carry the ones it pushes IN, and paying for
+    // the whole annulus would be paying for the amplitude twice.
+    //
+    // T-2894: only where the GPU's deal does not reach it — no pool to keep the
+    // mid field, or its tile not yet home after a boot, a tier change or a
+    // jump. Where it does, the mid pass deals this lattice in GLSL and
+    // `reapMid` does the rest of what this walk does, slot for slot.
+    if (!midOnGpu) yield* scatter(camE, camN, tune.mid.cell, tune.mid.perCell,
+      mid.lattice.outer, mid.lattice.inner, 0x9e3779, 'strata', cone,
+      (e, n, r, rng, _cellSeed, u, z) => {
+        const off = fringeOf(e, n, mid.fringe);
+        if (r > mid.fade[0] + off + step) return;
+        const zone = zoneOf(e, n, z);
+        if (!zone || !zone.graminoids.length) return;
+        // T-2085: on short turf the ground's texture is the mid band.
+        if (zone.turf) return;
+        // A clump card stands for the same matrix the near tufts do, so it is
+        // thinned by the same recorded cover — and by the same STRATIFIED draw.
+        // Applying it to one layer and not the other would put a seam at the
+        // near/mid crossover exactly where the change of representation is
+        // supposed to be invisible.
+        const wet = wetAt(e, n);
+        const sp = dealt(wet ? zone.wet.graminoids : zone.dry.graminoids,
+          zone.matrixShare, u);
+        if (!sp) return;
+        const c = zone.census?.matrix;
+        countDealt(c, sp, wet);
+        const y = station(e, n, zone, sp, wet);
+        if (y === null) { if (c) c.row.rejStation++; return; }
+        countDraw(c, sp, wet);
+        // T-0093 — the INNER edge is a density handover too, and it is the half
+        // of the near/mid crossover the ticket's own two stands turned out to
+        // rest on: standing in a roadway the travel track carries no near tufts
+        // at all, so every screen-doored pixel of the verge there was written by
+        // this ramp fading IN. Each card carries its own inner radius across
+        // 4.5-7.5 m and is drawn whole beyond it. The OUTER edge is untouched:
+        // it is 18-27 m, the far band already stands over it, and its fringe is
+        // what keeps the boundary off a constant screen row.
+        midSet.ring(slotRing(mid, e, n, off, _ring));
+        placeCard(midSet, sp, zone, e, y, n, rng);
+      });
+    stats.rebuilds++;
+  }
+
+  function* rebuildForbs(camE, camN, cone) {
+    forbSet.reset();
+    rosetteSet.reset();
+    shrubSet.reset();
+    // T-2895: where the GPU draws the near ring its heads, the forbs' with
+    // them, are hung after the pass's own (`hangNearHeads`), so a pass that
+    // walks the forbs here records theirs for it — see `rebuildAll`.
+    const hs = forbHeadsCpu ?? heads;
+    if (forbHeadsCpu) for (const k in hs) hs[k].reset();
+    const f = rings.forb;
+    yield* scatter(camE, camN, tune.forb.cell, tune.forb.perCell,
+      f.lattice.outer, f.lattice.inner, 0x2545f9, 'lattice', cone,
+      (e, n, r, rng, _cellSeed, u, z) => {
+        // The forb ring ends within a metre of the mid ring, so the two
+        // boundaries land on the same screen row and both have to be ragged or
+        // the flowers alone would draw the line the grass no longer does.
+        const off = fringeOf(e, n, f.fringe);
+        if (r > f.fade[0] + off + step) return;
+        const zone = zoneOf(e, n, z);
+        if (!zone || !zone.forbs.length) return;
+        // T-2122: the weeds on turf stand on the forb ring like every other
+        // community's, so they arrive at its ragged outer edge twenty-odd
+        // metres out and not a few paces in front of the walker (T-2085 had
+        // them on a ring of their own the size of the near one). Only the ones
+        // a kept lot re-seats along its line survive — see below.
+        const fr = f;
+        const fo = off;
+        // The forb layer's density is the zone's OWN summed density_per_ha, so a
+        // sparse community stays sparse. `share` is the chance this lattice slot
+        // is used at all — of the half of the community that may stand on this
+        // side of the waterline, which is why there are two of them. It and the
+        // species come off the slot's ONE low-discrepancy draw; see `dealt`.
+        const wet = wetAt(e, n);
+        const sp = dealt(wet ? zone.wet.forbs : zone.dry.forbs,
+          wet ? zone.forbShareWet : zone.forbShare, u);
+        if (!sp) return;
+        const c = zone.census?.forb;
+        countDealt(c, sp, wet);
+        // T-2086: a kept yard turns its forb slot out — the record says where
+        // scythe, hoof and foot reached. A stated share of those slots is
+        // re-seated in the strip beside the lot line, where the weeds survive;
+        // the rest stand empty, counted as a station refusal, which is what it
+        // is: the ground here refuses the plant. A re-seated slot is asked
+        // everything again at its new foot, and must still be inside the ring.
+        const seat = forbSeat(e, n);
+        if (seat === false) { if (c) c.row.rejStation++; return; }
+        // T-2122: on short turf a weed stands only where a kept lot re-seats it
+        // against its fence line. Loose on open turf, out to the forb ring,
+        // they read as a sprinkle of spikes over the town's bare and trodden
+        // ground — and on the near ring T-2085 gave them they popped up a few
+        // paces ahead. Counted as a station refusal, which is what it is.
+        if (zone.turf && !seat) { if (c) c.row.rejStation++; return; }
+        if (seat) {
+          e = seat[0]; n = seat[1];
+          r = Math.hypot(e - camE, n - camN);
+          if (r > f.fade[0] + off) { if (c) c.row.rejStation++; return; }
+        }
+        const y = station(e, n, zone, sp, wet);
+        if (y === null) { if (c) c.row.rejStation++; return; }
+        if (crowdsTheWalker(sp, r, cone?.planes ? cone.eyeY - y : 0)) { if (c) c.row.rejWalker++; return; }
+        countDraw(c, sp, wet);
+        const set = sp.form === 'forb_basal_scape' ? rosetteSet : forbSet;
+        set.ring(ringAt(fr.fade, fo, _ring));
+        const h = placeForb(set, sp, e, y, n, rng);
+        if (h > 0 && r <= fr.head[0] + fo + step) {
+          maybeHead(hs, sp, e, y, n, rng, h, ringAt(fr.head, fo, _headRing));
+        }
+      });
+
+    // ROADMAP K54 — THE SHRUB STRATUM, ON ITS OWN PASS OVER THE SAME RING.
+    //
+    // Same lattice geometry, same fade ring, a different SALT: the two draws
+    // have to be independent, because a shrub stands over the herb layer rather
+    // than instead of it, and sharing one stratified draw would make every
+    // shrub slot a slot the herbs did not get. That is the whole defect this
+    // parcel repairs, and reusing `u` would rebuild it one line lower down.
+    //
+    // Everything else is the forb pass, unchanged: the fringe, the walker
+    // clearance, the station rules and the head. `placeShrub` reads `width_m` as
+    // the clump diameter it is on a shrub (K53).
+    yield* scatter(camE, camN, tune.forb.cell, tune.forb.perCell,
+      f.lattice.outer, f.lattice.inner, 0x7b5c1d, 'wild', cone,
+      (e, n, r, rng, _cellSeed, u, z) => {
+        const off = fringeOf(e, n, f.fringe);
+        if (r > f.fade[0] + off + step) return;
+        const zone = zoneOf(e, n, z);
+        if (!zone || !zone.shrubs.length) return;
+        const wet = wetAt(e, n);
+        const sp = dealt(wet ? zone.wet.shrubs : zone.dry.shrubs,
+          wet ? zone.shrubShareWet : zone.shrubShare, u);
+        if (!sp) return;
+        const c = zone.census?.shrub;
+        countDealt(c, sp, wet);
+        const y = station(e, n, zone, sp, wet);
+        if (y === null) { if (c) c.row.rejStation++; return; }
+        if (crowdsTheWalker(sp, r, cone?.planes ? cone.eyeY - y : 0)) { if (c) c.row.rejWalker++; return; }
+        countDraw(c, sp, wet);
+        shrubSet.ring(ringAt(f.fade, off, _ring));
+        const h = placeShrub(shrubSet, sp, e, y, n, rng);
+        if (h > 0 && r <= f.head[0] + off + step) {
+          maybeHead(hs, sp, e, y, n, rng, h, ringAt(f.head, off, _headRing));
+        }
+      });
+  }
+
+  // Forbs and their heads share the head sets with the graminoids, so the two
+  // ground rebuilds have to happen together or the heads would be half-cleared.
+  /**
+   * THE FAR BAND — T-0086. The sward past the detailed rings.
+   *
+   * One aggregate clump card per kept lattice slot, rooted on the heightfield at
+   * a station the placer allows, drawn whole, and thinned toward both ends of
+   * the band by `farKeepAt`. Nothing here fades in the shader: `FAR_RING` puts
+   * every card wholly inside its ring, so the dither branch never runs and
+   * there is no stipple to see.
+   *
+   * It is NOT counted into the drawn census. The census is a population — how
+   * many plants of each species the frame drew against how many its recorded
+   * abundance asks for — and a far card is not a plant. It is the several
+   * metres of matrix the band no longer draws individually, so counting one as
+   * a drawn stem would inflate every community's matrix count by the area of an
+   * annulus four times the size of the ring the census is about. The species
+   * deal is still made, and still off the community's own recorded weights,
+   * because it is what gives the card its colour and its height.
+   */
+  function* rebuildFar(camE, camN, cone) {
+    farSet.reset();
+    // T-2967: a pass that deals the far band here leaves no GPU reap of an
+    // earlier placement to land over it, and records its heads for the GPU
+    // near ring to hang first (`hangNearHeads`), as the reap's would be.
+    farGen++;
+    gpuNear?.farByCpu();
+    const hs = farHeadsCpu ?? heads;
+    if (farHeadsCpu) for (const k in hs) hs[k].reset();
+    // Each slot now carries a continuous ring instead of changing presence
+    // only on a CPU rebuild (T-2035).
+    for (const [i, band] of tune.far.bands.entries()) {
+      yield* scatter(camE, camN, band.cell, band.perCell, band.radius + step, Math.max(0, band.inner - step),
+        farSalt(i), 'lattice', cone,
+        (e, n, r, rng, _cellSeed, u, z) => farSlot(i, band, e, n, r, rng, u, z, farSet, hs));
+    }
+  }
+  /** The far band's lattice salt for band `i` (`scatter`'s, and the GPU deal's). */
+  function farSalt(i) { return 0x3a91c7 ^ (i * 0x85ebca6b); }
+
+  /**
+   * ONE FAR SLOT, as `rebuildFar` deals it (T-2967: out of the walk, so the GPU
+   * far deal's reap asks the very same code at a slot it hands back whole —
+   * `FAR_DEAL.ask`). `set` takes the card and `hs` the head.
+   */
+  function farSlot(i, band, e, n, r, rng, u, z, set, hs) {
+    const rank = farRank(e, n, i) / band.keep;
+    if (rank >= 1) return;
+    const outer = band.radius - band.ramp * rank;
+    const inner = band.inner + band.innerRamp * rank;
+    const feather = Math.min(8, band.innerRamp, band.ramp);
+    if (r > outer + step || r < inner - step) return;
+    set.ring([outer, feather, inner, feather]);
+    const zone = zoneOf(e, n, z);
+    if (!zone || !zone.graminoids.length) return;
+    if (zone.turf) return;
+    const wet = wetAt(e, n);
+    // T-0209. THE FAR BAND DEALS THE WHOLE COMMUNITY, not just its grass.
+    // Until this it dealt `graminoids` alone, so every flowering
+    // community past the mid ring was a hundred per cent matrix however
+    // its record read — and no card the far band drew could carry a
+    // flower because no card the far band drew was a plant that has one.
+    //
+    // The split is made INSIDE the band this slot was already occupied
+    // on, not beside it: the slot is used when `u < matrixShare` exactly
+    // as before, and the forbs take their own recorded share OF that
+    // range. So the card count, the instance count, the triangles and the
+    // draw calls are what they were, and what changes is which plant a
+    // card stands for. Widening the occupied band instead would have
+    // bought the bloom with geometry, which is the budget the whole
+    // ticket was told not to spend.
+    //
+    // T-0280. AND THE SHARE IT TAKES IS A COVER AGAINST A COVER.
+    //
+    // The split above was dealt on `forbShare`, and `forbShare` is the
+    // FORB RING's lattice occupancy — `min(1, density × cell² / perCell)`
+    // at one plant per 2.89 m² slot. Two things were wrong with it here,
+    // and they compound.
+    //
+    // It is CLAMPED, and the clamp belongs to a different lattice. Nine of
+    // the ten populated forb layers sit on that 1.000 ceiling
+    // (`tools/forb_clamp_baseline.json`), so for nine communities the far
+    // band's species mix was decided by the number 1.000 and not by
+    // anything their records say: `z06_dense_forest` asks 66.381 plants
+    // per m² and `z01_wet_prairie` asks 0.407, and the band split both as
+    // though they had asked for the same thing. The far band is dealt on
+    // its own lattice at 3.4 m and 9.5 m with `perCell: 1`, and nothing
+    // about the forb ring's slot size bounds a PROPORTION drawn on it.
+    //
+    // And it is the wrong KIND of number even unclamped. `matrixShare` is
+    // `cover.matrix_fraction`, a fraction of GROUND COVERED; `forbShare`
+    // is a slot-occupancy chance derived from stem density. Dividing one
+    // by the sum of both added an area to a probability — K49(a)'s unit
+    // error, one stratum further out — so raising the clamp would have
+    // replaced a wrong constant with a wrong quantity. At 66.381 plants
+    // per m² the unclamped share is ~1 and every far card in the dense
+    // forest would have been a flower.
+    //
+    // So both sides are now the AREAL COVER of their stratum.
+    // `subsetOn().cover` sums `stems × π·clump²` over the subset that may
+    // actually stand on this side of the waterline, which for a
+    // cover-recorded species is its own `cover_fraction` returned intact;
+    // the matrix side stays the record's own `matrix_fraction`, which is
+    // that same quantity already written down. The ratio is then a mix of
+    // two ground shares, which is what an aggregate card standing for
+    // several square metres of ground is a mix of — the reading T-0225 is
+    // in, arrived at here.
+    //
+    // THE CLUMP IS THE DRAWN ONE, and it has to be. Fifty of the sward
+    // records state no `width_m` — every forb of the wet prairie, the
+    // mesic prairie and the sand prairie, and both marsh forbs — so a sum
+    // over recorded widths alone would not make those strata small, it
+    // would make them ABSENT, and the far band would deal the sand
+    // prairie as pure grass on the strength of a missing field. `coverOf`
+    // falls back to `clumpRadiusOf`, which is the footprint the placer is
+    // ALREADY giving those plants and has given them since the walker
+    // clearance was written. `forbCoverFallbacks` on `communities()` says
+    // how many of a community's forbs were measured that way.
+    //
+    // MIDPOINT, not `coverHigh`. T-0034 deals the forb RING off the top of
+    // each recorded range because that ring is a slot COUNT and the count
+    // had headroom; `matrix_fraction` is a single recorded central figure
+    // with no upper end to match, and dividing a high end by a midpoint
+    // would tilt the mix toward flowers by the width of the forb records'
+    // ranges alone. Both sides central, or the ratio is an artefact of
+    // which end each was read at.
+    //
+    // T-1106. AND THE COVER IS A FLOOR, WHILE THIS BAND IS A WALL.
+    //
+    // Ground cover is the honest mix for ground, and everything above
+    // stands. It is not the honest mix for THIS band. The nearest far card
+    // is 34 m out and the furthest 95; at fifty metres a 1.7 m eye looks
+    // 1.9 degrees below horizontal, the sward is seen edge-on, and the
+    // plant that fills a pixel is the first element the ray meets. That is
+    // governed by silhouette area per element times elements per m² of
+    // ground — `silhouetteOf` — and the depth of the wall cancels out of a
+    // ratio between two strata standing in it.
+    //
+    // The two quantities disagree exactly where the strata differ in
+    // SHAPE. A compass plant 1.8 m tall in 1.2 m grass stands up more wall
+    // per square metre of floor than its footprint says, and under the
+    // cover reading the band could not know it: T-0280's change cost
+    // `prairie_west` every drawn head past 26.4 m, down from 135.7 m,
+    // because the tall narrow stratum was priced as though the visitor
+    // were looking down at it. `tools/measure_far_split.mjs` §1 carries all
+    // three columns and the per-community move.
+    //
+    // THIS IS THE MODEL THE MODULE ALREADY USES ONE FIELD OVER.
+    // `tools/measure_far_bloom.mjs` §1 has priced the bloom share on this
+    // same edge-on `n x a` since T-0209 and states its liberty for it, so
+    // until now the split and the bloom were two readings of one wall in
+    // two different units.
+    //
+    // The card count does not move. This decides what a card stands for,
+    // exactly as T-0209 above left it, and the boundary itself is summed
+    // off `data/flora` once per community in `farSplitOf` — no constant
+    // enters it here.
+    const forb = u >= (wet ? zone.farSplit.wet : zone.farSplit.dry);
+    const sp = farDealt(zone, wet, u);
+    if (!sp) return;
+    const y = station(e, n, zone, sp, wet);
+    if (y === null) return;
+    farPlace(band, sp, zone, forb, e, y, n, r, rng, outer, inner, feather, set, hs);
+  }
+  /** The far split and the species deal off the slot's one draw (T-1106,
+   *  above), or null. */
+  function farDealt(zone, wet, u) {
+    const split = wet ? zone.farSplit.wet : zone.farSplit.dry;
+    return u >= split
+      ? dealt(wet ? zone.wet.forbs : zone.dry.forbs, zone.matrixShare - split, u - split)
+      : dealt(wet ? zone.wet.graminoids : zone.dry.graminoids, split, u);
+  }
+  /** A far slot's card, and its flower — what `farSlot` does once `station`
+   *  has given it ground, and the GPU deal's reap once the page has. */
+  function farPlace(band, sp, zone, forb, e, y, n, r, rng, outer, inner, feather, set, hs) {
+    const h = placeFarCard(set, sp, zone, e, y, n, rng, band);
+    // ...and a flowering forb's far card carries the flower, out to the
+    // distance the record's own head size stays one pixel wide — see
+    // `farHeadReach`. The head sets and their material are the ones the
+    // forb ring already uses, so this is instances on a mesh that is
+    // drawn either way, never a new draw call.
+    if (forb && h > 0 && sp.head && tune.far.minPx && band.heads !== false
+      && r <= farHeadReach(sp, tune.far.minPx) + step) {
+      const hr = farHeadRing(sp, tune.far.minPx, _headRing);
+      hr[0] = Math.min(hr[0], outer - HEAD_FADE_AT * feather);
+      hr[1] = Math.max(hr[1], (1 - HEAD_FADE_AT) * feather);
+      hr[2] = inner + HEAD_FADE_AT * feather;
+      hr[3] = (1 - HEAD_FADE_AT) * feather;
+      maybeHead(hs, sp, e, y, n, rng, h, hr);
+    }
+  }
+
+  /**
+   * THE FAR SHRUBS — T-2014. See `TUNE.farShrub` for why this is the shrub
+   * pass's own lattice and not a second planting.
+   *
+   * The generator call order below matches the shrub pass up to `placeShrub`
+   * (`scatter` hands both the same per-slot `rng` and `u`), which is the whole
+   * of the refinement: the far bush and the detailed bush are one plant. Like
+   * the far band it is NOT counted into the drawn census — the detailed pass
+   * already counts the slots inside the forb ring, and past it this is the
+   * same population seen further off, not more of it.
+   */
+  const _farShrubRing = [FAR_RING[0], FAR_RING[1], 0, HARD];
+  function* rebuildFarShrubs(camE, camN, cone) {
+    cone = cone ? { ...cone, margin: tune.farShrub.step } : null;
+    // T-2896: the carries dealt by the GPU first, where the kept carry tile
+    // covers them, so the read-back is on its way while the far shrubs walk.
+    // T-2966: read in the frame only for a caller with no budget (`farSync`);
+    // and not dealt yet while an earlier pass's tail holds the target.
+    const carryGpu = !dealOnCpu && (gpuNear?.carryCovers(camE, camN) ?? false);
+    // T-2968: and the far shrubs in the same job, where their slot field
+    // covers the walk (flora-gpu-farshrub.js): their read-back, reap and DRAIN
+    // are the carries', so a pass that must land leaves them to the tail.
+    const shrubsGpu = carryGpu && gpuNear.farShrubCovers(camE, camN);
+    const carryJob = carryGpu ? gpuNear.carryStart(camE, camN, shrubsGpu) : null;
+    if (!shrubsGpu) {
+      gpuNear?.farShrubByCpu();
+      yield* walkFarShrubs(camE, camN, cone);
+    }
+    yield* rebuildCarry(camE, camN, cone, carryGpu, carryJob, shrubsGpu);
+  }
+  /** The far shrubs' CPU walk (T-2014's, as it always was). T-2968: also the
+   *  carry job's, for a pose whose slot field stopped covering it. */
+  function* walkFarShrubs(camE, camN, cone) {
+    farShrubSet.reset();
+    const f = rings.forb;
+    const fs = tune.farShrub;
+    const inner = farShrubInner();
+    yield* scatter(camE, camN, tune.forb.cell, tune.forb.perCell,
+      fs.radius, inner, 0x7b5c1d, 'wild', cone,
+      (e, n, r, rng, _cellSeed, u, z) => {
+        const off = fringeOf(e, n, f.fringe);
+        // Where THIS slot's detailed bush stops fading and is drawn whole.
+        const handover = f.fade[0] + off - f.fade[1];
+        if (r < handover - fs.step) return;
+        const outer = fs.radius - fs.step - fs.ramp * farShrubRank(e, n);
+        if (r > outer + fs.step) return;
+        const zone = zoneOf(e, n, z);
+        if (!zone || !zone.shrubs.length) return;
+        const wet = wetAt(e, n);
+        const sp = dealt(wet ? zone.wet.shrubs : zone.dry.shrubs,
+          wet ? zone.shrubShareWet : zone.shrubShare, u);
+        if (!sp) return;
+        const y = station(e, n, zone, sp, wet);
+        if (y === null) return;
+        _farShrubRing[0] = outer;
+        _farShrubRing[1] = Math.min(12, fs.ramp / 2);
+        _farShrubRing[2] = handover;
+        farShrubSet.ring(_farShrubRing);
+        placeShrub(farShrubSet, sp, e, y, n, rng);
+      });
+    farShrubSet.commit();
+  }
+
+  /** Same-slot sward continuity. The detailed tufts/card geometry and this
+   * lower-cost geometry are dealt from identical keys and receive identical
+   * transforms. Coverage fades only beyond the nine-metre close verge. */
+  function* rebuildCarry(camE, camN, cone, onGpu = false, job = null, shrubs = false) {
+    // T-2896: dealt by the GPU (flora-gpu-carry.js) — waited for while the
+    // read-back is on its way, as a walk on the pool is, and taken in the frame
+    // by a resumption that may not wait — and reaped in slot order.
+    // T-2966: except one that must land now (DRAIN), which leaves the read-back
+    // and the reap to the carries' tail (`carryPass`).
+    if (onGpu && (yield* gpuNear.carryPass(camE, camN, cone, job, shrubs)) !== false) {
+      dealtOnGpu.far = true;
+      return;
+    }
+    dealtOnGpu.far = false;
+    gpuNear?.carryByCpu();
+    // T-2968: the far shrubs this pass left to a job it never dealt.
+    if (shrubs) {
+      gpuNear.farShrubByCpu();
+      yield* walkFarShrubs(camE, camN, cone);
+    }
+    yield* walkCarry(camE, camN, cone);
+    gpuNear?.carryWalked();
+  }
+  /** The carries' CPU walk (T-2035's, as it always was). T-2966: also a NEXT's,
+   *  as the carries' tail, where the kept tile no longer covers its pose. */
+  function* walkCarry(camE, camN, cone, shrubs = false) {
+    // T-2968: a NEXT walked as the tail walks the far shrubs it left to the job.
+    if (shrubs) yield* walkFarShrubs(camE, camN, cone);
+    const margin = carryMargin;
+    for (const { kind, target, original, radius, band, carryFringe, walk } of carryWalks) {
+      target.reset();
+      yield* scatter(camE, camN, walk.cell, walk.perCell, walk.radius, walk.inner, walk.salt, walk.draw, cone,
+        (e, n, r, rng, _cellSeed, u, z) => {
+          const off = fringeOf(e, n, original.fringe);
+          const detailRing = slotRing(original, e, n, off, _ring);
+          // Keep the coarse clump through the detailed representation's
+          // partial coverage. Its inner edge falls where detail is solid.
+          const handover = kind === 'mid' ? 0 : detailRing[0] - detailRing[1];
+          const edge = radius + fringeOf(e, n, carryFringe);
+          if (r < handover - margin || r > edge + margin) return;
+          const zone = zoneOf(e, n, z);
+          if (!zone || !zone.graminoids.length) return;
+          // T-2085: no carry on turf — past its own rings the ground carries it.
+          if (zone.turf) return;
+          const wet = wetAt(e, n);
+          const sp = dealt(wet ? zone.wet.graminoids : zone.dry.graminoids,
+            zone.matrixShare, u);
+          if (!sp) return;
+          const y = station(e, n, zone, sp, wet);
+          if (y === null) return;
+          target.ring([edge, band, handover, kind === 'mid' ? 0 : HARD]);
+          if (kind === 'near') placeGraminoid(target, sp, e, y, n, rng);
+          else placeCard(target, sp, zone, e, y, n, rng);
+        });
+      target.commit();
+    }
+  }
+
+  /** The frame's flora figures, off every set as it stands now. Read after
+   *  either rebuild, because the far shrubs rebuild on their own step. */
+  function tally() {
+    stats.instances = sets.reduce((a, s) => a + s.mesh.count, 0);
+    stats.sets = Object.fromEntries(sets.map((s) => [s.mesh.name, s.mesh.count]));
+    stats.caps = Object.fromEntries(sets.map((s) => [s.mesh.name, s.max]));
+    stats.capped = sets.filter((s) => s.mesh.count >= s.max).map((s) => s.mesh.name);
+    stats.demand = Object.fromEntries(sets.map((s) => [s.mesh.name, s.demand()]));
+    stats.trisPer = Object.fromEntries(sets.map((s) => [s.mesh.name, s.tris]));
+    stats.shortfall = Object.fromEntries(sets.map((s) => [s.mesh.name, s.demand() - s.mesh.count])
+      .filter(([, short]) => short > 0));
+    stats.triangles = sets.reduce((a, s) => a + s.mesh.count * s.tris, 0);
+    stats.drawCalls = sets.filter((s) => s.mesh.count > 0).length;
+  }
+
+  function* rebuildAll(camE, camN, cone) {
+    nearDealing = true;
+    openCensus();
+    // T-2894: whether this pass's mid ring is the GPU's, decided as it starts.
+    const midOnGpu = !dealOnCpu && (gpuNear?.midCovers(camE, camN) ?? false);
+    dealtOnGpu.near = midOnGpu;
+    yield* rebuildGround(camE, camN, cone, midOnGpu);
+    // T-2895: and its forbs, rosettes and shrubs with it: dealt in the mid
+    // pass and reaped beside the mid cards (`reapForbs`), or walked here.
+    if (!midOnGpu) yield* rebuildForbs(camE, camN, cone);
+    // T-2967: and its far band, dealt by the GPU against the far field and
+    // reaped between frames (`reapFar`), or walked here when the kept far
+    // tile does not cover the far lattice (a boot, a tier change, a jump).
+    const farOnGpu = gpuNear?.farCovers(camE, camN) ?? false;
+    if (!farOnGpu) yield* rebuildFar(camE, camN, cone);
+    // T-2716: the near ring's tufts dealt by the GPU at this pass's centre.
+    // T-2774: and read back for their heads and the census — in this frame for
+    // a caller that reads the buffers straight after, which counts them into
+    // this census before it closes; otherwise collected when the GPU is done,
+    // and until then the sets carry the last placement's near heads.
+    // T-2894: and the mid ring with them, where the GPU deals it.
+    // T-2895: a forb ring walked here hands its heads to the near ring's
+    // first, so a read-back reaped in this frame (it hangs none: the pass is
+    // dealing) and the pass's own hanging below both find them.
+    if (!midOnGpu && forbHeadsCpu) gpuNear?.takeForbHeads(forbHeadsCpu);
+    if (!farOnGpu && farHeadsCpu) gpuNear?.takeFarHeads(farHeadsCpu);
+    gpuNear?.place(camE, camN, cone, nearSync, midOnGpu, farOnGpu);
+    closeCensus();
+    hangNearHeads();
+    // The far shrubs commit themselves, on their own step; a mid ring and a
+    // forb ring the GPU dealt, when its read-back is reaped.
+    const reaped = new Set(midOnGpu ? [midSet, forbSet, rosetteSet, shrubSet] : []);
+    // T-2967: and the far band's, when its reap lands.
+    if (farOnGpu) reaped.add(farSet);
+    for (const s of sets) {
+      if (s !== farShrubSet && s !== nearCarry && s !== midCarry && !reaped.has(s)) s.commit();
+    }
+    nearDealing = false;
+    tally();
+  }
+
+  const tmpV = new THREE.Vector3();
+  const tmpF = new THREE.Vector3();
+  const tmpQ = new THREE.Quaternion();
+
+  /**
+   * T-2106. THE REBUILDS, SPREAD OVER FRAMES. Each of the two passes the walker
+   * triggers — the near lattice (`rebuildAll`) and the far shrubs with their
+   * carries (`rebuildFarShrubs`) — is a generator already, which the boot path
+   * iterates between paints. While the visitor moves smoothly the animation
+   * loop now does the same: a pass is started EARLY, advanced a slice of each
+   * frame, and its sets are committed only when it lands, so the GPU goes on
+   * drawing the last whole lattice and never a half-dealt one. The deal itself
+   * is untouched — a pass dealt over ten frames lands the plants a pass dealt
+   * in one would, which `tools/measure_walk_frames.mjs --verify` checks.
+   *
+   * `reach` is how far the walker may stand from the pass's centre before the
+   * lattice on screen runs out of margin (`step` for the near rings, the far
+   * shrubs' own step for theirs); `CONE_YAW_STEP` is the same for a turn.
+   * `cost` is what the last whole pass spent: the next one is paced on it.
+   */
+  const nearPass = { name: 'near', make: rebuildAll, at: 'near', yawAt: 'yaw',
+    reach: step, pending: null, cost: null, waits: 0 };
+  const farPass = { name: 'far', make: rebuildFarShrubs, at: 'farShrub', yawAt: 'farShrubYaw',
+    reach: tune.farShrub.step, pending: null, cost: null, waits: 0 };
+  stats.spread = { landings: 0, drained: 0, abandoned: 0, frames: 0, ms: 0, waits: 0,
+    jumps: 0, jumpFrames: 0, passes: { near: 0, far: 0 }, last: { near: null, far: null },
+    // T-2696: the slots a spread pass dealt off the pool, and how many of them
+    // had their worker's zone and ground answers home when the deal reached them.
+    slots: { dealt: 0, zoned: 0, grounded: 0 },
+    // T-2894: every pass as it is counted — its number, the main thread's ms
+    // it cost (a spread pass's slices summed, a one-frame pass's own), and how
+    // it ended — whichever loop dealt it. `measure_walk_frames.mjs` reads the
+    // near re-deal off this: it used to count only the passes that landed in a
+    // frame it drove, and the page's own loop, still ticking while the tool
+    // holds the clock, lands the rest between them (T-2774's turn: 5-7 counted
+    // of 59). The last PASS_LOG_KEEP of each kind are kept.
+    log: { near: [], far: [] },
+    // T-2894: near passes dropped after their ground was dealt (`rebuildGround`
+    // counts `stats.rebuilds` as it ends), so the rebuilds a move did are its
+    // passes plus these.
+    droppedDealt: 0 };
+  const PASS_LOG_KEEP = 4096;
+  function logPass(p, pass, ms, kind) {
+    const log = stats.spread.log[p.name];
+    // T-2966: and which side dealt its GPU rings (`dealtOnGpu`).
+    const entry = { pass, ms, kind, onGpu: dealtOnGpu[p.name] };
+    log.push(entry);
+    if (log.length > PASS_LOG_KEEP) log.splice(0, log.length - PASS_LOG_KEEP);
+    // T-2966: a far pass's carries' tail books its ms on the pass.
+    if (p === farPass) gpuNear?.carryOwned(entry);
+  }
+  /** T-2894: a pass in flight dropped; counted if its ground was dealt. */
+  function dropPass(p) {
+    // T-2966: a far pass dropped in its carries hands a deferred NEXT back.
+    if (p === farPass) gpuNear?.carryDropped();
+    if (p.name === 'near' && stats.rebuilds > p.pending.rebuilds0) stats.spread.droppedDealt++;
+    p.pending = null;
+    stats.spread.abandoned++;
+  }
+
+  /** Run, start or advance one pass this frame. True if its sets changed. */
+  function runPass(p, f, due) {
+    const { e, n, yaw } = f;
+    // Worth spreading: the last pass cost more than the slice, and half this
+    // pass's margin — the most a spread pass can use — holds at least four
+    // frames of the walker's pace and turn (two to spread over, two in hand).
+    // A pass that fits in the slice, a teleport, a snap turn, a horse at the
+    // near rings' 0.6 m step: each takes the one-frame pass it always did,
+    // started on time and not early, because starting a pass early that
+    // cannot then be spread only adds passes (measured on a ride: 367 against
+    // 221).
+    const smooth = f.pace * 4 <= p.reach / 2 && f.turnRate * 4 <= CONE_YAW_STEP / 2;
+    const costly = (p.cost ?? 0) > f.budgetMs;
+    const spread = f.spread && costly && smooth;
+    // T-2683: except the snap turn and the arrival, on the animation loop.
+    // Neither leaves margin to spread over, but both are ONE jump and not a
+    // pace kept up: the pass is dealt from where the camera landed, over a
+    // few frames (`JUMP_FRAMES`), and the old lattice draws until it lands.
+    // A horse is smooth at its pace and keeps its one-frame pass. A cone
+    // that changed is not a jump (`f.spread` is false): that pass is T-2682's.
+    if (p.pending?.jump) {
+      // The camera jumped AGAIN, or the cone changed under it: deal afresh.
+      if (f.spread && smooth) return advance(p, f, jumpSlice(p, f));
+      dropPass(p);
+    }
+    if (p.pending && !spread) {
+      // Dealt for a pose the camera has jumped from: dropped uncommitted. The
+      // sets still hold the last whole lattice on the GPU, and `due` decides
+      // afresh whether that one still serves.
+      dropPass(p);
+    }
+    const c = centres[p.at];
+    const d = c ? Math.hypot(e - c.e, n - c.n) : Infinity;
+    const dy = centres[p.yawAt] === null ? Infinity : yawGap(yaw, centres[p.yawAt]);
+    if (!p.pending) {
+      if (!spread) {
+        if (!due) return false;
+        if (f.spread && costly && (f.pace > p.reach || f.turnRate > CONE_YAW_STEP)) {
+          begin(p, f, true);
+          stats.spread.jumps++;
+          return advance(p, f, jumpSlice(p, f));
+        }
+        const t0 = performance.now();
+        // T-2966: dealt whole in this frame — but under a budget its carries'
+        // read-back is not waited for in it (DRAIN: they land as a tail).
+        const g = p.make(e, n, f.cone);
+        const token = Number.isFinite(f.budgetMs) ? DRAIN : undefined;
+        while (!g.next(token).done) { /* runtime synchronous path */ }
+        p.cost = performance.now() - t0;
+        logPass(p, ++stats.spread.passes[p.name], p.cost, 'one-frame');
+        centres[p.at] = { e, n };
+        centres[p.yawAt] = yaw;
+        return true;
+      }
+      // Start EARLY by as far as the walker will go while the pass is spread:
+      // its pace (and turn) per frame, for the frames the last pass's cost
+      // needs at this budget, and two in hand. Never earlier than half the
+      // reach — spreading every pass over half the margin is the least any
+      // frame can be asked to pay, because the pass after it needs the rest.
+      // T-2604: and the frames the last pass spent waiting on its walks.
+      const frames = Math.ceil((p.cost ?? 0) / Math.max(f.budgetMs, 0.5)) + 3 + p.waits;
+      const lead = Math.min(p.reach / 2, Math.max(f.pace, frames * f.pace));
+      const leadYaw = Math.min(CONE_YAW_STEP / 2, frames * f.turnRate);
+      if (d + lead <= p.reach && dy + leadYaw <= CONE_YAW_STEP) return false;
+      begin(p, f, false);
+    }
+    // The frames left before the camera reaches the edge of the lattice on
+    // screen, at this frame's pace and turn, less one for the frame this one
+    // renders and one in hand. A pass not landed by then is finished in this
+    // frame: the margin is never spent, only the time.
+    const left = Math.min(
+      f.pace > 0 ? (p.reach - d) / f.pace : Infinity,
+      f.turnRate > 0 ? (CONE_YAW_STEP - dy) / f.turnRate : Infinity) - 2;
+    const late = left < 1 || performance.now() - p.pending.t0 > SPREAD_MAX_MS;
+    const owed = Math.max(0, (p.cost ?? f.budgetMs) - p.pending.spent);
+    return advance(p, f, late ? Infinity : Math.max(f.budgetMs, owed / Math.max(1, left)));
+  }
+
+  /**
+   * Start a pass to be dealt over frames. T-2604: its lattice walks go to the
+   * job pool (the cone carries the mark, because it is what every walk of the
+   * pass is given). T-2683: and they go ALL AT ONCE — the walks the last pass
+   * of this kind made are sent now, from this pass's centre and cone, so a
+   * walk is on a worker before the deal reaches it rather than waiting a frame
+   * for its reply when it does. A walk the pass makes that was not sent ahead
+   * (the first pass, a tier change) is sent when it is reached, as before.
+   */
+  function begin(p, f, jump) {
+    const { e, n, yaw } = f;
+    f.camera.getWorldQuaternion(tmpQ);
+    const cone = f.cone && { ...f.cone, jobs: true, walks: [], ahead: new Map(),
+      ground: groundKey, groundWorker, tally: stats.spread.slots };
+    if (cone && jobsOnWorkers()) {
+      for (const w of p.walks ?? []) {
+        const job = walkJob(e, n, w, cone);
+        const reply = sendWalk(job, cone.groundWorker);
+        reply.slots.catch(() => {}); // one never asked for is not an error
+        cone.ahead.set(walkKey(job), reply);
+      }
+    }
+    p.pending = { gen: p.make(e, n, cone), cone, e, n, yaw, jump,
+      spent: 0, frames: 0, waits: 0, rebuilds0: stats.rebuilds,
+      t0: performance.now(),
+      // Where the camera stood, so a gate can deal the same pass in one frame
+      // and compare the two plant for plant.
+      camera: [tmpV.x, tmpV.y, tmpV.z, ...tmpQ.toArray()] };
+  }
+
+  /** T-2683. A jump pass's slice: its last whole cost over `JUMP_FRAMES`, at
+   *  least the frame budget, and never past `JUMP_SLICE_MS` with what this
+   *  frame has dealt already counted (a snap turns both passes at once); all
+   *  of it once it is late. */
+  function jumpSlice(p, f) {
+    if (performance.now() - p.pending.t0 > SPREAD_MAX_MS) return Infinity;
+    return Math.max(f.budgetMs,
+      Math.min(JUMP_SLICE_MS - f.dealt, (p.cost ?? f.budgetMs) / JUMP_FRAMES));
+  }
+
+  /** Deal a slice of the pass in flight; land it if it ran to its end. */
+  function advance(p, f, slice) {
+    const late = slice === Infinity;
+    const t0 = performance.now();
+    let done = false;
+    // T-2604: a walk still on a worker ends the slice, and is collected next
+    // frame; a late pass is never told it may wait, so it walks in this one.
+    do {
+      // T-2966: a late pass is told DRAIN, which every walk takes as "may not
+      // wait" and the carries as "leave the rest to the tail".
+      const s = p.pending.gen.next(late ? DRAIN : MAY_WAIT);
+      done = s.done;
+      if (s.value === WALK_WAIT) { p.pending.waits++; break; }
+    } while (!done && performance.now() - t0 < slice);
+    p.pending.spent += performance.now() - t0;
+    p.pending.frames++;
+    f.dealt += performance.now() - t0;
+    if (!done) return false;
+    land(p, late);
+    return true;
+  }
+
+  /** A spread pass has run to its end: its lattice is the one shown. */
+  function land(p, drained) {
+    const q = p.pending;
+    centres[p.at] = { e: q.e, n: q.n };
+    centres[p.yawAt] = q.yaw;
+    p.cost = q.spent;
+    p.waits = q.waits;
+    // T-2683: the walks this pass made, for the next one to send ahead.
+    if (q.cone?.walks.length) p.walks = q.cone.walks;
+    const sp = stats.spread;
+    sp.landings++;
+    if (drained) sp.drained++;
+    sp.frames += q.frames;
+    sp.ms += q.spent;
+    sp.waits += q.waits;
+    // T-2683: the frames a jump pass drew the old lattice for, its landing one
+    // included — what a snap turn costs the visitor to look at.
+    if (q.jump) sp.jumpFrames += q.frames;
+    sp.last[p.name] = { e: q.e, n: q.n, yaw: q.yaw, frames: q.frames, ms: q.spent, waits: q.waits,
+      jump: q.jump, camera: q.camera, pass: ++sp.passes[p.name] };
+    logPass(p, sp.passes[p.name], q.spent, drained ? 'drained' : q.jump ? 'jump' : 'landed');
+    p.pending = null;
+  }
+
+  const api = {
+    group,
+    stats,
+    zoneAt(e, n) { return finder(e, n)?.id ?? null; },
+    /**
+     * T-2695. The workers' zone answers held against this finder's: `count`
+     * points over the measured grid, asked of a copy of the ground the workers
+     * were handed (as a worker reads it, after a structured clone) and of the
+     * page's own finder. `differ` must be 0; `unasked` are the points the worker
+     * leaves to the page (off the grid). `{ held: false }` with no workers.
+     */
+    checkHeldZones(count = 20000) {
+      if (!ground) return { held: false };
+      const clone = structuredClone(ground);
+      const zoneAt = groundZones(clone);
+      const groundAt = groundAnswers(clone);
+      const hf = terrain.heightfield;
+      let s = 0x2695;
+      const rnd = () => { s ^= s << 13; s >>>= 0; s ^= s >>> 17; s ^= s << 5; s >>>= 0; return s / 4294967296; };
+      const out = { held: true, asked: 0, unasked: 0, differ: 0, first: [],
+        ground: groundAt ? { asked: 0, differ: 0, wet: 0, floor: 0, trodden: 0, keep: 0, track: 0,
+          trackHeld: trackOnWorker, first: [] } : null };
+      // T-2696: the ground answers too, at the same points and at as many again
+      // where floors and corridors are — near a footprint, and near a street's
+      // line — which a uniform draw over the whole grid would mostly miss.
+      const circles = footprintCircles(footprints);
+      const lines = (verge.records ?? []).filter((r) => r.path?.length);
+      const near = (k) => {
+        if (k % 2 === 1 && circles.length) {
+          const c = circles[Math.floor(rnd() * circles.length)];
+          const r = Math.sqrt(c.r2) + 4;
+          return [c.e + (rnd() * 2 - 1) * r, c.n + (rnd() * 2 - 1) * r];
+        }
+        if (lines.length) {
+          const l = lines[Math.floor(rnd() * lines.length)];
+          const p = l.path[Math.floor(rnd() * l.path.length)];
+          const r = l.corridor_width_m * 0.5 + 3;
+          return [p[0] + (rnd() * 2 - 1) * r, p[1] + (rnd() * 2 - 1) * r];
+        }
+        return null;
+      };
+      const askGround = (e, n) => {
+        const fw = groundAt(e, n);
+        if (fw === GROUND_UNASKED) return;
+        // The track bit is read only where the page reads it (`trackOnWorker`).
+        const f = trackOnWorker ? fw : fw & ~GROUND_TRACK;
+        const g = out.ground;
+        g.asked++;
+        const page = (water.isWater(e, n) ? GROUND_WET : 0)
+          | (onFloor(blocks, e, n) ? GROUND_FLOOR : 0) | vergeBand(verge(e, n))
+          // T-2896: and the streets' track, where the workers answer it.
+          | (trackOnWorker && growthEdges(e, n) ? GROUND_TRACK : 0);
+        const y = terrain.surfaceHeight(e, n);
+        if (f & GROUND_WET) g.wet++;
+        if (f & GROUND_FLOOR) g.floor++;
+        if (f & GROUND_TRODDEN) g.trodden++;
+        if (f & GROUND_KEEP) g.keep++;
+        if (f & GROUND_TRACK) g.track++;
+        if (f !== page || groundAt.y !== y) {
+          g.differ++;
+          if (g.first.length < 5) g.first.push({ e, n, worker: [f, groundAt.y], page: [page, y] });
+        }
+      };
+      for (let k = 0; k < count; k++) {
+        // A tenth of the points off the grid's edge, to read the hand-back too.
+        const e = hf.originE - 20 + rnd() * (hf.widthM + 40);
+        const n = hf.originN - 20 + rnd() * (hf.depthM + 40);
+        if (groundAt) {
+          askGround(e, n);
+          const p = near(k);
+          if (p) askGround(p[0], p[1]);
+        }
+        const z = zoneAt(e, n);
+        if (z === ZONE_UNASKED) { out.unasked++; continue; }
+        out.asked++;
+        if ((z ? zones[z - 1] : null) !== finder(e, n)) {
+          out.differ++;
+          if (out.first.length < 5) out.first.push({ e, n, worker: zones[z - 1]?.id ?? null, page: finder(e, n)?.id ?? null });
+        }
+      }
+      return out;
+    },
+    shoreDistance(e, n) { return water.distance(e, n); },
+    /** T-0280. Which SIDE of that waterline, which `shoreDistance` cannot say —
+     *  it returns a positive distance either way, to land from water and to
+     *  water from land. Every lattice pass picks its species list, and the far
+     *  band makes its grass-or-flower split, on this exact test, so a gate
+     *  sampling the ground the far band covers asks the placer for it rather
+     *  than guessing from a distance that is symmetric. */
+    isWaterAt(e, n) { return water.isWater(e, n); },
+    /** May a rooted plant stand here at all — the travelled track, the
+     *  building footprints and the water answered in one call. A gate
+     *  measuring how densely a community was planted has to divide by the
+     *  ground that was actually available to it, not by the disc it sampled. */
+    plantableAt(e, n) { return station(e, n, NO_COMMUNITY, null) !== null; },
+    /** The station a NAMED species of the community here would be given, or null
+     *  if this is not a place that species may stand. The gate asks the placer
+     *  itself rather than re-deriving its rules: `substrate` is only worth
+     *  recording if the thing that plants the town reads it. */
+    stationOf(e, n, speciesId) {
+      const zone = finder(e, n);
+      const sp = zone?.byId.get(speciesId);
+      if (!sp) return null;
+      return station(e, n, zone, sp);
+    },
+    /**
+     * T-2698. The near deal's field, for the shader that will deal the near
+     * ring itself (T-2557): `at` is the CPU's answer at one point — community
+     * (its index in `communities()` plus one, 0 = none), the FIELD_FLAGS and
+     * the ground height — asked through the very closures the deal asks;
+     * `build` rasterises it at the texel centres of the tile around a camera;
+     * `slots` is every slot of the near lattice there (no cone), the points
+     * `tools/measure_near_field.mjs` holds the tile to.
+     */
+    /**
+     * T-2716. The near ring as the GPU draws it, or null where the CPU set
+     * does: `stats` (deal passes, tile builds and uploads, read-backs, and the
+     * main thread's ms on each) and `groundAt`, the kept tile's ground under a
+     * point — what a drawn tuft roots on. T-2774: `flush` takes a read-back
+     * still on its way now, so a reader comparing the head sets sees the last
+     * placement's heads and not the one before.
+     */
+    nearDraw: gpuNear ? { stats: gpuNear.stats, groundAt: (e, n) => gpuNear.groundAt(e, n),
+      flush: () => gpuNear.flush(),
+      // T-2894: the mid field's spec (null where the CPU deals the mid ring),
+      // and both kept tiles home — a tool waits on it before reading the GPU's
+      // mid cards, which a pass deals only where the mid tile covers it.
+      midSpec: gpuNear.midSpec, settled: () => gpuNear.settled(),
+      // T-2967: the far band's slot fields (`bands` and their `bytes`, or
+      // null where the CPU deals the far band), and a tool's switch: false
+      // deals the far band on the CPU at every pass, as before this slice —
+      // the before of `tools/measure_far_field.mjs`'s placed-card reading.
+      farField: gpuNear.farField, setFarOnGpu: (on) => gpuNear.setFarOnGpu(on),
+      // T-2968: the far shrubs' slot field, and the same switch for them.
+      farShrubField: gpuNear.farShrubField, setFarShrubOnGpu: (on) => gpuNear.setFarShrubOnGpu(on),
+      // T-2969: the near and mid keepers, whose landings a tool reads.
+      keepers: () => gpuNear.keepers() } : null,
+    /**
+     * T-2967. The far band's ground as the far field asks it, for
+     * `tools/measure_far_field.mjs`: `at` is the CPU's answer at one point in
+     * the far field's terms — community, WET, TURF, BLOCKED for a FLOOR only
+     * (the pool's half: the far field holds no `growthBlocked`, which the reap
+     * asks at the slot) and TRODDEN, and the height; `spec(texel)` the spec of
+     * the TEXEL-CENTRE field the slot fields replaced, at `texel` (the tool's
+     * argument for them); `slots` every slot of the
+     * three far lattices (no cone) — east, north, band, distance, and whether
+     * the band's rank and the slot's own ring keep it (a slot a card can
+     * stand on), and its cell (c, r); `slotPoint(i, I, J)` the point band
+     * `i`'s slot field asks its texel (I, J) at (jobs/zone-kernel.js).
+     */
+    farField: {
+      slotPoint(i, I, J) {
+        const band = tune.far.bands[i];
+        return slotPoint({ salt: farSalt(i), cell: band.cell, sub: Math.round(Math.sqrt(band.perCell)),
+          wild: false }, I, J);
+      },
+      spec(texel) {
+        const reach = Math.max(...tune.far.bands.map((b) => b.radius)) + step + FAR_LATTICE_PAD_M;
+        return farFieldSpec(reach, texel ? { texel } : undefined);
+      },
+      at(e, n, out = [0, 0, 0]) {
+        const zone = finder(e, n);
+        let f = 0;
+        if (water.isWater(e, n)) f |= FIELD_FLAGS.WET;
+        if (zone?.turf) f |= FIELD_FLAGS.TURF;
+        if (onFloor(blocks, e, n)) f |= FIELD_FLAGS.BLOCKED;
+        if (zone && trodden(e, n, zone, TALLEST)) f |= FIELD_FLAGS.TRODDEN;
+        out[0] = zone ? zoneIndex.get(zone) + 1 : 0;
+        out[1] = f;
+        out[2] = terrain.surfaceHeight(e, n);
+        return out;
+      },
+      /** Whether community `z` (1-based, the class texel's) is ground the far
+       *  band deals on: grass, and not short turf. */
+      deals(z) { const zone = zones[z - 1]; return !!zone && zone.graminoids.length > 0 && !zone.turf; },
+      slots(camE, camN) {
+        const out = [];
+        for (const [i, band] of tune.far.bands.entries()) {
+          const gen = scatter(camE, camN, band.cell, band.perCell, band.radius + step,
+            Math.max(0, band.inner - step), farSalt(i), 'lattice', null, (e, n, d) => {
+              const rank = farRank(e, n, i) / band.keep;
+              const keep = rank < 1 && d <= band.radius - band.ramp * rank + step
+                && d >= band.inner + band.innerRamp * rank - step;
+              out.push(e, n, i, d, keep ? 1 : 0, Math.floor(e / band.cell), Math.floor(n / band.cell));
+            });
+          for (const _ of gen) { /* drained */ }
+        }
+        return Float64Array.from(out);
+      },
+    },
+    nearField: {
+      spec: FIELD_SPEC,
+      flags: FIELD_FLAGS,
+      glsl: FIELD_GLSL,
+      sample: sampleField,
+      /**
+       * T-2715. `at` at a TEXEL: the point's own answer, and BLOCKED as well
+       * wherever `growthEdges` (the page passes the streets' track) reaches any
+       * of the texel's four corners. A track edge through a texel whose centre it
+       * misses used to leave the tile unblocked under a slot the CPU blocks — the
+       * one tuft at river_bank after the bank went per-texel. What `growthEdges`
+       * holds must be wider than a texel's diagonal, so a band that reaches any
+       * point of the texel reaches a corner, and the tile errs only on the side
+       * of exclusion. Everything else in `growthBlocked` is `growthPatch`, asked
+       * at the centre: the worked bank already answers a texel at a time
+       * (`working-bank.js` BANK_PATCH_M), and a fence is thinner than a texel.
+       */
+      atTexel(e, n, out = [0, 0, 0], texel = FIELD_SPEC.texel) {
+        this.at(e, n, out);
+        if (!(out[1] & FIELD_FLAGS.BLOCKED) && edgeCorners(e, n, texel / 2)) out[1] |= FIELD_FLAGS.BLOCKED;
+        return out;
+      },
+      at(e, n, out = [0, 0, 0]) {
+        const zone = finder(e, n);
+        let f = 0;
+        if (water.isWater(e, n)) f |= FIELD_FLAGS.WET;
+        if (zone?.turf) f |= FIELD_FLAGS.TURF;
+        if (station(e, n, NO_COMMUNITY, null, false) === null) f |= FIELD_FLAGS.BLOCKED;
+        if (zone && trodden(e, n, zone, TALLEST)) f |= FIELD_FLAGS.TRODDEN;
+        out[0] = zone ? zoneIndex.get(zone) + 1 : 0;
+        out[1] = f;
+        out[2] = terrain.surfaceHeight(e, n);
+        return out;
+      },
+      build(camE, camN, spec = FIELD_SPEC) {
+        const { e0, n0 } = fieldOrigin(camE, camN, spec);
+        return buildField((e, n, out) => this.atTexel(e, n, out, spec.texel), e0, n0, spec);
+      },
+      /**
+       * T-2707. The tile kept around a walker (near-field.js `fieldKeeper`): a
+       * re-centre re-rasterises only the strip it exposes, and the pool's worker
+       * that holds the zones' ground answers it (jobs/zone-kernel.js
+       * `fieldRect`), so the page adds only `growthBlocked` — the streets' track,
+       * the yards, the ground strip and the worked bank, which live here — and
+       * asks `at` whole for a texel the worker could not answer. `pool: false`
+       * asks every texel here, for the tool's before.
+       *
+       * T-2894: `page: false` leaves the page's `growthBlocked` out of the
+       * tile altogether (the mid field's keeper): its deal asks it at the slot
+       * itself, on the page, for the few slots the GPU places (`reapMid`), so
+       * a re-centre's main-thread share is the copy of the worker's answers.
+       *
+       * T-2967: `unasked` (a class value, the far field's FAR_UNASKED) writes
+       * that into a texel the pool did not answer instead of asking `at` for it
+       * on the page — off the measured grid a far tile can be tens of
+       * thousands of texels, and its deal hands such a slot back whole.
+       *
+       * T-2967: `slot` (`{salt, cell, sub, wild}`) makes it a SLOT field: each
+       * texel asked at the lattice slot it stands for (zone-kernel.js
+       * `slotPoint`) rather than at its centre — pool only, so with `unasked`.
+       */
+      keeper({ spec = FIELD_SPEC, pool = true, page = true, unasked: mark = null, slot = null } = {}) {
+        if (slot && mark === null) throw new Error('a slot field marks what the pool did not answer');
+        const at = this.at;
+        const table = new Uint8Array(zones.length + 1);
+        zones.forEach((z, i) => {
+          table[i + 1] = (z.turf ? FIELD_TABLE_TURF : 0) | (z.turfCeiling ? FIELD_TABLE_CEILING : 0);
+        });
+        const o = [0, 0, 0];
+        const keeper = fieldKeeper({
+          spec,
+          ask: (r, e0, n0, texel) => (pool && groundKey
+            ? runJob('fieldRect', { ground: groundKey, e0, n0, texel, ...r, table, slot },
+              { worker: groundWorker })
+            : null),
+          finish(got, { i0, j0, w, h }, e0, n0, texel, cls, height) {
+            if (got) keeper.stats.pooled += w * h;
+            // The strip's corner lattice, asked once and shared by the four
+            // texels round each corner (see `atTexel`).
+            const corner = page ? edgeLattice(e0 + i0 * texel, n0 + j0 * texel, w, h, texel) : null;
+            const edged = (i, j) => corner !== null && (corner[j * (w + 1) + i]
+              || corner[j * (w + 1) + i + 1] || corner[(j + 1) * (w + 1) + i]
+              || corner[(j + 1) * (w + 1) + i + 1]);
+            for (let j = 0; j < h; j++) {
+              const n = n0 + (j0 + j + 0.5) * texel;
+              for (let i = 0; i < w; i++) {
+                const e = e0 + (i0 + i + 0.5) * texel;
+                const k = j * w + i;
+                const f = got ? got.flags[k] : FIELD_UNASKED;
+                if (f === FIELD_UNASKED) {
+                  if (got) keeper.stats.unasked++;
+                  // T-2967: a keeper that marks them (the far field's) leaves
+                  // the texel to the deal, which hands its slots back whole.
+                  if (mark !== null) { cls[2 * k] = mark; cls[2 * k + 1] = 0; height[k] = 0; continue; }
+                  // `atTexel`, with the strip's own corners.
+                  at(e, n, o);
+                  cls[2 * k] = o[0]; height[k] = o[2];
+                  cls[2 * k + 1] = edged(i, j) ? o[1] | FIELD_FLAGS.BLOCKED : o[1];
+                  continue;
+                }
+                cls[2 * k] = got.zone[k];
+                // With the corners asked, the centre need only ask `growthPatch`:
+                // a band that reaches the centre reaches a corner, and asking the
+                // track at both doubled the page's share of a re-centre (T-2715's
+                // walk reading: 0.59 -> 1.07 ms a metre, worst step 29 -> 55 ms).
+                const blocked = !page ? false : corner === null ? growthBlocked(e, n)
+                  : edged(i, j) || (growthPatch !== null && growthPatch(e, n));
+                cls[2 * k + 1] = !(f & FIELD_FLAGS.BLOCKED) && blocked ? f | FIELD_FLAGS.BLOCKED : f;
+                height[k] = got.y[k];
+              }
+            }
+          },
+        });
+        // Texels the pool answered, and of those the ones it handed back to `at`.
+        keeper.stats.pooled = 0;
+        keeper.stats.unasked = 0;
+        return keeper;
+      },
+      slots(camE, camN) {
+        const out = [];
+        const gen = scatter(camE, camN, tune.near.cell, tune.near.perCell,
+          rings.near.lattice.outer, rings.near.lattice.inner, 0x51ed27, 'strata', null,
+          (e, n) => { out.push(e, n); });
+        for (const _ of gen) { /* drained */ }
+        return Float64Array.from(out);
+      },
+      /** T-2706: the water's surface, where a wet station stands. */
+      waterY,
+      /** T-2706: the near walk's own arguments, for `latticeUniforms`. */
+      walk: { cell: tune.near.cell, perCell: tune.near.perCell, salt: 0x51ed27, draw: 'strata' },
+      /** The communities and their graminoid subsets packed for the shader. */
+      table() { return dealTable(zones); },
+      /**
+       * What every slot `slots` walks CAME TO, through `dealNearSlot` itself —
+       * the draw's own deal with the census left alone and nothing drawn.
+       * DEAL_STRIDE numbers a slot (see `flora-gpu-deal.js`); `rowOf` is a
+       * `table()`'s, so the species reads as the shader's row number.
+       */
+      deal(camE, camN, rowOf) {
+        const out = [];
+        let got = null;
+        const sink = {
+          ring() {},
+          push(e, y, n, yaw, h, spread, arch, r, g, b, conf) {
+            got = [yaw, h, spread, arch, r, g, b, conf];
+            return true;
+          },
+        };
+        const draws = [];
+        const gen = scatter(camE, camN, tune.near.cell, tune.near.perCell,
+          rings.near.lattice.outer, rings.near.lattice.inner, 0x51ed27, 'strata', null,
+          (e, n, d, rng, _cellSeed, u) => {
+            got = null;
+            draws.length = 0;
+            dealNearSlot(e, n, d, () => { const v = rng(); draws.push(v); return v; },
+              u, undefined, null, sink, false);
+            const o = _nearDealt;
+            const row = o.sp ? rowOf(zoneIndex.get(o.zone), o.sp) : -1;
+            out.push(e, n, u, o.code, row, o.code === NEAR_DEAL.placed ? o.y : NaN,
+              ...(got ?? [NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN]), draws[4] ?? NaN);
+          });
+        for (const _ of gen) { /* drained */ }
+        return Float64Array.from(out);
+      },
+    },
+    /** What each community may plant on each side of its waterline, by id. */
+    substrates() {
+      return zones.map((z) => ({
+        id: z.id,
+        dry: z.dry.graminoids.items.concat(z.dry.forbs.items, z.dry.shrubs.items)
+          .map((s) => s.id),
+        wet: z.wet.graminoids.items.concat(z.wet.forbs.items, z.wet.shrubs.items)
+          .map((s) => s.id),
+      }));
+    },
+    /** What each compiled community carries out of its record, so the gate can
+     *  ask whether the authored number reached the renderer rather than
+     *  trusting that it did. */
+    communities() {
+      return zones.map((z) => ({
+        id: z.id, matrixShare: z.matrixShare, bareSoil: z.bareSoil,
+        /** T-2122. Short turf: drawn by the ground's texture, not as plants,
+         *  so a census of drawn plants has to stand somewhere else. */
+        turf: !!z.turf,
+        /** T-1056. The recorded woody band, so a reader of this report can see
+         *  WHY a sand zone's shrub count stands below its recorded density. */
+        woodyBand: z.woody?.establishes ?? null,
+        graminoids: z.graminoids.length,
+        /** ROADMAP K55. The other two strata's slot chances, which K55 moves and
+         *  which nothing outside this module could read until it did — the
+         *  drawn census could see the plants that arrived and not the number
+         *  that asked for them, so a share sitting on its 1.0 clamp looked
+         *  exactly like one that had been tuned there. `z10_settled_town` is
+         *  the case: K55 multiplies its forb density and draws the same 146
+         *  plants, because both sides of the change are over the ceiling. */
+        forbShare: z.forbShare,
+        forbShareWet: z.forbShareWet,
+        shrubShare: z.shrubShare,
+        /** T-0282. The shrub stratum's own over-water share, the one of the four
+         *  `shareOf` deals that was never exported. Without it the ceiling
+         *  declaration cannot see a quarter of the lattice it exists to state. */
+        shrubShareWet: z.shrubShareWet,
+        /** The sum each is dealt off, so a reader can tell a share that is
+         *  clamped from one that is small. `null` for the matrix by
+         *  `SLOT_BASIS` — its slot count is `matrixShare` above.
+         *
+         *  T-0034: `forbDensity` is the sum `forbShare` is ACTUALLY dealt off,
+         *  which is now the recorded upper bound. `forbDensityMid` is the
+         *  midpoint sum it was dealt off before, kept beside it so a
+         *  measurement can quote the size of the raise and the ceiling that
+         *  ate the rest of it without re-deriving either. */
+        forbDensity: z.dry.forbs.densityHigh,
+        forbDensityMid: z.dry.forbs.density,
+        /** T-0019. The same sum on the WET side of the waterline, which nothing
+         *  outside this module could read: `forbShareWet` is clamped exactly as
+         *  `forbShare` is, so a wet layer sitting on the ceiling was
+         *  indistinguishable from one tuned to it. Four of the ten communities
+         *  plant a different list over water, and two of them are among the
+         *  layers the clamp binds. */
+        forbDensityWet: z.wet.forbs.densityHigh,
+        shrubDensity: z.dry.shrubs.density,
+        /** T-0282. And the sum behind `shrubShareWet`, for the same reason
+         *  T-0019 exported `forbDensityWet`: a clamped share is one plant per
+         *  slot whatever the slot is, so the density is what says how far a
+         *  layer is from the ceiling and how much of its record it loses. */
+        shrubDensityWet: z.wet.shrubs.density,
+        /**
+         * T-0280. The AREAL COVER each stratum's own records sum to, on each
+         * side of the waterline — the quantity `matrixShare` above is already
+         * in, and the one the far band's grass-or-flower split is dealt on.
+         *
+         * Exported beside `forbShare` rather than instead of it, because the
+         * pair is the measurement: `forbShare` is the clamped slot chance the
+         * split USED to read, `forbCover` is the cover it reads now, and a
+         * reader that has both can state the size of the change per community
+         * without re-deriving either. `matrixCover` is the graminoid subset's
+         * own cover, so a reader can also check `matrix_fraction` against what
+         * its own species records sum to.
+         */
+        matrixCover: z.dry.graminoids.cover,
+        matrixCoverWet: z.wet.graminoids.cover,
+        forbCover: z.dry.forbs.cover,
+        forbCoverWet: z.wet.forbs.cover,
+        forbCoverHigh: z.dry.forbs.coverHigh,
+        forbCoverHighWet: z.wet.forbs.coverHigh,
+        /**
+         * T-1106. AND THE SAME FOUR STRATA AS WALLS — the silhouette-area
+         * density the far band's split is dealt on since T-1106, exported beside
+         * the cover it was dealt on between T-0280 and T-1106 so the size of the
+         * change is arithmetic on this table and not a diff of two runs.
+         *
+         * `matrixSilAspect` and `forbSilAspect` are `sil / cover` per stratum —
+         * the square metres of wall one square metre of that stratum's floor
+         * stands up. They are the entire content of the ticket: where the two
+         * aspects are equal the split does not move at all, and where the forbs
+         * are the taller narrower stratum it moves by exactly their ratio.
+         *
+         * `matrixSil` is the graminoid subset's own sum, NOT `matrixShare`
+         * converted — see `rebuildFar`, which converts the record's own
+         * `matrix_fraction` by `matrixSilAspect` rather than replacing it, and
+         * carries both so the choice is visible here.
+         */
+        matrixSil: z.dry.graminoids.sil,
+        matrixSilWet: z.wet.graminoids.sil,
+        matrixSilAspect: z.dry.graminoids.cover > 0
+          ? z.dry.graminoids.sil / z.dry.graminoids.cover : null,
+        matrixSilAspectWet: z.wet.graminoids.cover > 0
+          ? z.wet.graminoids.sil / z.wet.graminoids.cover : null,
+        forbSil: z.dry.forbs.sil,
+        forbSilWet: z.wet.forbs.sil,
+        forbSilAspect: z.dry.forbs.cover > 0
+          ? z.dry.forbs.sil / z.dry.forbs.cover : null,
+        forbSilAspectWet: z.wet.forbs.cover > 0
+          ? z.wet.forbs.sil / z.wet.forbs.cover : null,
+        silUnknown: z.dry.graminoids.silUnknown + z.dry.forbs.silUnknown
+          + z.wet.graminoids.silUnknown + z.wet.forbs.silUnknown,
+        /** How many of the forb records behind those sums stated no `width_m`
+         *  and were therefore measured at the footprint the placer gives them,
+         *  and how many converted to no count at all. The provenance of the
+         *  number, exported beside it: a fifth of the sward records state no
+         *  width, and a reader of this table should not have to discover that
+         *  by reading the records. */
+        forbCoverFallbacks: z.dry.forbs.coverFallbacks,
+        forbCoverFallbacksWet: z.wet.forbs.coverFallbacks,
+        coverUnknown: z.dry.graminoids.coverUnknown + z.dry.forbs.coverUnknown
+          + z.wet.graminoids.coverUnknown + z.wet.forbs.coverUnknown,
+      }));
+    },
+    /** The lattice/fade rings and the rebuild step, for the gate that checks a
+     *  plant cannot arrive already grown. The far band is deliberately NOT a
+     *  layer here: it carries no fade ring for that gate to inset, and the
+     *  invariant it does carry is the one below. */
+    rings: { step, layers: rings },
+    /**
+     * T-0034. The forb lattice's own geometry — the ceiling `forbShareOf`
+     * clamps against, stated rather than re-derived in a tool.
+     *
+     * `forbShare` alone cannot say how far a community is from the clamp in
+     * PLANTS: a share of 1.0 is one plant per slot whatever the slot is, and
+     * what a raise buys is decided by how much ground a slot stands for. K58's
+     * six clamped layers are all one number away from that ceiling and nothing
+     * outside this module could name it.
+     *
+     * It is `TUNE.forb`, not `tune.forb`: `forbShareOf` reads the base tune, so
+     * the ceiling is the same at every detail setting and only the RING the
+     * lattice is dealt over shrinks with `light`.
+     */
+    forbLattice: {
+      cell: TUNE.forb.cell,
+      perCell: TUNE.forb.perCell,
+      /** Ground one lattice slot stands for, m². */
+      slotArea: (TUNE.forb.cell ** 2) / TUNE.forb.perCell,
+      /** The most plants per m² this lattice can carry: one per slot. */
+      ceilingPerM2: TUNE.forb.perCell / (TUNE.forb.cell ** 2),
+    },
+    /** T-0086. The far band's own tuning and its ramp, so a measurement asks
+     *  the placer what fraction of the ground carries a card at `d` rather than
+     *  re-deriving it. Zero at both ends is the assertion worth making. */
+    farBand: { ...tune.far, coverAt: (d) => farCoverAt(d, tune.far) },
+    /** T-2014. The far shrubs' tuning and their thinning, read the same way. */
+    farShrubs: { ...tune.farShrub, keepAt: (d) => farShrubKeepAt(d, tune.farShrub) },
+    /**
+     * The height multiplier the vertex shader gives an instance of `setName`
+     * standing `d` metres from the camera — the same ramp, in JS.
+     *
+     * `outer` is that instance's OWN outer radius, off its `aChiRing`. Pass it:
+     * since the outer boundary carries a per-slot fringe, the layer's nominal
+     * ring answers for no particular plant, and it answers ZERO for one the
+     * fringe pushed out — which would report a pop-in gate green by not looking
+     * at the instances that can pop.
+     */
+    fadeAt(setName, d, outer) {
+      const ring = ringOfSet[setName];
+      if (!ring) return null;
+      return fadeOf(slotOf(ring, outer), d);
+    },
+    /** What fraction of its recorded height this plant is drawn at — `heightOf`,
+     *  reached the same way `fadeAt` reaches `fadeOf`. Since T-0035 a drawn
+     *  plant is drawn whole, so this is 1 wherever `fadeAt` is above zero. */
+    heightAt(setName, d, outer) {
+      const ring = ringOfSet[setName];
+      if (!ring) return null;
+      return heightOf(slotOf(ring, outer), d);
+    },
+    /** Where this ground's own boundary stands relative to its layer's nominal
+     *  one, in metres. The gate asks the placer rather than re-deriving the
+     *  noise, which is the rule the substrate work set. */
+    fringeAt(layer, e, n) {
+      const r = rings[layer];
+      return r ? fringeOf(e, n, r.fringe) : null;
+    },
+
+    /** This ground's share of a spread band, in `[0, 1)` — `handoverRank`, on
+     *  the same terms `fringeAt` offers the fringe. `which` is 0 for an outer
+     *  boundary and 1 for an inner one, as in `slotRing`.
+     *
+     *  T-0277 asks what a DENSITY handover would cost on the two outer edges
+     *  that still ramp (`TUNE.mid.band`, `TUNE.forb.band`), and the only honest
+     *  way to answer is to deal each placed slot the rank it would actually get
+     *  and see where the drawn boundary lands. Re-deriving the hash in the tool
+     *  would answer a question about the tool's copy of it; this asks the
+     *  placer, which is the rule `fringeAt` set.
+     */
+    handoverAt(e, n, which = 0) { return handoverRank(e, n, which); },
+
+    async prepare(camera, checkpoint = () => null, onProgress = () => {}) {
+      camera.getWorldPosition(tmpV); camera.getWorldDirection(tmpF);
+      const e = tmpV.x, n = -tmpV.z;
+      const fl = Math.hypot(tmpF.x, tmpF.z) || 1;
+      const fe = tmpF.x / fl, fn = -tmpF.z / fl;
+      const cone = viewCone(camera, tmpF, tmpV);
+      centres.coneCos = cone.cos; centres.aerial = Boolean(cone.planes);
+      for (const row of rebuildFarShrubs(e, n, cone)) {
+        const pause = checkpoint(); if (pause) await pause;
+      }
+      // T-2716: the drawn near ring's field tile, home before the first deal.
+      await gpuNear?.prime(e, n);
+      for (const row of rebuildAll(e, n, cone)) {
+        onProgress(row.done, row.total);
+        const pause = checkpoint(); if (pause) await pause;
+      }
+      centres.near = { e, n }; centres.yaw = Math.atan2(fe, fn);
+      centres.farShrub = { e, n }; centres.farShrubYaw = centres.yaw;
+      centres.pitch = Math.asin(tmpF.y); centres.eyeY = tmpV.y;
+    },
+
+    /**
+     * @param {number} [budgetMs] T-2106: the milliseconds of this frame the
+     *   near rebuild may spend. Unset (or Infinity), a rebuild runs to
+     *   completion in the frame that needs it, which is what every caller that
+     *   reads the buffers straight after must get; the animation loop passes a
+     *   slice and the pass is spread over the frames the margin allows.
+     */
+    update(dt, camera, budgetMs = Infinity) {
+      uniforms.uChiTime.value += dt * TUNE.wind.speedNear;
+      if (!sunFound) {
+        sunFound = sunFromScene(group, uniforms, problems);
+      }
+      if (!camera) return;
+      camera.getWorldPosition(tmpV);
+      const e = tmpV.x;
+      const n = -tmpV.z;
+      // T-2774: such a caller reads the near ring's heads back in the frame too.
+      nearSync = !Number.isFinite(budgetMs);
+      farSync = nearSync;
+      // T-2716: the drawn near ring's field tile follows the walker on the pool;
+      // a caller that reads the buffers straight after gets it whole, now.
+      gpuNear?.keep(e, n, nearSync);
+
+      // Forward in ENU; -Z is north (terrain.js).
+      camera.getWorldDirection(tmpF);
+      const fl = Math.hypot(tmpF.x, tmpF.z) || 1;
+      const fe = tmpF.x / fl;
+      const fn = -tmpF.z / fl;
+      const yaw = Math.atan2(fe, fn);
+      const cone = viewCone(camera, tmpF, tmpV);
+      const coneCos = cone.cos;
+      const pitch = Math.asin(tmpF.y);
+      // T-2605: the eye's height and pitch are read by the deal only through the
+      // aerial cone's frustum (`outsideFrustum`, `crowdsTheWalker`'s drop), so on
+      // the ground they are not a new cone. Walking up a grade by more than
+      // `step` used to count as one: it dropped the spread pass and dealt both
+      // lattices in one frame — the one flora task over 50 ms left in the walk.
+      const aerial = Boolean(cone.planes);
+      const coneChanged = centres.coneCos !== coneCos || centres.aerial !== aerial
+        || (aerial && (centres.pitch === null || Math.abs(pitch - centres.pitch) > 0.1
+          || centres.eyeY === null || Math.abs(tmpV.y - centres.eyeY) > step));
+      const turned = centres.yaw === null
+        || Math.abs(((yaw - centres.yaw + Math.PI * 3) % (Math.PI * 2)) - Math.PI)
+           > CONE_YAW_STEP;
+      const turnedFar = centres.farShrubYaw === null
+        || Math.abs(((yaw - centres.farShrubYaw + Math.PI * 3) % (Math.PI * 2)) - Math.PI)
+           > CONE_YAW_STEP;
+      // T-2085. How far the last frame carried the walker: the next one will
+      // carry it about as far, so the rebuild is taken a frame EARLY rather
+      // than a frame late. See `moved`.
+      const pace = centres.last ? Math.hypot(e - centres.last.e, n - centres.last.n) : 0;
+      centres.last = { e, n };
+      // T-2106. How far the last frame turned the view, as `pace` is how far it
+      // carried the walker.
+      const turnRate = centres.lastYaw === null ? 0 : yawGap(yaw, centres.lastYaw);
+      centres.lastYaw = yaw;
+      // A rebuild may be spread only over SMOOTH motion (see `runPass`): a new
+      // cone needs the lattice where the camera now is, in this frame, exactly
+      // as before. So does a caller that set no budget — every tool that drives
+      // `step()` and reads the buffers straight after.
+      const frame = { e, n, yaw, cone, pace, turnRate, budgetMs, camera, dealt: 0,
+        spread: Number.isFinite(budgetMs) && !coneChanged
+          && centres.near !== null && centres.farShrub !== null };
+      // T-2966: the carries a far pass left to land after it, a slice of this
+      // frame (all of it for a caller with no budget).
+      if (gpuNear) frame.dealt += gpuNear.carryTailStep(budgetMs);
+      // The far shrubs and the carries first, on their own step, as before.
+      const farLanded = runPass(farPass, frame, coneChanged || turnedFar
+        || moved(centres.farShrub, e, n, tune.farShrub.step, pace));
+      const nearLanded = runPass(nearPass, frame, coneChanged || turned
+        || moved(centres.near, e, n, step, pace));
+      if (coneChanged) {
+        centres.coneCos = coneCos; centres.aerial = aerial;
+        centres.pitch = pitch; centres.eyeY = tmpV.y;
+      }
+      // `rebuildAll` tallies itself; a far pass alone has to be counted.
+      if (farLanded && !nearLanded) tally();
+    },
+
+    /** T-2106. Land a spread rebuild now, if one is under way — for a reader
+     *  of the buffers that must see one whole lattice. True if one landed. */
+    settle() {
+      let landed = false;
+      // T-2774: and the near heads with it — a pass landed here reads back in
+      // the frame, and a read-back still on its way is taken now.
+      nearSync = true;
+      farSync = true;
+      if (!nearPass.pending) gpuNear?.flush();
+      for (const p of [farPass, nearPass]) {
+        if (!p.pending) continue;
+        const t0 = performance.now();
+        for (const _ of p.pending.gen) { /* drained */ }
+        p.pending.spent += performance.now() - t0;
+        land(p, true);
+        landed = true;
+      }
+      // T-2966: and the carries' tail, taken and reaped now.
+      if (gpuNear?.carryInFlight()) {
+        gpuNear.carryTailStep(Infinity);
+        landed = true;
+      }
+      if (landed) tally();
+      return landed;
+    },
+    /** T-2106. Whether a spread rebuild is under way, its sets uncommitted.
+     *  T-2966: or a far pass's carries' tail. */
+    inFlight() {
+      return nearPass.pending !== null || farPass.pending !== null
+        || (gpuNear?.carryInFlight() ?? false);
+    },
+    /** T-2966. While on, every pass walks its GPU rings (the mid ring, the
+     *  carries) on the CPU, so a tool dealing a landed pass again in one frame
+     *  deals it on the side the pass took (`onGpu` on its log entry).
+     *  Never set by the page. Returns the setting. */
+    dealOnCpu(on) { dealOnCpu = !!on; return dealOnCpu; },
+
+    dispose() {
+      if (groundKey) runJob('dropGround', { key: groundKey }, { worker: groundWorker }).catch(() => {});
+      for (const d of disposables) d?.dispose?.();
+    },
+  };
+  // T-2716: the drawn near ring keeps its field tile through the API's own keeper.
+  gpuNear?.bind(api.nearField);
+  return api;
+}
+
+/** What it returns when there is nothing it is allowed to draw. */
+function inertRig(group, stats) {
+  return {
+    group,
+    stats,
+    zoneAt() { return null; },
+    checkHeldZones() { return { held: false }; },
+    update() {},
+    dispose() {},
+  };
+}
+
+/**
+ * Whether the walker has gone far enough from `centre` that the lattice has to
+ * be rebuilt. `ringsFor` insets every ring inside its lattice by exactly
+ * `step`, so the rebuild has to land while the walker is still within `step`
+ * of the old centre — and a test of `> step` alone only ever fires on the
+ * frame AFTER it has left, overshooting by up to one frame's move.
+ *
+ * T-2085. On the near ring that overshoot was not the 7 % of a ramp the smoke
+ * allowed for: since T-0093 its edge is a per-slot handover and the shader's
+ * band is `HARD`, so a tuft whose own boundary fell inside the overshoot
+ * arrived at 100 % — measured at 6.93 m on the arrival walk, at 0.15 m paces
+ * that crossed the 0.6 m step on the fifth pace and not the fourth. So the
+ * last frame's move is taken as the next one's and the rebuild fires a frame
+ * early. A move longer than the step is a jump, not a pace: it rebuilds on its
+ * own distance, and is not carried into the frame after it.
+ */
+/** The unsigned angle between two yaws, in radians, across the wrap. */
+function yawGap(a, b) {
+  return Math.abs(((a - b + Math.PI * 3) % (Math.PI * 2)) - Math.PI);
+}
+
+function moved(centre, e, n, step, pace = 0) {
+  if (!centre) return true;
+  return Math.hypot(e - centre.e, n - centre.n) + (pace <= step ? pace : 0) > step;
+}
+
+/** SUN_FALLBACK as a direction, in three's axes: +x east, +y up, -z north. */
+function sunDirFallback() {
+  const az = SUN_FALLBACK.azimuthDeg * Math.PI / 180;
+  const el = SUN_FALLBACK.elevationDeg * Math.PI / 180;
+  const horiz = Math.cos(el);
+  return new THREE.Vector3(
+    Math.sin(az) * horiz, Math.sin(el), -Math.cos(az) * horiz,
+  ).normalize();
+}
+
+/**
+ * Find the sun the SCENE already built and light the sward with it.
+ *
+ * main.js mounts this module with no reference to world.js, so the light is
+ * found by walking up from our own group to the scene root. That is deliberate
+ * rather than lazy: world.js derives the sun from the scene record's date,
+ * latitude and local mean time, and a second sun invented here would light the
+ * prairie from one direction and the buildings from another in the same frame.
+ * If there is no directional light to find, the fallback is used and SAID —
+ * silently lighting the sward from a guessed sun is the class of error this
+ * project exists to avoid.
+ *
+ * @returns {boolean} true once it has an answer, right or fallback.
+ */
+function sunFromScene(group, uniforms, problems) {
+  let root = group;
+  while (root.parent) root = root.parent;
+  if (root === group) return false;          // not mounted yet; ask again
+  let sun = null;
+  let sky = null;
+  root.traverse((o) => {
+    if (!sun && o.isDirectionalLight) sun = o;
+    if (!sky && o.isHemisphereLight) sky = o;
+  });
+  if (!sun) {
+    problems.push('flora: the scene carries no directional light — the sward is lit by '
+      + `flora.js's own fallback sun (${SUN_FALLBACK.elevationDeg}° up, bearing `
+      + `${SUN_FALLBACK.azimuthDeg}°) and may not agree with the rest of the frame`);
+    return true;
+  }
+  sun.updateWorldMatrix(true, false);
+  sun.target?.updateWorldMatrix(true, false);
+  const from = new THREE.Vector3().setFromMatrixPosition(sun.matrixWorld);
+  const to = sun.target
+    ? new THREE.Vector3().setFromMatrixPosition(sun.target.matrixWorld)
+    : new THREE.Vector3();
+  uniforms.uChiSun.value.copy(from).sub(to).normalize();
+  const i = sun.intensity;
+  uniforms.uChiSunCol.value.set(sun.color.r * i, sun.color.g * i, sun.color.b * i);
+  // The sky fill, from the scene's published value rather than from a light.
+  //
+  // world.js used to deliver the fill as a HemisphereLight, which this could
+  // read; since W1 it delivers it as an environment map, which a Lambert
+  // material cannot see at all — three applies `scene.environment` to the
+  // physical materials only. Sniffing the light list would therefore have found
+  // nothing and left the sward on its default, lighting the prairie by one sky
+  // and the town beside it by another: the same class of error the sun above is
+  // traversed for rather than invented. `scene.userData.chiSkyFill` is the
+  // contract, the hemisphere light stays a fallback for any scene that still
+  // ships one, and a scene offering neither says so instead of guessing.
+  const fill = root.userData?.chiSkyFill;
+  if (Array.isArray(fill) && fill.length === 3) {
+    uniforms.uChiSky.value.set(fill[0], fill[1], fill[2]);
+  } else if (sky) {
+    const j = sky.intensity;
+    uniforms.uChiSky.value.set(sky.color.r * j, sky.color.g * j, sky.color.b * j);
+  } else {
+    problems.push('flora: the scene publishes no sky fill and carries no hemisphere '
+      + "light — the sward is lit by flora.js's own default ambient and may not "
+      + 'agree with the rest of the frame');
+  }
+  return true;
+}
+
+function mergeTune(level) {
+  const t = {
+    near: { ...TUNE.near }, mid: { ...TUNE.mid }, forb: { ...TUNE.forb },
+    far: { ...TUNE.far }, farShrub: { ...TUNE.farShrub },
+    cap: { ...TUNE.cap }, step: { ...TUNE.step },
+  };
+  const preset = level === 'light' ? LOW : level === 'balanced' ? MID : null;
+  if (preset) {
+    Object.assign(t.near, preset.near);
+    Object.assign(t.mid, preset.mid);
+    Object.assign(t.forb, preset.forb);
+    Object.assign(t.far, preset.far);
+    Object.assign(t.farShrub, preset.farShrub);
+    Object.assign(t.cap, preset.cap);
+  }
+  return t;
+}
+
+/* -------------------------------------------------------------------------- */
+/* the records                                                                 */
+/* -------------------------------------------------------------------------- */
+
+async function getJSON(url) {
+  const res = await fetch(url, { cache: 'no-cache' });
+  if (!res.ok) throw new Error(`${res.status} ${res.statusText} — ${url}`);
+  return res.json();
+}
+
+/** One fetch for the manifest, then exactly the files it names — never a probe.
+ *  A 404 in the network log is indistinguishable from a broken boot. */
+/**
+ * T-0471 — WHICH SCENES A MANIFEST ENTRY BELONGS TO. A zone or planting with no
+ * `scenes` list is ecology and stands in every scene that draws the flora layer;
+ * one WITH a list is a claim about those scenes only. The settled town's ruderal
+ * sward and the four planting records (dooryards, the Lombardy rows, the
+ * Sauganash's stems, the wood by the second fort's west wall) are 1835's, and the
+ * 1812 lakeshore must not inherit a single urban yard from them. `sceneId` null
+ * draws everything, which is what every caller did before scenes were scoped.
+ * tools/validate.py holds the list to scene ids that exist and to the record's
+ * own copy, and refuses a planting whose `scene` its manifest entry does not list.
+ */
+export function floraInScene(entry, sceneId) {
+  if (sceneId == null || !Array.isArray(entry?.scenes)) return true;
+  return entry.scenes.map(String).includes(String(sceneId));
+}
+
+async function loadFlora(dataBase, problems, sceneId = null) {
+  if (!dataBase) {
+    problems.push('flora: no data base URL — nothing is planted');
+    return null;
+  }
+  let index;
+  const indexUrl = new URL('flora/index.json', dataBase);
+  try {
+    index = await getJSON(indexUrl);
+  } catch (err) {
+    problems.push(`flora: ${err.message} — no vegetation is drawn, and the ground is `
+      + 'the bare terrain surface');
+    return null;
+  }
+  if (!Array.isArray(index.zones) || !index.zones.length) {
+    problems.push('flora: the manifest lists no zones — no vegetation is drawn');
+    return null;
+  }
+  index = { ...index, zones: index.zones.filter((z) => floraInScene(z, sceneId)) };
+  const files = new Map();
+  const wanted = [
+    ...index.zones.map((z) => ['zone', z.id, z.file]),
+    ...(index.palettes ?? []).map((p) => ['palette', p.id, p.file]),
+  ];
+  const loaded = await Promise.all(wanted.map(async ([kind, id, file]) => {
+    if (!file) return [kind, id, null, 'the manifest gave no file'];
+    try {
+      return [kind, id, await getJSON(new URL(`flora/${file}`, dataBase)), null];
+    } catch (err) {
+      return [kind, id, null, err.message];
+    }
+  }));
+  for (const [kind, id, body, why] of loaded) {
+    if (!body) { problems.push(`flora: ${kind} ${id} — ${why}`); continue; }
+    files.set(`${kind}:${id}`, body);
+  }
+  return { index, files };
+}
+
+/**
+ * ROADMAP K55 — WHICH SUM EACH STRATUM'S SLOT COUNT IS DEALT OFF, IN ONE PLACE.
+ *
+ * A slot count is a number of plants standing on a square metre of ground, so
+ * the only sum that can answer it is a sum of plants per square metre. Both
+ * lattice-dealt strata now read `stems`, which is the record's own abundance in
+ * that unit whatever field it was written in.
+ *
+ * **The matrix is `null`, and that is the parcel's own refusal made explicit.**
+ * K55 was opened against four lists and named three matrix ones among them, but
+ * a matrix slot count is `cover.matrix_fraction` read off the record directly —
+ * it has never come off this sum, so there was nothing in those rows to move.
+ * The sum was computed for the matrix anyway and read by nobody, which is how a
+ * report came to name three refusals as work: the column printed the DEFAULT
+ * argument rather than a fact about the renderer. `null` deletes the number
+ * instead of relabelling it, so the next reader gets nothing to misuse.
+ *
+ * `auditAbundance` prints from this same object, so the report cannot drift
+ * from the rule again.
+ */
+const SLOT_BASIS = { matrix: null, forb: 'stems', shrub: 'stems' };
+
+/** Per zone: a weighted graminoid list, a weighted forb list, colours, extent. */
+function compileZones({ index, files }, terrain, problems, stats) {
+  const seenForms = new Set();
+  const out = [];
+  // The manifest PUBLISHES the shape vocabulary, so a value added there and
+  // not here is a flower the renderer would silently drop. Caught at boot,
+  // once, against the list itself rather than against whatever happens to be
+  // planted near the visitor.
+  for (const shape of index.vocabulary?.inflorescence_shapes ?? []) {
+    if (!HEAD_OF_SHAPE[shape]?.kind) {
+      stats.unimplementedShapes.push(shape);
+      problems.push(`flora: the manifest publishes inflorescence shape '${shape}' and this `
+        + 'renderer has no archetype for it — any species recording it draws no flower');
+    }
+  }
+  const byPriority = [...index.zones]
+    .map((z) => ({ ...z, record: files.get(`zone:${z.id}`) }))
+    .filter((z) => {
+      if (!z.record) return false;
+      if (!Array.isArray(z.record.species)) {
+        problems.push(`flora: zone ${z.id} carries no species list`);
+        return false;
+      }
+      return true;
+    });
+
+  for (const entry of byPriority) {
+    const rec = entry.record;
+    const palette = files.get(`palette:${rec.palette ?? entry.palette}`) ?? null;
+    const graminoids = [];
+    const forbs = [];
+    /**
+     * ROADMAP K54 — THE SHRUB LAYER IS A STRATUM, NOT A TALL FORB, AND IT IS
+     * DEALT ON ITS OWN LATTICE.
+     *
+     * K53 drew the twenty-one `shrub_low` records with their own archetype and
+     * measured why only fourteen of them stood: they were competing for the
+     * forb layer's slots on plants per square metre, against a wild leek at 40.
+     * A slot is one plant and the forb lattice carries one plant per 2.89 m² of
+     * ground, so where the herb layer's own density saturates that lattice —
+     * which it does in five of the ten communities — the deal becomes a
+     * count-proportional SUBSAMPLE, and a subsample by count thins the shrubs
+     * by the whole saturation ratio. In the wet woods that ratio is 117.
+     *
+     * The two are not competing for the same ground in the first place. A hazel
+     * clump stands OVER the leeks, and its record says so: nine `shrub_low`
+     * records in `z06_dense_forest` sum to 92 % ground cover while the herb
+     * layer beneath them is recorded separately at 40 plants per m². So the
+     * shrubs are dealt from their OWN lattice pass, at their own recorded
+     * density, and nothing is taken from the herb layer to pay for them.
+     */
+    const shrubs = [];
+
+    for (const sp of rec.species) {
+      if (!OUR_ROLES.has(sp.role)) continue;          // trees.js draws the rest
+      const form = sp.form;
+      const isGrass = GRAMINOID_FORMS.has(form);
+      const isForb = FORB_FORMS.has(form);
+      if (!isGrass && !isForb) {
+        if (!seenForms.has(form)) {
+          seenForms.add(form);
+          stats.unimplementedForms.push(form);
+          problems.push(`flora: form '${form}' is not implemented — `
+            + `${sp.id ?? sp.binomial} is recorded and not drawn`);
+        }
+        continue;
+      }
+      const built = buildSpecies(sp, palette, problems, entry.id);
+      if (!built) continue;
+      stats.species++;
+      if (isGrass) graminoids.push(built);
+      else if (built.form === 'shrub_low') shrubs.push(built);
+      else forbs.push(built);
+    }
+
+    /**
+     * ROADMAP K49(c2) — THE LOTTERY IS DEALT ON PLANTS PER SQUARE METRE, AND
+     * THE SLOT COUNT IS NOT.
+     *
+     * Two different questions had been answered off one number. How many slots
+     * a list is dealt is a question about GROUND — the forb layer's own summed
+     * density, the matrix layer's recorded `matrix_fraction` — and which
+     * species fills a dealt slot is a question about the POPULATION standing on
+     * it. K49(a) found the second one being answered by normalising three
+     * different units against each other, so a species recorded as covering
+     * 25 % of the ground was dealt slots as though it were 0.25 plants per
+     * square metre, against a neighbour recorded at 6 plants per square metre.
+     * The two-metre dogwood and the wild garlic, made identical by a division.
+     *
+     * `stems` is the record's own abundance read as a count — K49(c1) closed
+     * the last gap in it, so all 98 sward records carry one — and the lottery
+     * is normalised over THAT. The recorded sum was kept separately and set
+     * `forbShare`, so K49(c2) moved no slot at all: it changed what fills a
+     * slot, never how many are filled. `matrixShare` is read off the record
+     * directly and was never in the arithmetic at all.
+     *
+     * The shares it moves are quoted in ROADMAP K49(c1), measured before this
+     * half was written so it could not choose its own bar.
+     *
+     * ROADMAP K55 FINISHED IT, and the slot count moves this time — the two
+     * lattice strata are dealt off `stems` as well (`SLOT_BASIS`), so the sum
+     * below survives only as the lottery's fallback for a species with no
+     * derivable count. There is no such species today.
+     */
+    for (const s of [...graminoids, ...forbs, ...shrubs]) {
+      /** The abundance exactly as recorded, in whatever unit the record used.
+       *  Read only where `stems` is null, which K49(c1) closed across all 98
+       *  sward records — it is the fallback and not a second opinion. */
+      s.recorded = s.weight;
+      s.weight = s.stems ?? s.recorded;
+    }
+    const lotOf = (list) => list.reduce((t, s) => t + s.weight, 0);
+    for (const list of [graminoids, forbs, shrubs]) {
+      const total = lotOf(list);
+      if (total > 0) for (const s of list) s.weight /= total;
+    }
+
+    // How much of the ground a community's matrix actually covers is AUTHORED,
+    // per zone, in the record's own `cover` block — and nothing in this
+    // renderer had ever asked for it. Every one of the ten communities was
+    // planted at the single lattice density L32 tuned on the closed
+    // wet-prairie sward, so the settled town (`bare_soil_fraction: 0.45` by
+    // its own record), the shaded riverbank understory (`matrix_fraction`
+    // 0.45) and the lakeshore sand (0.35) were all drawn as densely as prairie
+    // that covers the ground completely. `tools/validate.py` gates this field
+    // on every run and `index.json` denormalises `bare_soil_fraction` so the
+    // ground shader can fetch it once: the number was written, checked and
+    // shipped to the browser, and then never read.
+    //
+    // It is a probability directly, and that is the whole reason 1.0 is the
+    // anchor rather than some scaling: a zone recording full matrix cover is
+    // planted exactly as it was before, so the density tuned against the
+    // reference photographs is untouched, and no zone can ask for more
+    // geometry than the lattice already carries.
+    const cover = rec.cover ?? {};
+    let matrixShare = cover.matrix_fraction;
+    if (typeof matrixShare !== 'number' || !(matrixShare >= 0)) {
+      problems.push(`flora: zone ${entry.id} records no cover.matrix_fraction — its sward `
+        + 'falls back to a fully closed one, which is a claim its record does not make');
+      matrixShare = 1;
+    }
+
+    // A COMMUNITY IS NOT THE SAME LIST ON BOTH SIDES OF ITS WATERLINE. The marsh
+    // record carries cattails, bulrushes and two floating-leaved water lilies,
+    // and only the lilies are impossible on the bank. So each side gets its own
+    // legal subset, drawn from with the weights RENORMALISED over that subset:
+    // the recorded cover still decides how many slots carry a plant, and what
+    // fills a slot is whatever can actually stand there.
+    //
+    // Filtering at the pick rather than dropping the slot at the station is the
+    // whole point. A slot that picked a water lily on dry ground and was then
+    // refused would simply be empty, which would thin the dry marsh edge by the
+    // lilies' 6.5 % share of that sward — the record's `matrix_fraction` says
+    // 0.75 there, and it does not stop meaning 0.75 because two of its species
+    // cannot stand on a bank.
+    const subsetOn = (list, wet, basis) => {
+      const items = list.filter((s) => (
+        wet ? s.substrate !== 'soil' : s.substrate !== 'open_water'));
+      return {
+        items,
+        total: items.reduce((a, s) => a + s.weight, 0),
+        /** The subset's abundance summed as PLANTS PER SQUARE METRE, which is
+         *  the unit a slot count is in. `SLOT_BASIS` says which sum each
+         *  stratum's is dealt off, and for the matrix the honest answer is that
+         *  there is no sum: `null`, so a reader that reaches for one gets
+         *  nothing rather than a number that means nothing.
+         *
+         *  ROADMAP K49(c2) moved the LOTTERY onto `stems` and left the slot
+         *  count on the recorded sum, saying so. K54 moved the SHRUB stratum's
+         *  count across. K55 moves the FORB stratum's, which is the last one
+         *  dealt off this sum at all — a list mixing a cover fraction with a
+         *  count was adding an area to a number of plants, exactly K49(a)'s
+         *  fault one level up, and the two entirely area-recorded forb lists
+         *  (`z05_riverbank_timber`, `z10_settled_town`) never registered as
+         *  mixed because a list needs both units to look inconsistent.
+         *
+         *  `stems` is not a new number: it is the record's own cover divided by
+         *  what one plant of that species covers, `stems × π(width/2)²`
+         *  inverted, on the width K49(c1) put on all 98 sward records. */
+        density: basis === null ? null
+          : items.reduce((a, s) => a + (s.stems ?? 0), 0),
+        /** T-0034. The same sum at the top of every record's own range. See
+         *  `stemsHigh`: it is the FORB stratum's slot count that is dealt off
+         *  this, and nothing else reads it. */
+        densityHigh: basis === null ? null
+          : items.reduce((a, s) => a + (s.stemsHigh ?? s.stems ?? 0), 0),
+        /**
+         * T-0280. The subset's abundance summed as the FRACTION OF GROUND IT
+         * COVERS — `coverOf` over the subset — which is the same quantity, in
+         * the same unit, as the `cover.matrix_fraction` sitting in `matrixShare`
+         * below.
+         *
+         * It is not a slot count and it is not `basis`-gated: every stratum has
+         * an areal cover whether or not its slots are dealt off a sum, and the
+         * matrix's is exactly the number a reader would want to check
+         * `matrix_fraction` against. What reads it is the far band's
+         * grass-or-flower split, which needs a RATIO and therefore needs both
+         * of its sides to be the same kind of number.
+         *
+         * `coverHigh` is the same sum at the top of each recorded range, the
+         * end T-0034 deals the forb RING off. The split does not use it — see
+         * `rebuildFar` — and it is carried so the choice can be seen and
+         * re-argued without re-deriving it.
+         *
+         * It is the `drawn` reading: a record with no `width_m` contributes the
+         * footprint the placer gives it rather than nothing at all. `fallbacks`
+         * counts how many of the items that was, so no reader has to take the
+         * sum's provenance on trust, and `coverUnknown` counts the items whose
+         * abundance does not convert to a count at all — expected to be zero
+         * since K49(c1), and exported so that expectation is checkable.
+         */
+        cover: items.reduce((a, s) => a + (coverOf(s, { drawn: true }) ?? 0), 0),
+        coverHigh: items.reduce(
+          (a, s) => a + (coverOf(s, { drawn: true, high: true }) ?? 0), 0),
+        coverFallbacks: items.filter((s) => !s.width).length,
+        coverUnknown: items.filter((s) => coverOf(s, { drawn: true }) === null).length,
+        /**
+         * T-1106. THE SAME SUBSET AS A WALL — `silhouetteOf` over the subset,
+         * m² of upright silhouette per m² of ground. The far band's split reads
+         * this; `cover` is kept beside it because the PAIR is the measurement
+         * and because every other reader of a stratum's abundance is asking
+         * about ground.
+         *
+         * `silAspect` on `communities()` is the conversion these sums embody,
+         * `sil / cover` — the
+         * abundance-weighted mean of `4h / (pi w)` over the subset, which is how
+         * many square metres of wall one square metre of this stratum's floor
+         * stands up. It is exported because it is the whole content of the
+         * change: a stratum of tall narrow plants and one of low broad ones can
+         * hold the same ground and not the same sky, and this number says by how
+         * much. `silUnknown` counts the items that convert to no silhouette at
+         * all — a missing `height_m`, which no sward record has today and which
+         * is exported so that stays checkable.
+         */
+        sil: items.reduce((a, s) => a + (silhouetteOf(s, { drawn: true }) ?? 0), 0),
+        silHigh: items.reduce(
+          (a, s) => a + (silhouetteOf(s, { drawn: true, high: true }) ?? 0), 0),
+        silUnknown: items.filter((s) => silhouetteOf(s, { drawn: true }) === null).length,
+      };
+    };
+
+    const cell = TUNE.forb.cell;
+    /** Chance one lattice slot of the forb-ring cell carries a plant: a
+     *  stratum's own plants per m² times the ground one slot stands for. The
+     *  clamp is the lattice's ceiling of one plant per slot and is the only
+     *  bound in it — see K54's note on the wet woods, the one community whose
+     *  recorded shrub density reaches it, and K58, which is the open parcel on
+     *  what that clamp costs the six communities already sitting on it. */
+    const shareOf = (density) => Math.min(
+      1, density * cell * cell / TUNE.forb.perCell);
+    /**
+     * T-1106. THE FAR BAND'S GRASS-OR-FLOWER BOUNDARY, ONE NUMBER PER SIDE OF
+     * THE WATERLINE, decided here rather than per lattice slot.
+     *
+     * `u < matrixShare` still says whether the slot is occupied at all — that is
+     * T-0209's arrangement and does not move. This says WHERE inside that range
+     * the grass ends and the flowering plants begin, and both of the quantities
+     * it is dealt on are SILHOUETTE-AREA DENSITIES (`silhouetteOf`), because the
+     * far band is a wall seen edge-on and not a floor seen from above.
+     *
+     * THE MATRIX SIDE IS THE RECORD'S OWN COVER, CONVERTED — not the graminoid
+     * subset's raw sum. `cover.matrix_fraction` is a single authored figure and
+     * T-0280 chose it deliberately over what the species rows happen to sum to;
+     * this keeps that choice and multiplies it by the stratum's own measured
+     * aspect, `sil / cover`, so the change of unit is the only thing T-1106
+     * does. `matrixSil` on `communities()` carries the raw sum beside it for a
+     * reader who wants to check the two against each other.
+     *
+     * A community whose matrix records give no silhouette to convert by keeps
+     * the pre-T-1106 arrangement of dividing covers, which is the same refusal
+     * `measure_far_bloom.mjs` §1 makes for the marsh: no silhouette, no ratio
+     * between silhouettes.
+     */
+    const farSplitOf = (matrixShare, side) => {
+      const aspect = side.graminoids.cover > 0
+        ? side.graminoids.sil / side.graminoids.cover : null;
+      const matrixSide = aspect === null ? matrixShare : matrixShare * aspect;
+      const forbSide = aspect === null ? side.forbs.cover : side.forbs.sil;
+      if (!side.forbs.items.length || !(forbSide > 0) || !(matrixSide > 0)) return matrixShare;
+      return matrixShare * (1 - forbSide / (matrixSide + forbSide));
+    };
+    const dry = {
+      graminoids: subsetOn(graminoids, false, SLOT_BASIS.matrix),
+      forbs: subsetOn(forbs, false, SLOT_BASIS.forb),
+      shrubs: subsetOn(shrubs, false, SLOT_BASIS.shrub),
+    };
+    const wet = {
+      graminoids: subsetOn(graminoids, true, SLOT_BASIS.matrix),
+      forbs: subsetOn(forbs, true, SLOT_BASIS.forb),
+      shrubs: subsetOn(shrubs, true, SLOT_BASIS.shrub),
+    };
+    out.push({
+      id: entry.id,
+      zone: entry.zone,
+      /** T-2085 / T-2122. Short turf: drawn by the ground's texture. */
+      turf: isTurfCommunity(rec),
+      /** ...and the recorded tones that texture is painted in (handTurfToGround). */
+      turfTones: isTurfCommunity(rec) ? {
+        sodDark: palette?.greens?.[0] ?? null,
+        sodLight: palette?.greens?.[2] ?? palette?.greens?.at?.(-1) ?? null,
+        // The manifest's copies of the record's two ground tones, which
+        // validate.py holds equal to it and terrain.js already paints the box
+        // zones from; the dust is the palette's own dry-glaze tone.
+        bare: entry.ground_rgb ?? null,
+        dust: palette?.ground?.dry_rgb ?? entry.ground_rgb ?? null,
+        wet: entry.ground_wet_rgb ?? null,
+        bareFraction: typeof cover.bare_soil_fraction === 'number' ? cover.bare_soil_fraction : 0,
+      } : null,
+      extent: rec.extent ?? entry.extent ?? null,
+      priority: rec.extent?.priority ?? entry.priority ?? 0,
+      standsInWater: rec.extent?.kind === 'buffer' && rec.extent?.of === 'water'
+        && (wet.graminoids.items.length > 0 || wet.forbs.items.length > 0
+          || wet.shrubs.items.length > 0),
+      graminoids,
+      forbs,
+      shrubs,
+      /** The same two lists split by `substrate`: what may be planted on the
+       *  dry side of the waterline, and what may be planted over water. */
+      dry,
+      wet,
+      /** Every drawn species of this community by id, so a gate can ask the
+       *  placer about one by name. */
+      byId: new Map([...graminoids, ...forbs, ...shrubs].map((s) => [s.id, s])),
+      /** T-2094. How tall the turf's own low layer grows — the tallest matrix
+       *  or ground species — which is the height a trodden verge is cropped to
+       *  (`trodden`). Null off the turf communities. */
+      turfCeiling: isTurfCommunity(rec) ? turfCeilingOf([...graminoids, ...forbs]) : null,
+      /** Chance a matrix lattice slot is used at all: the record's own
+       *  `cover.matrix_fraction`. Clamped only because a fraction over 1 would
+       *  be a bookkeeping error the validator already refuses. */
+      matrixShare: clamp01(matrixShare),
+      /** T-1106. Where the grass ends inside that occupied range, per side of
+       *  the waterline — see `farSplitOf`. Constant per community, so the far
+       *  band's per-slot work is a comparison and not a ratio. */
+      farSplit: {
+        dry: farSplitOf(clamp01(matrixShare), dry),
+        wet: farSplitOf(clamp01(matrixShare), wet),
+      },
+      /**
+       * T-1056 SETTLED WHAT THIS FIELD GATES, AND THE ANSWER IS NOTHING.
+       *
+       * `matrix_fraction` above is read as a probability because it is an AREAL
+       * cover fraction and a slot count for an areal layer is a fraction of
+       * ground. `bare_soil_fraction` is not its mirror: the herb and woody
+       * strata are recorded as COUNTS — stems per m², clumps per hectare — and
+       * thinning a count by an area fraction adds an area to a number of
+       * plants, which is K49(a)'s and K55's unit error one level up. A shrub
+       * also stands OVER the herb layer rather than instead of it (K54), so
+       * bare soil under a sand cherry is not ground the sand cherry failed to
+       * take. So this stays a record-only claim, read by the ground shader and
+       * by the drawn census and by nothing else — written here, in
+       * data/flora/index.json's `_doc` and in docs/LIBERTIES.md L32, so the
+       * next parcel to reach for it finds the refusal rather than re-deciding.
+       * The sand bar's even scatter of scrub was NOT this field's to fix: it is
+       * `woody_stratum` below, an elevation bound in the unit an elevation is
+       * in.
+       */
+      bareSoil: typeof cover.bare_soil_fraction === 'number' ? cover.bare_soil_fraction : null,
+      /**
+       * T-1056 — THE ELEVATION BAND THE WOODY STRATUM ESTABLISHES ACROSS, read
+       * off the record and handed to `station` as-is.
+       *
+       * `applies_to_roles` is the record's own list and is kept as a Set rather
+       * than hard-coded to `shrub_low`, because the same band binds the roles
+       * `trees.js` draws (`tree`, `thicket`) and the two renderers have to be
+       * reading ONE claim. `tools/validate.py` gates the range, the datum, the
+       * roles against the index vocabulary and the grading, and refuses a band
+       * that binds no species this zone records — so an absent block here means
+       * the zone states no bound, never that one was dropped.
+       */
+      woody: (() => {
+        const w = rec.woody_stratum;
+        if (!w) return null;
+        const band = w.establishes_m;
+        if (!Array.isArray(band) || band.length !== 2 || !(band[0] < band[1])) {
+          problems.push(`flora: zone ${entry.id} records a woody_stratum whose `
+            + 'establishes_m is not a rising [low, high] band, so no woody bound is applied');
+          return null;
+        }
+        return { establishes: band, roles: new Set(w.applies_to_roles ?? []) };
+      })(),
+      /**
+       * Chance a forb lattice slot is used, from the record's own densities —
+       * per side, because the legal subset is what stands there.
+       *
+       * T-0034 — AT THE TOP OF THE RECORDED RANGE, NOT ITS MIDDLE. The ticket
+       * was "raise the bloom", and the owner's ruling on it allows the bloom to
+       * be tuned as a reconstructed value provided the bound is stated. The
+       * bound taken is the tightest one available: each species' own recorded
+       * upper figure, so the town is a prairie at the dense end of what its
+       * sources describe and not one plant past it (docs/LIBERTIES.md L182).
+       *
+       * It moves three communities and only three — the mesic prairie
+       * (0.809 → 1.000), the wet prairie (0.798 → 1.000) and the sand prairie
+       * (0.210 → 0.329). The other six forb layers were already over the
+       * lattice's ceiling before this and are unchanged by it, which is K58 and
+       * not this ticket: past the clamp a bigger number draws nothing.
+       */
+      forbShare: shareOf(dry.forbs.densityHigh),
+      forbShareWet: shareOf(wet.forbs.densityHigh),
+      /** ROADMAP K54. The same question of the shrub stratum's own lattice, off
+       *  its own recorded clump density. Nothing here is taken from the forb
+       *  layer: the two passes are independent draws over the same ring — and
+       *  T-0034's upper-bound reading is deliberately NOT applied here, because
+       *  a denser shrub stratum is more bushes and not more bloom. */
+      shrubShare: shareOf(dry.shrubs.density),
+      shrubShareWet: shareOf(wet.shrubs.density),
+      matColor: meanColor(graminoids, palette),
+      palette,
+    });
+  }
+  out.sort((a, b) => b.priority - a.priority);
+  for (let i = 1; i < out.length; i++) {
+    if (out[i].priority === out[i - 1].priority) {
+      problems.push(`flora: ${out[i - 1].id} and ${out[i].id} share priority `
+        + `${out[i].priority} — which community wins where they overlap is undefined`);
+      break;
+    }
+  }
+  return out.filter((z) => z.extent);
+}
+
+/**
+ * ROADMAP K49(a) — WHICH LISTS DEAL THEIR SLOTS OFF NUMBERS THAT ARE NOT IN THE
+ * SAME UNIT, and which records cannot be converted into one.
+ *
+ * Reported and NOT gated, deliberately, the way R-M1 splits a measurement from
+ * the bar it will eventually be held to: the repair needs a footprint this
+ * dataset does not carry for every species, so a gate here today would either
+ * fail the build over data nobody has researched yet or be satisfied by an
+ * invented number. Both are worse than a figure printed every run. K49(c) is
+ * the fix, and it starts by closing `unconvertible`.
+ *
+ * K49(c1) CLOSED `unconvertible`: the twenty-five sward records that gave a
+ * cover and no footprint carry one now, each graded in its own
+ * `width_provenance` because no source states one, and `tools/validate.py`
+ * refuses a new sward record that carries a cover without a width. So this
+ * list is expected to be EMPTY and an entry in it is a defect rather than a
+ * research gap. `mixed` stays non-empty and stays a report: a list whose
+ * species record their abundance in different fields is a fact about the
+ * dataset, and it stops being a FAULT when K49(c2) deals the slots on `stems`.
+ *
+ * `mixed` is one row per (community, list) whose species do not agree on what
+ * their abundance measures. `countedShare` is how much of that list's slot
+ * lottery is currently held by its COUNT-recorded species — the share that is
+ * being compared against an area and therefore means nothing as it stands.
+ *
+ * ROADMAP K54 — AND `basis` IS WHICH SUM THE LIST'S SLOT COUNT IS DEALT OFF,
+ * because that is where the mixing still bites. K49(c2) moved the LOTTERY onto
+ * `stems` and said in as many words that the slot count was left on the recorded
+ * sum; a list dealt off `recorded` while mixing an area with a count is
+ * therefore still adding cover fractions to plants per m², and that arithmetic
+ * planted `z05_riverbank_timber`'s understory at 8.8× its own record.
+ *
+ * ROADMAP K55 CLOSED IT, and `basis` now comes from `SLOT_BASIS` rather than
+ * from a rule written twice. Both lattice strata read `stems`; the matrix reads
+ * `null` because its slot count is `cover.matrix_fraction` and never this sum,
+ * so its `mixed` row is about the LOTTERY only and there is nothing in it to
+ * move. That is why the column used to name three matrix rows as K55 work: it
+ * printed `subsetOn`'s default argument, not what the renderer does with the
+ * list. A mixed row is a fact about the dataset from here on, not a defect.
+ */
+function auditAbundance(zones) {
+  const mixed = [];
+  const unconvertible = [];
+  let lists = 0;
+  for (const z of zones) {
+    for (const [list, items] of [['matrix', z.graminoids], ['forb', z.forbs],
+      ['shrub', z.shrubs]]) {
+      if (!items.length) continue;
+      lists++;
+      let counted = 0;
+      let countedShare = 0;
+      let area = 0;
+      for (const s of items) {
+        if (s.unit === 'cover_fraction') {
+          area++;
+          // The weights are already normalised over the list, so `weight` IS
+          // the share of the slots this species is dealt today.
+          if (s.stems === null) unconvertible.push({ zone: z.id, list, id: s.id, share: s.weight });
+        } else if (s.unit !== 'none') {
+          counted++;
+          countedShare += s.weight;
+        }
+      }
+      if (counted > 0 && area > 0) {
+        mixed.push({
+          zone: z.id, list, species: items.length, counted, area, countedShare,
+          basis: SLOT_BASIS[list] ?? null,
+        });
+      }
+    }
+  }
+  return { lists, mixed, unconvertible };
+}
+
+/** One species entry, reduced to numbers the placer can use per instance. */
+function buildSpecies(sp, palette, problems, zoneId) {
+  const h = sp.height_m;
+  if (!Array.isArray(h) || h.length !== 2 || !(h[1] > 0)) {
+    problems.push(`flora: ${zoneId}/${sp.id ?? sp.binomial} has no usable height_m`);
+    return null;
+  }
+  const july = sp.july ?? {};
+  const veg = july.phenology === 'vegetative' || july.phenology === 'budding';
+  let inflor = july.inflorescence ?? null;
+  if (veg && inflor) {
+    // CONTRACT.md §5.4 rule 1. The record contradicts itself; the July gate wins
+    // and the head is not drawn, because a flowering culm on a vegetative grass
+    // is the error the whole season check exists to prevent.
+    problems.push(`flora: ${zoneId}/${sp.id ?? sp.binomial} is '${july.phenology}' and `
+      + 'still carries an inflorescence — no head is drawn; the record needs fixing');
+    inflor = null;
+  }
+  const greens = palette?.greens ?? [];
+  const base = rgb(july.foliage_rgb) ?? rgb(greens[1]) ?? [0.32, 0.40, 0.17];
+  const alt = rgb(july.foliage_rgb_alt) ?? rgb(greens[2]) ?? base;
+
+  const ab = sp.abundance ?? {};
+  let weight = 0;
+  if (Array.isArray(ab.cover_fraction)) weight = mid(ab.cover_fraction);
+  else if (Array.isArray(ab.density_per_ha)) weight = mid(ab.density_per_ha) / 10000;
+  else if (Array.isArray(ab.stems_per_m2)) weight = mid(ab.stems_per_m2);
+  if (!(weight > 0)) weight = 0.01;
+
+  /**
+   * ROADMAP K49(a) — THREE UNITS, ONE SUM, AND THE SUM IS WHAT DEALS THE SLOTS.
+   *
+   * `pick()` deals SLOTS, and a slot is one drawn plant. The three abundance
+   * fields a record may carry are not three spellings of one number:
+   * `stems_per_m2` and `density_per_ha` are COUNTS of plants, `cover_fraction`
+   * is the AREA of ground the species holds. The block above normalises all
+   * three into one share, which reads "covers 25 % of the ground" as "0.25
+   * plants per square metre" — a claim about a two-metre dogwood and a claim
+   * about a wild garlic, made identical by a division.
+   *
+   * `stems` is the same abundance read as a count, and it is derivable only
+   * where the record carries what converts an area into one: the plant's own
+   * `width_m` — what one drawn plant covers on the ground. Where it does not,
+   * this is NULL rather than a guess — the footprint the placer falls back on
+   * for walker clearance is a clearance radius, and using it here would put an
+   * invented number at the centre of the arithmetic that decides what the sward
+   * is made of. AGENTS.md rule 2: the gap is recorded, not filled.
+   *
+   * K49(c1): every sward record carries a width now, so `stems` is derivable
+   * for all 98 of them and `auditAbundance` reports none. It is still not what
+   * deals the slots — `weight` is, and moving the lottery onto `stems` is
+   * K49(c2), which is a split from this half because the conversion puts a
+   * species the census owes 1.10 slots to at the edge of the K49(f) tail gate.
+   * The numbers are committed in ROADMAP K49(c1) so the fix cannot redefine
+   * its own success.
+   */
+  const width = Array.isArray(sp.width_m) ? sp.width_m : null;
+  let stems = null;
+  let stemsHigh = null;
+  let unit = 'none';
+  if (Array.isArray(ab.stems_per_m2)) {
+    unit = 'stems_per_m2';
+    stems = mid(ab.stems_per_m2);
+    stemsHigh = ab.stems_per_m2[1];
+  } else if (Array.isArray(ab.density_per_ha)) {
+    unit = 'density_per_ha';
+    stems = mid(ab.density_per_ha) / 10000;
+    stemsHigh = ab.density_per_ha[1] / 10000;
+  } else if (Array.isArray(ab.cover_fraction)) {
+    unit = 'cover_fraction';
+    if (width) {
+      const one = Math.PI * (mid(width) * 0.5) ** 2;
+      stems = mid(ab.cover_fraction) / one;
+      stemsHigh = ab.cover_fraction[1] / one;
+    }
+  }
+  if (stems !== null && !(stems > 0)) stems = null;
+  if (stemsHigh !== null && !(stemsHigh > 0)) stemsHigh = null;
+
+  return {
+    id: sp.id ?? sp.binomial ?? 'unnamed',
+    form: sp.form,
+    role: sp.role,
+    substrate: substrateOf(sp, problems, zoneId),
+    weight,
+    /** The abundance field this species' weight was read out of, and that
+     *  same abundance as plants per m² where one is derivable. K49(a). */
+    unit,
+    stems,
+    /**
+     * T-0034 — THE SAME ABUNDANCE READ AT THE TOP OF ITS OWN RANGE.
+     *
+     * Every abundance in `data/flora` is a RANGE, because a prairie's forb load
+     * is not one number: the record says 400–900 yellow coneflowers to the
+     * hectare and means both ends of that. `stems` takes the midpoint, and the
+     * midpoint is not a figure any source states — it is a reading this
+     * renderer chose, silently, and it planted every hectare of the town as the
+     * average hectare.
+     *
+     * This is the same abundance read at the recorded upper end. It is a
+     * RECONSTRUCTED reading, not a sourced one (docs/LIBERTIES.md L182), and its
+     * bound is the record itself: no species can be planted denser than its own
+     * record's larger figure, so the sward never leaves the envelope its
+     * evidence draws. `stems` is kept beside it because the LOTTERY still runs
+     * on the midpoints — which species fills a slot is unchanged, and only how
+     * many slots are filled moves.
+     */
+    stemsHigh,
+    height: h,
+    width,
+    shape: GRASS_SHAPE[sp.form] ?? { arch: 0.28, spread: 0.45 },
+    base,
+    alt,
+    dry: rgb(palette?.dry_accent) ?? [0.55, 0.53, 0.35],
+    head: headOf(inflor, sp, problems, zoneId),
+    conf: LEVEL[sp.confidence] ?? LEVEL.inferred,
+  };
+}
+
+/** The published `substrates` vocabulary (data/flora/index.json), and the only
+ *  thing in a record that says which side of the waterline a plant may stand on.
+ *
+ *  `soil` is rooted ground above the water; `saturated_soil` is the emergent
+ *  habit — wet ground OR standing water, foliage carried above the surface —
+ *  and `open_water` is rooted below the surface with the leaves floating ON it.
+ *
+ *  Before this field existed the placer read `role`, and a water lily and a
+ *  cattail are both `emergent`: the pads were planted on the dry marsh edge
+ *  like any other reed, ankle-high mats standing on soil. Their `appearance`
+ *  said "floating pads in open water" the whole time, but that is prose. */
+const SUBSTRATES = new Set(['soil', 'saturated_soil', 'open_water']);
+
+function substrateOf(sp, problems, zoneId) {
+  const declared = sp.substrate;
+  if (declared === undefined) {
+    // The validator requires the field of every `emergent` record, so a missing
+    // one means the renderer is reading data older than its own rules. Report it
+    // and fall back to the habit the role implies, which is what this module did
+    // before the field existed.
+    if (sp.role === 'emergent') {
+      problems.push(`flora: ${zoneId}/${sp.id ?? sp.binomial} is emergent and records no `
+        + 'substrate — it is planted as if it stood in the shallows, which is a guess '
+        + 'about a plant that may float');
+      return 'saturated_soil';
+    }
+    return 'soil';
+  }
+  if (!SUBSTRATES.has(declared)) {
+    problems.push(`flora: ${zoneId}/${sp.id ?? sp.binomial} records substrate '${declared}', `
+      + 'which is not in the published vocabulary — it is planted on dry ground');
+    return 'soil';
+  }
+  return declared;
+}
+
+/**
+ * The flower, off the record's own `july.inflorescence.shape`. A shape the
+ * renderer has no archetype for is REPORTED and draws nothing: substituting a
+ * different archetype is exactly the failure this dispatch exists to end, and
+ * a missing flower that is written down is recoverable in a way that a wrong
+ * one silently drawn is not.
+ */
+function headOf(inflor, sp, problems, zoneId) {
+  if (!inflor) return null;
+  const style = HEAD_OF_SHAPE[inflor.shape];
+  if (!style) {
+    problems.push(`flora: ${zoneId}/${sp.id ?? sp.binomial} records inflorescence shape `
+      + `'${inflor.shape}', which has no archetype — its flower is not drawn`);
+    return null;
+  }
+  return {
+    kind: style.kind,
+    count: style.count,
+    tilt: style.tilt,
+    band: style.band,
+    color: rgb(inflor.rgb) ?? [0.8, 0.8, 0.7],
+    frac: clamp01(inflor.height_frac ?? 0.9),
+    size: Array.isArray(inflor.size_m) ? inflor.size_m : [0.06, 0.12],
+  };
+}
+
+function meanColor(graminoids, palette) {
+  const fallback = rgb(palette?.greens?.[1]) ?? [0.30, 0.38, 0.16];
+  if (!graminoids.length) return fallback;
+  const out = [0, 0, 0];
+  let w = 0;
+  for (const g of graminoids) {
+    for (let i = 0; i < 3; i++) out[i] += (g.base[i] * 0.6 + g.alt[i] * 0.4) * g.weight;
+    w += g.weight;
+  }
+  return w > 0 ? out.map((v) => v / w) : fallback;
+}
+
+function rgb(v) {
+  if (!Array.isArray(v) || v.length < 3) return null;
+  // sRGB bytes in the record; linear in the shader. three's Color does the
+  // transfer, and doing it here means the palette is authored the way a
+  // photograph is measured.
+  const c = new THREE.Color(v[0] / 255, v[1] / 255, v[2] / 255).convertSRGBToLinear();
+  return [c.r, c.g, c.b];
+}
+function mid(range) { return (range[0] + range[1]) / 2; }
+
+/**
+ * T-0280. THE RADIUS OF THE CLUMP ONE PLANT'S RECORD GIVES, in metres, and the
+ * module's ONE answer to it. `crowdsTheWalker` has held that answer since the
+ * timber critic handed back the three-metre prairie dock at arm's length, and
+ * it is the general one: half the recorded `width_m` where a record states a
+ * width, and where none does, the footprint the placer gives the plant anyway,
+ * off its own recorded height. Fifty of the sward records state no width — every
+ * forb of the wet prairie, the mesic prairie and the sand prairie among them —
+ * so a rule that only worked on recorded widths would answer for half the town.
+ */
+function clumpRadiusOf(sp) {
+  return sp.width ? mid(sp.width) * 0.5 : Math.min(0.35, mid(sp.height) * 0.16);
+}
+
+/**
+ * T-0280. THE GROUND ONE SPECIES' RECORDED ABUNDANCE COVERS, as a fraction of
+ * ground: `stems × π·clump²`. For a cover-recorded species this hands its own
+ * `cover_fraction` straight back, because K49(c1) derived `stems` by dividing by
+ * exactly this disc; for a stem- or hectare-recorded one it is the conversion in
+ * the direction the record does not state.
+ *
+ * TWO QUESTIONS, and they want different answers where `width_m` is absent.
+ *
+ * `drawn: true` asks what ground the plants the renderer PUTS THERE cover, so
+ * a missing width falls back to `clumpRadiusOf`'s height rule — the footprint
+ * the placer is already giving that plant. This is the one a ratio between two
+ * strata must use, because dropping the width-less records would not make a
+ * stratum smaller, it would make it ABSENT: all five sand-prairie forbs and both
+ * marsh forbs are width-less, and a sum over recorded widths alone calls those
+ * two communities flowerless when their records plainly are not.
+ *
+ * `drawn: false` (the default) asks what the RECORD states, and answers `null`
+ * rather than a fallback where it states no width. That is the census's
+ * question — K54 put the field there to audit the authored numbers — and a
+ * derived footprint would audit the renderer against itself.
+ *
+ * `high` reads the top of each recorded range, the end T-0034 deals the forb
+ * ring off, instead of its midpoint.
+ */
+function coverOf(sp, { high = false, drawn = false } = {}) {
+  const n = high ? (sp.stemsHigh ?? sp.stems) : sp.stems;
+  if (n === null || n === undefined) return null;
+  if (!drawn && !sp.width) return null;
+  return n * Math.PI * clumpRadiusOf(sp) ** 2;
+}
+
+/**
+ * T-1106. THE SAME STRATUM AS A WALL RATHER THAN AS A FLOOR — silhouette-area
+ * density, `stems x w x h`, in m² of upright screen-filling area per m² of
+ * ground.
+ *
+ * WHY A SECOND QUANTITY EXISTS AT ALL. `coverOf` above answers "how much GROUND
+ * does this stratum's recorded abundance hold", and that is the honest question
+ * for ground: a walker looking down sees footprints. The far band is not that
+ * view. Its nearest card stands 34 m out and its furthest 95 m, and at fifty
+ * metres a 1.7 m eye looks 1.9 degrees below horizontal — the sward is seen EDGE
+ * ON, as a wall, and what fills a pixel is the first element the ray meets. The
+ * quantity that governs which plant that is, is projected area per element times
+ * elements per unit ground, which is this; the depth of the wall cancels out of
+ * a RATIO between two strata standing in it.
+ *
+ * This is not a new model. `tools/measure_far_bloom.mjs` §1 has priced the BLOOM
+ * on exactly this bridge since T-0209, stating the same edge-on argument and the
+ * same `n x a`. What T-1106 found is that the far band's grass-or-flower SPLIT
+ * was on the other quantity, so the module was answering two neighbouring
+ * questions about the same wall in two different units.
+ *
+ * `w` IS THE DRAWN CLUMP, for the reason T-0280 gives at `coverOf`: fifty sward
+ * records state no `width_m`, and a sum over recorded widths alone would not
+ * make those strata thin, it would make them ABSENT. `h` is the record's own
+ * `height_m` on 1 July, which every sward record states — a plant with no height
+ * returns `null` and is counted as unknown rather than silently as nothing.
+ *
+ * THE SILHOUETTE IS THE CLUMP'S BOUNDING RECTANGLE, `w x h` — not an ellipse, not
+ * a measured profile, and NOT the far card's own quad, whose width is the
+ * aggregate `band.wide` L137 gives it rather than this plant's. That is a stated
+ * liberty, docs/LIBERTIES.md L236: a shape factor would cancel out of the ratio
+ * wherever the two strata share a growth form, the project has no measured
+ * profile for either to make it not cancel, and applying one to a single side
+ * would be a thumb on the scale.
+ */
+function silhouetteOf(sp, { high = false, drawn = false } = {}) {
+  const n = high ? (sp.stemsHigh ?? sp.stems) : sp.stems;
+  if (n === null || n === undefined) return null;
+  if (!drawn && !sp.width) return null;
+  if (!sp.height) return null;
+  return n * (2 * clumpRadiusOf(sp)) * mid(sp.height);
+}
+function clamp01(v) { return Math.min(1, Math.max(0, v)); }
+
+/* -------------------------------------------------------------------------- */
+/* where a community is — CONTRACT.md §4                                       */
+/* -------------------------------------------------------------------------- */
+
+/** Distance-to-water, two chamfer passes over the committed heightfield.
+ *  `buffer` extents ask it for every plant placed. */
+async function waterField(terrain, checkpoint) {
+  const hf = terrain.heightfield;
+  const cell = 4.0;
+  const surfaceY = hf?.meta?.water_surface_m ?? 0;
+  if (!hf?.loaded) {
+    return {
+      surfaceY,
+      isWater: (e, n) => terrain.isWater(e, n),
+      distance: () => Infinity,
+    };
+  }
+  const e0 = hf.originE;
+  const n0 = hf.originN;
+  const cols = Math.max(2, Math.ceil(hf.widthM / cell) + 1);
+  const rows = Math.max(2, Math.ceil(hf.depthM / cell) + 1);
+  const BIG = 1e6;
+  // Two fields make this a distance to the SHORE, not merely a distance to
+  // water. The old one seeded every water cell with zero, so a `0–8 m from
+  // water` marsh extent matched the middle of the river just as strongly as
+  // the bank. On land we ask for the nearest water cell; in water we ask for
+  // the nearest land cell.
+  const toWater = new Float32Array(cols * rows).fill(BIG);
+  const toLand = new Float32Array(cols * rows).fill(BIG);
+  for (let r = 0; r < rows; r++) {
+    const pause = checkpoint(); if (pause) await pause;
+    for (let c = 0; c < cols; c++) {
+      const i = r * cols + c;
+      if (terrain.isWater(e0 + c * cell, n0 + r * cell)) toWater[i] = 0;
+      else toLand[i] = 0;
+    }
+  }
+  const solve = async (d) => {
+    const put = (i, v) => { if (v < d[i]) d[i] = v; };
+    for (let r = 0; r < rows; r++) {
+      const pause = checkpoint(); if (pause) await pause;
+      for (let c = 0; c < cols; c++) {
+        const i = r * cols + c;
+        if (c > 0) put(i, d[i - 1] + cell);
+        if (r > 0) put(i, d[i - cols] + cell);
+        if (c > 0 && r > 0) put(i, d[i - cols - 1] + cell * 1.4142);
+        if (c < cols - 1 && r > 0) put(i, d[i - cols + 1] + cell * 1.4142);
+      }
+    }
+    for (let r = rows - 1; r >= 0; r--) {
+      const pause = checkpoint(); if (pause) await pause;
+      for (let c = cols - 1; c >= 0; c--) {
+        const i = r * cols + c;
+        if (c < cols - 1) put(i, d[i + 1] + cell);
+        if (r < rows - 1) put(i, d[i + cols] + cell);
+        if (c < cols - 1 && r < rows - 1) put(i, d[i + cols + 1] + cell * 1.4142);
+        if (c > 0 && r < rows - 1) put(i, d[i + cols - 1] + cell * 1.4142);
+      }
+    }
+  };
+  await solve(toWater);
+  await solve(toLand);
+  // T-2695: the fields as numbers, so a worker reads the same distances.
+  const held = { e0, n0, cell, cols, rows, toWater, toLand };
+  const isWater = (e, n) => terrain.isWater(e, n);
+  return {
+    surfaceY,
+    isWater,
+    held,
+    distance: (e, n) => waterDistance(held, isWater, e, n),
+  };
+}
+
+/** Highest priority wins; a point that matches nothing gets nothing. */
+/**
+ * T-2085 — WHERE THE GROUND PAINTS TURF, asked of the placer itself.
+ *
+ * The mask is the zone finder's own answer, texel by texel, over the box the
+ * turf communities' extents can reach: the terrain paints turf exactly where
+ * the bands above have stopped drawing cards, and a community a later parcel
+ * re-draws (T-2084's derived extent) carries its ground with it, with nothing
+ * here to edit. Water is left out, so the channel bed stays the channel bed.
+ * One blur pass gives the edge a ramp of about one texel each side; the shader
+ * frays it. At most 256 texels a side, at no finer than 2 m.
+ */
+const TURF_MASK_MAX_PX = 256;
+const TURF_MASK_MIN_M = 2;
+/** T-2125: questions per texel, at fixed offsets inside it (a rotated grid). */
+const TURF_MASK_TAP_AT = [[-0.30, -0.10], [0.10, -0.30], [0.30, 0.10], [-0.10, 0.30]];
+const TURF_MASK_TAPS = TURF_MASK_TAP_AT.length;
+async function handTurfToGround(zones, finder, water, terrain, problems, checkpoint = () => null) {
+  const turf = zones.filter((z) => z.turf);
+  const out = { zones: turf.map((z) => z.id), painted: false, cellM: null, texels: 0 };
+  if (!turf.length || typeof terrain?.setTurf !== 'function') return out;
+  let box = null;
+  for (const z of turf) {
+    const b = extentBounds(z.extent);
+    if (!b) {
+      problems.push(`flora: turf community ${z.id} has no extent a mask can be cut from — `
+        + 'its cards are not drawn and its ground stays prairie');
+      continue;
+    }
+    // T-2125: the finder now asks a polygon up to ZONE_BLEND_MAX_M off the
+    // plant's point, so the community reaches that far past its own bounds.
+    const p = ZONE_BLEND_MAX_M;
+    box = box ? { e0: Math.min(box.e0, b.e0 - p), e1: Math.max(box.e1, b.e1 + p),
+      n0: Math.min(box.n0, b.n0 - p), n1: Math.max(box.n1, b.n1 + p) }
+      : { e0: b.e0 - p, e1: b.e1 + p, n0: b.n0 - p, n1: b.n1 + p };
+  }
+  const tones = turf[0].turfTones;
+  if (!box || !tones || ![tones.sodDark, tones.sodLight, tones.bare, tones.dust, tones.wet]
+    .every((t) => Array.isArray(t) && t.length === 3)) {
+    if (box) problems.push(`flora: turf community ${turf[0].id} records no full set of tones`);
+    return out;
+  }
+  const cell = Math.max(TURF_MASK_MIN_M,
+    Math.max(box.e1 - box.e0, box.n1 - box.n0) / (TURF_MASK_MAX_PX - 4));
+  const w = Math.ceil((box.e1 - box.e0) / cell) + 4;
+  const h = Math.ceil((box.n1 - box.n0) / cell) + 4;
+  const e0 = box.e0 - 2 * cell;
+  const n0 = box.n0 - 2 * cell;
+  const raw = new Uint8Array(w * h);
+  for (let j = 0; j < h; j++) {
+    // T-2059: four finder questions a texel over the whole mask held the
+    // phone's flora phase for 200 ms in one task; a row is a few milliseconds.
+    const pause = checkpoint(); if (pause) await pause;
+    for (let i = 0; i < w; i++) {
+      // T-2125: the finder answers each plant from a draw across the blend
+      // band, so one question per texel would speckle the mask. TURF_MASK_TAPS
+      // questions, spread over the texel, give the SHARE of plants the town
+      // holds there — the gradient the sward thins across.
+      const ce = e0 + (i + 0.5) * cell;
+      const cn = n0 + (j + 0.5) * cell;
+      if (water.isWater(ce, cn)) continue;
+      let hits = 0;
+      for (let t = 0; t < TURF_MASK_TAPS; t++) {
+        const [oe, on] = TURF_MASK_TAP_AT[t];
+        if (finder(ce + oe * cell, cn + on * cell)?.turf) hits++;
+      }
+      if (hits) { raw[j * w + i] = Math.round((255 * hits) / TURF_MASK_TAPS); out.texels++; }
+    }
+  }
+  const data = new Uint8Array(w * h);
+  for (let j = 1; j < h - 1; j++) {
+    for (let i = 1; i < w - 1; i++) {
+      let sum = 0;
+      for (let dj = -1; dj <= 1; dj++) for (let di = -1; di <= 1; di++) sum += raw[(j + dj) * w + i + di];
+      data[j * w + i] = Math.round(sum / 9);
+    }
+  }
+  out.cellM = cell;
+  out.painted = terrain.setTurf({
+    box: { e0, e1: e0 + w * cell, n0, n1: n0 + h * cell },
+    mask: { data, w, h },
+    ...tones,
+  });
+  return out;
+}
+
+
+/**
+ * T-2783 — THE FAR SWARD'S COLOUR, handed to the ground the way the turf is.
+ *
+ * Past the near ring the sward thins to cards and then to nothing, and the
+ * ground under it was the prairie tile: the colour of litter between stems,
+ * which is what a walker sees at their feet and not what a July sward is at
+ * forty metres, seen almost edge-on, where nothing shows but the grass. So the
+ * plain past the near ring read as paint and the end of the tufts read as a line.
+ *
+ * The ground now eases toward the sward's own colour over the tier's rings
+ * (terrain.js `FAR_SWARD_FRAGMENT`). WHICH colour, and how much of it, is asked
+ * of the placer, texel by texel, over the heightfield: the community the zone
+ * finder deals at that point, its `matColor` (the mean of its grass records'
+ * July greens, the colour its cards are tinted with) and its recorded
+ * `matrix_fraction` as the weight. No grass where a community records none,
+ * none on water, none on the town's turf — the 1835 town paints its own short
+ * grass after this. One question a texel, then one blur pass, because the
+ * finder deals each point from a draw across a blended edge.
+ *
+ * `FAR_SWARD` holds the parts that are tuning, not evidence: the gain that
+ * brings a ground lit as a surface up to a sward lit as leaves, the strength of
+ * the coarse grain's streaks, and its scale (docs/LIBERTIES.md L-far-sward-2783).
+ */
+const FAR_SWARD = {
+  /** Metres a texel. The communities' edges blend over ~100 m (T-2125). */
+  cellM: 16,
+  /** Linear multipliers on the recorded green. A card is lit through the leaf
+   *  (`LEAF.scatter`, `LEAF.transmit`); the ground is lit as a surface, so the
+   *  same albedo reads darker and greyer on the ground than in the grass. */
+  gain: [0.82, 0.88, 0.64],
+  /** How far the coarse grain moves the tone, and its tile in metres. */
+  streak: 0.70,
+  grainM: 18.0,
+};
+async function handFarSwardToGround(zones, finder, water, terrain, tune, problems,
+  checkpoint = () => null) {
+  const out = { painted: false, cellM: FAR_SWARD.cellM, texels: 0, start: null, full: null };
+  const hf = terrain?.heightfield;
+  if (typeof terrain?.setFarSward !== 'function' || !hf?.loaded) return out;
+  const cell = FAR_SWARD.cellM;
+  // A rim of one weightless texel each side, so the clamped map ramps to
+  // nothing at its own edge rather than smearing its last row outward.
+  const w = Math.ceil(hf.widthM / cell) + 2;
+  const h = Math.ceil(hf.depthM / cell) + 2;
+  const e0 = hf.originE - cell;
+  const n0 = hf.originN - cell;
+  const raw = new Float32Array(w * h * 4);
+  for (let j = 1; j < h - 1; j++) {
+    const pause = checkpoint(); if (pause) await pause;
+    for (let i = 1; i < w - 1; i++) {
+      const ce = e0 + (i + 0.5) * cell;
+      const cn = n0 + (j + 0.5) * cell;
+      if (water.isWater(ce, cn)) continue;
+      const z = finder(ce, cn);
+      if (!z || z.turf || !z.graminoids?.length || !z.matColor) continue;
+      const a = clamp01(z.matrixShare ?? 0);
+      if (a <= 0) continue;
+      const k = (j * w + i) * 4;
+      raw[k] = z.matColor[0] * a;
+      raw[k + 1] = z.matColor[1] * a;
+      raw[k + 2] = z.matColor[2] * a;
+      raw[k + 3] = a;
+      out.texels++;
+    }
+  }
+  if (!out.texels) {
+    problems.push('flora: no texel of the heightfield deals a grass community — the far '
+      + 'sward is not painted and the plain past the near ring keeps the tile');
+    return out;
+  }
+  // One blur, premultiplied by the weight so a grass texel beside a bare one
+  // keeps its own green and only its weight falls.
+  const data = new Uint8Array(w * h * 4);
+  for (let j = 1; j < h - 1; j++) {
+    for (let i = 1; i < w - 1; i++) {
+      let r = 0, g = 0, b = 0, a = 0;
+      for (let dj = -1; dj <= 1; dj++) {
+        for (let di = -1; di <= 1; di++) {
+          const k = ((j + dj) * w + i + di) * 4;
+          r += raw[k]; g += raw[k + 1]; b += raw[k + 2]; a += raw[k + 3];
+        }
+      }
+      if (a <= 0) continue;
+      const k = (j * w + i) * 4;
+      // Square-root encoded: the shader squares it back to linear.
+      data[k] = Math.round(255 * Math.sqrt(Math.min(1, r / a)));
+      data[k + 1] = Math.round(255 * Math.sqrt(Math.min(1, g / a)));
+      data[k + 2] = Math.round(255 * Math.sqrt(Math.min(1, b / a)));
+      data[k + 3] = Math.round((255 * a) / 9);
+    }
+  }
+  // The tier's own rings: the ground starts to turn where the near ring's
+  // tufts stop standing solid, and is the sward's colour by the outer edge of
+  // the mid ring, where the cards start to thin.
+  out.start = tune.near.radius;
+  out.full = tune.mid.radius + (tune.mid.fringe ?? 0);
+  out.painted = terrain.setFarSward({
+    box: { e0, e1: e0 + w * cell, n0, n1: n0 + h * cell },
+    map: { data, w, h },
+    start: out.start,
+    full: out.full,
+    streak: FAR_SWARD.streak,
+    grainM: FAR_SWARD.grainM,
+    gain: FAR_SWARD.gain,
+  });
+  return out;
+}
+
+/** What fraction of the modelled DRY ground matches no community. Sampled over
+ *  the whole heightfield, so it is a property of the dataset and not of where
+ *  the visitor happens to stand. */
+async function auditCoverage(terrain, finder, checkpoint) {
+  const hf = terrain.heightfield;
+  if (!hf?.loaded) return 0;
+  const step = 8;
+  let land = 0;
+  let bare = 0;
+  for (let n = hf.originN; n <= hf.originN + hf.depthM; n += step) {
+    const pause = checkpoint(); if (pause) await pause;
+    for (let e = hf.originE; e <= hf.originE + hf.widthM; e += step) {
+      if (terrain.isWater(e, n)) continue;
+      land++;
+      if (!finder(e, n)) bare++;
+    }
+  }
+  return land ? bare / land : 0;
+}
+
+/* -------------------------------------------------------------------------- */
+/* the lattice                                                                 */
+/* -------------------------------------------------------------------------- */
+
+/** Hermite ramp, 0 below `lo` and 1 at or above `hi`. The shape a recorded
+ *  elevation band is read over: see `station`'s woody bound (T-1056), and
+ *  docs/LIBERTIES.md L233 for why the shape itself is an admission. */
+function smoothstep(lo, hi, x) {
+  if (!(hi > lo)) return x >= hi ? 1 : 0;
+  const t = Math.min(1, Math.max(0, (x - lo) / (hi - lo)));
+  return t * t * (3 - 2 * t);
+}
+
+/** T-2094. The tallest recorded height of a community's low layer. */
+function turfCeilingOf(species) {
+  const low = species.filter((sp) => (sp.role === 'matrix' || sp.role === 'ground')
+    && Array.isArray(sp.height));
+  return low.length ? Math.max(...low.map((sp) => sp.height[1])) : null;
+}
+
+/** Deterministic hash -> a repeatable per-slot random stream, so re-centring
+ *  the lattice puts every plant back exactly where it was. */
+function hash3(a, b, c) {
+  // Math.imul throughout, and it is load-bearing rather than tidy: `a * k` on a
+  // full 32-bit seed is a ~2^62 double, the low bits fall off the mantissa, and
+  // the four plants in a cell all drew the same "random" number and stacked up
+  // on the same blade of grass. The field looked a quarter as dense as it was.
+  let h = Math.imul(a, 0x27d4eb2d) ^ Math.imul(b, 0x165667b1) ^ Math.imul(c, 0x9e3779b1);
+  h = Math.imul(h ^ (h >>> 15), 0x85ebca6b);
+  h = Math.imul(h ^ (h >>> 13), 0xc2b2ae35);
+  return (h ^ (h >>> 16)) >>> 0;
+}
+
+/**
+ * ROADMAP K49(b) — THE FORB SLOT'S DRAW, AND WHY IT IS NOT `rng()`.
+ *
+ * A slot's species used to come off the same xorshift stream as its jitter: an
+ * independent uniform draw per slot. Independent draws lose their rare end. Six
+ * species their own community's recipe owes a whole plant to were drawn NOWHERE
+ * across 6,780 slots (K49(a)) — prairie dock, a two-metre landmark, owed 3.23 of
+ * them in the wet prairie and standing none. **All six were forb lists**, which
+ * is why this is the forb layer's draw and not the sward's.
+ *
+ * The repair WAS a low-discrepancy assignment (and read T-0265 below before
+ * this paragraph is quoted for anything): a rank-1 lattice
+ * `frac(c·α + r·β + k·γ)` on the slot's OWN world lattice coordinates, walked
+ * against the same CDF `pick()` already walks. It was taken to be
+ * equidistributed over any window, so a band of the CDF the width of prairie
+ * dock's share gets its count to within one slot instead of to within a Poisson
+ * tail — and it is a pure
+ * function of the slot, so re-centring the lattice puts the same species back in
+ * the same place, which is the promise `hash3` makes and K48's owed-draw picker
+ * cannot keep (its running state would change the plant at your feet as you
+ * walked up to it).
+ *
+ * α, β, γ were 1/g, 1/g², 1/g³ for the root of g⁴ = g + 1 — the R3 quasirandom
+ * generators, chosen for equidistribution rather than for looking irrational.
+ *
+ * THE MATRIX LAYERS DO NOT TAKE THIS LATTICE, AND A SCREENSHOT IS WHY. Run
+ * on the near and mid tufts as well, this made the west prairie grow in ROWS:
+ * the lattice band that decides whether a slot carries a plant is a family of
+ * near-diagonal lines, invisible where two slots in a hundred are planted and
+ * unmissable where sixty are. The matrix lists lost no species to the tail — the
+ * cost was all visible and the benefit all in a column that already read zero.
+ * They are stratified a different way instead — see `stratum`, K49(d).
+ *
+ * T-0265 — AND "EQUIDISTRIBUTED OVER ANY WINDOW" IS NOT TRUE OF A PHONE'S
+ * WINDOW. The sentence above is the claim the rank-1 lattice was taken on, and
+ * on the mobile stand it fails: `tools/measure_sward_draw.mjs --gate` with
+ * `SWARD_VIEWPORT=mobile` was RED on an unmodified `dev`, cocklebur owed 1.49
+ * slots in the settled town and drawn nowhere in the scene. The measurement, off
+ * the deal itself at the settled-town station: the forb ring reaches 12.4 m at
+ * the `light` tune against a rotation block 54 m square, so the WHOLE frame sits
+ * inside ONE Cranley–Patterson block and the 46 slots it deals are one
+ * contiguous window of one rotation. Their `u` sorted leaves a gap of 0.0399
+ * between 0.8247 and 0.8646, and cocklebur's band — 0.0324 wide, seventh of
+ * seven in that list's CDF — lies wholly inside it. The species is not rare in
+ * that frame; it is absent from it, and the desktop stand passed only because
+ * its ring deals 7,153 slots instead of 2,763.
+ *
+ * FOUR REPAIRS WERE MEASURED AND THREE ARE REFUTED, so they are not tried again:
+ *
+ * - the sub-cell term made exact (`k/perCell` in place of `k·γ`, which fixes the
+ *   pairing 2γ ≡ 0.099 leaves in a cell's four slots) — mobile still RED, the
+ *   hole merely moved to two mesic-prairie forbs, and the forb deviation rose
+ *   from 16.23 to 19.53 per 100 slots. A re-roll, not a repair;
+ * - the forb and shrub passes moved onto `stratum` (K49(d)) — mobile still RED
+ *   and the forb deviation 28.70 per 100, which is `stratum`'s own stated
+ *   weakness read back at us: exactness over the block is not equidistribution
+ *   over the sub-window, and the census reads zone ∩ ring, which is one;
+ * - the rotation block cut to four cells so a phone's ring holds several of
+ *   them, with the phases swept rather than hashed — mobile still RED, the hole
+ *   at a wet-prairie forb instead;
+ * - **the construction below — mobile GREEN, and the desktop stays green.**
+ *
+ * WHAT REPLACED THE LATTICE: the same hierarchical stratification K49(c2) built
+ * for the dense layers, applied at the CELL rather than at the block.
+ *
+ *   u = frac(k / perCell + blockPhase(c, r, perCell, globalShift))
+ *
+ * Two properties, and the window needs both. Inside one cell the `perCell` slots
+ * take values exactly `1/perCell` apart, so every cell that is dealt whole
+ * offers all four quarters of the CDF. Across cells the offset is
+ * `blockPhase`'s van der Corput sweep of that same step, indexed by the CELL's
+ * Morton code, so the four cells of any aligned 2×2 group hold offsets exactly a
+ * quarter of the step apart and sixteen of a 4×4 group a sixteenth. A window of
+ * C contiguous cells therefore deals `C · perCell` values spread over [0, 1) at
+ * about `1 / (C · perCell)`, BY CONSTRUCTION rather than by luck — 1/48 at the
+ * settled-town stand against cocklebur's 0.0324 — where the rank-1 lattice gave
+ * the same window gaps of two and a half times its mean spacing.
+ *
+ * It keeps everything K49(b) was taken for. It is still a pure function of the
+ * slot's world coordinates, so re-centring puts the same species back in the
+ * same place; `globalShift` is still one random start per layer, so it is still
+ * unbiased; and it is still the SPARSE layers' draw only — the matrix lists
+ * stay on `stratum`, for the screenshot reason above.
+ *
+ * WHAT IT COST, stated rather than left to be found: the forb body deviates
+ * slightly more from its own recorded shares — 16.23 → 17.46 per 100 slots at
+ * the phone, 8.44 → 9.47 at the desktop — while the shrub body deviates
+ * markedly less (34.52 → 26.52 and 10.41 → 7.69). That is the trade this makes:
+ * a per-cent of the shortfall column for the tail column, which is the one the
+ * gate is on and the one a visitor can see, because a species standing nowhere
+ * is a species the town does not have.
+ */
+/*
+ * THE BLOCK ROTATION IS GONE (T-0371). It was the Cranley–Patterson offset that
+ * kept the rank-1 lattice from repeating one diagonal across the field, one per
+ * 16×16-cell block (`LD_BLOCK_SHIFT = 4`, keyed on `LD_BLOCK_SALT`). T-0265
+ * replaced the lattice with `cellPhase`, after which `scatter` still hashed a
+ * block key, a rotation and a block index for every lattice cell and read none
+ * of them. Only the `strata` draw has blocks now, and `scatter` computes them on
+ * that path alone; `tools/measure_rank_bias.mjs` mirrors those lines verbatim.
+ */
+
+function frac(x) { return x - Math.floor(x); }
+
+/**
+ * ROADMAP K49(d) — THE DENSE LAYER'S STRATIFICATION, AND WHY IT IS NOT A LATTICE.
+ *
+ * K49(b) left the near and mid tufts on an independent `rng()` because the
+ * rank-1 lattice above ROWS the prairie. That was a veto on the construction,
+ * not on the goal: the matrix lists' worst shortfall was **31.47 slots** — the
+ * mesic prairie deals 793 slots between four grasses and one of them came up
+ * thirty-one short of the cover its own record states — and nothing had reduced
+ * it.
+ *
+ * The striping is not the rare end of the CDF, it is the common one. At
+ * `matrixShare ≈ 0.6` the test `u < share` selects most of a lattice, so the
+ * SELECTED SET inherits the lattice's structure and the field inherits it in
+ * turn. Any construction whose slot-to-`u` map has a direction in it will do
+ * this at that density. So the requirement is a stratification with no direction
+ * to read.
+ *
+ * A keyed pseudorandom BIJECTION over the block's slots is that. Every slot in a
+ * 16×16-cell block is dealt a distinct rank in `[0, n)`, so `u` takes each of the
+ * n equally spaced values exactly once: a CDF band of width w gets its exact
+ * count `round(w·n)` inside the block, not a Poisson draw around it. And because
+ * the map from slot to rank is a hashed permutation rather than an arithmetic
+ * progression, the ranks carry no gradient across the grid — the selected set is
+ * spatially indistinguishable from the independent draw it replaces, which is
+ * exactly what the screenshot in K49(b) demanded and the lattice could not give.
+ *
+ * A four-round Feistel network is the standard form and is used here: it is a
+ * bijection by construction (each round is invertible whatever the round
+ * function does), it needs no table, and it is a pure function of the slot's
+ * world coordinates, so re-centring the lattice puts the same plant back — the
+ * same promise `hash3` makes and K48's account-keeping picker cannot.
+ *
+ * ITS WEAKNESS, STATED RATHER THAN DISCOVERED: exactness over the BLOCK is not
+ * equidistribution over a sub-window, and the census reads zone ∩ ring, which is
+ * one. It bounds the error to what the block boundaries cut, instead of removing
+ * it. The matrix tail is already empty (K49(a) found no absent matrix species),
+ * so the tail is not what this is for — the shortfall is.
+ *
+ * THAT LAST SENTENCE WAS WRONG WITHIN THE DAY, AND K49(f) IS WHY. The tail was
+ * empty when it was written and this construction emptied it the other way: a
+ * fixed grid of `u` puts every band narrower than one step out of the scene
+ * ALTOGETHER, and two of the dataset's forty-five matrix bands are. Read
+ * `stratum`'s own doc block below before changing anything here — the repair is
+ * the block's phase, and it also recovers most of the regression the paragraph
+ * below blames on a filter.
+ *
+ * ...and it was thought to have a SECOND face that cost two rows of the census.
+ * IT DOES NOT, AND THE PARAGRAPH THAT SAID SO IS STRUCK. What it said was: rank
+ * is a deterministic function of position inside the block, so a filter running
+ * AFTER the deal on a spatial rule of its own — `station()` refusing a building
+ * footprint or the far side of a waterline — selects a BIASED set of ranks; and
+ * therefore, do not reach for `stratum` in a heavily filtered layer. K49(f)
+ * refuted the settled-town half the same day, by fixing the fixed grid instead.
+ * **T-0018 / K49(e) refutes the mechanism itself** —
+ * `tools/measure_rank_bias.mjs`, which runs the deal out of THIS file:
+ *
+ *   position → rank is `feistel(idx, half, blockHash)`, and `blockHash` is
+ *   `hash3(bc, br, salt ^ STRAT_SALT)` — RE-KEYED IN EVERY BLOCK. A spatial rule
+ *   does not know that key, so the ranks it accepts are an arbitrary subset,
+ *   independently re-drawn block by block. Pooled, they are uniform.
+ *
+ * Measured over 400 independent layer keys, chi-square on 15 df against uniform:
+ * a waterline half-plane **2.0**, a footprint disc **4.1**, a street stripe
+ * **2.3** — against a rank-blind control at **4.7** and a critical value of 37.7
+ * at p = 0.001. A filter deliberately written to read the rank scores
+ * **100,800**, so the instrument goes red by four orders of magnitude when there
+ * is something to catch.
+ *
+ * SO THE RULE IS THE OPPOSITE OF THE ONE THAT WAS WRITTEN HERE. Reach for
+ * `stratum` in a filtered layer: filtered, it still beats an independent draw
+ * (mix deviation per 100 planted slots — unfiltered **0.83**, thinned to ~60 %
+ * **3.2–5.0**, independent **5.83**). What a filter costs is the STRATIFICATION,
+ * not the accuracy: the surviving `u` are no longer equally spaced, so the deal
+ * slides back towards Poisson at about the rate it thins. Expect precision to
+ * degrade with filtering; do not expect a lean.
+ */
+const STRAT_SALT = 0x7f4a7c15;
+/**
+ * ...and the block is FOUR cells square, not the lattice's sixteen, because
+ * K49(b) finding 3's rule — *the block size is set by PLANTED slots, not by
+ * cells* — points the other way for a dense layer. The forb layer plants a few
+ * per cent of what it deals and needed 1,024 slots to resolve a species band;
+ * the matrix layer plants `matrixShare ≈ 0.6` of them, thirty times the rate, so
+ * 64 slots already carry ~38 plants — more than the forb layer's 16×16 block
+ * ever did.
+ *
+ * And the small block is not merely sufficient, it is BETTER, for the reason the
+ * parcel's own weakness names: exactness holds over the block and the census
+ * reads a sub-window, so the error is whatever the window's partial blocks cut.
+ * A near ring is 15.2 m across and a 16-cell block is 11.8 m — the window
+ * contained about ONE whole block, so almost every slot read was in a partial
+ * one. At four cells it is 3.0 m and the same window holds ~20.
+ *
+ * So the rule has a FLOOR and a CEILING, and only the floor was written down.
+ * Measured, all five, on the matrix `deviation` of `tools/measure_sward_draw.mjs`
+ * — never on `worstShortfall`, which is a max of a max and ranks these in a
+ * different order:
+ *
+ * | block | m (near) | slots | matrix deviation |
+ * |---|---|---|---|
+ * | independent draw | — | — | 368.80 |
+ * | 1 cell | 0.74 | 4 | 2,725.88 |
+ * | 2 cells | 1.48 | 16 | 602.95 |
+ * | **4 cells** | **2.96** | **64** | **282.89** |
+ * | 8 cells | 5.92 | 256 | 303.30 |
+ * | 16 cells | 11.84 | 1,024 | 340.47 |
+ *
+ * The floor is not a soft one: at four slots per block `u ∈ {0.125, 0.375,
+ * 0.625, 0.875}`, so at `share ≈ 0.6` exactly two are planted and `u / share`
+ * takes TWO values — the CDF collapses onto two species and the deviation is
+ * seven times the fault being repaired.
+ */
+const STRAT_BLOCK_SHIFT = 2;
+
+/** One round-keyed Feistel pass over `2·half` bits. Invertible by construction,
+ *  so the map is a permutation of `[0, 2^(2·half))` whatever `hash3` returns. */
+function feistel(x, half, key) {
+  const mask = (1 << half) - 1;
+  let l = (x >>> half) & mask;
+  let r = x & mask;
+  for (let i = 0; i < 4; i++) {
+    const t = l ^ (hash3(r, key, i + 1) & mask);
+    l = r;
+    r = t;
+  }
+  return ((l << half) | r) >>> 0;
+}
+
+/**
+ * The slot's rank inside its block, as a `u` in `[0, 1)`.
+ *
+ * `half` is chosen so the Feistel's domain `2^(2·half)` covers `n`; when it
+ * overshoots (it does not at `perCell = 4`, where a 16×16 block holds exactly
+ * 1,024 slots and the domain is 1,024) the standard cycle-walk re-applies the
+ * permutation until the image lands back in range, which is still a bijection on
+ * `[0, n)`. The guard is a belt on a loop that provably terminates; falling back
+ * to the identity keeps `u` in range rather than returning a rank that is not a
+ * rank.
+ *
+ * ROADMAP K49(f) — AND THE GRID IT LANDS ON HAS TO MOVE, or the tail of the CDF
+ * is not thin, it is EMPTY.
+ *
+ * The permutation decides which slot gets which rank. It does not change the SET
+ * of `u` the block deals, which without `phase` is `{(k + 0.5) / n}` — the same n
+ * numbers in every block of the world, for ever. A species owns a CDF band of
+ * width `share × weight`, so a band narrower than `1/n` can contain none of them,
+ * and then it contains none of them EVERYWHERE: the species is not rare in the
+ * scene, it is absent from it, deterministically, at every station. That is the
+ * exact fault K49(b) repaired in the forb lists — and it came back in the matrix
+ * lists the moment K49(d) handed them a fixed grid. (The forb layer never had it:
+ * its lattice `u` already carries the block's `shift`.)
+ *
+ * `phase` is the block's own offset, wrapped — a systematic sample with a random
+ * start, which is the textbook form for exactly this reason. The n values stay
+ * equally spaced, so the block is still an exact stratification and K49(d)'s
+ * deviation result is untouched in construction; what changes is that a band of
+ * width w now falls on a dealt value in about `w · n` of the blocks instead of in
+ * all of them or none, which is the unbiased answer. A species owed a plant per
+ * hundred square metres gets one per hundred square metres.
+ */
+function stratum(idx, n, half, key, phase) {
+  let x = idx;
+  for (let guard = 0; guard < 24; guard++) {
+    x = feistel(x, half, key);
+    if (x < n) return frac((x + 0.5) / n + phase);
+  }
+  return frac((idx + 0.5) / n + phase);
+}
+
+/**
+ * ROADMAP K49(c2) — AND THE PHASE HAS TO SWEEP THE STEP, or a species owed ONE
+ * plant in the frame gets it on a coin toss.
+ *
+ * K49(f) gave every block its own RANDOM phase, which is unbiased and is what
+ * fixed the species drawn nowhere in the WORLD: a band of width `w` lands on a
+ * dealt value in about `w · n` of the blocks instead of in all of them or none.
+ * What it does not fix is the frame. A band with `w · n = 0.077` — the sedge
+ * meadow's two bulrushes, measured — is a coin toss per block, and over the
+ * fourteen blocks a station's ring holds it comes up empty about a third of the
+ * time. The species is owed 1.10 slots and draws none, at random, which is the
+ * one thing K49(f)'s gate is absolute about.
+ *
+ * So the phases are STRATIFIED ACROSS BLOCKS as well as within one. The block's
+ * phase is `globalShift + vdc(morton(block)) / n`: a van der Corput sweep of the
+ * step `[0, 1/n)`, indexed by the block's Morton code, on a random global start.
+ * Three properties, and the parcel needs all three:
+ *
+ * - **The set inside a block is untouched** — the n values are still equally
+ *   spaced by `1/n`, so it is still an exact stratification and K49(d)'s
+ *   deviation result stands by construction.
+ * - **Adjacent blocks get maximally separated phases.** Reversing the bits of
+ *   the Morton code sends the block coordinates' LOW bits to the top of the
+ *   fraction, so the four blocks of any aligned 2×2 group hold phases exactly
+ *   `1/4` of the step apart, sixteen of a 4×4 group `1/16` apart. A band wider
+ *   than the sweep's spacing is then hit BY CONSTRUCTION rather than by luck.
+ * - **It stays unbiased.** `globalShift` is one random start for the layer, so
+ *   a band of width `w` still lands in `w · n` of the blocks on average; what
+ *   changes is the variance, which is the whole complaint.
+ *
+ * T-0265 — AND IT IS NOW BOTH DRAWS' SWEEP, at two scales. `stratum` calls it
+ * per BLOCK with `n` the block's slot count; the sparse draw calls it per CELL
+ * with `n = perCell`, because the frame that failed was smaller than a block.
+ * The argument is the same one either way and the code is the same line.
+ */
+function blockPhase(c, r, n, globalShift) {
+  return frac(globalShift + vdc(morton(c, r)) / n);
+}
+
+/** Interleave two block coordinates into one Morton code. Biased into the
+ *  unsigned range first, so a block west or south of the origin indexes the
+ *  same way as one east or north of it. */
+function morton(c, r) {
+  return ((spread16(r + 0x8000) << 1) | spread16(c + 0x8000)) >>> 0;
+}
+
+/** One 16-bit value spread into the even bits of a 32-bit word. */
+function spread16(n) {
+  let x = n & 0xffff;
+  x = (x | (x << 8)) & 0x00ff00ff;
+  x = (x | (x << 4)) & 0x0f0f0f0f;
+  x = (x | (x << 2)) & 0x33333333;
+  x = (x | (x << 1)) & 0x55555555;
+  return x >>> 0;
+}
+
+/** The van der Corput sequence in base 2: the index with its bits reversed,
+ *  read as a fraction. Consecutive indices are far apart by construction, which
+ *  is the property `blockPhase` is built on. */
+function vdc(i) {
+  let x = i >>> 0;
+  x = ((x & 0x55555555) << 1) | ((x >>> 1) & 0x55555555);
+  x = ((x & 0x33333333) << 2) | ((x >>> 2) & 0x33333333);
+  x = ((x & 0x0f0f0f0f) << 4) | ((x >>> 4) & 0x0f0f0f0f);
+  x = ((x & 0x00ff00ff) << 8) | ((x >>> 8) & 0x00ff00ff);
+  return (((x >>> 16) | (x << 16)) >>> 0) / 4294967296;
+}
+
+/** The half-width the Feistel needs to cover `n` slots. */
+function stratumHalf(n) {
+  let bits = 1;
+  while ((1 << bits) < n) bits++;
+  return (bits + 1) >> 1;
+}
+
+function rngFrom(seed) {
+  let s = seed >>> 0 || 1;
+  return () => {
+    s ^= s << 13; s >>>= 0;
+    s ^= s >>> 17;
+    s ^= s << 5; s >>>= 0;
+    return s / 4294967296;
+  };
+}
+
+/** Walk the lattice cells around the camera, calling `emit` per jittered slot
+ *  inside the ring. The grid is world-anchored, not camera-anchored.
+ *
+ *  `draw` picks how the slot's `u` — the one number that decides both whether it
+ *  carries a plant and which species (see `dealt`) — is constructed. `'lattice'`
+ *  is the SPARSE draw the forb, shrub and far passes take: the rank-1 sequence
+ *  of K49(b) until T-0265 measured it empty-handed in a phone's window, and the
+ *  cell-resolution stratification of K49(c2) since. `'strata'` is the block
+ *  permutation of K49(d), which the DENSE matrix layers take because a lattice
+ *  stripes them. Both are pure functions of the slot's world coordinates. */
+function* scatter(camE, camN, cell, perCell, radius, inner, salt, draw, cone, emit) {
+  if (cone?.jobs && jobsOnWorkers()) {
+    yield* scatterOnPool(camE, camN, cell, perCell, radius, inner, salt, draw, cone, emit);
+    return;
+  }
+  const c0 = Math.floor((camE - radius) / cell);
+  const c1 = Math.ceil((camE + radius) / cell);
+  const r0 = Math.floor((camN - radius) / cell);
+  const r1 = Math.ceil((camN + radius) / cell);
+  const sub = Math.max(1, Math.round(Math.sqrt(perCell)));
+  const rr = radius * radius;
+  const ri = inner * inner;
+  // ROADMAP K49(d). The block is the stratum: every slot in it is dealt a
+  // distinct rank, so a CDF band gets its exact count rather than a Poisson one.
+  const strata = draw === 'strata';
+  const shiftBits = STRAT_BLOCK_SHIFT;
+  const span = 1 << shiftBits;
+  const nSlots = span * span * perCell;
+  const half = stratumHalf(nSlots);
+  // ROADMAP K49(c2). ONE random start for the whole layer, not one per block:
+  // the sweep is what separates neighbouring blocks, and a per-block random
+  // start would put it back where K49(f) left it.
+  const globalShift = hash3(salt, STRAT_SALT, 0x9e3779b9) / 4294967296;
+  yield { done: 0, total: r1 - r0 + 1 };
+  // T-2096. A cell no slot of which can pass the ring or the cone test below is
+  // skipped before its slots are hashed. Each slot's stream is seeded from its
+  // own cell and index, so skipping a cell moves no other slot: the plants
+  // dealt are exactly the ones the per-slot tests would have kept. Three
+  // quarters of the bounding square is outside a walker's cone, and hashing it
+  // was most of what a rebuild spent before a single plant was asked about.
+  const halfDiag = cell * Math.SQRT1_2;
+  for (let r = r0; r <= r1; r++) {
+    const ny0 = r * cell - camN, ny1 = (r + 1) * cell - camN;
+    const ny = ny0 > 0 ? ny0 : ny1 < 0 ? -ny1 : 0;
+    const fy = Math.max(Math.abs(ny0), Math.abs(ny1));
+    for (let c = c0; c <= c1; c++) {
+      const nx0 = c * cell - camE, nx1 = (c + 1) * cell - camE;
+      const nx = nx0 > 0 ? nx0 : nx1 < 0 ? -nx1 : 0;
+      if (nx * nx + ny * ny > rr) continue;
+      const fx = Math.max(Math.abs(nx0), Math.abs(nx1));
+      if (fx * fx + fy * fy < ri) continue;
+      if (cone) {
+        const ce = (c + 0.5) * cell - camE, cn = (r + 0.5) * cell - camN;
+        const cd = Math.hypot(ce, cn);
+        if (cd - halfDiag > CONE_KEEP_M) {
+          const low = cone.cos >= 0 ? (cd - halfDiag) * cone.cos : (cd + halfDiag) * cone.cos;
+          if (ce * cone.fe + cn * cone.fn + halfDiag
+            < low - 2 * (cone.margin ?? 0) - 1e-6) continue;
+        }
+      }
+      const cellSeed = hash3(c, r, salt);
+      // ROADMAP K49(d). The strata draw deals one permutation per 4×4-cell block
+      // of the WORLD lattice; the sparse draw has no blocks at all since T-0265
+      // (see `cellPhase`), so none of this is computed for it (T-0371).
+      let blockHash = 0, shift = 0, base = 0, cellPhase = 0;
+      if (strata) {
+        const bc = c >> shiftBits;
+        const br = r >> shiftBits;
+        blockHash = hash3(bc, br, salt ^ STRAT_SALT);
+        // ROADMAP K49(c2). A phase that SWEEPS its own step across neighbouring
+        // blocks, because a random one leaves a narrow band to a coin toss in
+        // the frame. See `blockPhase`.
+        shift = blockPhase(bc, br, nSlots, globalShift);
+        // The slot's index inside its own block. Arithmetic shift, so a block
+        // west or south of the origin indexes the same way as one east or north.
+        base = ((c - ((c >> shiftBits) << shiftBits)) * span
+          + (r - ((r >> shiftBits) << shiftBits))) * perCell;
+      } else {
+        cellPhase = blockPhase(c, r, perCell, globalShift);
+      }
+      for (let k = 0; k < perCell; k++) {
+        const rng = rngFrom(hash3(cellSeed, k, 0x68bc21eb));
+        // ROADMAP K49(b). The slot's own place in the deal: it decides BOTH
+        // whether this slot carries a plant at all and which species it is, so
+        // that the thinning cannot resample the species draw back into an
+        // independent one. See `dealt`.
+        // ROADMAP K49(f). The stratification wraps its grid of ranks by the
+        // block's own `shift`; without it the strata deal the same n values of
+        // `u` in every block of the world and a CDF band narrower than `1/n` is
+        // drawn nowhere at all. T-0265: the sparse draw takes the same medicine
+        // one scale down — `cellPhase` above, swept per CELL — because at a
+        // phone the whole ring fits inside one block and one rotation, so a
+        // block offset is a coin tossed once for the frame.
+        const u = strata
+          ? stratum(base + k, nSlots, half, blockHash, shift)
+          : frac(k / perCell + cellPhase);
+        // A jittered sub-grid, not free scatter: free scatter leaves holes
+        // the eye reads as bare soil and clusters it reads as one plant.
+        const sx = k % sub;
+        const sy = (k / sub) | 0;
+        // T-2038. Sparse shrub ranks repeatedly selected the same quarter of
+        // every cell. Use independent full-cell jitter for wild woody plants;
+        // both shrub LODs consume these same two draws and retain identity.
+        const je = rng(), jn = rng();
+        const e = (c + (draw === 'wild' ? je : (sx + je) / sub)) * cell;
+        const n = (r + (draw === 'wild' ? jn : (sy + jn) / sub)) * cell;
+        const d2 = (e - camE) ** 2 + (n - camN) ** 2;
+        if (d2 > rr || d2 < ri) continue;
+        const d = Math.sqrt(d2);
+        // Outside the view cone there is nothing to see and everything to pay
+        // for: three has no per-instance culling, so a plant behind the walker
+        // still runs its vertex shader. The cone is far wider than the frame
+        // (62 degrees against 38) so a turn of a dozen degrees is planted
+        // before the lattice catches up; inside CONE_KEEP_M everything is kept,
+        // because that ring must not flicker as you turn on the spot.
+        if (cone && d > CONE_KEEP_M
+          && ((e - camE) * cone.fe + (n - camN) * cone.fn)
+            < d * cone.cos - 2 * (cone.margin ?? 0)) continue;
+        if (cone?.planes && outsideFrustum(cone, e, n, d)) continue;
+        emit(e, n, d, rng, cellSeed, u);
+      }
+    }
+    yield { done: r - r0 + 1, total: r1 - r0 + 1 };
+  }
+}
+
+/** The aerial cone's frustum test for one slot of the walk: true if no part of
+ *  a plant standing there can be in view. It asks the terrain for the ground's
+ *  height, which is why it stays on the main thread when the walk does not. */
+function outsideFrustum(cone, e, n, d) {
+  const y = cone.surface(e, n) + cone.halfHeight;
+  // Distance to any unit plane can change by no more than translation
+  // plus the rotation chord. 0.22 rad exceeds both yaw/pitch thresholds.
+  const pad = cone.bodyRadius + (cone.margin ?? 0.6)
+    + Math.hypot(d, cone.eyeY - y) * 0.22;
+  return cone.planes.some(p => p.normal.x * e + p.normal.y * y
+    - p.normal.z * n + p.constant < -pad);
+}
+
+/** T-2695: names each flora layer's ground on the workers (jobs/zone-kernel.js). */
+let groundSerial = 0;
+
+/**
+ * T-2604. A walk sent to a worker yields this while its slots are on the way, and
+ * the pass is resumed with MAY_WAIT by the one caller that can let a frame go by
+ * for it: `runPass`, on a spread pass that is not late. Every other resumption
+ * (a late slice, `settle`, a `for…of` drain, the boot path) takes the walk in the
+ * frame instead, so nothing ever spins waiting on a message it cannot receive.
+ */
+const WALK_WAIT = Object.freeze({ waiting: true });
+/** T-2696. The slot `scatterOnPool` is handing `emit`, with its worker reply
+ *  (`at`, `{flags, y}`) and its place in it; `at` is null between slots. */
+const HELD_SLOT = { at: null, i: 0, e: NaN, n: NaN };
+const MAY_WAIT = Symbol('may wait');
+/** T-2966. And a late pass, or one the animation loop deals whole, is resumed
+ *  with DRAIN: as good as "may not wait" to every walk, and to the far pass's
+ *  carries "land without me" — their read-back and reap go on as a tail. */
+const DRAIN = Symbol('drain');
+
+/**
+ * T-2604. `scatter` with its walk on the job pool: the same slots, dealt to `emit`
+ * in the same order with the same yields, out of `jobs/lattice-kernel.js` on a
+ * worker (`tools/check_lattice_kernel.mjs` holds the kernel to `scatter` slot for
+ * slot). Only a spread pass comes here (its cone carries `jobs`); a one-frame
+ * pass walks in `scatter` as it always did.
+ */
+function* scatterOnPool(camE, camN, cell, perCell, radius, inner, salt, draw, cone, emit) {
+  const w = { cell, perCell, radius, inner, salt, draw };
+  const job = walkJob(camE, camN, w, cone);
+  // T-2683: the walk the pass sent ahead for this one, if it sent one; and this
+  // walk written down, for the next pass to send ahead in its turn.
+  const key = walkKey(job);
+  const ahead = cone.ahead?.get(key);
+  cone.ahead?.delete(key);
+  cone.walks?.push(w);
+  const total = Math.ceil((camN + radius) / cell) - Math.floor((camN - radius) / cell) + 1;
+  const walk = { slots: null, failed: false };
+  const sent = ahead ?? sendWalk(job, cone.groundWorker);
+  sent.slots.then((slots) => { walk.slots = slots; }, () => { walk.failed = true; });
+  yield { done: 0, total };
+  while (!walk.slots) {
+    if (walk.failed || (yield WALK_WAIT) !== MAY_WAIT) walk.slots = latticeSlots(job);
+  }
+  const { e, n, d, u, cellSeed, rng, rowEnd } = walk.slots;
+  const tally = cone.tally;
+  let i = 0;
+  for (let row = 0; row < rowEnd.length; row++) {
+    // T-2695: each slot's community, once the worker's answer is home (read per
+    // row, as it may land between two frames of the deal); until then the deal
+    // asks its own finder. Slot for slot the walk taken here, so it indexes both.
+    // T-2696: and its ground with it, which the deal reads off HELD_SLOT for
+    // the slot it is given and for no other point.
+    const zone = sent.zone;
+    const ground = sent.ground;
+    for (; i < rowEnd[row]; i++) {
+      if (cone.planes && outsideFrustum(cone, e[i], n[i], d[i])) continue;
+      if (ground) { HELD_SLOT.at = ground; HELD_SLOT.i = i; HELD_SLOT.e = e[i]; HELD_SLOT.n = n[i]; }
+      emit(e[i], n[i], d[i], rngFrom(rng[i]), cellSeed[i], u[i], zone?.[i]);
+      HELD_SLOT.at = null;
+      if (tally) { tally.dealt++; if (zone) tally.zoned++; if (ground) tally.grounded++; }
+    }
+    yield { done: row + 1, total };
+  }
+}
+
+/** T-2695. A walk sent to the pool, and its slots' communities asked as soon as
+ *  they are home (jobs/zone-kernel.js): a second job, so the slots — what a pass
+ *  waits on — come home no later than they did. `zone` is null until then.
+ *  T-2696: `ground` is the same reply's water, floor, verge and height, slot for
+ *  slot (`{flags, y}`), or null. */
+function sendWalk(job, worker) {
+  const sent = { slots: runJob('latticeSlots', job), zone: null, ground: null };
+  if (job.ground != null) {
+    sent.slots.then((s) => runJob('slotZones', { ground: job.ground, e: s.e, n: s.n }, { worker }))
+      .then((r) => { sent.ground = r.flags ? r : null; sent.zone = r.zone; }, () => {});
+  }
+  return sent;
+}
+
+/** The lattice walk a worker is sent: the walk's own numbers at a centre and a
+ *  cone. One constructor, so a walk sent ahead (T-2683) and the walk the deal
+ *  then asks for are the same job and read the same key. */
+function walkJob(camE, camN, w, cone) {
+  return { camE, camN, cell: w.cell, perCell: w.perCell, radius: w.radius, inner: w.inner,
+    salt: w.salt, draw: w.draw, ground: cone.ground ?? null,
+    cone: { fe: cone.fe, fn: cone.fn, cos: cone.cos, margin: cone.margin } };
+}
+function walkKey(job) { return JSON.stringify(job); }
+
+/** Weighted pick from a compiled species list (weights sum to 1). */
+/**
+ * One species out of a `{items, total}` subset, at its recorded weight. The
+ * weights are normalised over the WHOLE community, so a subset sums to its own
+ * share of it and `u` is scaled by that total — which is what renormalising over
+ * the subset amounts to, without copying every entry to rewrite one number.
+ */
+function pick(subset, u) {
+  const list = subset.items;
+  if (!list.length) return null;
+  let acc = 0;
+  const target = u * subset.total;
+  for (const item of list) {
+    acc += item.weight;
+    if (target <= acc) return item;
+  }
+  return list[list.length - 1];
+}
+
+/**
+ * ROADMAP K49(b) — the slot's whole deal, out of ONE low-discrepancy draw.
+ *
+ * A lattice slot is asked two questions in a row: does the community's recorded
+ * cover put a plant here at all (`share`), and if so which species (`pick`). Ask
+ * them of two independent numbers and the second one's equidistribution is
+ * spent: the surviving slots are a random subsample of the lattice, and a random
+ * subsample of a low-discrepancy set is back to Poisson in its tail — which is
+ * the fault K49(a) measured.
+ *
+ * So the two questions share one draw. `u` below the share carries the plant,
+ * and its position INSIDE `[0, share)` is what walks the CDF: species i then
+ * owns a band of width `share × weight_i`, and the lattice hits every band at
+ * its own rate. That is the whole repair — the same marginal probabilities, in
+ * one stratified draw instead of two independent ones.
+ *
+ * Returns null when the slot carries nothing.
+ */
+function dealt(subset, share, u) {
+  if (!(share > 0) || u >= share) return null;
+  return pick(subset, u / share);
+}
+
+/* -------------------------------------------------------------------------- */
+/* placing one plant                                                           */
+/* -------------------------------------------------------------------------- */
+
+const _m = new THREE.Matrix4();
+const _e = new THREE.Euler();
+const _c = new THREE.Color();
+
+/**
+ * A plant may not be standing where the walker is standing.
+ *
+ * The near ring is camera-relative and had no inner radius, so a three-metre
+ * prairie dock could be planted at arm's length and fill the frame — which is
+ * what the timber critic handed back as "the giant yellow-flowered plant at
+ * absurd scale in the immediate foreground". The clearance is not a fudge
+ * factor: it is the walker's own shoulder half-width (walker.js WALK.radius,
+ * 0.34 m) plus the radius of the clump the record itself gives, because a
+ * plant whose crown overlaps the body of the person looking at it is a plant
+ * that person has walked through.
+ */
+const WALKER_RADIUS_M = 0.34;
+function crowdsTheWalker(sp, r, eyeAboveRoot = 0) {
+  // T-2035: a flying camera has no body sweeping a hole through the ground
+  // beneath it. Preserve the walking clearance, but keep the rooted plant
+  // when the eye is safely above even its tallest possible crown.
+  if (eyeAboveRoot > sp.height[1] * 1.25 + WALKER_RADIUS_M) return false;
+  const clump = clumpRadiusOf(sp);
+  return r < WALKER_RADIUS_M + clump;
+}
+
+/**
+ * T-2716. The near walk's set when the GPU draws the tufts: it counts what the
+ * CPU deal placed (the census and `tally` read it) and draws nothing, so
+ * `placeGraminoid` still returns the height the heads are hung off.
+ */
+function nearSink(name, geometry) {
+  const g = geometry();
+  const tris = (g.index ? g.index.count : g.attributes.position.count) / 3;
+  g.dispose();
+  let n = 0;
+  let want = 0;
+  const mesh = { name, count: 0 };
+  return {
+    mesh, tris, max: Infinity,
+    demand() { return want; },
+    skip(k) { want += k; },
+    reset() { n = 0; want = 0; },
+    ring() {},
+    push() { want++; n++; return true; },
+    commit() { mesh.count = n; },
+  };
+}
+
+function instSet(name, geometry, material, max) {
+  const mesh = new THREE.InstancedMesh(geometry, material, max);
+  mesh.name = name;
+  mesh.castShadow = false;
+  mesh.receiveShadow = false;
+  // Always around the viewer; culling can only throw it away by mistake.
+  mesh.frustumCulled = false;
+  // Drawn BEFORE the ground on purpose: the ground is a full-screen standard
+  // material with a shadow lookup and is the most expensive thing in the frame,
+  // so every sward fragment that lands first is one the depth test never
+  // shades. Measured: at eye height in open prairie it pays for the sward.
+  mesh.renderOrder = -3;
+  mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  mesh.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(max * 3), 3);
+  mesh.instanceColor.setUsage(THREE.DynamicDrawUsage);
+  const params = new THREE.InstancedBufferAttribute(new Float32Array(max * 4), 4);
+  params.setUsage(THREE.DynamicDrawUsage);
+  geometry.setAttribute('aFlora', params);
+  // docs/PROVENANCE.md: per-PLANT here, because the evidence behind a species
+  // belongs to the species, not to the archetype it is drawn with. An instanced
+  // attribute reaches the same shader declaration a per-vertex one would.
+  const conf = new THREE.InstancedBufferAttribute(new Float32Array(max), 1);
+  conf.setUsage(THREE.DynamicDrawUsage);
+  geometry.setAttribute('_confidence', conf);
+  // The ring this instance is faded over, and how far its origin stands above
+  // the base of its own plant — zero for anything rooted, the stalk height for
+  // a flower head, which is what lets the shader lower a head to the ground as
+  // its plant shrinks instead of leaving it hanging where the CPU put it.
+  const ringAttr = new THREE.InstancedBufferAttribute(new Float32Array(max * 4), 4);
+  ringAttr.setUsage(THREE.DynamicDrawUsage);
+  geometry.setAttribute('aChiRing', ringAttr);
+  const riseAttr = new THREE.InstancedBufferAttribute(new Float32Array(max), 1);
+  riseAttr.setUsage(THREE.DynamicDrawUsage);
+  geometry.setAttribute('aChiRise', riseAttr);
+  const familyAttr = new THREE.InstancedBufferAttribute(new Float32Array(max), 1);
+  familyAttr.setUsage(THREE.DynamicDrawUsage);
+  geometry.setAttribute('aChiFamily', familyAttr);
+  /** Never fades: overwritten before the first push of every pass. */
+  let ringNow = [1e9, 1e-4, 0, 0];
+
+  const tris = (geometry.index ? geometry.index.count : geometry.attributes.position.count) / 3;
+  let n = 0;
+  /**
+   * T-0214. How many instances this set was ASKED for over the pass, against
+   * the `n` it drew. A set at its cap refuses silently — `push` returns false
+   * and the caller stops — so before this counter the difference between a set
+   * that had nothing to draw and one that was cut off mid-plant was invisible
+   * from outside the module, and the only way to see it was to notice that
+   * `mesh.count` happened to equal `max`. That reads as a coincidence, and at
+   * two of the nine head sets it was not one.
+   *
+   * It counts DEMAND, not refusals: every push attempt, plus whatever the
+   * caller abandons on a refusal and tells us about through `skip`. So
+   * `want - n` is the shortfall in instances, by name, and an allocation can
+   * be sized against it instead of against a guess.
+   */
+  let want = 0;
+  return {
+    mesh,
+    tris,
+    max,
+    /** Instances asked for since the last `reset` — see `want`. */
+    demand() { return want; },
+    /** Instances the caller gave up on after a refusal, so the demand figure
+     *  is the whole of what the records asked for and not the part that was
+     *  attempted before the set filled. */
+    skip(k) { want += k; },
+    reset() { n = 0; want = 0; },
+    /** T-2774. Where the set stands now, and back to it: the near ring's heads
+     *  are appended after a pass's own (`hangNearHeads`), and appended afresh
+     *  when the read-back they hang off lands after the pass committed. */
+    mark() { return [n, want]; },
+    rewind(m) { n = m[0]; want = m[1]; },
+    /** The ring every following push is drawn on, `[outer, band, inner,
+     *  innerBand]`. A head set is pushed to from two different rings in one
+     *  rebuild, so this is per-push state rather than per-set. */
+    ring(r) { ringNow = r; },
+    /**
+     * @param {number} [tilt] radians off vertical, baked into the INSTANCE
+     *   matrix rather than the vertex program: a flower head is held at an
+     *   angle and the tilt has to vary per instance, while the yaw slot in
+     *   `aFlora` can only turn it about the vertical. Pass `yaw` 0 alongside a
+     *   tilt — the matrix carries the whole rotation.
+     * @param {number} [tiltAz] which way it leans.
+     * @param {number} [rise] metres this instance's origin stands above the
+     *   base of its plant. The shader lowers it by `rise * (1 - fade)`.
+     * @returns {boolean} false when the cap is reached — the caller stops.
+     */
+    push(e, y, n2, yaw, height, spread, arch, r, g, b, conf2, tilt = 0, tiltAz = 0, rise = 0, family = 0) {
+      want++;
+      if (n >= max) return false;
+      if (tilt !== 0) {
+        // The yaw is NOT passed to the Euler, and that is R-BUG7. It is the
+        // head's spin about its own stalk and the vertex program already
+        // applies it, off `aFlora.w`, before this matrix runs. Turning the
+        // whole tilted head by it a second time here spins `tiltAz` — the
+        // bearing the caller computed so the stalk would lean BACK to its own
+        // stem — to a uniformly random one. Four repairs in this file computed
+        // that bearing correctly and not one of them reached the geometry:
+        // measured on the published mirror, 38 drawn heads over 32 poses had
+        // their stalk foot in open air, the worst 58 cm from any stem.
+        _e.set(Math.cos(tiltAz) * tilt, 0, Math.sin(tiltAz) * tilt, 'YXZ');
+        _m.makeRotationFromEuler(_e);
+        _m.setPosition(e, y, -n2);
+      } else {
+        _m.makeTranslation(e, y, -n2);
+      }
+      mesh.setMatrixAt(n, _m);
+      mesh.instanceColor.setXYZ(n, r, g, b);
+      params.setXYZW(n, height, spread, arch, yaw);
+      conf.setX(n, conf2);
+      ringAttr.setXYZW(n, ringNow[0], ringNow[1], ringNow[2], ringNow[3]);
+      riseAttr.setX(n, rise);
+      familyAttr.setX(n, family);
+      n++;
+      return true;
+    },
+    commit() {
+      mesh.count = n;
+      mesh.instanceMatrix.needsUpdate = true;
+      mesh.instanceColor.needsUpdate = true;
+      params.needsUpdate = true;
+      conf.needsUpdate = true;
+      ringAttr.needsUpdate = true;
+      riseAttr.needsUpdate = true;
+      familyAttr.needsUpdate = true;
+    },
+  };
+}
+
+/** Uneven light is most of what separates the July photographs from the
+ *  October one (luminance spanning 150-210 levels against 90). A per-plant
+ *  patch factor from a smooth world-space field buys that mottling for one
+ *  noise lookup — and it is patchiness in the vegetation, not a light. */
+function patchOf(e, n) {
+  return 0.66 + 0.72 * vnoise(e * 0.21 + 5.5, n * 0.21 - 2.3)
+    * (0.72 + 0.42 * vnoise(e * 0.74 - 1.1, n * 0.74 + 6.2));
+}
+
+/** THE GROWTH FIELD (T-1825): coherent 1.4-2.8 m stands of vigorous and thin
+ *  growth, the scale the ground tile's own growth octaves work at (see
+ *  `prairie-tile.js`). A July sward is not a crop. Where the ground is a little
+ *  richer or wetter a stand closes up taller and darker, and beside it a thinner
+ *  one shows its litter. Drawing every tuft's height independently made the
+ *  near field read as a seedling row. Mean 0.5, so the averages it steers
+ *  (height within the record's range, the thatch minority, the tone) stay where
+ *  they were. It moves them around the field; it does not move their means. */
+function vigourOf(e, n) {
+  return 0.62 * vnoise(e * 0.36 + 3.1, n * 0.36 - 7.7)
+       + 0.38 * vnoise(e * 0.72 - 2.4, n * 0.72 + 1.9);
+}
+
+/** The tone a stand's vigour gives its plants: darker where the canopy closes,
+ *  lighter where it is thin. Mean 1.0 over the field. */
+function vigourTone(vig) {
+  return 0.86 + 0.28 * (1 - vig);
+}
+
+function tint(sp, u, v) {
+  // Two greens per species, plus a small tonal jitter: the bar photographs show
+  // several distinct greens within a metre, and one flat green reads as carpet.
+  const t = u * u;
+  const k = 0.82 + v * 0.40;
+  return [
+    (sp.base[0] * (1 - t) + sp.alt[0] * t) * k,
+    (sp.base[1] * (1 - t) + sp.alt[1] * t) * k,
+    (sp.base[2] * (1 - t) + sp.alt[2] * t) * k,
+  ];
+}
+
+function placeGraminoid(set, sp, e, y, n, rng) {
+  // Where in the record's own range this tuft stands is about a third its own
+  // draw and two thirds its stand's vigour (T-1825). The range is the
+  // record's, untouched: the field only decides which tufts sit high in it and
+  // which sit low.
+  const vig = vigourOf(e, n);
+  const u = rng() * 0.35 + vig * 0.65;
+  // The record's own height, at full size. The ring fade that used to be baked
+  // in here is applied per frame in the vertex shader instead: baked, it could
+  // only change when the lattice was rebuilt, which made it a step rather than
+  // a ramp and put the plant's whole growth into one frame.
+  const h = sp.height[0] + (sp.height[1] - sp.height[0]) * u;
+  // width_m is the clump diameter the record gives; only fall back to a
+  // proportion of the height when it does not. The proportion had cordgrass
+  // splaying 1.1 m against a recorded 0.5-0.9.
+  const spread = (sp.width ? mid(sp.width) : h * sp.shape.spread) * (0.78 + rng() * 0.5);
+  const tone = patchOf(e, n) * vigourTone(vig);
+  const c = tint(sp, rng(), rng()).map((x) => x * tone);
+  // A minority of dead thatch from last year's growth, at the base of the
+  // clump. Kept a minority on purpose: a straw-coloured sward is October. Still
+  // 7 % over the field, but gathered into the thin stands (0 % at full vigour,
+  // 14 % at none), which is where litter shows through a July canopy.
+  const dry = rng() < 0.14 * (1 - vig);
+  const col = dry
+    ? [c[0] * 0.6 + sp.dry[0] * 0.5, c[1] * 0.6 + sp.dry[1] * 0.45, c[2] * 0.6 + sp.dry[2] * 0.5]
+    : c;
+  // The height is returned, and it is the height the HEAD must be hung off:
+  // a zero says the cap was reached and nothing was drawn here, so nothing may
+  // be hung off it either.
+  return set.push(e, y, n, rng() * Math.PI * 2, h, spread,
+    sp.shape.arch * (0.7 + rng() * 0.7), col[0], col[1], col[2], sp.conf) ? h : 0;
+}
+
+/** T-2894: `tone` is the stand's, when the GPU's deal brought it (flora-gpu-mid.js);
+ *  it is the one number here asked of the ground, and it draws nothing. */
+function placeCard(set, sp, zone, e, y, n, rng, tone = patchOf(e, n) * vigourTone(vigourOf(e, n))) {
+  const u = rng();
+  const h = (sp.height[0] + (sp.height[1] - sp.height[0]) * u) * 0.92;
+  // A clump, not a hoarding. Width 1.25-2.15 x height made 2.5 m billboards
+  // that tiled the mid-ground into flat-topped dark blocks.
+  const w = h * (0.42 + rng() * 0.44);
+  // The stand's tone, not its height (T-1825): the mid ring's OUTER edge is the
+  // boundary the sward's reach is read off (part 11), so the cards' heights
+  // stay exactly as drawn and only the near tufts stand taller or lower.
+  const c = tint(sp, rng(), rng()).map((x) => x * tone);
+  // Mid-distance clumps carry a little of the zone's own mean, so the sea reads
+  // as one community rather than as a spray of unrelated colours.
+  const m = zone.matColor;
+  set.push(e, y, n, 0, h, w, 0.5 + rng(),
+    c[0] * 0.72 + m[0] * 0.28,
+    c[1] * 0.72 + m[1] * 0.28,
+    c[2] * 0.72 + m[2] * 0.28, sp.conf);
+}
+
+/**
+ * A far card: the same clump archetype the mid ring draws, standing for the
+ * several metres of sward the band no longer draws plant by plant. T-0086.
+ *
+ * Two things separate it from `placeCard`. Its height is drawn from the UPPER
+ * half of the species' recorded range and lifted a little, because what an
+ * aggregate shows against the sky is the tallest plants in the patch and not
+ * the mean of them (LIBERTIES L137). And it carries much more of the
+ * community's own mean colour — aerial perspective is not modelled below the
+ * fog's reach, and a spray of unrelated hues at sixty metres reads as noise
+ * where a patch of one green reads as a meadow.
+ */
+function placeFarCard(set, sp, zone, e, y, n, rng, band) {
+  const u = 0.45 + 0.55 * rng();
+  const plantH = sp.height[0] + (sp.height[1] - sp.height[0]) * u;
+  const h = plantH * band.lift;
+  const w = band.wide[0] + (band.wide[1] - band.wide[0]) * rng();
+  const c = tint(sp, rng(), rng()).map((x) => x * patchOf(e, n));
+  const m = zone.matColor;
+  // The PLANT's height is returned, not the card's. `band.lift` widens and
+  // lifts an aggregate so it reads as several metres of matrix rather than one
+  // clump (L137); a flower hung off that lift would stand a hand's breadth over
+  // the plant that is supposed to be carrying it. Zero says the set was capped
+  // and nothing was drawn here, so nothing may be hung off it either — the same
+  // contract `placeGraminoid` and `placeForb` keep with `maybeHead`.
+  return set.push(e, y, n, 0, h, w, 0.5 + rng(),
+    c[0] * 0.38 + m[0] * 0.62,
+    c[1] * 0.38 + m[1] * 0.62,
+    c[2] * 0.38 + m[2] * 0.62, sp.conf) ? plantH : 0;
+}
+
+function placeForb(set, sp, e, y, n, rng) {
+  const h = sp.height[0] + (sp.height[1] - sp.height[0]) * rng();
+  // The leaf archetype is drawn at a nominal one metre, so whatever scales the
+  // plant also scales its leaves. `width_m` is the CLUMP diameter, and a
+  // riverbank shrub recorded at two metres across therefore grew sixty-
+  // centimetre leaves and filled the river-bank shot with pale green arrowheads.
+  // The shrubs have their own archetype now (K53, `placeShrub`), so this clamp
+  // no longer stands between a two-metre clump and its own recorded width — it
+  // bounds the leaf of an actual forb, which is what it was always for.
+  // Clamped to the size a broad prairie leaf actually is — EXCEPT for a basal
+  // rosette, whose recorded width IS the leaf span and whose whole diagnosis is
+  // that the leaves are huge (prairie dock, 0.6-1.0 m across the rosette).
+  const rosette = sp.form === 'forb_basal_scape';
+  const spread = rosette
+    ? THREE.MathUtils.clamp((sp.width ? mid(sp.width) * 0.5 : h * 0.18), 0.05, 0.55)
+    : THREE.MathUtils.clamp(sp.width ? mid(sp.width) * 0.45 : h * 0.26, 0.07, 0.40);
+  const c = tint(sp, rng() * 0.6, rng()).map((x) => x * patchOf(e, n));
+  return set.push(e, y, n, rng() * Math.PI * 2, h, spread, 0.1 + rng() * 0.2,
+    c[0], c[1], c[2], sp.conf, 0, 0, 0, foliageFamily(sp.id)) ? h : 0;
+}
+
+/**
+ * A shrub, which is a different plant from a tall forb in the two ways a
+ * visitor can see: it is WOODY and MULTI-STEMMED from the ground, and its
+ * clump is as wide as the record says rather than as wide as a leaf.
+ *
+ * `width_m` is the reading that changes. On a forb it is a clump diameter that
+ * has to be clamped to 0.40 m or the leaves become arrowheads (`placeForb`);
+ * on a shrub it is the thing itself — *"low sprawling mats 1-3 m across"* is
+ * `prunus_pumila`'s own recorded appearance, and drawn through `placeForb` that
+ * plant came out as a 70 cm wand. So the recorded half-width IS the spread
+ * here, and the archetype is authored to fill it.
+ *
+ * The floor and the ceiling are the records' own range and not a taste: the
+ * narrowest shrub width in `data/flora` is 0.6 m (`quercus_velutina_grubs` in
+ * the wet woods) and the widest 3.5 m (`crataegus_spp`), so 0.30-1.75 m of
+ * half-width passes every one of the twenty-one records through unchanged and
+ * still refuses a mis-typed 30 m clump.
+ *
+ * `arch` is small on purpose. A woody stem does not bend to the wind the way a
+ * forb's does, and the same slot carries the wind sway — 0.04-0.12 against the
+ * forb's 0.10-0.30 is the difference between a bush moving and a bush swaying.
+ */
+function placeShrub(set, sp, e, y, n, rng) {
+  const h = sp.height[0] + (sp.height[1] - sp.height[0]) * rng();
+  const spread = THREE.MathUtils.clamp(
+    sp.width ? mid(sp.width) * 0.5 : h * 0.45, 0.30, 1.75);
+  const c = tint(sp, rng() * 0.6, rng()).map((x) => x * patchOf(e, n));
+  return set.push(e, y, n, rng() * Math.PI * 2, h, spread, 0.04 + rng() * 0.08,
+    c[0], c[1], c[2], sp.conf, 0, 0, 0, foliageFamily(sp.id)) ? h : 0;
+}
+
+/**
+ * The flower, and ONLY when the record says there is one: `sp.head` is null for
+ * every vegetative grass, so no branch here can put a seed head on big bluestem
+ * in July. See the July gate in the file header — it is unchanged.
+ *
+ * `plantH` is the height the plant was ACTUALLY given, not a fresh draw of the
+ * same range, and it is only ever non-zero when the plant was actually drawn.
+ * Both of those are the fix for the two heads the critic found floating in the
+ * open sky with no stem beneath them.
+ */
+function maybeHead(heads, sp, e, y, n, rng, plantH, ring) {
+  if (!sp.head || !(plantH > 0)) return;
+  const set = heads[sp.head.kind];
+  if (!set) return;
+  set.ring(ring);
+  // A forb instance IS one plant. A matrix instance is a bundle of shoots, and
+  // only a minority of shoots in a grass clump carry a culm in mid-July — a
+  // head on every tuft made a flowering cordgrass sward look like a wheat
+  // field. L32.
+  if (sp.role === 'matrix' || sp.role === 'emergent') {
+    if (rng() > 0.16) return;
+  }
+  _c.setRGB(sp.head.color[0], sp.head.color[1], sp.head.color[2]);
+  // One plant, several inflorescences, by architecture — see HEAD_OF_SHAPE.
+  // A grass culm carries one panicle however the forb beside it branches.
+  const grass = sp.role === 'matrix' || sp.role === 'emergent';
+  const range = sp.head.count;
+  const many = grass ? 1 : range[0] + ((rng() * (range[1] - range[0] + 1)) | 0);
+  const tilt = sp.head.tilt;
+  const top = plantH * sp.head.frac;
+  const reach = PEDUNCLE[sp.head.kind] ?? 1.5;
+  for (let i = 0; i < many; i++) {
+    const size = sp.head.size[0] + (sp.head.size[1] - sp.head.size[0]) * rng();
+    const lean = tilt[0] + (tilt[1] - tilt[0]) * rng();
+    const a = rng() * Math.PI * 2;
+    // The first head is terminal. The rest are carried DOWN the plant over the
+    // architecture's own band, and the lower a branch starts the further out it
+    // reaches — which is what puts a mountain mint's colour at knee height and
+    // a loosestrife's up the whole stem, instead of parking every flower in the
+    // scene on one plane a metre and a half off the ground where a standing
+    // eye can barely see it against the sky.
+    const down = i === 0 ? 0 : sp.head.band * rng();
+    // Where the flower ends up. It is not where the instance goes: since
+    // R-BUG7 the archetype's origin is the FOOT of its own stalk (see
+    // `peduncle`), so this is the height the head reaches once the stalk under
+    // it has been stood up and leaned over.
+    const rise = top * (1 - down) * (0.94 + rng() * 0.10);
+    // ...and this is where the branch leaves the stem, which is the whole of
+    // the placement now. The stalk is `reach` head-sizes long and leans by
+    // `lean`, so it lifts the head `cos(lean)` of that and carries it
+    // `sin(lean)` of it out to the side — and BOTH come out of one rotation
+    // about a point that is on the plant, instead of out of a position and a
+    // lean that have to be kept in agreement. Four repairs went into keeping
+    // them in agreement and the fifth is not doing that again.
+    // Clamped into the plant, both ends. The upper clamp is what makes the
+    // assertion provable rather than measured: `foot <= plantH`, and since
+    // T-0035 the shader scales neither of them, so the stalk's foot is under
+    // the plant's own top at every distance the pair is drawn at.
+    const foot = Math.min(plantH, Math.max(0, rise - reach * size * Math.cos(lean)));
+    if (!set.push(
+      e,
+      y + foot,
+      n,
+      rng() * Math.PI * 2, size, size, 0, _c.r, _c.g, _c.b, sp.conf, lean,
+      // Which way it leans out — a fresh bearing per head, so a plant's
+      // inflorescences ring its stem instead of all leaning one way.
+      a,
+      foot,
+    )) {
+      // T-0214. The set is full and this plant loses the rest of its
+      // inflorescences. Say how many, so the shortfall is a number with a name
+      // on it rather than a set that silently happens to sit on its ceiling.
+      set.skip(many - i - 1);
+      return;
+    }
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* archetype geometry                                                          */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Every archetype is built at NOMINAL size — one metre tall, one across, at the
+ * origin — and the vertex shader scales it per instance from the record's own
+ * `height_m`, which is how one geometry is cordgrass at 1.8 m and little
+ * bluestem at 0.5 m in the same draw call. `aDir` is the blade's azimuth; the
+ * shader arches each blade outward along it, so a tuft opens into a fountain.
+ */
+function emptyGeo() {
+  return { pos: [], nor: [], col: [], dir: [], side: [], botany: [], idx: [], n: 0 };
+}
+function finishGeo(g, name) {
+  // Heads share the leaf program. Reserve kind 8 for their untextured florets,
+  // so April can withhold July flowers without another material or draw pass.
+  if (name.startsWith('flora-head-')) for (let i=0;i<g.n;i++) {
+    if (g.side[i*4+3]===0) botany(g,i,0,0,8);
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.name = name;
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(g.pos, 3));
+  geo.setAttribute('normal', new THREE.Float32BufferAttribute(g.nor, 3));
+  geo.setAttribute('color', new THREE.Float32BufferAttribute(g.col, 3));
+  geo.setAttribute('aDir', new THREE.Float32BufferAttribute(g.dir, 4));
+  geo.setAttribute('aSide', new THREE.Float32BufferAttribute(g.side, 4));
+  geo.setAttribute('aBotany', new THREE.Float32BufferAttribute(g.botany, 3));
+  geo.setIndex(g.idx);
+  return geo;
+}
+function vert(g, x, y, z, nx, ny, nz, r, gg, b, dx, dz, sx = 0, sy = 0, sz = 0) {
+  g.pos.push(x, y, z);
+  g.nor.push(nx, ny, nz);
+  g.col.push(r, gg, b);
+  g.dir.push(dx, dz, 0, 0);
+  // aSide is the offset from the archetype's own axis, in REAL metres, added
+  // AFTER the height and spread scales — otherwise a wide clump gets wide
+  // leaves, and cordgrass (0.5-0.9 m across, blades a centimetre or two wide)
+  // ended up with leaves the width of a hand. It carries Y as well as XZ
+  // because a grass blade TWISTS as it rises, so its width vector leaves the
+  // horizontal plane, and because a basal rosette's leaves are a real size in
+  // metres and must not scale with a three-metre flowering scape.
+  g.side.push(sx, sy, sz, 0);
+  g.botany.push(0, 0, 0);
+  return g.n++;
+}
+
+/** Tapered twig, with its root and tip attached to the shrub scaffold. */
+function branchlet(g, from, to, width, dx, dz) {
+  const row = [];
+  const tangent = to.map((v, i) => v - from[i]);
+  const normal = new THREE.Vector3(-dx * tangent[1],
+    dx * tangent[0] + dz * tangent[2], -dz * tangent[1]).normalize();
+  for (const [point, scale] of [[from, 1], [to, 0.38]]) {
+    for (const side of [-1, 1]) {
+      const v = vert(g, point[0] - dz * width * scale * side, point[1],
+        point[2] + dx * width * scale * side, normal.x, normal.y, normal.z,
+        0.48, 0.48, 0.48, dx, dz);
+      botany(g, v, 0, 0, -1);
+      row.push(v);
+    }
+  }
+  g.idx.push(row[0], row[1], row[2], row[1], row[3], row[2]);
+}
+
+/** Per-vertex botanical UVs, without changing the wind/support attributes. */
+function botany(g, vertex, u, v, kind) {
+  g.botany[vertex * 3] = u;
+  g.botany[vertex * 3 + 1] = v;
+  g.botany[vertex * 3 + 2] = kind;
+  // Pack shader data into the existing direction/offset slots. With three's
+  // instance matrix and confidence patch the material reaches the guaranteed
+  // sixteen-attribute WebGL floor; separate botanical attributes exceed it.
+  g.dir[vertex * 4 + 2] = u;
+  g.dir[vertex * 4 + 3] = v;
+  g.side[vertex * 4 + 3] = kind;
+}
+
+/** A leaf surface with a raised midrib, curved tip and real leaf-local UVs.
+ * The single-segment light form remains two triangles, as the old paddle did.
+ * Higher tiers split the blade along its length and across the midrib. */
+function curvedLeaf(g, { base, dx, dz, len, wide, rise, curl, segments, k0, k1 }) {
+  let previous = null;
+  for (let j = 0; j <= segments; j++) {
+    const t = j / segments;
+    const arch = Math.sin(t * Math.PI) * curl;
+    const k = k0 + (k1 - k0) * (0.3 + 0.7 * Math.sin(t * Math.PI * 0.8));
+    const row = [];
+    // The texture carries the pointed edge. A curved rectangle is only the
+    // support: every pixel outside the botanical outline is discarded.
+    for (let side = 0; side < (segments > 1 ? 3 : 2); side++) {
+      const u = side / (segments > 1 ? 2 : 1);
+      const lateral = (u * 2 - 1) * wide;
+      const fold = segments > 1 && side === 1 ? wide * 0.09 * Math.sin(t * Math.PI) : 0;
+      const slope = rise + Math.cos(t * Math.PI) * Math.PI * curl
+        + (segments > 1 && side === 1 ? wide * 0.09 * Math.PI * Math.cos(t * Math.PI) : 0);
+      const foldSlope = segments > 1 ? (1 - 2 * u) * 0.09 * Math.sin(t * Math.PI) : 0;
+      const n = new THREE.Vector3(-dx * slope + dz * foldSlope * len,
+        len, -dz * slope - dx * foldSlope * len).normalize();
+      const v = vert(g, base[0] + dx * len * t - dz * lateral,
+        base[1] + rise * t + arch + fold, base[2] + dz * len * t + dx * lateral,
+        n.x, n.y, n.z, k, k, k, dx, dz);
+      botany(g, v, u, t, 1);
+      row.push(v);
+    }
+    if (previous) for (let c = 0; c < row.length - 1; c++) {
+      g.idx.push(previous[c], previous[c + 1], row[c],
+        previous[c + 1], row[c + 1], row[c]);
+    }
+    previous = row;
+  }
+}
+
+/**
+ * Light inside a closed sward, as a multiple of the species' own colour.
+ *
+ * Two things the round-1 ramp got wrong, and they are most of the near field's
+ * tone. First, the argument is the height IN THE CANOPY and not the distance
+ * along the blade: keyed off the blade's own length, a basal leaf 30 cm up in
+ * a metre-and-a-half sward got the same lit tip as a culm reaching the top, so
+ * the upper half of EVERY tuft came out pale and the near field read as a
+ * bleached gradient. Second, and more important, sunlight does not arrive in a
+ * stand as a smooth gradient — it arrives in FLECKS. At midday a fraction of
+ * the leaves deep inside a prairie are in full sun through a gap and the rest
+ * are in their neighbours' shade, and in the Woodworth photograph's nearest
+ * five metres that is exactly what the bright pixels are: whole leaf faces at
+ * (219, 233, 172), scattered at every depth, against a dark mass. A smooth
+ * ramp cannot produce that. It produced a 25th percentile of 92 where the
+ * photograph's is 31.
+ *
+ * `u` is height in the canopy, 0 at the floor and 1 at the surface; `fleck` is
+ * this blade's own sunfleck gain, 0 when it is in shade.
+ */
+const CANOPY = {
+  /** Diffuse light on the floor of a closed sward, and at its surface. */
+  floor: 0.135,
+  gradient: 0.62,
+  gamma: 1.35,
+  /** Chance a blade sits in a sunfleck, on the floor and at the surface. */
+  fleckFloor: 0.05,
+  fleckTop: 0.60,
+  /** What a fleck is worth, and how much of it survives to depth u. */
+  fleckGain: [0.80, 1.55],
+  fleckReach: 0.55,
+};
+function shade(u, fleck = 0) {
+  return CANOPY.floor + CANOPY.gradient * u ** CANOPY.gamma
+    + fleck * (CANOPY.fleckReach + (1 - CANOPY.fleckReach) * u);
+}
+
+/** The same, shallower: a card is read almost edge-on, so the near field's
+ *  near-black base turned the whole mid-ground into a dark wall. */
+function cardShade(t) { return 0.22 + 0.62 * t; }
+
+/**
+ * A tuft of blades: the near-field workhorse. Half the blades are BASAL — short,
+ * wide, low-angled leaves — and they are what closes the ground. A clump of
+ * equal straps at full height reads as reeds in a pond; a real grass clump is
+ * mostly leaf near the soil with a few shoots reaching the top of the sward.
+ */
+function tuftGeometry(blades = 12, segments = 2) {
+  const g = emptyGeo();
+  const rng = rngFrom(0x1835f10a);
+  for (let b = 0; b < blades; b++) {
+    // Half the blades are basal. They sprawl outward at a low angle, which is
+    // where ground cover is cheapest to buy: a leaf lying over the soil hides
+    // far more of it per triangle than one standing up in the air, and a real
+    // grass clump is mostly leaf near the ground anyway.
+    const basal = b < Math.round(blades / 2);
+    const phi = (b / blades) * Math.PI * 2 + rng() * 0.9;
+    const dx = Math.sin(phi);
+    const dz = Math.cos(phi);
+    // Lengths biased short: many leaves, few culms.
+    const len = basal ? 0.24 + rng() * 0.34 : 0.40 + 0.60 * rng() ** 0.8;
+    // Real half-widths, in metres: a coarse basal leaf is 3-6 cm across, a
+    // culm leaf 1.5-3 cm. These are no longer multiplied by the clump spread.
+    const wide = (basal ? 0.020 + rng() * 0.016 : 0.008 + rng() * 0.010);
+    const lean = basal ? 0.52 + rng() * 0.44 : 0.14 + rng() * 0.26;
+    const tone = 0.86 + rng() * 0.30;
+    // Is THIS blade in a sunfleck? Decided once per blade, at the height its
+    // tip reaches, so the lit leaves are scattered through the depth of the
+    // stand instead of banded across the top of it. Nothing shades the topmost
+    // leaves of a canopy, which is why fleckTop is essentially 1.
+    const uTip = Math.min(1, (len * (1 - lean * 0.62)) / 0.92);
+    const fleck = rng() < CANOPY.fleckFloor + (CANOPY.fleckTop - CANOPY.fleckFloor) * uTip
+      ? CANOPY.fleckGain[0] + (CANOPY.fleckGain[1] - CANOPY.fleckGain[0]) * rng()
+      : 0;
+    // How far the blade rolls about its own axis between base and tip. A grass
+    // leaf is not a flat ribbon standing on edge: it twists, which is why a
+    // sward catches the sun in flecks rather than as one sheet. Round 1 gave
+    // every blade in every tuft the same hand-set normal, and that — far more
+    // than the exposure — is why 204,748 near-field pixels resolved into 697
+    // colours against a photograph's 4,837.
+    const roll = (rng() - 0.5) * 2.3;
+    let prev = null;
+    for (let s = 0; s <= segments; s++) {
+      const t = s / segments;
+      const half = wide * Math.max(0, 1 - t ** 1.5);
+      // A grass leaf ARCHES: it rises, slows, and its tip falls away. Without
+      // the droop term the tuft is a spray of straight straps and reads as a
+      // yucca, which is what the first pass looked like.
+      const y = len * (t - lean * 0.62 * t * t);
+      const out = lean * t * t;
+      const cx = dx * out;
+      const cz = dz * out;
+      // The blade's own frame at this station: tangent along it, width across
+      // it, normal off its face — the normal is DERIVED from the arch instead
+      // of asserted, so the vertical base of a blade presents a vertical face
+      // and its drooping tip presents its face to the sky, which is what puts
+      // a 70-degree sun on the top of the sward and nothing on its floor.
+      const tx = dx * 2 * lean * t;
+      const ty = len * (1 - 1.24 * lean * t);
+      const tz = dz * 2 * lean * t;
+      let wx = dz;
+      let wy = 0;
+      let wz = -dx;
+      let nx = -dx * ty;
+      let ny = dx * tx + dz * tz;
+      let nz = -dz * ty;
+      const nl = Math.hypot(nx, ny, nz) || 1;
+      nx /= nl; ny /= nl; nz /= nl;
+      // Roll the (width, normal) pair about the tangent. Both turn together,
+      // so the twist is in the GEOMETRY and not a shading trick painted on a
+      // flat ribbon.
+      const cs = Math.cos(roll * t);
+      const sn = Math.sin(roll * t);
+      const wx2 = wx * cs + nx * sn;
+      const wy2 = wy * cs + ny * sn;
+      const wz2 = wz * cs + nz * sn;
+      const nx2 = nx * cs - wx * sn;
+      const ny2 = ny * cs - wy * sn;
+      const nz2 = nz * cs - wz * sn;
+      wx = wx2; wy = wy2; wz = wz2;
+      const px = wx * half;
+      const py = wy * half;
+      const pz = wz * half;
+      // 0.92 is the tallest blade's own top: `len` runs to 1.0 and the droop
+      // takes about eight per cent off it, so a culm tip lands at the sward's
+      // surface and reads as fully lit.
+      const k = shade(Math.min(1, y / 0.92), fleck) * tone;
+      const a = vert(g, cx, y, cz, nx2, ny2, nz2, k, k, k, dx, dz, -px, -py, -pz);
+      const c = vert(g, cx, y, cz, nx2, ny2, nz2, k, k, k, dx, dz, px, py, pz);
+      botany(g, a, 0, t, 3); botany(g, c, 1, t, 3);
+      if (prev) {
+        g.idx.push(prev[0], prev[1], a);
+        // At t=1 the two tip vertices coincide: half-width is exactly zero.
+        // Their second triangle has no area under any instance transform or
+        // wind phase. Keep every vertex/attribute and omit only that empty draw.
+        if (s < segments) g.idx.push(prev[1], c, a);
+      }
+      prev = [a, c];
+    }
+  }
+  return finishGeo(g, 'flora-tuft');
+}
+
+/**
+ * A serrated clump card for the mid field, turned to the camera in the shader.
+ * Four columns of different heights, because a rectangle reads as a fence and a
+ * flat top edge reads as mown.
+ */
+function cardGeometry(columns = 7, selected = null) {
+  const g = emptyGeo();
+  const rng = rngFrom(0x5a17c001);
+  for (let i = 0; i < columns; i++) {
+    // Tapered blades with a gap either side. Adjacent columns tile into a
+    // rectangle, and a rectangle at 20 m reads as a hoarding however finely
+    // its top edge is stepped.
+    const cx = -0.5 + (i + 0.5) / columns + (rng() - 0.5) * 0.20;
+    // Narrow, with real gaps. A column at 1.15/columns is a 23 cm 'blade' at
+    // the card's own width, and at five metres that reads as a pale sail
+    // hanging over the sward rather than as a clump of grass.
+    const w0 = (0.5 / columns) * (0.34 + rng() * 0.40);
+    const top = 0.38 + rng() * 0.62;
+    const tip = (rng() - 0.5) * 0.40 * top;
+    const k0 = cardShade(0);
+    const k1 = cardShade(top) * (0.86 + rng() * 0.30);
+    const a = vert(g, cx - w0, 0, 0, 0, 0.90, 0.44, k0, k0, k0, 0, 0);
+    const b = vert(g, cx + w0, 0, 0, 0, 0.90, 0.44, k0, k0, k0, 0, 0);
+    const c = vert(g, cx + tip - w0 * 0.14, top, 0, 0, 0.90, 0.44, k1, k1, k1, 0, 0);
+    const d = vert(g, cx + tip + w0 * 0.14, top, 0, 0, 0.90, 0.44, k1, k1, k1, 0, 0);
+    // Each support column resolves into three fine curved blades. The
+    // physical envelope, instance census and two-triangle budget stay fixed.
+    botany(g, a, 0, 0, 4); botany(g, b, 1, 0, 4);
+    botany(g, c, 0, 1, 4); botany(g, d, 1, 1, 4);
+    if (!selected || selected.includes(i)) g.idx.push(a, b, c, b, d, c);
+  }
+  return finishGeo(g, 'flora-card');
+}
+
+/** A forb: one stem, four leaves. The flower is a separate archetype. */
+function forbGeometry(segments = 1) {
+  const g = emptyGeo();
+  const rng = rngFrom(0x7c0ffee1);
+  const w = 0.012;
+  for (const ang of [0, Math.PI / 2]) {
+    const dx = Math.sin(ang) * w;
+    const dz = Math.cos(ang) * w;
+    const k0 = shade(0.15);
+    const k1 = shade(0.95);
+    const a = vert(g, -dx, 0, -dz, 0, 1, 0, k0, k0, k0, 0, 0);
+    const b = vert(g, dx, 0, dz, 0, 1, 0, k0, k0, k0, 0, 0);
+    const c = vert(g, -dx, 1, -dz, 0, 1, 0, k1, k1, k1, 0, 0);
+    const d = vert(g, dx, 1, dz, 0, 1, 0, k1, k1, k1, 0, 0);
+    g.idx.push(a, b, c, b, d, c);
+  }
+  for (let i = 0; i < 4; i++) {
+    const y = 0.22 + i * 0.17;
+    const phi = i * 1.9 + rng();
+    const len = 0.42 - i * 0.055;
+    const wide = 0.150 - i * 0.020;
+    // Opposite/alternating leaves remain on the old stem stations. Their
+    // pointed outlines and veins are resolved by the atlas even on light.
+    for (const side of (segments === 1 ? [i % 2 ? -1 : 1] : [1, -1])) {
+      const angle = phi + (side < 0 ? Math.PI : 0);
+      const dx = Math.sin(angle), dz = Math.cos(angle);
+      const reach = len * (side < 0 ? 0.65 : 1);
+      const rise = reach * 0.26;
+      curvedLeaf(g, { base: [0, y, 0], dx, dz, len: reach, wide,
+        rise, curl: reach * 0.10, segments,
+        k0: shade(y * 0.8), k1: shade(Math.min(1, y + 0.2)) });
+    }
+  }
+  return finishGeo(g, 'flora-forb');
+}
+
+/* --- the nine flower archetypes, one per row of HEAD_OF_SHAPE ------------- */
+/*
+ * All nine are built in a NOMINAL unit box: one across and one tall, centred on
+ * the attachment point at y = 0, so the record's `inflorescence.size_m` scales
+ * a Liatris spike to 30 cm and a Dalea thimble to 3 cm through the same two
+ * numbers. Each carries a PEDUNCLE below the head, proportioned to it, because
+ * a flower that ends where its stalk should begin is the floating sprite the
+ * critic caught in the sky. And each is drawn about the vertical: the tilt is
+ * per instance, on the instance matrix, so no two heads of a species present
+ * the same face and none of them is ever exactly edge-on.
+ */
+
+/**
+ * How far below its own head each archetype's stalk reaches, in units of the
+ * head's size. It is a module constant and not a local because `maybeHead` has
+ * to know it: a head is only ever offset from the plant's stem by as far as its
+ * own stalk can lean back to reach it. Without that the branched inflorescences
+ * came out as lollipops hanging in the air beside the scape — the same
+ * unattached-flower failure the critic caught, one level down.
+ */
+const PEDUNCLE = {
+  spike: 1.6,
+  spire: 1.2,
+  panicle: 1.4,
+  ray: 2.2,
+  raydroop: 2.2,
+  pompom: 2.2,
+  dome: 2.0,
+  corymb: 2.2,
+  compound: 2.0,
+};
+
+/**
+ * A thin stalk from the attachment point down, in the archetype's own units —
+ * and then the whole archetype is LIFTED so that the foot of that stalk sits at
+ * the origin. It is the last call in every head builder for exactly that
+ * reason.
+ *
+ * **Anchoring a head at its foot rather than at its flower is what makes
+ * "attached" an invariant instead of a number** (R-BUG7). The instance origin is
+ * then the point on the stem where the branch leaves it; the tilt rotates the
+ * head out about that point, so the offset from the stem is generated BY the
+ * stalk instead of being a second number that has to agree with it; and
+ * `chiFade` scales the whole thing about the foot, so a head slides down its own
+ * stalk as its plant shrinks instead of staying out at a fixed offset while the
+ * stalk that was supposed to reach it gets shorter. The head's rise is then
+ * `footRise <= plantHeight`, and that inequality is the assertion — proved
+ * rather than measured. Since T-0035 nothing shrinks at all: the ring ramp is
+ * coverage, every drawn plant is drawn at its recorded height, and the clamp in
+ * `maybeHead` carries the invariant on its own at the one size there is.
+ */
+function peduncle(g, drop = 1.5, wide = 0.022, k = 0.42) {
+  for (let i = 0; i < 2; i++) {
+    const a = (i / 2) * Math.PI;
+    const dx = Math.sin(a) * wide;
+    const dz = Math.cos(a) * wide;
+    const p0 = vert(g, -dx, -drop, -dz, -Math.cos(a), 0, Math.sin(a), k, k, k, 0, 0);
+    const p1 = vert(g, dx, -drop, dz, -Math.cos(a), 0, Math.sin(a), k, k, k, 0, 0);
+    const p2 = vert(g, -dx, 0, -dz, -Math.cos(a), 0, Math.sin(a), k * 1.5, k * 1.5, k * 1.5, 0, 0);
+    const p3 = vert(g, dx, 0, dz, -Math.cos(a), 0, Math.sin(a), k * 1.5, k * 1.5, k * 1.5, 0, 0);
+    for (const v of [p0, p1, p2, p3]) botany(g, v, 0, 0, -2);
+    g.idx.push(p0, p1, p2, p1, p3, p2);
+  }
+  for (let i = 1; i < g.pos.length; i += 3) g.pos[i] += drop;
+}
+
+/** A dense column: Liatris's button spike, Physostegia, Amorpha, the cattail's
+ *  brown spadix, Spiraea's conical panicle. A WAND, not a cone — a cordgrass
+ *  spike is millimetres across on a culm a quarter-metre long. */
+function spikeGeometry() {
+  const g = emptyGeo();
+  for (let i = 0; i < 3; i++) {
+    const a = (i / 3) * Math.PI;
+    // A WAND. Round 1's comment about a field of pale traffic cones was right
+    // and this stays narrow: the whole one-sided cordgrass inflorescence is two
+    // or three centimetres across on a spike a quarter-metre long.
+    const dx = Math.sin(a) * 0.062;
+    const dz = Math.cos(a) * 0.062;
+    // Florets open from the top down, so a spike is paler at its shoulder.
+    const p0 = vert(g, -dx * 0.55, -0.48, -dz * 0.55, dx, 0.2, dz, 0.72, 0.72, 0.72, 0, 0);
+    const p1 = vert(g, dx * 0.55, -0.48, dz * 0.55, dx, 0.2, dz, 0.72, 0.72, 0.72, 0, 0);
+    const p2 = vert(g, -dx, 0.06, -dz, dx, 0.2, dz, 1.10, 1.10, 1.10, 0, 0);
+    const p3 = vert(g, dx, 0.06, dz, dx, 0.2, dz, 1.10, 1.10, 1.10, 0, 0);
+    const p4 = vert(g, 0, 0.50, 0, dx, 0.5, dz, 1.22, 1.22, 1.22, 0, 0);
+    g.idx.push(p0, p1, p2, p1, p3, p2, p2, p3, p4);
+  }
+  peduncle(g, PEDUNCLE.spike, 0.016);
+  return finishGeo(g, 'flora-head-spike');
+}
+
+/**
+ * Culver's root: a terminal spire with two to four lateral spires off its
+ * shoulder, which is the candelabra the vocabulary names and the plant's whole
+ * silhouette. Drawn as the same mesh as a Liatris button it scored under ten
+ * pixels and was indistinguishable from it.
+ */
+function spireGeometry() {
+  const g = emptyGeo();
+  const wand = (cx, cz, base, top, wide, k) => {
+    for (let i = 0; i < 2; i++) {
+      const a = (i / 2) * Math.PI;
+      const dx = Math.sin(a) * wide;
+      const dz = Math.cos(a) * wide;
+      const p0 = vert(g, cx - dx, base, cz - dz, dx, 0.2, dz, k * 0.72, k * 0.72, k * 0.72, 0, 0);
+      const p1 = vert(g, cx + dx, base, cz + dz, dx, 0.2, dz, k * 0.72, k * 0.72, k * 0.72, 0, 0);
+      const p2 = vert(g, cx - dx, top - 0.12, cz - dz, dx, 0.2, dz, k, k, k, 0, 0);
+      const p3 = vert(g, cx + dx, top - 0.12, cz + dz, dx, 0.2, dz, k, k, k, 0, 0);
+      const p4 = vert(g, cx, top, cz, dx, 0.5, dz, k * 1.15, k * 1.15, k * 1.15, 0, 0);
+      g.idx.push(p0, p1, p2, p1, p3, p2, p2, p3, p4);
+    }
+  };
+  wand(0, 0, -0.34, 0.50, 0.055, 1.06);
+  for (let i = 0; i < 4; i++) {
+    // The laterals spread about a third of the terminal spire's own length —
+    // narrower than that and the candelabra collapses back into the single
+    // wand it is supposed to be distinguishable from.
+    const a = (i / 4) * Math.PI * 2 + 0.4;
+    const r = 0.30 + (i % 2) * 0.10;
+    wand(Math.sin(a) * r, Math.cos(a) * r, -0.40, 0.24 + (i % 2) * 0.16, 0.046, 0.94);
+  }
+  peduncle(g, PEDUNCLE.spire, 0.020);
+  return finishGeo(g, 'flora-head-spire');
+}
+
+/** Bluejoint, wild rice, wood nettle: an OPEN panicle — a diffuse airy cloud
+ *  of fine branches, which is nothing like a wand and is why the wet prairie's
+ *  second grass read as a second cordgrass. */
+function panicleGeometry() {
+  const g = emptyGeo();
+  const rng = rngFrom(0x9a11c1e0);
+  for (let i = 0; i < 7; i++) {
+    const a = rng() * Math.PI * 2;
+    const t = rng();
+    const y0 = -0.42 + t * 0.55;
+    const len = 0.20 + rng() * 0.28;
+    const dx = Math.sin(a);
+    const dz = Math.cos(a);
+    const w = 0.012;
+    const k0 = 0.70;
+    const k1 = 1.16;
+    const p0 = vert(g, -dz * w, y0, dx * w, dx * 0.5, 0.7, dz * 0.5, k0, k0, k0, 0, 0);
+    const p1 = vert(g, dz * w, y0, -dx * w, dx * 0.5, 0.7, dz * 0.5, k0, k0, k0, 0, 0);
+    const p2 = vert(g, dx * len * 0.5, y0 + len * 0.62, dz * len * 0.5,
+      dx * 0.5, 0.7, dz * 0.5, k1, k1, k1, 0, 0);
+    g.idx.push(p0, p1, p2);
+  }
+  peduncle(g, PEDUNCLE.panicle, 0.014);
+  return finishGeo(g, 'flora-head-panicle');
+}
+
+/**
+ * A composite head. `droop` swings the rays DOWN around a raised central cone
+ * — Ratibida and Echinacea — while the flat form is Rudbeckia, Heliopsis and
+ * the Silphiums. Two shapes, one builder, because the difference between them
+ * is exactly one sign and the vocabulary distinguishes them.
+ */
+function rayGeometry(droop) {
+  const g = emptyGeo();
+  // Enough rays that they OVERLAP into a disc with a toothed rim. Nine spokes
+  // radiating off a small centre reads as a spider, not a flower, and at nine
+  // centimetres on a prairie-dock scape it was a yellow star in the sky.
+  const rays = 14;
+  const coneY = droop ? 0.20 : 0.09;
+  const tipY = droop ? -0.24 : 0.015;
+  const disc = [];
+  const rim = droop ? 0.30 : 0.34;
+  const c0 = vert(g, 0, coneY, 0, 0, 1, 0, 0.55, 0.55, 0.55, 0, 0);
+  for (let i = 0; i < rays; i++) {
+    const a = (i / rays) * Math.PI * 2;
+    disc.push(vert(g, Math.sin(a) * rim, coneY * 0.35, Math.cos(a) * rim,
+      Math.sin(a) * 0.5, 0.86, Math.cos(a) * 0.5, 0.74, 0.74, 0.74, 0, 0));
+  }
+  for (let i = 0; i < rays; i++) g.idx.push(c0, disc[i], disc[(i + 1) % rays]);
+  for (let i = 0; i < rays; i++) {
+    // Each ray is a broad petal spanning two rim points and reaching past its
+    // neighbours, so the outline closes.
+    const a = ((i + 0.5) / rays) * Math.PI * 2;
+    const dx = Math.sin(a);
+    const dz = Math.cos(a);
+    const nx = droop ? dx * 0.45 : dx * 0.16;
+    const nz = droop ? dz * 0.45 : dz * 0.16;
+    const b = disc[i];
+    const c = disc[(i + 1) % rays];
+    const d = vert(g, dx * 0.50, tipY, dz * 0.50, nx, 0.90, nz, 1.18, 1.18, 1.18, 0, 0);
+    g.idx.push(b, c, d);
+  }
+  peduncle(g, droop ? PEDUNCLE.raydroop : PEDUNCLE.ray, 0.020);
+  return finishGeo(g, droop ? 'flora-head-raydroop' : 'flora-head-ray');
+}
+
+/** Monarda, Dalea, a rattlesnake-master globe, a hazel husk, a dogwood berry
+ *  cluster: a small dense ball on the stem tip. */
+function pompomGeometry() {
+  const g = emptyGeo();
+  for (let i = 0; i < 3; i++) {
+    const phi = (i / 3) * Math.PI;
+    const dx = Math.sin(phi) * 0.5;
+    const dz = Math.cos(phi) * 0.5;
+    const nx = -Math.cos(phi);
+    const nz = Math.sin(phi);
+    const a = vert(g, -dx, -0.30, -dz, nx, 0, nz, 0.72, 0.72, 0.72, 0, 0);
+    const b = vert(g, dx, -0.30, dz, nx, 0, nz, 0.72, 0.72, 0.72, 0, 0);
+    const c = vert(g, -dx, 0.34, -dz, nx, 0, nz, 1.14, 1.14, 1.14, 0, 0);
+    const d = vert(g, dx, 0.34, dz, nx, 0, nz, 1.14, 1.14, 1.14, 0, 0);
+    botany(g, a, 0, 0, 5); botany(g, b, 1, 0, 5);
+    botany(g, c, 0, 1, 5); botany(g, d, 1, 1, 5);
+    g.idx.push(a, b, c, b, d, c);
+  }
+  peduncle(g, PEDUNCLE.pompom, 0.030);
+  return finishGeo(g, 'flora-head-pompom');
+}
+
+/**
+ * A DOMED umbel — swamp milkweed, common milkweed, a nodding onion. A
+ * hemisphere of florets, and emphatically not the flat horizontal plate that
+ * used to stand in for it: at 1.68 m eye height a head at 0.6-0.9 m is seen
+ * about eleven degrees above the horizontal, so a plate presented its EDGE and
+ * a seven-centimetre umbel came out three pixels wide at five metres.
+ */
+function domeGeometry() {
+  const g = emptyGeo();
+  const rings = 2;
+  const seg = 7;
+  const grid = [];
+  for (let r = 0; r <= rings; r++) {
+    const row = [];
+    const th = (r / rings) * (Math.PI / 2);
+    const rr = Math.sin(th) * 0.5;
+    const yy = Math.cos(th) * 0.40;
+    const k = 1.20 - 0.42 * (r / rings);
+    for (let s = 0; s < seg; s++) {
+      const a = (s / seg) * Math.PI * 2;
+      const dx = Math.sin(a);
+      const dz = Math.cos(a);
+      row.push(vert(g, dx * rr, yy - 0.08, dz * rr,
+        dx * Math.sin(th), Math.cos(th) + 0.15, dz * Math.sin(th), k, k, k, 0, 0));
+    }
+    for (const v of row) botany(g, v, g.pos[v * 3] + 0.5,
+      g.pos[v * 3 + 2] + 0.5, 7);
+    grid.push(row);
+  }
+  for (let r = 0; r < rings; r++) {
+    for (let s = 0; s < seg; s++) {
+      const s1 = (s + 1) % seg;
+      g.idx.push(grid[r][s], grid[r + 1][s], grid[r][s1],
+        grid[r][s1], grid[r + 1][s], grid[r + 1][s1]);
+    }
+  }
+  peduncle(g, PEDUNCLE.dome, 0.024);
+  return finishGeo(g, 'flora-head-dome');
+}
+
+/**
+ * A flat-topped corymb — ironweed, mountain mint, wild quinine, butterfly
+ * weed. Still a disc, because that is what the plant is, but built with a
+ * standing TILT so it is never read edge-on, and given a shallow crown so it
+ * has a silhouette from the side as well as a face from above. The rest of the
+ * tilt is per instance, on the instance matrix.
+ */
+function corymbGeometry() {
+  const g = emptyGeo();
+  const seg = 9;
+  const ring = [];
+  const c0 = vert(g, 0, 0.13, 0, 0, 1, 0, 1.22, 1.22, 1.22, 0, 0);
+  for (let i = 0; i < seg; i++) {
+    const a = (i / seg) * Math.PI * 2;
+    const dx = Math.sin(a);
+    const dz = Math.cos(a);
+    // A corymb is a cluster of heads, not a wheel: the rim is uneven.
+    const rr = 0.42 + 0.08 * Math.sin(a * 3.0 + 1.1);
+    ring.push(vert(g, dx * rr, 0.02 + 0.03 * Math.sin(a * 2.0), dz * rr,
+      dx * 0.30, 0.94, dz * 0.30, 0.90, 0.90, 0.90, 0, 0));
+  }
+  for (const v of [c0, ...ring]) botany(g, v, g.pos[v * 3] + 0.5,
+    g.pos[v * 3 + 2] + 0.5, 7);
+  for (let i = 0; i < seg; i++) g.idx.push(c0, ring[i], ring[(i + 1) % seg]);
+  // The under-side, so the disc has a body when it is seen from below.
+  const u0 = vert(g, 0, -0.09, 0, 0, -1, 0, 0.58, 0.58, 0.58, 0, 0);
+  botany(g, u0, 0.5, 0.5, 7);
+  for (let i = 0; i < seg; i++) g.idx.push(u0, ring[(i + 1) % seg], ring[i]);
+  peduncle(g, PEDUNCLE.corymb, 0.020);
+  return finishGeo(g, 'flora-head-corymb');
+}
+
+/** A COMPOUND umbel — water hemlock, golden alexanders, sweet cicely: several
+ *  small domed umbellets on rays from one point, which is the architecture
+ *  that reads as an umbellifer and nothing else does. */
+function compoundGeometry() {
+  const g = emptyGeo();
+  const umbellets = 5;
+  const seg = 4;
+  for (let u = 0; u <= umbellets; u++) {
+    const a = ((u - 1) / umbellets) * Math.PI * 2 + 0.3;
+    const cx = u === 0 ? 0 : Math.sin(a) * 0.38;
+    const cz = u === 0 ? 0 : Math.cos(a) * 0.38;
+    const cy = u === 0 ? 0.16 : 0.02 + 0.05 * Math.sin(a * 2.0);
+    const rr = u === 0 ? 0.15 : 0.13;
+    const c0 = vert(g, cx, cy + 0.05, cz, 0, 1, 0, 1.20, 1.20, 1.20, 0, 0);
+    const ring = [];
+    for (let i = 0; i < seg; i++) {
+      const b = (i / seg) * Math.PI * 2;
+      ring.push(vert(g, cx + Math.sin(b) * rr, cy, cz + Math.cos(b) * rr,
+        Math.sin(b) * 0.4, 0.9, Math.cos(b) * 0.4, 0.86, 0.86, 0.86, 0, 0));
+    }
+    for (const v of [c0, ...ring]) botany(g, v,
+      (g.pos[v * 3] - cx) / (rr * 2) + 0.5,
+      (g.pos[v * 3 + 2] - cz) / (rr * 2) + 0.5, 7);
+    for (let i = 0; i < seg; i++) g.idx.push(c0, ring[i], ring[(i + 1) % seg]);
+    // The ray that carries it back to the centre.
+    if (u > 0) {
+      const w = 0.010;
+      const p0 = vert(g, cx - Math.cos(a) * w, cy - 0.01, cz + Math.sin(a) * w,
+        0, 1, 0, 0.50, 0.50, 0.50, 0, 0);
+      const p1 = vert(g, cx + Math.cos(a) * w, cy - 0.01, cz - Math.sin(a) * w,
+        0, 1, 0, 0.50, 0.50, 0.50, 0, 0);
+      const p2 = vert(g, 0, -0.14, 0, 0, 1, 0, 0.44, 0.44, 0.44, 0, 0);
+      g.idx.push(p0, p1, p2);
+    }
+  }
+  peduncle(g, PEDUNCLE.compound, 0.022);
+  return finishGeo(g, 'flora-head-compound');
+}
+
+/**
+ * A basal-scape plant: prairie dock, compass plant, wild iris, plantain. A
+ * ROSETTE of big paddle leaves lying at the ground and a nearly naked scape
+ * over it — the dossier names prairie dock's 40 cm basal rosette explicitly,
+ * and it is the plant's whole diagnosis. Drawn with the generic forb it became
+ * a three-metre leafy stalk with sixty-centimetre leaves halfway up it, which
+ * is the giant the timber critic handed back from the foreground.
+ *
+ * The rosette is scaled by the instance's SPREAD, which `placeForb` takes from
+ * the record's own `width_m`, so the leaves are the recorded size of the
+ * rosette and do not grow with the flowering scape above them.
+ */
+function rosetteGeometry(segments = 1) {
+  const g = emptyGeo();
+  const rng = rngFrom(0x51190010);
+  // The scape: bare, thin, and the full height of the plant.
+  for (const ang of [0.3, 0.3 + Math.PI / 2]) {
+    const dx = Math.sin(ang) * 0.010;
+    const dz = Math.cos(ang) * 0.010;
+    const k0 = shade(0.10);
+    const k1 = shade(0.98);
+    const a = vert(g, -dx, 0, -dz, dz, 0.3, -dx, k0, k0, k0, 0, 0);
+    const b = vert(g, dx, 0, dz, dz, 0.3, -dx, k0, k0, k0, 0, 0);
+    const c = vert(g, -dx, 1, -dz, dz, 0.3, -dx, k1, k1, k1, 0, 0);
+    const d = vert(g, dx, 1, dz, dz, 0.3, -dx, k1, k1, k1, 0, 0);
+    g.idx.push(a, b, c, b, d, c);
+  }
+  // Five huge paddle leaves, rising out of the crown and arching back down.
+  // Their SPAN is in the archetype's own units and is scaled by the rosette's
+  // recorded radius; their rise is a small fraction of the plant's height, so a
+  // 40 cm prairie-dock rosette stands about 15 cm proud of the ground while a
+  // plantain's lies flat, which is what both plants do.
+  for (let i = 0; i < 5; i++) {
+    const phi = (i / 5) * Math.PI * 2 + rng() * 0.7;
+    const dx = Math.sin(phi);
+    const dz = Math.cos(phi);
+    const len = 0.80 + rng() * 0.20;
+    const wide = 0.30 + rng() * 0.12;
+    const rise = 0.050 + rng() * 0.026;
+    curvedLeaf(g, { base: [dx * 0.06, 0.004, dz * 0.06], dx, dz,
+      len: len - 0.06, wide, rise: rise * 0.42, curl: rise * 0.8,
+      segments, k0: shade(0.14), k1: shade(0.34 + rng() * 0.12) });
+  }
+  return finishGeo(g, 'flora-rosette');
+}
+
+/**
+ * The shrub: four woody stems out of one root and a broad leafy shell over
+ * them — forty-eight leaf sprays in three bands, the lowest arching down over the
+ * stems (K56, K57) — in the same nominal box every other archetype uses — one tall, one
+ * across, so `height_m` scales the stems and the recorded clump half-width
+ * scales the spread (`placeShrub`).
+ *
+ * **Multi-stemmed from the ground is the whole diagnosis, not decoration.** It
+ * is what separates a shrub from a tree above it and from a forb beside it, and
+ * three of these records say so in their own text: the black-oak grubs are
+ * *"multi-stemmed low clonal oak sprouting from an old root system"*, the plum
+ * is *"thicket-forming"*, the sand cherry a *"low sprawling mat"*. A single
+ * stalk cannot read as any of those at any size.
+ *
+ * **The proportions are a RECONSTRUCTION and are recorded as one** (`docs/
+ * LIBERTIES.md`). No source in this repository states the branching habit of a
+ * Chicago hazel or a river-bank dogwood, and the alternative to inventing one
+ * within bounds is the wand that is there today. What bounds it: the stems rise
+ * to 0.55-0.95 of the recorded height and lean out to 0.30-0.55 of the recorded
+ * half-width, so the SILHOUETTE is the record's own two numbers and only the
+ * arrangement inside it is invented. Nothing here reads a figure the record
+ * does not carry.
+ *
+ * T-2015 cost: 136 triangles at light (the original floor), 392 balanced,
+ * 520 full, with unchanged instance counts. The extra triangles curve the
+ * leafy shoots and attach them to the main stems. `shrub-grain.js` still owns
+ * the envelope; `measure_spray_grain.mjs` measures its uncut support area,
+ * not the leaf coverage left after the botanical alpha mask.
+ */
+function shrubGeometry(grain = SHRUB_GRAIN, name = 'flora-shrub', reach = 1, segments = 1, sprayStride = 1) {
+  const g = emptyGeo();
+  const rng = rngFrom(0x5c123b00);
+  // The stems, the bands, the spray plan and every corner are `shrub-grain.js`,
+  // which imports nothing — so the grain can be measured in a second without a
+  // browser, and the measurement reads the SAME arithmetic the scene draws. The
+  // seed and the generator stay here, because a measurement that re-seeds is
+  // measuring a different bush.
+  const { stems, sprays } = shrubLayout(rng, grain);
+  // `reach` rescales the horizontal only (T-2014's far archetype; 1 here).
+  const fit = (p) => [p[0] * reach, p[1], p[2] * reach];
+  for (const s of stems) {
+    // Woody, but not a silhouette: `color.g` is this module's only occlusion
+    // term, so a stem written at 0.05 is a black stick where the foliage does
+    // not cover it, and a shrub's stems are exposed for the lower half of it.
+    const k0 = shade(0.16);
+    const k1 = shade(0.42);
+    const [p0, p1, p2, p3] = s.corners.map((p, i) => {
+      const centre = i < 2 ? [0, 0] : [s.dx * s.lean, s.dz * s.lean];
+      const narrow = i < 2 ? 0.45 : 0.20;
+      return [centre[0] + (p[0] - centre[0]) * narrow, p[1],
+        centre[1] + (p[2] - centre[1]) * narrow];
+    }).map(fit);
+    const a = vert(g, p0[0], p0[1], p0[2], s.dx, 0.35, s.dz, k0, k0, k0, 0, 0);
+    const b = vert(g, p1[0], p1[1], p1[2], s.dx, 0.35, s.dz, k0, k0, k0, 0, 0);
+    const c = vert(g, p2[0], p2[1], p2[2], s.dx, 0.35, s.dz,
+      k1, k1, k1, s.dx, s.dz);
+    const d = vert(g, p3[0], p3[1], p3[2], s.dx, 0.35, s.dz,
+      k1, k1, k1, s.dx, s.dz);
+    for (const v of [a, b, c, d]) botany(g, v, 0, 0, -1);
+    g.idx.push(a, b, c, b, d, c);
+  }
+  // The COUNT is what K56 moved and the GRAIN is what K57 set: sixteen plates
+  // covered 17.7 % of the shell and could be seen straight through, thirty-two
+  // covered 30.9 %, and the finer question — the same total plate area as more,
+  // smaller masses — is answered by `tools/measure_spray_grain.mjs` rather than
+  // by preference. `SHRUB_GRAIN` in `shrub-grain.js` carries the answer and the
+  // reasoning; the shading is all that is left here.
+  for (const [sprayIndex, p] of sprays.entries()) {
+    if (segments > 1) {
+      // Attach every sampled shoot to its nearest main stem. The old spray
+      // envelope contained disconnected green plates; removing those plates
+      // must reveal actual woody structure, not leaves suspended in space.
+      const rootH = p.top * 0.62;
+      let closest = stems[0], distance = Infinity;
+      for (const stem of stems) {
+        const t = Math.min(1, rootH / stem.top);
+        const d = Math.hypot(stem.dx * stem.lean * t - p.dx * p.lean,
+          stem.dz * stem.lean * t - p.dz * p.lean);
+        if (d < distance) { distance = d; closest = stem; }
+      }
+      const t = Math.min(1, rootH / closest.top);
+      const from = [closest.dx * closest.lean * t, rootH,
+        closest.dz * closest.lean * t];
+      const to = [p.dx * p.lean, p.top, p.dz * p.lean];
+      branchlet(g, fit(from), fit(to), 0.0042 * reach, p.dx, p.dz);
+    }
+    const k0 = shade(0.24 + p.top * 0.30);
+    const k1 = shade(Math.min(1, 0.58 + p.top * 0.40));
+    const [p0, p1, p2, p3] = p.corners.map(fit);
+    let previous = null;
+    // The original 64-spray scaffold still sets each shrub's size. The
+    // surface between its corners now curls, and an alpha-tested twig with
+    // individual leaves replaces the old solid trapezoid. Light keeps the
+    // original two triangles per spray; higher tiers spend four/six.
+    const bend = (rng() - 0.5) * 0.070;
+    for (let j = 0; j <= segments; j++) {
+      const t = j / segments;
+      const bulge = Math.sin(t * Math.PI) * bend;
+      const k = (k0 + (k1 - k0) * t) * (0.88 + rng() * 0.14);
+      const row = [];
+      for (let side = 0; side < 2; side++) {
+        const start = side ? p1 : p0, end = side ? p3 : p2;
+        const x = start[0] + (end[0] - start[0]) * t;
+        const y = start[1] + (end[1] - start[1]) * t + bulge;
+        const z = start[2] + (end[2] - start[2]) * t;
+        const slope = bend * Math.PI * Math.cos(t * Math.PI);
+        const n = new THREE.Vector3(-p.dx * (p.rise + slope), p.len,
+          -p.dz * (p.rise + slope)).normalize();
+        const v = vert(g, x, y, z, n.x, n.y, n.z,
+          k * 0.98, k, k * 0.96, p.dx, p.dz);
+        botany(g, v, side, t, 2);
+        row.push(v);
+      }
+      if (previous && sprayIndex % sprayStride === 0) g.idx.push(previous[0], row[0], previous[1],
+        previous[1], row[0], row[1]);
+      previous = row;
+    }
+  }
+  return finishGeo(g, name);
+}
+
+/**
+ * T-2014. The far shrub: `FAR_SHRUB_GRAIN`'s fewer, larger leaf masses, with
+ * the horizontal brought back to the detailed archetype's own reach so the
+ * bigger plates fill the shell rather than widen the bush past its record.
+ */
+function farShrubGeometry() {
+  // T-2035: select canonical sprays, so the coarse bush is already contained
+  // in the detailed one at handover. A different larger-plate layout changed
+  // the entire silhouette at the old hard switch. All RNG draws are retained.
+  return shrubGeometry(SHRUB_GRAIN, 'flora-shrub-far', 1, 1, 3);
+}
+
+/** Smooth value noise, 0..1. No texture, no table. */
+function vnoise(x, z) {
+  const xi = Math.floor(x);
+  const zi = Math.floor(z);
+  const fx = x - xi;
+  const fz = z - zi;
+  const sx = fx * fx * (3 - 2 * fx);
+  const sz = fz * fz * (3 - 2 * fz);
+  const h = (a, b) => (hash3(a, b, 0x2f1c) & 0xffff) / 65535;
+  const a0 = h(xi, zi) * (1 - sx) + h(xi + 1, zi) * sx;
+  const a1 = h(xi, zi + 1) * (1 - sx) + h(xi + 1, zi + 1) * sx;
+  return a0 * (1 - sz) + a1 * sz;
+}
+
+/* -------------------------------------------------------------------------- */
+/* materials                                                                   */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * One material family for every plant: Lambert, vertex colours, double sided,
+ * per-instance transform and wind in the vertex shader. The instance matrix
+ * carries the POSITION ONLY; yaw, height, spread and arch arrive in `aFlora`,
+ * which is what lets one canonical tuft be six species at six heights in one
+ * draw call, and keeps the wind in world space — a rotation baked into the
+ * instance matrix would have silently turned it per plant.
+ */
+function plantMaterial({ uniforms, billboard = false, membrane = 1.0, gpuNear = null }) {
+  const mat = new THREE.MeshLambertMaterial({
+    color: 0xffffff,
+    vertexColors: true,
+    side: THREE.DoubleSide,
+  });
+  const prior = mat.onBeforeCompile;
+  mat.onBeforeCompile = (shader, renderer) => {
+    if (typeof prior === 'function') prior(shader, renderer);
+    Object.assign(shader.uniforms, {
+      uChiTime: uniforms.uChiTime,
+      uChiWind: uniforms.uChiWind,
+      uChiSway: uniforms.uChiSway,
+      uChiWaveK: uniforms.uChiWaveK,
+      // T-3586: the shared gust rhythm (wind-gust.js), the trees' and the wind sound's.
+      uGustClock,
+    });
+    Object.assign(shader.uniforms, {
+      uChiSun: uniforms.uChiSun,
+      uChiSunCol: uniforms.uChiSunCol,
+      uChiSky: uniforms.uChiSky,
+      uChiFoliage: uniforms.uChiFoliage,
+      uChiSpring: seasonUniforms.uChiFresh,
+    });
+    if (gpuNear) Object.assign(shader.uniforms, gpuNear.uniforms);
+    shader.vertexShader = `
+attribute vec4 aDir;        // xy blade azimuth, zw local botanical UV
+attribute float aChiFamily; // atlas row selected from the species id
+varying vec3 vChiBotany;
+varying float vChiFamily;
+attribute vec4 aSide;       // xyz offset in metres, w botanical surface kind
+attribute vec4 aFlora;      // height, spread, arch, yaw
+attribute vec4 aChiRing;    // fade ring: outer, band, inner, innerBand
+uniform float uChiTime;
+uniform vec2  uChiWind;
+uniform float uChiSway;
+uniform float uChiWaveK;
+uniform float uGustClock;
+${GUST_GLSL}
+varying vec3 vChiNW;        // world normal, unflipped
+varying vec3 vChiPW;        // world position
+varying float vChiLit;      // how much of the sky this point can see, 0..1.6
+varying float vChiFade;     // the ring ramp, as coverage: 0 absent, 1 solid
+varying float vChiDither;   // this plant's own phase on the ordered dither
+` + shader.vertexShader
+      .replace('#include <color_vertex>', /* glsl */`
+#include <color_vertex>
+#ifdef USE_COLOR
+  // Stem albedo is set in the fragment before the confidence hook. Retain
+  // color.g separately as canopy occlusion, but do not dye wood green or a
+  // flower stalk white with the instance's foliage/petal color.
+  if (aSide.w < -0.5) vColor.rgb = vec3(1.0);
+#endif
+`)
+      .replace('#include <beginnormal_vertex>', /* glsl */`
+#include <beginnormal_vertex>
+// The same wind coefficient drives positions and normals. Fetch-backed near
+// instances fill their transform before this chunk, just as CPU instances do.
+vec3 chiNormalInst = vec3(instanceMatrix[3][0], instanceMatrix[3][1], instanceMatrix[3][2]);
+float chiPh = dot(chiNormalInst.xz, uChiWind) * uChiWaveK + uChiTime;
+float chiGust = (0.62 + 0.38 * sin(chiPh * 0.31 + 1.7)) * chiTownGust(chiNormalInst);
+float chiPlantWind = uChiSway * chiGust * sin(chiPh);
+{
+  float cy = cos(aFlora.w), sy = sin(aFlora.w);
+  ${billboard ? /* glsl */`
+  objectNormal.xz = vec2(objectNormal.x * cy + objectNormal.z * sy,
+                        -objectNormal.x * sy + objectNormal.z * cy);
+  ` : /* glsl */`
+  float t = clamp(position.y, 0.0, 1.0);
+  float dt = step(0.0,position.y)*(1.0-step(1.0,position.y));
+  vec3 speciesScale = max(vec3(aFlora.y, aFlora.x, aFlora.y), vec3(0.001));
+  if (aSide.w > 2.5 && aSide.w < 3.5) {
+    // A grass ribbon's width is in metres AFTER species scale. Transform its
+    // length tangent and keep that physical width, rather than widening it.
+    vec3 width = aSide.xyz;
+    vec3 tangent;
+    if (dot(width,width) > 1e-12) tangent = cross(width,objectNormal);
+    else {
+      tangent = vec3(aDir.x*objectNormal.y,-dot(objectNormal.xz,aDir.xy),aDir.y*objectNormal.y);
+      width = cross(objectNormal,tangent);
+    }
+    float ty = tangent.y;
+    tangent.xz += aDir.xy * (2.0*aFlora.z*t*ty*dt);
+    tangent *= speciesScale;
+    tangent.xz = vec2(tangent.x*cy+tangent.z*sy,-tangent.x*sy+tangent.z*cy);
+    width.xz = vec2(width.x*cy+width.z*sy,-width.x*sy+width.z*cy);
+    tangent.xz += uChiWind * (2.0*t*aFlora.x*ty*chiPlantWind*dt);
+    objectNormal = cross(tangent,width);
+  } else {
+    // Inverse transpose of the arch, species scale, yaw and wind shear.
+    // This changes light on the folded leaf; its outline and motion stay put.
+    objectNormal.y -= 2.0*aFlora.z*t*dt*dot(objectNormal.xz,aDir.xy);
+    objectNormal /= speciesScale;
+    objectNormal.xz = vec2(objectNormal.x*cy+objectNormal.z*sy,-objectNormal.x*sy+objectNormal.z*cy);
+    objectNormal.y -= 2.0*t*chiPlantWind*dt*dot(objectNormal.xz,uChiWind);
+  }
+  `}
+}
+`)
+      .replace('#include <begin_vertex>', /* glsl */`
+#include <begin_vertex>
+{
+  vChiBotany = vec3(aDir.zw, aSide.w);
+  vChiFamily = aChiFamily;
+  vec3 chiInst = vec3(instanceMatrix[3][0], instanceMatrix[3][1], instanceMatrix[3][2]);
+  float chiT = clamp(transformed.y, 0.0, 1.0);
+  // The ring ramp, measured from where the camera IS this frame. It used to be
+  // baked into the height on the CPU, where it could only change when the
+  // lattice was rebuilt — every 1.2 m walked, against a 2.2 m band, so a plant
+  // came up out of the ground to 55% of its height between one frame and the
+  // next. Here it is continuous, and the lattice is inset from it by the
+  // rebuild step (see \`ringsFor\`) so nothing is ever drawn before it is placed.
+  float chiD = distance(cameraPosition.xz, chiInst.xz);
+  // The floor is a MICRON, not a tenth of a millimetre, and it is only there to
+  // guard the division: a spread boundary hands its ring over as a step of
+  // width \`HARD\`, and a floor wider than the step would put the step back into
+  // a ramp a plant could be caught halfway up. See \`HARD\` in flora.js.
+  float chiFade = clamp((aChiRing.x - chiD) / max(aChiRing.y, ${f(HARD)}), 0.0, 1.0);
+  if (aChiRing.w > 0.0) chiFade *= clamp((chiD - aChiRing.z) / aChiRing.w, 0.0, 1.0);
+  // **THE RAMP IS AN ALPHA, NOT A HEIGHT** (T-0035). The owner, twice: plants
+  // "grow up out of the ground" as you walk at them rather than fading in. Both
+  // repairs before this one made the ramp SMOOTHER — continuous per frame, then
+  // inset inside its own lattice so no plant arrived already grown — and both
+  // left the ramp driving SCALE, which is the thing he was describing. A plant
+  // that goes from zero to full size about its own base is growing, however
+  // finely you subdivide it.
+  //
+  // So the ramp is handed to the fragment shader as coverage and the geometry
+  // is drawn at the height the record gives it, at every distance it is drawn
+  // at at all. The plant stands its full height the first frame it exists;
+  // what changes with distance is how much of it is written.
+  //
+  // Outside the ramp entirely it collapses to a point rather than rasterising
+  // a full-size plant only to discard every fragment of it: the annulus between
+  // the fade edge and the lattice edge is \`step\` metres wide plus the fringe,
+  // and it carries a real share of the near lattice.
+  vChiFade = chiFade;
+  // A per-instance phase on the ordered dither below. The 4x4 matrix has
+  // sixteen levels, and a ramp in DISTANCE quantised to sixteen levels is
+  // sixteen concentric contours about the walker — the same "constant world
+  // radius is a constant screen row" failure the fringe was built to break
+  // (ROADMAP § S6a item 3). Offsetting each plant's threshold by a hash of its
+  // own world position scatters the contour across the field: fract(bayer +
+  // phase) is still uniform on [0,1), so the expected coverage is unchanged.
+  vChiDither = fract(sin(dot(floor(chiInst.xz * 64.0), vec2(12.9898, 78.233))) * 43758.5453);
+  // Arch each blade outward along its own azimuth, in nominal space.
+  transformed.xz += aDir.xy * (aFlora.z * chiT * chiT);
+  // Scale: height from the record, spread from the archetype's own proportions.
+  transformed.y *= aFlora.x;
+  transformed.xz *= aFlora.y;
+  transformed += aSide.xyz;
+  // ...and nothing scales it by the ramp. See \`vChiFade\` above: a plant is
+  // drawn at its own height or it is not drawn.
+  transformed *= step(1e-4, chiFade);
+  ${billboard ? /* glsl */`
+  // Turn the card to the camera about Y. Nothing else uses the yaw slot here.
+  vec2 chiToCam = cameraPosition.xz - chiInst.xz;
+  float chiLen = length(chiToCam);
+  vec2 chiF = chiLen > 0.001 ? chiToCam / chiLen : vec2(0.0, 1.0);
+  transformed.xz = vec2(transformed.x * chiF.y + transformed.z * chiF.x,
+                       -transformed.x * chiF.x + transformed.z * chiF.y);
+  objectNormal.xz = vec2(objectNormal.x * chiF.y + objectNormal.z * chiF.x,
+                        -objectNormal.x * chiF.x + objectNormal.z * chiF.y);
+  ` : /* glsl */`
+  float chiCy = cos(aFlora.w), chiSy = sin(aFlora.w);
+  transformed.xz = vec2(transformed.x * chiCy + transformed.z * chiSy,
+                       -transformed.x * chiSy + transformed.z * chiCy);
+  `}
+  ${/* glsl */`
+  // Wind, in world space, after the plant has been turned: a travelling wave
+  // across the field plus a slow gust, both fixed at the base and free at the
+  // tip. This is the "wind-combed" reading the sources give the wet prairie.
+  transformed.xz += uChiWind
+    * (chiPlantWind * chiT * chiT * aFlora.x);
+  `}
+  // The world-space frame the sun terms need, built HERE rather than read off
+  // three's vNormal: <defaultnormal_vertex> has already run by this point, so
+  // three's normal never sees the billboard turn above, and the instance
+  // matrix carries a real rotation for the tilted flower heads.
+  vChiNW = normalize(mat3(modelMatrix) * mat3(instanceMatrix) * objectNormal);
+  vChiPW = (modelMatrix * instanceMatrix * vec4(transformed, 1.0)).xyz;
+  // The archetype's own base-to-tip ramp, BEFORE the species colour multiplies
+  // it. It is the one occlusion term this module has — how deep in the clump
+  // this point sits — and it has to gate every light path, not just the
+  // reflected one: a transmission term that ignores it puts the same glow on
+  // the floor of the sward as on the blade tips, and a sward with no floor is
+  // as wrong as one with no sun (measured: median 56 -> 148, nothing under 20).
+  vChiLit = color.g;
+}
+`)
+      // The head descent that used to live here — a world-space lowering of a
+      // flower head's origin by `aChiRise * (1 - fade)`, patched in after the
+      // instance transform because the instance matrix carries a real rotation —
+      // is GONE with the scale it existed to chase. It kept a head on its stem
+      // while its plant shrank; nothing shrinks now, so `foot <= plantH` holds
+      // at the one size everything is drawn at (R-BUG7's invariant, and the
+      // clamp in `maybeHead` is still what proves it). `aChiRise` stays on the
+      // instance because `tools/measure_head_support.mjs` and the smoke read it
+      // back to locate a stalk's foot.
+      .replace('#include <project_vertex>', /* glsl */`
+vec4 mvPosition = vec4(transformed, 1.0);
+#ifdef USE_INSTANCING
+  mvPosition = instanceMatrix * mvPosition;
+#endif
+mvPosition = modelViewMatrix * mvPosition;
+gl_Position = projectionMatrix * mvPosition;
+`);
+    // The fake sunward normal that used to live at <normal_fragment_begin> —
+    // `normal.y = abs(normal.y)` — is GONE. It was standing in for exactly the
+    // transmission this block now models, and while it stopped back faces going
+    // black it also meant nothing in the sward was ever properly lit or
+    // properly shaded: every fragment got the same middling wash, which is the
+    // truncated distribution the structure critic measured (p99 132, not one
+    // pixel over 230). Three's own double-sided flip is left to do its job, so
+    // dot(N, L) is now a real two-sided term.
+    shader.fragmentShader = `
+uniform vec3 uChiSun;
+uniform vec3 uChiSunCol;
+uniform vec3 uChiSky;
+uniform sampler2D uChiFoliage;
+uniform float uChiSpring;
+varying vec3 vChiBotany;
+varying float vChiFamily;
+varying vec3 vChiNW;
+varying vec3 vChiPW;
+varying float vChiLit;
+varying float vChiFade;
+varying float vChiDither;
+
+// Ordered 4x4 Bayer, the same screen-door translucency the confidence view
+// dithers an unevidenced wall with (confidence.js) — a stable per-pixel
+// threshold, so no sorting, no blending and no order dependence inside a batch.
+// A sward is the case that most needs those properties: eight thousand
+// double-sided instances that would have to be depth-sorted every frame to be
+// drawn transparent, on a material three renders in the opaque pass.
+float chiBayer4(vec2 fragXY) {
+  int x = int(mod(fragXY.x, 4.0));
+  int y = int(mod(fragXY.y, 4.0));
+  int i = x + y * 4;
+  float m[16];
+  m[0]  =  0.0; m[1]  =  8.0; m[2]  =  2.0; m[3]  = 10.0;
+  m[4]  = 12.0; m[5]  =  4.0; m[6]  = 14.0; m[7]  =  6.0;
+  m[8]  =  3.0; m[9]  = 11.0; m[10] =  1.0; m[11] =  9.0;
+  m[12] = 15.0; m[13] =  7.0; m[14] = 13.0; m[15] =  5.0;
+  float v = 0.0;
+  for (int k = 0; k < 16; k++) { if (k == i) v = m[k]; }
+  return (v + 0.5) / 16.0;
+}
+` + shader.fragmentShader.replace('#include <clipping_planes_fragment>', /* glsl */`
+#include <clipping_planes_fragment>
+// T-0093. WHICH RINGS STILL REACH THIS LINE, because it is no longer all of
+// them: the near ring's outer edge and the mid ring's inner edge hand their
+// ground over by DENSITY now (TUNE \`spreadOuter\`/\`spreadInner\`), so every plant
+// on either of those boundaries arrives with \`vChiFade\` at 0 or 1 and the guard
+// below sends it straight past. What is left dithering is the mid and forb
+// rings' OUTER edges, where a plant is a few pixels wide and the far band
+// stands over the same ground.
+//
+// T-0187. That last sentence used to read "at 18–27 m", and it was only true
+// of the desktop: \`band\` was not scaled with the ring, so on a phone the same
+// ramps ran from 5.4 m and 7.4 m and 15.4 % of the frame inside nine metres
+// was written through this line. The bands are cut to the ring now, at every
+// setting, so the claim holds where it is made — the verge, which is what a
+// walker looks at, is written solid at \`light\`, \`balanced\` and \`full\` alike.
+//
+// T-0035. Coverage first, before a single lighting instruction is spent on a
+// fragment that is about to be thrown away — and guarded, so a plant that is
+// wholly inside its ring reaches the shader that existed before this: the
+// branch is what the confidence view's own comment warns about paying for.
+if (vChiFade < 1.0 && fract(chiBayer4(gl_FragCoord.xy) + vChiDither) >= vChiFade) discard;
+// Mid-April is a seasonal viewing approximation, not a backdated July bloom.
+if (uChiSpring > 0.5 && (vChiBotany.z > 4.5 || vChiBotany.z < -1.5)) discard;
+// A spray is a collection of leaves, never an opaque rectangular surface.
+// Atlas tiles are padded and use ordinary mipmaps; alpha clipping keeps leaf
+// gaps and depth ordering without sorting thousands of transparent plants.
+vec3 chiLeafSurface = vec3(1.0);
+vec3 chiRoundedN = normalize(vChiNW) * (gl_FrontFacing ? 1.0 : -1.0);
+if (vChiBotany.z > 0.5 && vChiBotany.z < 2.5) {
+  float chiColumn = step(1.5, vChiBotany.z);
+  vec2 chiUV = (clamp(vChiBotany.xy, 0.001, 0.999) + vec2(chiColumn,
+    7.0 - clamp(vChiFamily, 0.0, 7.0))) / vec2(2.0, 8.0);
+  vec4 chiTexel = texture2D(uChiFoliage, chiUV);
+  // Once a whole shoot is only a few pixels, preserve its filtered
+  // coverage instead of erasing thin leaves from distant LOD shrubs.
+  float chiFootprint = max(length(dFdx(vChiBotany.xy)), length(dFdy(vChiBotany.xy)));
+  float chiClip = mix(abs(vChiFamily - 5.0) < 0.1 ? 0.15 : 0.35,
+    0.08, smoothstep(0.04, 0.25, chiFootprint));
+  if (chiTexel.a < chiClip) discard;
+  chiLeafSurface = chiTexel.rgb;
+} else if (vChiBotany.z > 2.5 && vChiBotany.z < 3.5) {
+  // Longitudinal ridges at leaf scale, faded when smaller than a pixel.
+  float chiRidges = sin(vChiBotany.x * 94.248);
+  float chiResolvable = 1.0 - smoothstep(0.012, 0.05, fwidth(vChiBotany.x));
+  chiLeafSurface *= 0.94 + 0.055 * chiRidges * chiResolvable;
+} else if (vChiBotany.z > 3.5 && vChiBotany.z < 4.5) {
+  // Three stems inside each mid/far support column, with narrow rooted bases
+  // and unequal, curving tips. Derivative width keeps subpixel distant blades
+  // from disappearing without returning a solid close-up rectangle.
+  float chiBladeEdge = 1.0;
+  float chiPixel = min(0.16, 0.35 * fwidth(vChiBotany.x));
+  for (int i = 0; i < 3; i++) {
+    float j = float(i);
+    float top = i == 1 ? 1.0 : (i == 0 ? 0.89 : 0.76);
+    float t = vChiBotany.y / top;
+    float centre = (j + 0.5) / 3.0
+      + 0.085 * sin(t * 3.14159 + j * 2.1) * t * t;
+    float halfWidth = 0.13 * pow(max(0.0, 1.0 - t), 0.55)
+      * smoothstep(0.0, 0.08, t);
+    float edge = abs(vChiBotany.x - centre) - max(halfWidth, chiPixel);
+    if (t <= 1.0) chiBladeEdge = min(chiBladeEdge, edge);
+  }
+  if (chiBladeEdge > 0.0) discard;
+  chiLeafSurface *= 0.84 + 0.16 * smoothstep(0.0, 0.08, -chiBladeEdge);
+} else if (vChiBotany.z > 4.5 && vChiBotany.z < 7.5) {
+  vec2 p = vChiBotany.xy * 2.0 - 1.0;
+  if (vChiBotany.z < 5.5) {
+    // A small globe of florets, rather than three intersecting rectangles.
+    // Its original width/height support and attachment point are unchanged.
+    float rim = 0.975 + 0.025 * sin(atan(p.y, p.x) * 13.0);
+    if (dot(p, p) > rim * rim) discard;
+    vec3 dpX = dFdx(vChiPW), dpY = dFdy(vChiPW);
+    vec2 uvX = dFdx(vChiBotany.xy), uvY = dFdy(vChiBotany.xy);
+    float det = uvX.x * uvY.y - uvX.y * uvY.x;
+    float inv = sign(det) / max(abs(det), 1e-8);
+    vec3 T = normalize((dpX * uvY.y - dpY * uvX.y) * inv);
+    vec3 B = normalize((dpY * uvX.x - dpX * uvY.x) * inv);
+    chiRoundedN = normalize(T * p.x + B * p.y
+      + chiRoundedN * sqrt(max(0.035, 1.0 - dot(p, p))));
+  }
+  // Fine individual florets, mip-like suppression when no longer resolved.
+  vec2 floret = vChiBotany.xy * 13.0;
+  floret.x += mod(floor(floret.y), 2.0) * 0.5;
+  float grain = max(0.0, 1.0 - dot(fract(floret) - 0.5, fract(floret) - 0.5) * 3.3);
+  float resolved = 1.0 - smoothstep(0.035, 0.12,
+    max(fwidth(vChiBotany.x), fwidth(vChiBotany.y)));
+  chiLeafSurface *= mix(0.96, 0.81 + 0.19 * grain, resolved);
+}
+
+`).replace('#include <color_fragment>', /* glsl */`
+// Set stem albedo BEFORE color_fragment, where confidence.patch applies
+// its evidence tint. vColor was neutralized for stems in color_vertex, so
+// these colors do not inherit petal/leaf hue and cannot overwrite grading.
+if (vChiBotany.z < -1.5) {
+  diffuseColor.rgb = vec3(0.105, 0.16, 0.048) * (0.48 + vChiLit);
+} else if (vChiBotany.z < -0.5) {
+  diffuseColor.rgb = vec3(0.19, 0.135, 0.075) * (0.48 + vChiLit);
+}
+#include <color_fragment>
+`).replace('#include <normal_fragment_begin>', /* glsl */`
+#include <normal_fragment_begin>
+if (vChiBotany.z > 4.5 && vChiBotany.z < 5.5) {
+  normal = normalize(mat3(viewMatrix) * chiRoundedN);
+}
+`).replace('#include <opaque_fragment>', /* glsl */`
+{
+  // The face we can see, whichever side of the sheet it is.
+  vec3 chiN = chiRoundedN;
+  vec3 chiV = normalize(cameraPosition - vChiPW);
+  float chiNL = dot(chiN, uChiSun);
+
+  // What the leaf lets through. Keyed on the NEGATIVE half of the same N.L
+  // three used for the reflection, so a blade is lit on one side and glowing
+  // on the other and never both. The lobe is a (0.5 + 0.5 cos) remap rather
+  // than a raw cos^n: at 70 degrees the July sun is overhead, not behind the
+  // subject, and a hard forward lobe would never fire at eye height.
+  float chiFwd = pow(clamp(dot(chiV, -uChiSun) * 0.5 + 0.5, 0.0, 1.0), ${f(LEAF.forward)});
+  // What comes THROUGH is the leaf's own hue at the leaf's own transmittance —
+  // not its albedo, which is what caps a reflective model — gated by how much
+  // of the sky this point in the clump can see.
+  vec3 chiHue = diffuseColor.rgb
+    / max(max(diffuseColor.r, diffuseColor.g), max(diffuseColor.b, 1e-4));
+  // SQUARED, and that is the whole difference between a sward with a sun in it
+  // and a sward painted lime. A linear gate spread the glow evenly over every
+  // blade from floor to tip and lifted the median from 56 to 148 while the
+  // photographs sit at 72 and 93; squared, the floor of a clump keeps a
+  // hundredth of it and the exposed tips keep more than all of it, which is
+  // what a canopy actually does to light on its way down.
+  // ...and by how much of this fragment is one leaf rather than a stand-in for
+  // many. A mid-field CARD is already an average of lit blades and shaded
+  // interior, so giving it a whole leaf's transmission bleached the middle
+  // distance into a field of pale spikes brighter than the near ground — a
+  // clump at twenty metres is a dark green mass in every one of the bar
+  // photographs.
+  float chiOpen = pow(clamp(vChiLit, 0.0, 2.30), 2.0) * ${f(membrane)};
+  vec3 chiFilter = chiHue
+    * vec3(${f(LEAF.tint[0])}, ${f(LEAF.tint[1])}, ${f(LEAF.tint[2])}) * chiOpen;
+  vec3 chiExtra = uChiSunCol * (
+      ${f(LEAF.transmit)} * max(-chiNL, 0.0) * (0.42 + 0.58 * chiFwd)   // through it
+    + ${f(LEAF.scatter)} * max(chiNL, 0.0)                              // and around it
+  ) * chiFilter;
+  chiExtra += uChiSky * (${f(LEAF.skyTransmit)} * chiFilter);
+
+  // The cuticle: a waxy film over the leaf, so a narrow lobe at a dielectric
+  // F0 with the Fresnel edge that makes a grazing blade flare.
+  vec3 chiH = normalize(uChiSun + chiV);
+  float chiSpec = pow(max(dot(chiN, chiH), 0.0), ${f(LEAF.gloss)});
+  float chiF = ${f(LEAF.f0)} + ${f(1 - LEAF.f0)}
+    * pow(1.0 - clamp(dot(chiV, chiH), 0.0, 1.0), 5.0);
+  chiExtra += uChiSunCol
+    * (chiSpec * chiF * ${f(LEAF.specular)} * step(0.0, chiNL) * chiOpen);
+
+  // Broad leaves have a waxy surface, but never the unfiltered lime glow
+  // previously spread across whole forty-centimetre plates. Grass retains
+  // its independently measured July transmission.
+  float chiBroad = step(0.5, vChiBotany.z) * (1.0 - step(2.5, vChiBotany.z));
+  outgoingLight = outgoingLight * chiLeafSurface
+    + chiExtra * step(-0.5, vChiBotany.z) * mix(1.0, 0.68, chiBroad)
+      * (1.0 - 0.88 * step(4.5, vChiBotany.z)) * chiLeafSurface;
+}
+#include <opaque_fragment>
+`);
+  };
+  if (gpuNear) {
+    // T-2716. The near ring's tuft, its instances fetched from the deal pass's
+    // targets by `gl_InstanceID` (flora-gpu-near.js NEAR_FETCH_GLSL) where the
+    // program above reads instance attributes: the attributes become globals
+    // the fetch fills before anything reads them, and the colour the CPU set
+    // carried as `instanceColor` multiplies the vertex colour where three's
+    // own instancing would have.
+    const fetched = mat.onBeforeCompile;
+    mat.onBeforeCompile = (shader, renderer) => {
+      fetched(shader, renderer);
+      const v = shader.vertexShader
+        .replace('attribute vec4 aFlora;', '')
+        .replace('attribute vec4 aChiRing;', '')
+        .replace('attribute float aChiFamily;', '')
+        .replace('void main() {', 'void main() {\n  chiNearInstance();')
+        .replace('#include <color_vertex>', '#include <color_vertex>\n#ifdef USE_COLOR\n  vColor.rgb *= chiNearCol;\n#endif');
+      if (/attribute (vec4 aFlora|vec4 aChiRing|float aChiFamily);/.test(v)
+        || !v.includes('chiNearInstance();') || !v.includes('vColor.rgb *= chiNearCol')) {
+        throw new Error('flora: the near tuft program no longer has the anchors its fetch replaces');
+      }
+      shader.vertexShader = gpuNear.glsl + v;
+    };
+  }
+  mat.customProgramCacheKey = () => `flora-botanical-4-${billboard}-${membrane}${gpuNear ? '-gpu-near' : ''}`;
+  mat.needsUpdate = true;
+  return mat;
+}
+
+/** A float that always carries a decimal point, because GLSL will not take
+ *  `0` where it wants a float and a template literal will happily write one. */
+function f(v) {
+  return Number.isInteger(v) ? `${v}.0` : String(v);
+}
