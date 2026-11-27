@@ -1,0 +1,5 @@
+# Local E21/B4 Light timing diagnostic
+
+The complete authored core runtime delta was restored to actual E21 Git blobs for BEFORE. AFTER serves unmodified B4. Both snapshots use identical current assets/data and link only exact immutable archive bytes; replaced baseline modules were privatized first. The stock still-frame measurement helper and ceilings file are included unchanged. No app source, frame count, geometry, population, radius, raster setting or ceiling was edited.
+
+At the stock 1835 town-backyard stand and desktop Light conditions, the local five-core Xeon8573C report read E21 6,510.0 ms and B4 6,339.5 ms. Both drew exactly 1,012,277 triangles and 3,574 calls; both had zero page errors. This single sequential pair did not reproduce a candidate slowdown. The roughly 2.6% difference is not a speedup claim or proof that the GitHub runner caused its failure. The original four-core EPYC7763 Light failure remains a merge hold. Its unchanged exact-job repeat still requires the original matrix to finish. Reporting mode here is not represented as passing that calibrated gate. Raw logs, results, exact runtime hashes and method are retained.
