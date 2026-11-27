@@ -1,0 +1,5 @@
+# Ordinary upstream composition without moving the frozen app
+
+Dev advanced from18606 to482b through PR2390. Its jaunt sidecar bytes are exactly the canonical repair already validated in core1605; its other change is its own pending T3787 changelog entry. An isolated bare repository performed the complete three-way merge. The resulting tree f3e59b45 differs from core1605 only by that entry, preserves complete upstream and retains all29 validated owned file hashes. Relative to the actual new Dev base, only28 feature paths differ because the shared sidecar repair is already upstream.
+
+The complete merged pending-entry set passes the unchanged canonical checker. No active app file, app HEAD or origin/dev ref moved; the seasonal Native source remained frozen. This is a composition proof, not a fresh local Native or a timing pass. Core1605 still needs all7 exact-head workflows, resolution of its known calibrated timing concern, final reviews, raw clean state, the owned live lap and an unchanged inspected live Dev before merge. A later Dev advance requires its own inspection. No merge is claimed here.
