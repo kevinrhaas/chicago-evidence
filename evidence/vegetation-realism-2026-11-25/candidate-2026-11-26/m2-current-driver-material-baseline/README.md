@@ -1,0 +1,5 @@
+# Non-summer building faces compared with core
+
+The current seasonal review showed very dark building faces in spring, fall and winter. A separate, sequential browser run served the independently frozen B4 core BEFORE publication with its original fifteen plant/season modules, the same current assets/data/actor/driver runtime and the same fixed 1904 camera. Summer and spring both completed with zero page errors or recorded application problems. The B4 spring image has the same dark building faces as M2. Exact images, logs, dates, hashes, source references and a fixed left-facade pixel sample are retained.
+
+This establishes that the observed spring building appearance predates the M2 seasonal delta. It does not identify the lighting/material cause, establish whether it predates M1, or approve the whole scene's appearance. The tree/crop changes and the known calibrated Light timing failure have separate qualification records. No app source or publication was edited, and the immutable BEFORE publication was verified unchanged before and after the run.
