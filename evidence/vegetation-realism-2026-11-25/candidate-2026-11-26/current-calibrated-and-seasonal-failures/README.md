@@ -1,0 +1,9 @@
+# Current failures retained before further source work
+
+Core PR2358 remains draft and unmerged. The actual current1605 source was timed on the calibrated four-core EPYC7763 in run45955364389, attempt2/job140379226429. Full11815.5ms fits13750; Balanced10097.7 fits10500; Light7267.6 exceeds the unchanged7000ms ceiling. The verified artifact ZIP, host, stock report and raw job log are retained. No unchanged timing retry is planned. The inherited performance hold stays active until a genuinely repaired current candidate passes calibrated timing and the full required gates. The earlier uncalibrated successes are not a waiver.
+
+The second seasonal Native reached all16top-level parts, but part16 failed the context popup assertion. Part9 previously reached the590-second no-verdict bound and both32-way subdivisions passed; that does not make this gate complete. All raw attempts remain. No seasonal ticket commit was authored. The failed-epoch evidence waiter was retired without creating a success folder.
+
+Inspection finds the runtime producer already correct: building cards retain only the city baseline liberty; tree cards add the registered grown-tree reconstruction liberty. The older test assumed both cards had exactly one liberty. The focused test change now asserts the exact separate identifier lists, both pane counts, both registered titles and the Sources API; existing citation, missing-binding and native-subject assertions remain. Both context cards and walker passages pass the focused check. No runtime change, missing note or historical tree deletion is hidden by this contract update. A new complete Native gate remains required before authorship.
+
+This folder records failures and a focused contract repair. It does not qualify either app PR for merging. No heap snapshot or temporary artifact download URL is included.
