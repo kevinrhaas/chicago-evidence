@@ -1,0 +1,7 @@
+# Unchanged desktop repeat on an uncalibrated CPU
+
+Original run 45927844531 attempt 1 ended with fourteen successful cases and only the calibrated desktop failure. The exact desktop job was repeated once, after the matrix finished, without changing source, settings or limits. Attempt 2 job 140304087700 completed successfully on four-core Intel Xeon 6975P-C: Full 6,736.9 ms, Balanced 5,675.6 ms, Light 4,143.1 ms. All three geometry/draw counts match the original EPYC reading. The artifact ZIP digest matches GitHub; the extracted JSON and exact decoded UTF-8 log are retained.
+
+This CPU has no calibrated desktop ceiling. The job explicitly warned that these readings were not held against a limit. Its success does not resolve the original four-core EPYC Light failure of 7,213.1 ms against 7,000 ms. That merge hold remains active across later rebase heads until an actual calibrated current-candidate desktop reading passes unchanged limits. No root-cause conclusion is made from this cross-CPU comparison.
+
+Dev subsequently received coach-house assets and clothing runtime changes, so a new integrated head requires fresh CI. The sole obsolete unfinished B4 desktop smoke was retired; completed B4 evidence remains historical. Original fifteen-case outcomes and artifact metadata are retained, including all fourteen successes. No sibling workflow, assertion, ceiling, geometry, population, radius or raster setting was changed.
