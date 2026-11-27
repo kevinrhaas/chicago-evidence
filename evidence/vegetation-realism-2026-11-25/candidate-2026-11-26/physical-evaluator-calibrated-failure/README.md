@@ -1,0 +1,9 @@
+# Complete current-source physical guard: calibrated failure
+
+Run 45988782294, job 140471020428, workflow 9fa6da6f215813a2581c891c59f8080185261c87 measured the complete 28-path uncommitted candidate on Dev 2d7eea18c028f527981fb633d1ab9dbfbb96460d. All 28 source hashes, whole tree e09e73a17087e5c0142f7d9fde2999dc123cd96d and app tree e4711e5e3b0d11f5915d8ee270cead09538e14ae were verified before unchanged stock timing. Actual CPU: AMD EPYC 7763, four cores.
+
+Full passed at 12066.7 / 13750 ms; Balanced passed at 10252.4 / 10500 ms; Light FAILED at 7467.1 / 7000 ms. There were no page errors. Geometry and draw counts remained 3044315/5962, 2434867/5903 and 1012277/3574 respectively. The 3369-byte artifact ZIP has SHA256 f055db23340bddf76f5bbb6b1f1926084d052c6f7fa6ea89638fa0c11ca55e0d. Source/host receipts, report, complete raw log and workflow metadata are retained. No unchanged timing retry follows this failure. Local pixel equality and local speed comparisons did not establish a calibrated performance pass.
+
+The fresh local Native began independently while the calibrated job was queued. Partition 1/16 passed 93 steps in 380.9 seconds. When the actual performance failure arrived, partition 2/16 was intentionally stopped and recorded exit -15 after 300.7 seconds. Every partial log is retained. This Native is INCOMPLETE and supplies no full-gate qualification. No feature commit was authored, pushed or merged from this candidate.
+
+The performance hold remains active. A genuinely different rendering optimization is being investigated privately. Any replacement must receive its own complete source proof, calibrated performance check and fresh whole Native before authorship, then current-Dev integration, final preflight and complete current-head CI. The seasonal group remains staged separately. No heap snapshot or temporary download URL is included.
