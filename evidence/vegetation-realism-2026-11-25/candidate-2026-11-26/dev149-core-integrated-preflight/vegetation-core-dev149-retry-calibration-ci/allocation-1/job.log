@@ -1,0 +1,91 @@
+﻿2026-11-27T22:57:16.6814082Z Current runner version: '2.338.2'
+2026-11-27T22:57:16.6849156Z ##[group]Runner Image Provisioner
+2026-11-27T22:57:16.6850502Z Hosted Compute Agent
+2026-11-27T22:57:16.6851382Z Version: 20261111.635
+2026-11-27T22:57:16.6852178Z Commit: b8a594ea514ff44cadb5342986c68b1eac6e22ed
+2026-11-27T22:57:16.6853243Z Build Date: 2026-11-11T01:49:01Z
+2026-11-27T22:57:16.6854299Z Worker ID: {b48f56c2-1808-41ac-a125-5e97912a070a}
+2026-11-27T22:57:16.6855287Z Region: southcentralus
+2026-11-27T22:57:16.6856147Z Cloud: Azure
+2026-11-27T22:57:16.6857225Z ##[endgroup]
+2026-11-27T22:57:16.6859742Z ##[group]Operating System
+2026-11-27T22:57:16.6860716Z Ubuntu
+2026-11-27T22:57:16.6861455Z 22.04.5
+2026-11-27T22:57:16.6862249Z LTS
+2026-11-27T22:57:16.6863055Z ##[endgroup]
+2026-11-27T22:57:16.6863849Z ##[group]Runner Image
+2026-11-27T22:57:16.6864778Z Image: ubuntu-22.04
+2026-11-27T22:57:16.6865612Z Version: 20261122.372.1
+2026-11-27T22:57:16.6867807Z Included Software: https://github.com/actions/runner-images/blob/ubuntu22/20261122.372/images/ubuntu/Ubuntu2204-Readme.md
+2026-11-27T22:57:16.6870082Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu22%2F20261122.372
+2026-11-27T22:57:16.6871571Z ##[endgroup]
+2026-11-27T22:57:16.6873249Z ##[group]GITHUB_TOKEN Permissions
+2026-11-27T22:57:16.6877198Z Contents: read
+2026-11-27T22:57:16.6878124Z Metadata: read
+2026-11-27T22:57:16.6878982Z ##[endgroup]
+2026-11-27T22:57:16.6882006Z Secret source: Actions
+2026-11-27T22:57:16.6883340Z Cache mode: write
+2026-11-27T22:57:16.6884951Z Prepare workflow directory
+2026-11-27T22:57:16.7475482Z Prepare all required actions
+2026-11-27T22:57:16.7550043Z Getting action download info
+2026-11-27T22:57:17.0592447Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-11-27T22:57:17.5226040Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+2026-11-27T22:57:17.7560508Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-11-27T22:57:18.1041784Z Complete job name: core calibration allocation 1
+2026-11-27T22:57:18.1868777Z ##[group]Run python3 - <<'PYTHON'
+2026-11-27T22:57:18.1870403Z [36;1mpython3 - <<'PYTHON'[0m
+2026-11-27T22:57:18.1871682Z [36;1mimport json,os,subprocess[0m
+2026-11-27T22:57:18.1873011Z [36;1mfrom pathlib import Path[0m
+2026-11-27T22:57:18.1875392Z [36;1mcpu=next(line.split(':',1)[1].strip() for line in Path('/proc/cpuinfo').read_text().splitlines() if line.startswith('model name'))[0m
+2026-11-27T22:57:18.1878518Z [36;1mcores=int(subprocess.check_output(['nproc'],text=True).strip())[0m
+2026-11-27T22:57:18.1880532Z [36;1meligible=cpu==os.environ['REQUIRED_CPU'] and cores==4[0m
+2026-11-27T22:57:18.1883705Z [36;1mr={'cpu':cpu,'cores':cores,'calibrated':eligible,'eligibilityOnly':True,'required_cpu':os.environ['REQUIRED_CPU'],'required_cores':4,'source_and_timing_not_started':True}[0m
+2026-11-27T22:57:18.1887651Z [36;1mPath('/tmp/calibrated-host.json').write_text(json.dumps(r,indent=2)+'\n');print(json.dumps(r))[0m
+2026-11-27T22:57:18.1890968Z [36;1mif not eligible:raise SystemExit('This allocation is not the required established CPU profile; source/timing skipped')[0m
+2026-11-27T22:57:18.1893294Z [36;1mPYTHON[0m
+2026-11-27T22:57:18.2911728Z shell: /usr/bin/bash -e {0}
+2026-11-27T22:57:18.2913321Z env:
+2026-11-27T22:57:18.2915169Z   DIAGNOSTIC_HEAD: b82bac020f878a47b1337e4f197e7ca79f0e6017
+2026-11-27T22:57:18.2917635Z   SOURCE_MANIFEST_SHA: 0d476f924c2ae3f845c377f9ba67f07fb986f5cfb0f8c042bf03e899d80edb16
+2026-11-27T22:57:18.2919678Z   REQUIRED_CPU: AMD EPYC 9V74 80-Core Processor
+2026-11-27T22:57:18.2921368Z   SOURCE_RECEIPT_PATH: /tmp/calibrated-source-before.json
+2026-11-27T22:57:18.2922841Z ##[endgroup]
+2026-11-27T22:57:18.3362240Z This allocation is not the required established CPU profile; source/timing skipped
+2026-11-27T22:57:18.3366081Z {"cpu": "INTEL(R) XEON(R) PLATINUM 8573C", "cores": 4, "calibrated": false, "eligibilityOnly": true, "required_cpu": "AMD EPYC 9V74 80-Core Processor", "required_cores": 4, "source_and_timing_not_started": true}
+2026-11-27T22:57:18.3405234Z ##[error]Process completed with exit code 1.
+2026-11-27T22:57:18.3759262Z ##[group]Run actions/upload-artifact@v4
+2026-11-27T22:57:18.3760611Z with:
+2026-11-27T22:57:18.3761654Z   name: vegetation-core-dev149-calibration-1
+2026-11-27T22:57:18.3764686Z   path: /tmp/calibrated-host.json
+/tmp/calibrated-source-before.json
+/tmp/calibrated-source-after.json
+chicago/4d/still-frame-desktop.json
+chicago/4d/still-frame-mobile.json
+2026-11-27T22:57:18.3767804Z   if-no-files-found: error
+2026-11-27T22:57:18.3768947Z   compression-level: 6
+2026-11-27T22:57:18.3770141Z   overwrite: false
+2026-11-27T22:57:18.3771190Z   include-hidden-files: false
+2026-11-27T22:57:18.3772735Z env:
+2026-11-27T22:57:18.3773878Z   DIAGNOSTIC_HEAD: b82bac020f878a47b1337e4f197e7ca79f0e6017
+2026-11-27T22:57:18.3775863Z   SOURCE_MANIFEST_SHA: 0d476f924c2ae3f845c377f9ba67f07fb986f5cfb0f8c042bf03e899d80edb16
+2026-11-27T22:57:18.3777959Z   REQUIRED_CPU: AMD EPYC 9V74 80-Core Processor
+2026-11-27T22:57:18.3779471Z   SOURCE_RECEIPT_PATH: /tmp/calibrated-source-before.json
+2026-11-27T22:57:18.3781034Z ##[endgroup]
+2026-11-27T22:57:20.1840410Z (node:1922) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-27T22:57:20.1841390Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-27T22:57:20.1973541Z Multiple search paths detected. Calculating the least common ancestor of all paths
+2026-11-27T22:57:20.1984649Z The least common ancestor is /. This will be the root directory of the artifact
+2026-11-27T22:57:20.1985525Z With the provided path, there will be 1 file uploaded
+2026-11-27T22:57:20.1986601Z Artifact name is valid!
+2026-11-27T22:57:20.1987396Z Root directory input is valid!
+2026-11-27T22:57:20.5382197Z Beginning upload of artifact content to blob storage
+2026-11-27T22:57:20.5850423Z (node:1922) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-27T22:57:20.7558436Z Uploaded bytes 334
+2026-11-27T22:57:20.8018156Z Finished uploading artifact content to blob storage!
+2026-11-27T22:57:20.8019163Z SHA256 digest of uploaded artifact zip is c863b3362d1355d879eef17e9aadd9a1186c2770d84a960aa1b6afa07543a64c
+2026-11-27T22:57:20.8020375Z Finalizing artifact upload
+2026-11-27T22:57:21.1545325Z Artifact vegetation-core-dev149-calibration-1.zip successfully finalized. Artifact ID 15237160546
+2026-11-27T22:57:21.1547630Z Artifact vegetation-core-dev149-calibration-1 has been successfully uploaded! Final size is 334 bytes. Artifact ID is 15237160546
+2026-11-27T22:57:21.1558416Z Artifact download URL: https://github.com/kevinrhaas/chicago/actions/runs/46076977196/artifacts/15237160546
+2026-11-27T22:57:21.1726215Z Cleaning up orphan processes
+2026-11-27T22:57:21.2072998Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
