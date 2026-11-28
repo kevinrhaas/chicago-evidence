@@ -1,9 +1,17 @@
 # T-3836: eyes in the actual app
 
 Eye fit, gaze and optics built on merged photo/hair PR #2371 (dev `adf03372d897af48065d9354d23ad7294ee8ec2b`).
-Frozen source tree: `a51f553692106c23211029618310e6b681439944`. Imported JavaScript hashes, original geometry
+Frozen release candidate: `2efc8838536f373cc1dbd72d350885d52b3741a7`. Imported JavaScript hashes, original geometry
 counts, body-skeleton sharing and the ten image hashes are in [native-views.json](native-views.json).
 The eye change has not yet been merged to dev. Complete release qualification is in progress.
+
+The original image capture tree is `a51f553692106c23211029618310e6b681439944`; those
+receipts remain unchanged. The [canonical rebuild proof](canonical-library-rebuild.json)
+records the later refresh of three renderer input hashes and two runtime review hashes.
+All 530 generated files were compared: images, scalps, recipes and face parameters are
+byte identical. The renderer modules are identical too, and both runtime catalogs retain
+identical drawing parameters. The source patch and release candidate include that refresh.
+Full native qualification is being repeated on the corrected source.
 
 These are original published-app renders in Chromium SwiftShader, with the camera framed
 for review and other figures hidden. The app's materials, lights and native detail tiers
