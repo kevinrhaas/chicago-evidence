@@ -51,3 +51,11 @@ frame rate remains unmeasured; these stills do not claim photographic perfection
 
 Targeted checks: [skin and optics](skin-final-targeted.log), [life and binocular focus](life-final-targeted.log),
 [photo-library rollout](rollout-final-targeted.log). [Source patch](eye-source.patch.gz).
+
+## Visible limits in this pass
+
+William's photographed squint remains narrow, with a thin lower sclera strip still visible
+from the front. Close views retain the source photograph's lid shadows and limited texture
+resolution. Reduced detail levels retain angular pupil outlines in extreme close-ups.
+The source portraits, head proportions and original iris maps are preserved; the images
+show an improvement in eye fit and focus, not a finished photographic-quality face.
