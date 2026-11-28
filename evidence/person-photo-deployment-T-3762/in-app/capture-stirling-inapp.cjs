@@ -1,0 +1,21 @@
+const {chromium}=require('playwright');
+const fs=require('node:fs');
+const ids={dorothy:'pa1904_stirling_william_r_c1900_dorothy_sterling',alice:'pa1904_stirling_william_r_c1900_alice_m_sterling'};
+(async()=>{
+ const b=await chromium.launch({headless:true,executablePath:'/usr/bin/chromium',args:['--no-sandbox','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
+ const p=await b.newPage({viewport:{width:1400,height:1000}});const errors=[];
+ p.on('pageerror',e=>{errors.push(e.message);console.log('PAGEERROR',e.message);});
+ p.setDefaultTimeout(120000);
+ await p.addInitScript(()=>localStorage.setItem('chicago4d.settings',JSON.stringify({detail:'balanced'})));
+ await p.goto('http://127.0.0.1:3005/4d/walk/?year=1904',{waitUntil:'domcontentloaded',timeout:180000});
+ await p.waitForFunction(()=>window.__chicago4d?.ready,null,{timeout:240000});
+ console.log('APP READY');
+ await p.evaluate(()=>{const a=window.__chicago4d;window.__appRender=a.renderer.render.bind(a.renderer);a.renderer.render=(s,c)=>c?.updateMatrixWorld?.();});
+ await p.waitForFunction(()=>window.__chicago4d.welcome.state==='welcome',null,{timeout:120000});
+ await p.evaluate(()=>document.getElementById('home-roam').click());
+ await p.waitForFunction(()=>window.__chicago4d.welcome.state==='world',null,{timeout:120000});
+ await p.evaluate(()=>{const a=window.__chicago4d;a.renderer.setAnimationLoop(null);a.navigator.dock();document.exitPointerLock?.();});
+ console.log('WORLD READY',JSON.stringify(await p.evaluate(ids=>{const a=window.__chicago4d;return Object.fromEntries(Object.entries(ids).map(([k,id])=>{const x=a.humans.get(id);return [k,{actor:x?{id:x.id,personId:x.personId,instance:x.instance,position:x.root.position.toArray(),body:!!x.body,lod:x.lod,indoors:x.indoors}:null,home:a.days?.homeNow?.(id)}];}));},ids)));
+ const repl=require('node:repl').start({prompt:'APP> '});Object.assign(repl.context,{b,p,fs,ids,errors});
+ repl.on('exit',()=>void b.close());
+})().catch(e=>{console.error(e);process.exit(1);});
