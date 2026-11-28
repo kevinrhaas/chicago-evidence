@@ -1,0 +1,11 @@
+# Better Trees: final actual-Dev batch and preflight
+
+Head `e4ec8d6b65022738f70273ce16481e96d145423c`, tree `d96c1a2dfae84d451502dba48bb7c2bf4f7aaa8b`, integrates actual Dev `fe71576d80eab6f7b1e142f0c2f908a5dd3f8bab`. This includes the streamed drag controls, the actual #2424 carried-goods update for 1812, the actual #2423 1871 street furniture and their exact official release fold. Every original tree edit is independently applied and reversed over that immutable upstream tree. All 1,264 upstream liberty records are preserved and the three existing tree entries produce the canonical 1,267. Committed preflight passed in 261.6 seconds, including supplemental Native 2/32, required readers/base, identifiers, publication and release history.
+
+The preceding 33fb source completed all 13 workflows successfully. All eight Native sections, all 15 published browser parts at both viewports, zero-error whole-body logs, human/moving/upload regressions and all 15 stock reports are retained here with their actual source identities. That source has 1,453 declared Native steps and 1,565 published assertions with zero failures or page errors. No old execution was cancelled. These are historical results and do not qualify this newer combined source.
+
+The fresh final-source CI uses every original assertion and limit, all published sections at both viewports and all 15 stock reports. Desktop part 13 is dispatched first because it is the longest whole body; no input or coverage changes. The full Native gate still runs every step on the actual combined PR checkout. No preceding source alias, unheld machine reading or original timing is relabelled as a current pass.
+
+Original full 1,441-step Native and all six predefined calibration allocations retain the exact frozen 6b39988 source in adjacent `roughness-channel-qualified-source`. Every eligible actual EPYC 7763/4 allocation passed the original caps before seasonal authorship. The earlier real negatives, their corrections and the original seasonal photographs keep their actual source identities in adjacent folders.
+
+The intermediate control integration and its 272.3-second preflight remain in `dev-ff8-controls-source-preflight`. This folder records source and preflight; it claims no application merge. Target: Dev preview.
