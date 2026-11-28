@@ -54,3 +54,9 @@ All 411 original library photographs, head-fit landmarks and shape values, sourc
 Twenty-seven importer regressions pass, including the nasal-shadow regression, unsupported-pixel isolation and exact calibrated-body fallback. [Preservation proof](skin-rebuild-preservation.json), [canonical rebuild](skin-canonical-nose-rebuild.json), [visual manifest](visual-manifest.json) and the complete original native declaration [catalog](step-catalog.json) are included. Full release receipts will be added when qualification completes.
 
 Unseen profile details and colour reconstructed from monochrome remain declared liberties. Hair-card edges, limited archive resolution and thin lower sclera in William’s close-up remain visible limits; this is not a claim of photographic perfection. T-3553’s photo-ingestion page/command and physical-GPU crowd timing are outside this completed correction and remain outstanding.
+
+## Reusable capture template
+
+![Six-view face-matching reference template](face-matching-reference-template.png)
+
+This template is a synthetic illustration generated at the owner’s request on 28 November 2026, not an app render or a photograph of a historical person. The six views define the target input coverage: front, left/right three-quarter, left/right profile and rear; a separate smile/teeth image is optional. Left/right names refer to the visible side of the subject. Original individual images are preferred over a compressed collage.
